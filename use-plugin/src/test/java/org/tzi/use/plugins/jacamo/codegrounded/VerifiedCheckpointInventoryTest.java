@@ -20,16 +20,49 @@ class VerifiedCheckpointInventoryTest {
         java.nio.file.Files.writeString(journal.path(),"corrupted\n");assertThrows(RuntimeException.class,()->VerifiedCheckpointInventory.evaluatePrefix(current,journal,0,journal.persistedEntries()));
     }
     static VerificationSnapshot cut(List<ExternalOclConstraintService.Outcome> outcomes,List<SemanticConstraintResult> semanticRows) {
+        return cut(outcomes,semanticRows,Map.of());
+    }
+    static VerificationSnapshot cut(List<ExternalOclConstraintService.Outcome> outcomes,List<SemanticConstraintResult> semanticRows,Map<String,Object> extra) {
         String soil="!create x : Domain\n";String hash=ExternalOclConstraintService.sha256(soil.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-        var semantic=new SemanticVerificationEnvelope("1.0","native","configuration","boundary",semanticRows,Map.of(),Map.of("history","OBSERVED_PREFIX"),List.of(),Map.of("requirementInventory",Map.of("version","NATIVE_CONTRACT_INVENTORY/1.0","requiredInvariants",List.of("NATIVE:Domain::Required"))));
+        var observation=new TreeMap<String,Object>(extra);observation.putIfAbsent("requirementInventory",Map.of("version","NATIVE_CONTRACT_INVENTORY/1.0","requiredInvariants",List.of("NATIVE:Domain::Required")));
+        var semantic=new SemanticVerificationEnvelope("1.0","native","configuration","boundary",semanticRows,Map.of(),Map.of("history","OBSERVED_PREFIX"),List.of(),observation);
         var result=new RuntimeVerificationResult("session",1,"revision",1,"event","source",1,Instant.EPOCH,Instant.EPOCH,Instant.EPOCH,"cut","constraints",hash,outcomes,0,"INCOMPLETE","CURRENT_OBSERVED","",semantic);
         return new VerificationSnapshot(1,result,null,null,new VerificationSnapshot.StateImage(Map.of(),List.of(),soil));
     }
     static ExternalOclConstraintService.Outcome invariant(VerificationOutcome outcome){return new ExternalOclConstraintService.Outcome("NATIVE:Domain::Required","Domain",outcome,"native expression evidence","self.value > 0");}
+    @Test void declaredSettledScopeRequiresItsNativeRootsWhileOtherScopesRemainFuture() {
+        String marker=VerifiedCheckpointProtocol.SETTLED_CHECK_PREFIX+"source:scheme-one";
+        for(String status:List.of("FULFILLED","PENDING","UNKNOWN","VIOLATED","FAILED")) {
+            var observation=Map.<String,Object>of("requirementInventory",Map.of("version","NATIVE_CONTRACT_INVENTORY/1.0","requiredInvariants",List.of("NATIVE:Domain::Required"),"selectedIntentionalElements",List.of("root")),
+                    "originalEngine",Map.of("evaluated","PINNED_NATIVE_CUT","historyQuality","OBSERVED_PREFIX","contexts",List.of(
+                            Map.of("scopeView",Map.of("bindings",Map.of("scheme","scheme-one")),"occurrences",Map.of("root-instance",Map.of("sourceElement","root","aggregateStatus",status,"quality","KNOWN_DERIVED"))),
+                            Map.of("scopeView",Map.of("bindings",Map.of("scheme","scheme-two")),"occurrences",Map.of("other",Map.of("sourceElement","root","aggregateStatus","PENDING","quality","KNOWN_DERIVED"))))));
+            var current=cut(List.of(invariant(VerificationOutcome.PASS)),List.of(),observation);String original=current.result().resultHash();
+            var initial=VerifiedCheckpointInventory.evaluate(current);
+            var settled=VerifiedCheckpointInventory.settled(current,initial,List.of(marker));
+            assertEquals(status.equals("FULFILLED")?"PASS":Set.of("VIOLATED","FAILED").contains(status)?"FAIL":"UNKNOWN",settled.get(marker).truth());
+            assertEquals(original,current.result().resultHash(),"Applicability cannot rewrite the original marking/result");
+            String foreign=VerifiedCheckpointProtocol.SETTLED_CHECK_PREFIX+"source:foreign-scheme";
+            assertEquals("UNKNOWN",VerifiedCheckpointInventory.settled(current,initial,List.of(foreign)).get(foreign).truth());
+            if(status.equals("PENDING"))assertEquals("PASS",initial.get(VerifiedCheckpointProtocol.REQUIRED_CHECK).truth(),"Ordinary source boundaries still allow future progress");
+        }
+    }
     @Test void falseFutureGoalDoesNotMasqueradeAsAnApplicableFailure() {
         var future=new SemanticConstraintResult("goal","GOAL_CONDITION","Domain","x","source","self.completed",SemanticVerdict.FAIL,"false","future condition",1,"",Map.of());
         var result=VerifiedCheckpointInventory.evaluate(cut(List.of(invariant(VerificationOutcome.PASS)),List.of(future)));
         assertEquals("PASS",result.get(VerifiedCheckpointProtocol.REQUIRED_CHECK).truth());assertEquals("FUTURE",result.get("condition:goal").applicability());
+    }
+    @Test void settledHistoricalRootsRequireTheRuntimeOwnersCertificate() {
+        String marker=VerifiedCheckpointProtocol.SETTLED_CHECK_PREFIX+"source:scheme";
+        for(boolean certificate:List.of(false,true)) {
+            var root=Map.<String,Object>of("sourceElement","root","aggregateStatus","FULFILLED","quality","DERIVED_INPUT_UNAVAILABLE",
+                    "executionQuality","KNOWN_DERIVED_HISTORY","executionEvidence",certificate?Map.of("leaf",Map.of("policy","CERTIFIED_EXECUTION/1.0","stateHash","a".repeat(64))):Map.of());
+            var observation=Map.<String,Object>of("requirementInventory",Map.of("version","NATIVE_CONTRACT_INVENTORY/1.0","requiredInvariants",List.of("NATIVE:Domain::Required"),"selectedIntentionalElements",List.of("root")),
+                    "originalEngine",Map.of("evaluated","PINNED_NATIVE_CUT","historyQuality","OBSERVED_PREFIX","contexts",List.of(
+                            Map.of("scopeView",Map.of("bindings",Map.of("scheme","scheme")),"occurrences",Map.of("root",root)))));
+            var current=cut(List.of(invariant(VerificationOutcome.PASS)),List.of(),observation);
+            assertEquals(certificate?"PASS":"UNKNOWN",VerifiedCheckpointInventory.settled(current,VerifiedCheckpointInventory.evaluate(current),List.of(marker)).get(marker).truth());
+        }
     }
     @Test void requiredUnknownErrorMissingAndActualPostFailureRetainNativeMeaning() {
         for(var outcome:List.of(VerificationOutcome.SKIPPED,VerificationOutcome.ERROR))assertNotEquals("PASS",VerifiedCheckpointInventory.evaluate(cut(List.of(invariant(outcome)),List.of())).get(VerifiedCheckpointProtocol.REQUIRED_CHECK).truth());

@@ -24,11 +24,18 @@ final class CheckpointTimeline {
     }
 
     private static String signature(Cut cut) {
-        // A state milestone represents the frozen scoped CSL graph. Native checks,
-        // Task progress and failures remain exact in every audit cut and in the
-        // latest representative, without fabricating another identical CSL state.
-        // businessState is the canonical, ordered scoped object/attribute/link
-        // projection shown in the state panel; proof witnesses are audit metadata.
-        return SemanticJson.hash(cut.businessState());
+        // A selected source Task may finish without changing any Entity value.
+        // Include scoped terminal progress, not proof text, timestamps, row order
+        // or another execution's source token. All raw cuts remain in audit.
+        var progress=new TreeSet<String>();
+        for(var row:cut.evaluations()) {
+            if(row.kind().equals("GOAL_TASK")&&row.quality().startsWith("KNOWN")
+                    &&Set.of("FULFILLED","VIOLATED","FAILED").contains(row.status()))
+                progress.add(List.of(row.kind(),row.element(),row.player(),row.context(),row.occurrence(),row.status()).toString());
+            if(Set.of("TASK_POST","TASK_INVOCATION").contains(row.kind())
+                    &&Set.of("CONDITION_TRUE","CONDITION_FALSE","PASS","FAIL").contains(row.status()))
+                progress.add(List.of(row.kind(),row.element(),row.context(),row.occurrence(),row.status()).toString());
+        }
+        return SemanticJson.hash(List.of(cut.businessState(),progress));
     }
 }

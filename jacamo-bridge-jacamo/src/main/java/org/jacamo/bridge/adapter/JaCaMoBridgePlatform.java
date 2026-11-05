@@ -256,7 +256,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
             cartagoSource.publishObservation(()->{runtimeCoordinator.poll();return null;},()->{});
             if(jacamo.checkpoint.CheckpointBoot.verified()) {
                 verifiedCheckpoints=new VerifiedCheckpointBridge(sessionId,System.getProperty("jacamo.execution.run",org.jacamo.checkpoint.runtime.ExecutionBarrier.proof().run()),generation(),modelSnapshot.modelRevision(),plan,
-                        this::captureVerifiedCut,jacamo.checkpoint.CheckpointBoot::sourcesUnchanged);
+                        this::captureVerifiedCut,jacamo.checkpoint.CheckpointBoot::sourcesUnchanged,modelSnapshot);
             }
             readiness.update("observation",AdapterReadiness.ATTACHED,"program="+plan.programHash()+"; requests="+plan.requests().size()+"; requiredUnavailable="+owned.requiredUnavailable());
             System.out.println("BRIDGE_OBSERVATION_PLAN_ACTIVE program="+plan.programHash()+" requests="+plan.requests().size()+" capabilities="+owned.capabilities());

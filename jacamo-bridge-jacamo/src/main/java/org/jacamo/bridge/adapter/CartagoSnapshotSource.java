@@ -511,7 +511,14 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         return Map.of("normalizedEventKind","SET_CARTAGO_FOCUS","agentSemanticId",agent,"artifactSemanticId",artifact,"focused",focused);
     }
 
-    @Override public void opRequested(long time, AgentId agent, ArtifactId artifact, Op op) { if(!selectedOperation(artifact,op))return;event(RuntimeEventKind.STARTED, artifact, agent,
+    private final Map<Op,Map<String,Object>> taskDispatches=new java.util.IdentityHashMap<>();
+    @Override public void opRequested(long time, AgentId agent, ArtifactId artifact, Op op) { if(!selectedOperation(artifact,op))return;
+        var owner=TaskOperationDispatch.current();
+        if(!owner.isEmpty())synchronized(taskDispatches){
+            if(taskDispatches.size()>=4096)gap("TASK_OPERATION_DISPATCH_CAPACITY");
+            else if(taskDispatches.putIfAbsent(op,owner)!=null)gap("TASK_OPERATION_DISPATCH_IDENTITY_REUSED");
+        }
+        event(RuntimeEventKind.STARTED, artifact, agent,
             Map.of("phase", "requested", "operation", op.getName(), "arity", op.getParamValues().length)); }
     @Override public void opStarted(long time, OpId id, ArtifactId artifact, Op op) { if(!selectedOperation(artifact,op))return;event(RuntimeEventKind.STARTED, artifact, null,
             operationObservation(time,artifact,id,op,"started")); }
@@ -571,6 +578,10 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         var payload=new java.util.LinkedHashMap<String,Object>();
         payload.put("operationLifecycleCoverage","PARTIAL");payload.put("suspendResumeObservation","UNSUPPORTED_CARTAGO_3_1_AWAIT_NO_LOGGER_HOOKS");
         payload.put("phase",phase);payload.put("operation",op.getName());payload.put("opId",id.toString());
+        synchronized(taskDispatches){
+            var owner=phase.equals("completed")||phase.equals("failed")?taskDispatches.remove(op):taskDispatches.get(op);
+            if(owner!=null&&id.getAgentBodyId()!=null&&Objects.equals(owner.get("agentName"),id.getAgentBodyId().getAgentName()))payload.put("taskDispatch",owner);
+        }
         payload.put("artifactTypeJavaClassName",artifact.getArtifactType());
         payload.put("artifactSemanticId",OfficialCartagoAdapter.artifactId(environment.getId().toString(),artifact));
         AgentId performer=id.getAgentBodyId();

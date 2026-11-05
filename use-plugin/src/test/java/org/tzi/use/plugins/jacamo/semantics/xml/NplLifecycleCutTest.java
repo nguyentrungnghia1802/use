@@ -8,6 +8,7 @@ import org.jacamo.bridge.contract.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.NplLifecycleCut;
+import org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.NplPopulationCut;
 import org.tzi.use.plugins.jacamo.semantics.observer.SourceClock;
 import static org.junit.jupiter.api.Assertions.*;
 /** Actual timed NPL callbacks/public annotations; no Auction names or fake deadline DTOs. */
@@ -24,6 +25,22 @@ class NplLifecycleCutTest {
             actor.doAction(artifact,new Op("load","scope evidence { norm duty: start -> obligation(alice,true,missing,`now`+`1 seconds`). norm optional: start -> permission(bob,true,unused,`now`+`10 seconds`). }"),5000);
             actor.doAction(artifact,new Op("addFact","start"),5000);await(()->events.stream().filter(e->e.kind()==RuntimeEventKind.NORM_ACTIVATED).count()==2);
             var activated=events.stream().filter(e->e.kind()==RuntimeEventKind.NORM_ACTIVATED&&e.after().get("normDefinition").equals("duty")).findFirst().orElseThrow();
+            var cut=snapshots.capture("npl-revision",5).snapshot();
+            assertTrue(NplPopulationCut.closed(cut,NeutralNormBoard.class.getName()),"Actual board tracked from empty creation closes its retained activation population");
+            var late=new NplBoardSnapshotSource("late-run",()->List.of(NeutralNormBoard.instance));
+            try {late.attach(e->{});late.capture();var metadata=new TreeMap<String,Object>(cut.captureMetadata());metadata.put("sourceEvidence",Map.of("npl",late.captureMetadata()));
+                var lateCut=new RuntimeSnapshot(cut.snapshotId(),cut.modelRevision(),cut.captureStartedAt(),cut.captureEndedAt(),cut.startWatermarks(),cut.endWatermarks(),cut.validationAttempts(),cut.facts(),cut.sourceCompleteness(),cut.stateFingerprint(),metadata);
+                assertFalse(NplPopulationCut.closed(lateCut,NeutralNormBoard.class.getName()),"Late discovery is not a negative evidence proof");
+            }finally{late.close();}
+            var missing=cut.facts().stream().filter(f->f.kind()!=RuntimeFactKind.NORM_INSTANCE).toList();
+            var missingCut=new RuntimeSnapshot(cut.snapshotId(),cut.modelRevision(),cut.captureStartedAt(),cut.captureEndedAt(),cut.startWatermarks(),cut.endWatermarks(),cut.validationAttempts(),missing,cut.sourceCompleteness(),cut.stateFingerprint(),cut.captureMetadata());
+            assertFalse(NplPopulationCut.closed(missingCut,NeutralNormBoard.class.getName()),"Catalog and actual source facts must cover the same activations");
+            var disconnected=new TreeMap<String,Completeness>(cut.sourceCompleteness());disconnected.put("npl",Completeness.UNAVAILABLE);
+            var unavailableCut=new RuntimeSnapshot(cut.snapshotId(),cut.modelRevision(),cut.captureStartedAt(),cut.captureEndedAt(),cut.startWatermarks(),cut.endWatermarks(),cut.validationAttempts(),cut.facts(),disconnected,cut.stateFingerprint(),cut.captureMetadata());
+            assertFalse(NplPopulationCut.closed(unavailableCut,NeutralNormBoard.class.getName()));
+            var stale=new TreeMap<String,SourceWatermark>(cut.startWatermarks());stale.put("npl",new SourceWatermark("npl",cut.endWatermarks().get("npl").sequence()+1));
+            var staleCut=new RuntimeSnapshot(cut.snapshotId(),cut.modelRevision(),cut.captureStartedAt(),cut.captureEndedAt(),stale,cut.endWatermarks(),cut.validationAttempts(),cut.facts(),cut.sourceCompleteness(),cut.stateFingerprint(),cut.captureMetadata());
+            assertFalse(NplPopulationCut.closed(staleCut,NeutralNormBoard.class.getName()));
             String hash=(String)NplRuntimeProfile.evidence().get("artifactSha256");var decoder=new NplLifecycleCut(hash);
             var initial=decoder.decode(activated.entityId(),activated.after(),"norm-run",1);assertEquals("OBLIGATION",initial.norm().modality());assertEquals(Long.parseLong((String)activated.after().get("deadline")),initial.deadlineEpochMillis());
             assertEquals(Long.parseLong((String)activated.after().get("createdEpochMillis")),initial.createdEpochMillis());assertFalse(initial.reportedUnfulfilled());assertNull(initial.terminalEpochMillis());

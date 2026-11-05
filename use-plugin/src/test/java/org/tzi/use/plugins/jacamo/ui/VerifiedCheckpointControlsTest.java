@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.nio.file.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import javax.swing.*;
@@ -15,6 +16,28 @@ import org.tzi.use.plugins.jacamo.codegrounded.runtime.VerifiedCheckpointService
 class VerifiedCheckpointControlsTest {
     static Component find(Container root,String name){for(Component child:root.getComponents()){if(name.equals(child.getName()))return child;if(child instanceof Container nested){var found=find(nested,name);if(found!=null)return found;}}return null;}
     static void layout(Container root){root.doLayout();for(Component child:root.getComponents())if(child instanceof Container nested)layout(nested);}
+    @Test void sameReviewButtonReenablesForEachLaterExactToken()throws Exception {
+        var state=new AtomicReference<View>();var calls=new ArrayList<String>();var replies=new HashMap<String,CompletableFuture<Object>>();
+        var facade=new JaCaMoFacade(){
+            public String status(){return "Repeated review fixture";}
+            public boolean verifiedCheckpointMode(){return true;}
+            public View verifiedCheckpointState(){return state.get();}
+            public CompletableFuture<?> acknowledgeVerifiedCheckpoint(String token,String hash){
+                calls.add(token+":"+hash);var reply=new CompletableFuture<Object>();replies.put(token,reply);
+                state.set(new View("HELD_FAILURE",token,"source-task","Original failure retained","producer","use",hash,Set.of("scope"),false,true,Map.of()));return reply;
+            }
+        };
+        var panel=new AtomicReference<JaCaMoWorkbenchPanel>();
+        for(int i=0;i<3;i++) {
+            String token="review-"+i,hash="original-native-failure-"+i;
+            state.set(new View("HELD_FAILURE",token,"source-task","Original failure retained","producer","use",hash,Set.of("scope"),true,false,Map.of()));
+            SwingUtilities.invokeAndWait(()->{if(panel.get()==null)panel.set(JaCaMoWorkbenchPanel.authoredWorkflow(facade));panel.get().refreshRuntime();var button=(JButton)find(panel.get(),"acknowledge-checkpoint");assertTrue(button.isEnabled());button.doClick();assertFalse(button.isEnabled());assertEquals(token+":"+hash,calls.getLast());});
+            state.set(new View("RUNNING",token,"source-task","REVIEWED_CHECKPOINT_CONTINUED","producer","use",hash,Set.of("scope"),false,false,Map.of()));replies.get(token).complete(Map.of("released",true));
+            SwingUtilities.invokeAndWait(()->{panel.get().refreshRuntime();assertFalse(((JButton)find(panel.get(),"acknowledge-checkpoint")).isEnabled());});
+        }
+        assertEquals(List.of("review-0:original-native-failure-0","review-1:original-native-failure-1","review-2:original-native-failure-2"),calls);
+        SwingUtilities.invokeAndWait(()->panel.get().removeNotify());
+    }
     @Test void mainPrepareAlwaysSelectsVerificationWithoutAPassiveSelector()throws Exception {
         var mode=new AtomicBoolean();var prepared=new CountDownLatch(1);var panel=new AtomicReference<JaCaMoWorkbenchPanel>();
         var facade=new JaCaMoFacade(){

@@ -270,7 +270,10 @@ public final class RuntimeFactSources {
         var rows=new ArrayList<RuntimeTables.Row>();
         // Discovery is selected-board only. Even an empty COMPLETE source flag cannot prove global absence.
         Completeness population=merge(Completeness.PARTIAL,cut.sourceCompleteness().getOrDefault("npl",Completeness.UNAVAILABLE));
+        String boardClass=definition.node().optional("boardClass");
+        if(!boardClass.isEmpty()&&NplPopulationCut.closed(cut,boardClass))population=Completeness.COMPLETE;
         for(var fact:cut.facts())if(fact.kind()==RuntimeFactKind.NORM_INSTANCE&&fact.id().authority().equals("npl")) {
+            if(!boardClass.isEmpty()&&!boardClass.equals(CanonicalJson.object(fact.values().get("boardObservationProof")).get("artifactClass")))continue;
             var data=new LinkedHashMap<String,Object>();data.put("identity",fact.id().canonical());
             var proofs=new LinkedHashMap<String,String>();proofs.put("source-cut",proof);proofs.put("physical-identity",fact.id().canonical());
             Completeness quality=Completeness.UNAVAILABLE;String diagnostic="NPL_ACTIVATION_OR_PHYSICAL_BOARD_UNAVAILABLE";

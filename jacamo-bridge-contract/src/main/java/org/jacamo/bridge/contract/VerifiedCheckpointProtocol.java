@@ -6,6 +6,7 @@ import java.util.*;
 public final class VerifiedCheckpointProtocol {
     public static final String VERSION="1.0.0",CAPABILITY="runtime.verified-checkpoints.v1";
     public static final String INVENTORY="APPLICABLE_NATIVE_REQUIRED_INVENTORY/1.0",REQUIRED_CHECK="native.applicable";
+    public static final String SETTLED_CHECK_PREFIX="native.settled:";
     public enum Action { STATUS, APPROVE, HOLD_FAILURE, HOLD_UNVERIFIED, ACKNOWLEDGE_AND_CONTINUE, MONITOR_CLOSED }
     public record Identity(String session,String run,long generation,String revision,String token,long sequence,long barrierEpoch,
                            String policyHash,String producerHash,String requestHash,Set<String> executionScope) {
@@ -47,8 +48,11 @@ public final class VerifiedCheckpointProtocol {
     public record Rule(String id,String sourceIdentity,String artifactClass,Set<String> operations,Set<String> requiredChecks,String selectorKind) {
         public Rule(String id,String sourceIdentity,String artifactClass,Set<String> operations,Set<String> requiredChecks){this(id,sourceIdentity,artifactClass,operations,requiredChecks,"OPERATION_POST");}
         public Rule {
-            required(id);required(sourceIdentity);required(artifactClass);operations=Set.copyOf(operations);requiredChecks=Set.copyOf(requiredChecks);
-            if(!Set.of("OPERATION_POST","OPERATION_FAILURE","TASK_POST").contains(selectorKind))throw bad("POLICY_SELECTOR");
+            required(id);required(sourceIdentity);Objects.requireNonNull(artifactClass);operations=Set.copyOf(operations);requiredChecks=Set.copyOf(requiredChecks);
+            if(!Set.of("OPERATION_POST","OPERATION_FAILURE","OPERATION_UNMAPPED_POST","TASK_POST","SCHEME_POST","NORM_TERMINAL").contains(selectorKind))throw bad("POLICY_SELECTOR");
+            if(selectorKind.startsWith("OPERATION_"))required(artifactClass);
+            if(selectorKind.equals("SCHEME_POST")&&!Set.of("terminal","administrative").containsAll(operations)
+                    ||selectorKind.equals("NORM_TERMINAL")&&!Set.of("unfulfilled").containsAll(operations))throw bad("POLICY_LIFECYCLE_SELECTION");
             if(operations.isEmpty()||requiredChecks.isEmpty()||operations.stream().anyMatch(op->!op.matches("[A-Za-z_$][A-Za-z0-9_$]*")))throw bad("POLICY_RULE");
         }
         public Map<String,Object> payload(){return Map.of("id",id,"sourceIdentity",sourceIdentity,"artifactClass",artifactClass,"operations",operations.stream().sorted().toList(),"requiredChecks",requiredChecks.stream().sorted().toList(),"selectorKind",selectorKind);}
@@ -59,11 +63,11 @@ public final class VerifiedCheckpointProtocol {
             if(inputHashes.isEmpty()||rules.isEmpty()||rules.size()>256||rules.stream().map(Rule::id).distinct().count()!=rules.size())throw bad("POLICY_INVENTORY");
             if(rules.stream().anyMatch(rule->!rule.requiredChecks().contains(REQUIRED_CHECK)))throw bad("POLICY_NATIVE_INVENTORY_REQUIRED");
         }
-        public Map<String,Object> payload(){return Map.of("version","CHECKPOINT_POLICY/1.1","inventory",INVENTORY,"programHash",programHash,"inputHashes",inputHashes,"rules",rules.stream().map(Rule::payload).toList());}
+        public Map<String,Object> payload(){return Map.of("version","CHECKPOINT_POLICY/1.2","inventory",INVENTORY,"programHash",programHash,"inputHashes",inputHashes,"rules",rules.stream().map(Rule::payload).toList());}
         public String hash(){return VerifiedCheckpointProtocol.hash(payload());}
         public static Policy decode(Map<String,Object> map){
             keys(map,"version","inventory","programHash","inputHashes","rules");
-            if(!"CHECKPOINT_POLICY/1.1".equals(map.get("version"))||!INVENTORY.equals(map.get("inventory")))throw bad("POLICY_VERSION");
+            if(!"CHECKPOINT_POLICY/1.2".equals(map.get("version"))||!INVENTORY.equals(map.get("inventory")))throw bad("POLICY_VERSION");
             var hashes=new TreeMap<String,String>();CanonicalJson.object(map.get("inputHashes")).forEach((k,v)->{if(!(v instanceof String value))throw bad("POLICY_HASH_VALUE");hashes.put(k,value);});
             if(!(map.get("rules") instanceof List<?> list))throw bad("POLICY_RULES");
             var rules=new ArrayList<Rule>();for(Object raw:list){var r=CanonicalJson.object(raw);keys(r,"id","sourceIdentity","artifactClass","operations","requiredChecks","selectorKind");rules.add(new Rule(text(r,"id"),text(r,"sourceIdentity"),text(r,"artifactClass"),strings(r.get("operations")),strings(r.get("requiredChecks")),text(r,"selectorKind")));}

@@ -3,9 +3,10 @@
 // an actual enactment requires that same Agent's observed Plays link (not context ownership).
 // Auction CSL system specification. Project .jcm is the runtime input;
 // this hand-authored model and mapping XML are system specifications.
-// User-approved revision of Desktop diagram: capability is a singleton-agent
-// OrgCtx as pictured, overriding the embedded legacy capability Role. Atom maps to String.
-// Belief attributes are optional exact per-player JSON tuple views, not world truth.
+// Authoritative Core/auction/auction_csl.drawio: capability is a singleton-agent
+// OrgCtx, with enacts relations and no Role inheritance. Atom maps to String.
+// Beliefs are optional mental state, never authoritative Artifact/world values.
+// Typed belief scalars remain undefined without an unambiguous qualified binding.
 // @use-native-ocl 1 is an explicit USE plugin annotation. The original CSL parser
 // parses the structure/invariants; the plugin compiles this native contract block.
 csl v4.0 AuctionState {
@@ -13,19 +14,19 @@ csl v4.0 AuctionState {
         orgContext auctionGroup {
             role auctioneer;
             role participant;
-        }
-        // Model scope: the organization coordinates the named auction artifacts.
-        // This is not physical ownership of a CArtAgO workspace/artifact.
-        entity Auction {
-            attribute id : String required;
-            attribute running : Boolean required mutable default false;
-            attribute task : String required mutable default 'no_task';
-            // Initial source value is Double.MAX_VALUE; retain it in a snapshot.
-            // No invented numeric default or bounded-domain sentinel is used.
-            attribute best_bid : Real required mutable;
-            attribute winner : String required mutable default 'no_winner';
-            // Source field, not an observable property. Requires explicit access.
-            attribute currentWinner : String required mutable default 'no_winner';
+            // Model scope, not physical CArtAgO ownership or a disposal cascade.
+            entity Auction {
+                attribute id : String required;
+                attribute running : Boolean required mutable default false;
+                attribute task : String required mutable default 'no_task';
+                // Retain the source Double.MAX_VALUE; never invent a sentinel.
+                attribute best_bid : Real required mutable;
+                // Preserve the visible diagram's authored default literal.
+                // Actual source Atom observations (including no_winner) overwrite it.
+                attribute winner : String required mutable default 'defaul';
+                // Source field, not an observable property. Requires explicit access.
+                attribute currentWinner : String required mutable default 'no_winner';
+            }
         }
     }
 
@@ -40,7 +41,7 @@ csl v4.0 AuctionState {
         attribute belief_play : String optional mutable;
         attribute belief_running : String optional mutable;
         attribute belief_task : String optional mutable;
-        attribute belief_best_bid : String optional mutable;
+        attribute belief_best_bid : Real optional mutable;
         attribute belief_winner : String optional mutable;
     }
 

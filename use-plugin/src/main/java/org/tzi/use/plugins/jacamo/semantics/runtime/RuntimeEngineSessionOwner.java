@@ -172,14 +172,14 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
         return new Cut(owner,identity,ticket.get(),version,boundary,stateHash,UseStateReadView.pin(null,nativeEngine.system().state()),casts,advance,lost,invocation,nativeChecks,Math.max(1024,estimatedBytes),sources,work);
     }
     private void prepareXml(List<PreparedCast> result,Map<String,Completeness> sources,boolean lost,ExternalOclConstraintService.PreparedEvaluation nativeChecks) {
-        var expander=new OccurrenceGoalModelExpander(program.goalModel(),program.profile().engine(),program.xmlPlan().dependencyPopulations());
+        var expander=new OccurrenceGoalModelExpander(program.goalModel(),program.profile().engine(),program.xmlPlan().dependencyPopulations(),program.xmlPlan().goalViews(),program.xmlPlan().physicalActorViews());
         var demands=nativeEngine.xmlTaskDemands(identity.run(),identity.generation(),identity.revision());
         for(var scope:nativeEngine.xmlOccurrences(identity.run(),identity.generation(),identity.revision())) {
             var members=scope.members().stream().map(m->new OccurrenceGoalModelExpander.Player(m.actor(),m.actorType(),m.instance(),m.player(),m.role(),m.interval())).toList();
             var expansion=scope.complete()?expander.expand(members,program.goalModel().getName()+"_Execution_"+SemanticJson.hash(scope.id()).substring(0,24)):null;
             var actors=new TreeMap<String,JaCaMoOccurrenceBindingAdapter.ActorBinding>();var selves=new TreeMap<String,String>();var reads=new TreeMap<String,GoalRead>();var taskReads=new TreeMap<String,XmlTaskRead>();
             for(var member:scope.members())actors.put(member.actorType(),new JaCaMoOccurrenceBindingAdapter.ActorBinding(member.actorType(),member.instance(),member.role(),member.player()));
-            if(expansion!=null)for(var trace:expansion.trace().values())if(trace.kind().equals("SOURCE_ELEMENT")) {
+            if(expansion!=null)for(var trace:expansion.trace().values())if(Set.of("SOURCE_ELEMENT","REALIZATION_ELEMENT").contains(trace.kind())) {
                 var member=scope.members().stream().filter(m->m.actor().equals(trace.actor())&&m.player().equals(trace.player())&&m.role().equals(trace.role())).findFirst().orElseThrow();
                 String selfId=member.selves().getOrDefault(trace.source(),"");selves.put(trace.expanded(),selfId);
                 if(program.goalModel().findElement(trace.source()).orElse(null) instanceof Task) {

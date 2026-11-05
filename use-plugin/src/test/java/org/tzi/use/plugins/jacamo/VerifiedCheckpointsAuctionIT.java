@@ -41,7 +41,7 @@ public class VerifiedCheckpointsAuctionIT {
         try {
             facade.prepareOwnedProducer(original,selection,checkout.resolve("jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt"));
             assertNotNull(session.system());facade.startRuntime();
-            long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(150);long lastActivity=System.nanoTime();
+            long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(240);long lastActivity=System.nanoTime();
             while(System.nanoTime()<end) {
                 var view=facade.verifiedCheckpointState();
                 if(!view.token().isBlank()&&!view.token().equals(previousToken)) {
@@ -51,10 +51,16 @@ public class VerifiedCheckpointsAuctionIT {
                 }
                 if(automatic>=1&&!Files.exists(evidence.resolve("request-evidence-input")))Files.writeString(evidence.resolve("request-evidence-input"),"Actual AuctionArtifact.stop() twice as an existing source performer; no model, native state or result mutation");
                 if(view.reviewable()) {
+                    if(view.checkpoint().endsWith(":A_start_t1"))Files.write(evidence.resolve("initial-held.json"),CanonicalJson.encode(Map.of("state",view.state(),"reason",view.reason(),"request",view.request(),"native",facade.verificationSnapshot().toMap())));
+                    assertFalse(view.checkpoint().endsWith(":A_start_t1"),"Both concurrent creation Tasks must drain and verify without an initialization hold");
                     System.out.println("NATIVE_HELD token="+view.token()+" result="+view.resultHash()+" state="+view.state()+" reason="+view.reason());
                     var originalCut=facade.verificationSnapshot();var originalTruth=originalCut.result()==null?"":originalCut.result().resultHash();
                     Files.write(evidence.resolve("native-"+view.token()+".json"),CanonicalJson.encode(originalCut.toMap()));
-                    observed.put(view.token(),Map.of("state",view.state(),"reason",view.reason(),"resultHash",view.resultHash(),"useHash",view.useHash(),"request",view.request()));
+                    // Keep each full immutable cut in its native evidence file;
+                    // do not duplicate all snapshots into one bounded JSON frame.
+                    observed.put(view.token(),Map.of("state",view.state(),"reason",view.reason(),"resultHash",view.resultHash(),"useHash",view.useHash(),
+                            "requestIdentity",view.request().get("identity"),"checkpointId",view.request().get("checkpointId"),
+                            "sourceOccurrences",view.request().get("sourceOccurrences"),"nativeEvidence","native-"+view.token()+".json"));
                     if(view.state().equals("HELD_FAILURE"))failures++;
                     Thread.sleep(300);assertEquals(view.token(),facade.verifiedCheckpointState().token());
                     assertEquals(view.resultHash(),facade.verifiedCheckpointState().resultHash());
@@ -77,7 +83,8 @@ public class VerifiedCheckpointsAuctionIT {
                         Files.write(evidence.resolve("monitor-stop-restart.json"),CanonicalJson.encode(Map.of("token",restarted.token(),"originalFailedResult",view.resultHash(),"reconciledResult",restarted.resultHash(),"state",restarted.state())));
                         reconnected=true;
                     }
-                    facade.acknowledgeVerifiedCheckpoint(view.token(),view.resultHash()).get(20,TimeUnit.SECONDS);reviews++;lastHeld=true;lastActivity=System.nanoTime();
+                    facade.acknowledgeVerifiedCheckpoint(view.token(),view.resultHash()).get(20,TimeUnit.SECONDS);
+                    reviews++;lastHeld=true;lastActivity=System.nanoTime();
                     assertTrue(facade.runtimeVerificationHistory().stream().anyMatch(r->r.resultHash().equals(originalTruth)),"Reviewed original native result must remain in history after release");
                 }
                 if(view.state().equals("HELD_UNVERIFIED")&&!view.reviewable()&&!view.reason().contains("WAITING")&&!view.reason().contains("DRAINING")) {
@@ -114,6 +121,7 @@ public class VerifiedCheckpointsAuctionIT {
             assertTrue(hashes.equals(sourceHashes(original.getParent())),"External source changed");
             assertTrue(observed.size()+approvals.size()>4,"Repeated source checkpoints must occur");assertTrue(approvals.size()>0,"Qualified native PASS must continue automatically");
             assertEquals(reviews,acknowledgements.size(),"Every reviewed release needs its producer receipt");
+            assertTrue(reviews>=2,"Review must work for at least two distinct exact checkpoint tokens");
             var finalManifest=CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(replay.resolve("manifest.json"))));
             assertEquals(((Number)finalManifest.get("entries")).intValue(),offline.checkedEntries());
             assertFalse(offline.complete(),"The retained journal must preserve its intentional disconnect gap");assertEquals(List.of("REPLAY_PARTIAL_COVERAGE_GAP"),offline.diagnostics());

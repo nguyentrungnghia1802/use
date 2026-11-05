@@ -54,7 +54,11 @@ public final class ObservedConformancePresenter {
         rows.addAll(base.evaluations());
         var evidence=new LinkedHashMap<>(base.visualEvidence());
         evidence.put("verifiedCheckpointToken",checkpoint.token());evidence.put("verifiedCheckpointResultHash",checkpoint.resultHash());evidence.put("verifiedCheckpointUseHash",checkpoint.useHash());
-        var shown=new Cut("source-checkpoint:"+checkpoint.token()+":"+base.id(),base.trace(),base.state(),rows,base.coverage(),base.freshness(),base.failed()||checks.values().stream().anyMatch(c->c.truth().equals("FAIL")),"checkpoint:"+checkpoint.token(),base.requirements(),base.businessState(),base.executionMilestones(),base.selectedRequirements(),base.businessPopulationEmpty(),evidence);
+        var barrier=CanonicalJson.object(checkpoint.request().getOrDefault("barrier",Map.of()));
+        String sourceTrace=base.trace()+"\nSource causes: "+checkpoint.request().getOrDefault("sourceOccurrences",List.of())
+                +"\nRequested sequence: "+barrier.getOrDefault("requestedSequence","unavailable")
+                +"; frozen sequence: "+barrier.getOrDefault("frozenSequence","unavailable");
+        var shown=new Cut("source-checkpoint:"+checkpoint.token()+":"+base.id(),sourceTrace,base.state(),rows,base.coverage(),base.freshness(),base.failed()||checks.values().stream().anyMatch(c->c.truth().equals("FAIL")),"checkpoint:"+checkpoint.token(),base.requirements(),base.businessState(),base.executionMilestones(),base.selectedRequirements(),base.businessPopulationEmpty(),evidence);
         checkpointCuts.put(checkpoint.token(),shown);return List.copyOf(checkpointCuts.values());
     }
     /** Live window has no historical navigation: never parse the disk prefix or
@@ -211,7 +215,7 @@ public final class ObservedConformancePresenter {
                         if(!Set.of("GOAL","TASK","LEGACY").contains(Objects.toString(occurrence.getOrDefault("elementKind","LEGACY"))))continue;
                         // Population receivers implement ANY/ALL inside the
                         // execution graph; they are not extra source Goal instances.
-                        if(Set.of("ANY_DEPENDENCY_RECEIVER","ALL_DEPENDENCY_RECEIVER").contains(Objects.toString(occurrence.get("expansionKind"),"")))continue;
+                        if(Set.of("ANY_DEPENDENCY_RECEIVER","ALL_DEPENDENCY_RECEIVER","REALIZATION_ELEMENT").contains(Objects.toString(occurrence.get("expansionKind"),"")))continue;
                         String quality = Objects.toString(core.getOrDefault("qualityOverlay", occurrence.getOrDefault("quality", "UNAVAILABLE")));
                         String propagated = Objects.toString(occurrence.getOrDefault("aggregateStatus", "UNAVAILABLE"));
                         boolean known = Set.of("KNOWN","KNOWN_DERIVED").contains(quality) && "OBSERVED_PREFIX".equals(core.get("historyQuality"))

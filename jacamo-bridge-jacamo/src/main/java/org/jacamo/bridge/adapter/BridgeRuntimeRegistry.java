@@ -12,6 +12,9 @@ import org.jacamo.bridge.contract.RuntimeEvent;
 /** Process-local hook used only by official JaCaMo extension instances. */
 public final class BridgeRuntimeRegistry {
     private static final AtomicReference<Consumer<RuntimeEvent>> ACTIVE = new AtomicReference<>();
+    private static volatile java.util.Set<String> checkpointTaskSources=java.util.Set.of();
+    static void checkpointTaskSources(java.util.Set<String> sources){checkpointTaskSources=java.util.Set.copyOf(sources);}
+    static boolean checkpointTask(String hash,String task){return checkpointTaskSources.contains(hash+"/"+task);}
     private static final AtomicReference<Runnable> WORKSPACE_OBSERVER=new AtomicReference<>();
     static AutoCloseable attachWorkspaceObserver(Runnable observer) {
         Objects.requireNonNull(observer);

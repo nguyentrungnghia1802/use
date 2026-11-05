@@ -66,7 +66,7 @@ public final class VerifiedCheckpointService implements AutoCloseable {
                 displayCut(identity,request,cut);
                 view=present(state,identity,request,Objects.toString(status.get("diagnostic")),false);return;
             }
-            checks=port.nativeChecks(cut);nativeCut=cut;useHash=cut.result().stateHash();
+            checks=VerifiedCheckpointInventory.settled(cut,port.nativeChecks(cut),((List<?>)request.get("requiredChecks")).stream().map(String.class::cast).toList());nativeCut=cut;useHash=cut.result().stateHash();
             resultHash=VerifiedCheckpointProtocol.hash(Map.of("version",VerifiedCheckpointProtocol.INVENTORY,"nativeResultHash",cut.result().resultHash(),"checks",checksPayload(checks)));evaluated=identity;
             port.audit(Map.of("version","VERIFIED_CHECKPOINT_AUDIT/1.0","kind","EVALUATED","request",request,"state",state,"checks",checksPayload(checks),"acceptedUseCutHash",useHash,"resultHash",resultHash,"nativeResultHash",cut.result().resultHash()),cut);
             try {displayCut(identity,request,cut);}

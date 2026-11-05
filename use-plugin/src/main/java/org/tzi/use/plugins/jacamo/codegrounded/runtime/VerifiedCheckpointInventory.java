@@ -7,6 +7,53 @@ import org.tzi.use.plugins.jacamo.verification.VerificationOutcome;
 
 /** Applicable checks from the existing native result; no second verifier. */
 public final class VerifiedCheckpointInventory {
+    /** A source-declared settled scope cannot claim future progress forever.
+     * Read the original engine's selected roots; never rewrite its markings. */
+    public static Map<String,Check> settled(VerificationSnapshot cut,Map<String,Check> existing,Collection<String> required) {
+        var markers=required.stream().filter(id->id.startsWith(VerifiedCheckpointProtocol.SETTLED_CHECK_PREFIX)).toList();
+        if(markers.isEmpty())return existing;
+        var rows=new TreeMap<>(existing);
+        var semantic=cut.result()==null?null:cut.result().semantic();
+        var observed=semantic==null?Map.<String,Object>of():semantic.observation();
+        var inventory=CanonicalJson.object(observed.getOrDefault("requirementInventory",Map.of()));
+        var core=CanonicalJson.object(observed.getOrDefault("originalEngine",Map.of()));
+        var targets=inventory.get("selectedIntentionalElements") instanceof List<?> list?list:List.of();
+        var contexts=core.get("contexts") instanceof List<?> list?list:List.of();
+        for(String marker:markers) {
+            String scope=marker.substring(VerifiedCheckpointProtocol.SETTLED_CHECK_PREFIX.length());
+            boolean found=false,unknown=targets.isEmpty(),failed=false;
+            for(Object raw:contexts) {
+                var context=CanonicalJson.object(raw);var view=CanonicalJson.object(context.getOrDefault("scopeView",Map.of()));
+                var bindings=CanonicalJson.object(view.getOrDefault("bindings",Map.of()));
+                if(bindings.values().stream().noneMatch(value->value instanceof String id&&scope.equals("source:"+id)))continue;
+                found=true;var occurrences=CanonicalJson.object(context.getOrDefault("occurrences",Map.of()));
+                for(Object target:targets) {
+                    var roots=occurrences.values().stream().map(CanonicalJson::object).filter(o->target.equals(o.get("sourceElement"))).toList();
+                    if(roots.isEmpty())unknown=true;
+                    for(var root:roots) {
+                        String status=Objects.toString(root.get("aggregateStatus"),""),quality=Objects.toString(root.get("quality"),"");
+                        boolean nativeCut="PINNED_NATIVE_CUT".equals(core.get("evaluated"));
+                        boolean prefix="OBSERVED_PREFIX".equals(core.get("historyQuality"));
+                        boolean known=nativeCut&&prefix&&Set.of("KNOWN","KNOWN_DERIVED").contains(quality);
+                        String executionQuality=Objects.toString(root.getOrDefault("executionQuality",quality));
+                        var evidence=CanonicalJson.object(root.getOrDefault("executionEvidence",Map.of()));
+                        known|=nativeCut&&prefix&&Set.of("KNOWN","KNOWN_DERIVED").contains(executionQuality)
+                                &&"ORIGINAL_PROPAGATION_ON_ADMITTED_LEAVES/1.0".equals(context.get("executionQualification"));
+                        known|=nativeCut&&!evidence.isEmpty()&&Set.of("KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(executionQuality);
+                        failed|=known&&Set.of("VIOLATED","FAILED").contains(status);
+                        unknown|=!known||!Set.of("FULFILLED","VIOLATED","FAILED").contains(status);
+                    }
+                }
+            }
+            rows.put(marker,new Check(failed?"FAIL":!found||unknown?"UNKNOWN":"PASS","APPLICABLE",
+                    failed?"SETTLED_NATIVE_ROOT_FAILED":!found||unknown?"SETTLED_SELECTED_NATIVE_ROOT_NOT_FULFILLED":"SETTLED_SELECTED_NATIVE_ROOT_FULFILLED"));
+        }
+        boolean failed=rows.values().stream().anyMatch(c->c.applicability().equals("APPLICABLE")&&c.truth().equals("FAIL"));
+        boolean unknown=rows.values().stream().anyMatch(c->c.applicability().equals("APPLICABLE")&&!Set.of("PASS","FAIL").contains(c.truth()));
+        rows.put(VerifiedCheckpointProtocol.REQUIRED_CHECK,new Check(failed?"FAIL":unknown?"UNKNOWN":"PASS","APPLICABLE",
+                failed?"APPLICABLE_NATIVE_CHECK_FAILED":unknown?"APPLICABLE_REQUIRED_EVIDENCE_INCOMPLETE":"APPLICABLE_NATIVE_INVENTORY_PASSED"));
+        return Map.copyOf(rows);
+    }
     public static Map<String,Check> evaluate(VerificationSnapshot cut) {
         var rows=new TreeMap<String,Check>();boolean unknown=false,failed=false;
         var result=cut.result();

@@ -1,0 +1,871 @@
+{
+  "auction_csl.drawio": {
+    "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\auction\\auction_csl.drawio",
+    "sha256": "f7689f2dc7dfd1527923ee7685b6edba8b09296fc077bed23141463af4a0b714",
+    "embeddedCslSource": "// SINGLE_AGENT_CONTEXT: each auction_capabilities instance represents one physical Agent.\n// Its possible enacts relations to auctioneer/participant are explicit mapping correspondences;\n// an actual enactment requires that same Agent's observed Plays link (not context ownership).\n// Auction CSL system specification. Project .jcm is the runtime input;\n// this hand-authored model and mapping XML are system specifications.\n// Authoritative Core/auction/auction_csl.drawio: capability is a singleton-agent\n// OrgCtx, with enacts relations and no Role inheritance. Atom maps to String.\n// Beliefs are optional mental state, never authoritative Artifact/world values.\n// Typed belief scalars remain undefined without an unambiguous qualified binding.\n// @use-native-ocl 1 is an explicit USE plugin annotation. The original CSL parser\n// parses the structure/invariants; the plugin compiles this native contract block.\ncsl v4.0 AuctionState {\n    orgContext AuctionOrg {\n        orgContext auctionGroup {\n            role auctioneer;\n            role participant;\n            // Model scope, not physical CArtAgO ownership or a disposal cascade.\n            entity Auction {\n                attribute id : String required;\n                attribute running : Boolean required mutable default false;\n                attribute task : String required mutable default 'no_task';\n                // Retain the source Double.MAX_VALUE; never invent a sentinel.\n                attribute best_bid : Real required mutable;\n                // Preserve the visible diagram's authored default literal.\n                // Actual source Atom observations (including no_winner) overwrite it.\n                attribute winner : String required mutable default 'defaul';\n                // Source field, not an observable property. Requires explicit access.\n                attribute currentWinner : String required mutable default 'no_winner';\n            }\n        }\n    }\n\n    // One context instance represents exactly one physical Jason agent.\n    // It is not an adopted MOISE role and does not inherit from either role.\n    orgContext auction_capabilities {\n        attribute name : String required;\n        attribute beliefBase : String optional mutable;\n        attribute belief_joinedWsp : String optional mutable;\n        attribute belief_focusing : String optional mutable;\n        attribute belief_goalArgument : String optional mutable;\n        attribute belief_play : String optional mutable;\n        attribute belief_running : String optional mutable;\n        attribute belief_task : String optional mutable;\n        attribute belief_best_bid : Real optional mutable;\n        attribute belief_winner : String optional mutable;\n    }\n\n    // Source role-population constraints, distinct from declaration containment.\n    // Operational invariant: XML activates this rule once a qualified source roster\n    // and complete matching native Role population establish readiness. Activation\n    // stays true for this group incarnation, so later role loss still violates it.\n    context auctionGroup inv AuctioneerPopulation:\n        self.auctioneer->size() = 1;\n    context auctionGroup inv ParticipantPopulation:\n        self.participant->size() <= 300;\n}\n\n/* @use-native-ocl 1\ncontext Auction::start(service : String)\npre Idle:\n    not self.running\npost Opened:\n    self.running and self.task = service\n\ncontext Auction::bid(amount : Real)\npre RunningForBid:\n    self.running\n\ncontext Auction::stop()\npre RunningForStop:\n    self.running\npost Closed:\n    not self.running\n*/\n",
+    "cells": [
+      {
+        "id": "group",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "shape=folder;tabWidth=60;tabHeight=20;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;spacingTop=15;strokeColor=#000000;strokeWidth=1.7;fillColor=#FFFFFF;fontFamily=Arial;fontColor=#000000;fontSize=23;",
+        "text": "auctionGroup   OrgCtx"
+      },
+      {
+        "id": "auctioneer",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "rounded=1;absoluteArcSize=1;arcSize=70;html=1;whiteSpace=wrap;strokeColor=#000000;strokeWidth=1.7;fillColor=#FFFFFF;fontFamily=Arial;fontColor=#000000;fontSize=23;spacingLeft=18;",
+        "text": "auctioneer   Role"
+      },
+      {
+        "id": "participant",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "rounded=1;absoluteArcSize=1;arcSize=70;html=1;whiteSpace=wrap;strokeColor=#000000;strokeWidth=1.7;fillColor=#FFFFFF;fontFamily=Arial;fontColor=#000000;fontSize=23;spacingLeft=18;",
+        "text": "participant   Role"
+      },
+      {
+        "id": "auction_header",
+        "parent": "auction",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#000000;fontSize=24;align=center;verticalAlign=middle;",
+        "text": "Auction   <Entity>"
+      },
+      {
+        "id": "auction_separator",
+        "parent": "auction",
+        "source": "",
+        "target": "",
+        "style": "edgeStyle=none;startArrow=none;endArrow=none;strokeColor=#000000;strokeWidth=1.2;",
+        "text": ""
+      },
+      {
+        "id": "attr_id",
+        "parent": "auction",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#000000;fontSize=18;align=left;verticalAlign=top;",
+        "text": "id : String {readOnly}"
+      },
+      {
+        "id": "attr_running",
+        "parent": "auction",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#000000;fontSize=18;align=left;verticalAlign=top;",
+        "text": "running : Boolean = false"
+      },
+      {
+        "id": "attr_task",
+        "parent": "auction",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#000000;fontSize=18;align=left;verticalAlign=top;",
+        "text": "task : String = 'no_task'"
+      },
+      {
+        "id": "attr_best_bid",
+        "parent": "auction",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#000000;fontSize=18;align=left;verticalAlign=top;",
+        "text": "best_bid : Real"
+      },
+      {
+        "id": "attr_winner",
+        "parent": "auction",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#000000;fontSize=18;align=left;verticalAlign=top;",
+        "text": "winner : Atom = defaul"
+      },
+      {
+        "id": "attr_currentWinner",
+        "parent": "auction",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#000000;fontSize=18;align=left;verticalAlign=top;",
+        "text": "currentWinner : String = 'no_winner' *"
+      },
+      {
+        "id": "contains_auctioneer",
+        "parent": "1",
+        "source": "group",
+        "target": "auctioneer",
+        "style": "edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;strokeWidth=1.6;startArrow=diamond;startFill=1;startSize=13;endArrow=none;fontFamily=Arial;fontColor=#000000;fontSize=17;labelBackgroundColor=#FFFFFF;exitX=0.25;exitY=1;entryX=0.5;entryY=0;",
+        "text": "roles"
+      },
+      {
+        "id": "QVziQZ0g02-uQ_06R_lA-13",
+        "parent": "contains_auctioneer",
+        "source": "",
+        "target": "",
+        "style": "edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=1;fontFamily=Arial;fontSize=17;fontColor=#000000;labelBackgroundColor=#FFFFFF;",
+        "text": "0..*"
+      },
+      {
+        "id": "QVziQZ0g02-uQ_06R_lA-14",
+        "parent": "contains_auctioneer",
+        "source": "",
+        "target": "",
+        "style": "edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=1;fontFamily=Arial;fontSize=17;fontColor=#000000;labelBackgroundColor=#FFFFFF;",
+        "text": "0..1"
+      },
+      {
+        "id": "contains_participant",
+        "parent": "1",
+        "source": "group",
+        "target": "participant",
+        "style": "edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;strokeWidth=1.6;startArrow=diamond;startFill=1;startSize=13;endArrow=none;fontFamily=Arial;fontColor=#000000;fontSize=17;labelBackgroundColor=#FFFFFF;exitX=0.75;exitY=1;entryX=0.5;entryY=0;",
+        "text": "roles"
+      },
+      {
+        "id": "QVziQZ0g02-uQ_06R_lA-15",
+        "parent": "contains_participant",
+        "source": "",
+        "target": "",
+        "style": "edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=1;fontFamily=Arial;fontSize=17;fontColor=#000000;labelBackgroundColor=#FFFFFF;",
+        "text": "0..*"
+      },
+      {
+        "id": "QVziQZ0g02-uQ_06R_lA-16",
+        "parent": "contains_participant",
+        "source": "",
+        "target": "",
+        "style": "edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=1;fontFamily=Arial;fontSize=17;fontColor=#000000;labelBackgroundColor=#FFFFFF;",
+        "text": "0..300"
+      },
+      {
+        "id": "SLaSFZAiooNoFu2lGFpe-1",
+        "parent": "1",
+        "source": "group",
+        "target": "auction",
+        "style": "edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#000000;strokeWidth=1.6;startArrow=diamond;startFill=1;startSize=13;endArrow=none;fontFamily=Arial;fontColor=#000000;fontSize=17;labelBackgroundColor=#FFFFFF;",
+        "text": "entities"
+      },
+      {
+        "id": "SLaSFZAiooNoFu2lGFpe-2",
+        "parent": "SLaSFZAiooNoFu2lGFpe-1",
+        "source": "",
+        "target": "",
+        "style": "edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;",
+        "text": "1"
+      },
+      {
+        "id": "SLaSFZAiooNoFu2lGFpe-3",
+        "parent": "SLaSFZAiooNoFu2lGFpe-1",
+        "source": "",
+        "target": "",
+        "style": "edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;",
+        "text": "1"
+      },
+      {
+        "id": "2rZYCtywlWKuK-VgutrL-1",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "rounded=1;absoluteArcSize=1;arcSize=70;html=1;whiteSpace=wrap;strokeColor=#000000;strokeWidth=1.7;fillColor=#FFFFFF;fontFamily=Arial;fontColor=#000000;fontSize=23;spacingLeft=18;",
+        "text": "auction_capabilities    beliefBase : String  belief_joinedWsp : String  belief_focusing : String  belief_goalArgument : String  belief_play : String  belief_running : String belief_task : String belief_best_bid : Real belief_winner : Atom"
+      },
+      {
+        "id": "2rZYCtywlWKuK-VgutrL-4",
+        "parent": "1",
+        "source": "participant",
+        "target": "2rZYCtywlWKuK-VgutrL-1",
+        "style": "endArrow=classic;html=1;rounded=0;dashed=1;",
+        "text": ""
+      },
+      {
+        "id": "AInYuT7UozEVJt3HhMPe-3",
+        "parent": "2rZYCtywlWKuK-VgutrL-4",
+        "source": "",
+        "target": "",
+        "style": "edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=fontFamily,fontColor,fontStyle,textOpacity,labelBorderColor,labelBorderWidth,labelBackgroundColor,defaultLabelBackgroundColor,labelPadding;fontSize=20;",
+        "text": "enacts"
+      },
+      {
+        "id": "AInYuT7UozEVJt3HhMPe-1",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "shape=folder;tabWidth=60;tabHeight=20;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;spacingTop=15;strokeColor=#000000;strokeWidth=1.7;fillColor=#FFFFFF;fontFamily=Arial;fontColor=#000000;fontSize=23;",
+        "text": "AuctionOrg   OrgCtx"
+      },
+      {
+        "id": "AInYuT7UozEVJt3HhMPe-5",
+        "parent": "1",
+        "source": "auctioneer",
+        "target": "2rZYCtywlWKuK-VgutrL-1",
+        "style": "endArrow=classic;html=1;rounded=0;dashed=1;",
+        "text": ""
+      },
+      {
+        "id": "AInYuT7UozEVJt3HhMPe-6",
+        "parent": "AInYuT7UozEVJt3HhMPe-5",
+        "source": "",
+        "target": "",
+        "style": "edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=fontFamily,fontColor,fontStyle,textOpacity,labelBorderColor,labelBorderWidth,labelBackgroundColor,defaultLabelBackgroundColor,labelPadding;fontSize=20;",
+        "text": "enacts"
+      },
+      {
+        "id": "0igvHx3IjVmwQDb0WNdI-1",
+        "parent": "1",
+        "source": "group",
+        "target": "AInYuT7UozEVJt3HhMPe-1",
+        "style": "endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;defaultLabelBackgroundColor=page;",
+        "text": ""
+      },
+      {
+        "id": "audit_title",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#000000;fontSize=29;align=left;verticalAlign=top;",
+        "text": "AUCTION / verification coverage and semantic limits"
+      },
+      {
+        "id": "coverage",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#000000;fontSize=18;align=left;verticalAlign=top;",
+        "text": "1 / State supplied by the CSL core   Auction::start(service) reads running and writes running/task. Auction::bid(amount) reads running; an improving bid updates best_bid/currentWinner. A successful losing bid can change no state. Auction::stop() reads running, sets it false and publishes winner.  The five supplied Auction operation pre/post clauses have the required Boolean/String state. Their operation signatures belong to the execution/USE adapter, not CSL structural declarations.  String task represents the service description. winner remains a String encoding the source Atom, including no_winner."
+      },
+      {
+        "id": "external",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#000000;fontSize=18;align=left;verticalAlign=top;",
+        "text": "2 / Required external observer state    AuctionMonitor  / SchemeOrder and BidEvidence: startSatisfiedAt, bidEnabledAt, bidSatisfiedAt, decideEnabledAt, decideSatisfiedAt, now; bidCommittedBy, bidDoneBy, actualBidBy; adminBidOverride.   AuctionObligation  / WithinDeadline: goal, activatedAt, deadlineAt, endedAt, unfulfilled, monitor.  These are event/deontic trace projections. They are deliberately not Entity classes or an Association in CSL core. Role players are not the same set as mission-committed bidders. step.enabled / step.succeeded and agent-artifact focus also remain runtime evidence. The supplied OCL contains no @pre.  No Auction snapshot can prove a non-improving actual bid occurred, or reconstruct the 10 s / 1 h obligation history."
+      },
+      {
+        "id": "decisions",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#000000;fontSize=18;align=left;verticalAlign=top;",
+        "text": "3 / KEEP, MODIFY, REMOVE, ADD    KEEP:  auctionGroup, auctioneer, participant, Auction, id and the four observable properties.  MODIFY:  CSL notation; types, mutability and identifier origin; separate role-population bounds from declaration containment.  REMOVE:  Bid with amount/bidderName; opens-closes, submits, offers, and the untyped auction-sessions association.  ADD:  root AuctionOrg, explicit OrgCtx declaration nesting, persistent source field currentWinner, source population Phi.  No Service Entity: source stores only a String. No winner-to-Role association: source stores an agent-name Atom. No subgroup, Role inheritance, Compatibility, or Role-to-Role Link is declared by this case study. No Goal/Mission/Norm is a CSL node."
+      },
+      {
+        "id": "integration",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#000000;fontSize=17;align=left;verticalAlign=top;",
+        "text": "4 / Integration limits verified in use4Goal   The v4 grammar/compiler supports structural parse, reference validation, and scalar attributes. It declares no operations.  CslModel.requireLegacyRuntime rejects a v4 model in the legacy CSL-to-USE/runtime backend. A valid CSL diagram is not evidence of a completed executable bridge.  The iStar organization Actor Auction needs an explicit context correspondence. A direct OrgCtx mapping does not by itself satisfy the paper's total Actor-to-Role rule in Definition 4(iii). No artificial coordinator Role is introduced to hide that gap.  Binding each Task to Auction.id and its invocation is required for concurrent a1/a2; self:Auction is not automatically the paper's shared self:c:OrgCtx convention."
+      },
+      {
+        "id": "source_trace",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#000000;fontSize=17;align=left;verticalAlign=top;",
+        "text": "5 / Source and notation evidence   Mandatory local Auction folder: auction.jcm:8-31; src/org/auction-os.xml:14-50. src/agt/auction_capabilities.asl:2-13,19-42,53-57. src/env/auction_env/AuctionArtifact.java:8-44.  Paper: IV-A/IV-C, Fig. 6-7 and ProposalReview (pages 2-4). use4Goal: docs/model/csl.ecore; CSL.g4; CslBuildingVisitor; CslModelFactory; CslSemanticValidator; CslLayoutBuilder; CslUseViewModel; CslModel.requireLegacyRuntime.  ProposalReview records persistent revisions/reviews/validations. Auction has no corresponding stored Bid record; no such Entity or action-derived structural Association is copied mechanically."
+      },
+      {
+        "id": "numeric_identity",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#000000;fontSize=17;align=left;verticalAlign=top;",
+        "text": "6 / Explicit abstractions and observation limits   id projects CArtAgO artifact-name metadata via scheme Id. AuctionOrg is model scope, not physical workspace containment. currentWinner exists in Java but is not observable; extracting it requires explicit access/instrumentation. The current OCL does not read it; it records the candidate-to-published-winner semantics. Java double / Atom are projected to USE Real / String. Preserve Double.MAX_VALUE, or declare a justified finite-domain abstraction separately. No zero/default or artificial Bid history is substituted."
+      },
+      {
+        "id": "audit_footer",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#000000;fontSize=18;align=left;verticalAlign=top;",
+        "text": "Coverage verdict:  organizational declarations and source domain state are represented. Domain operation guards/effects can use Auction state. Full goal/task/deadline verification still requires explicit correspondences, execution evidence and the v4 runtime adapter; observer helpers are not part of this CSL model."
+      }
+    ]
+  },
+  "auction_istar_final_fixed.drawio": {
+    "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\Core\\auction\\auction_istar_final_fixed.drawio",
+    "sha256": "2d5f3076b57eab2937c2ab856c589b2374ad214f17b585233810ffd74c117532",
+    "embeddedCslSource": "",
+    "cells": [
+      {
+        "id": "A_decide",
+        "parent": "A_boundary",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.7;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=18;spacing=8;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "decide   successful !decide plan"
+      },
+      {
+        "id": "A_start",
+        "parent": "A_boundary",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.7;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=18;spacing=8;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "start   successful !start plan"
+      },
+      {
+        "id": "O_decide",
+        "parent": "O_boundary",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.7;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=18;spacing=8;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "decide   Auction closed; result available mAuctioneer | ttf: 1 h"
+      },
+      {
+        "id": "O_bid",
+        "parent": "O_boundary",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.7;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=18;spacing=8;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "bid   committed bids performed mParticipant | ttf: 10 s"
+      },
+      {
+        "id": "O_start",
+        "parent": "O_boundary",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.7;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=18;spacing=8;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "start   Auction started mAuctioneer"
+      },
+      {
+        "id": "O_root",
+        "parent": "O_boundary",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.7;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=18;spacing=8;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "auction(Id, Service)   all three assigned goals achieved"
+      },
+      {
+        "id": "O_and_start",
+        "parent": "O_boundary",
+        "source": "O_start",
+        "target": "O_root",
+        "style": "edgeStyle=none;rounded=0;html=1;strokeWidth=1.8;strokeColor=#E07A5F;startArrow=none;endArrow=baseDash;endFill=0;endSize=15;fillColor=#F2CC8F;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "O_and_bid",
+        "parent": "O_boundary",
+        "source": "O_bid",
+        "target": "O_root",
+        "style": "edgeStyle=none;rounded=0;html=1;strokeWidth=1.8;strokeColor=#E07A5F;startArrow=none;endArrow=baseDash;endFill=0;endSize=15;fillColor=#F2CC8F;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "O_and_decide",
+        "parent": "O_boundary",
+        "source": "O_decide",
+        "target": "O_root",
+        "style": "edgeStyle=none;rounded=0;html=1;strokeWidth=1.8;strokeColor=#E07A5F;startArrow=none;endArrow=baseDash;endFill=0;endSize=15;fillColor=#F2CC8F;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "P_bid",
+        "parent": "P_boundary",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.7;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=18;spacing=8;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "bid   successful !bid plan by a committed participant"
+      },
+      {
+        "id": "A_actor",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.7;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=18;spacing=8;fontFamily=Arial;fontColor=#393C56;fontSize=17;labelBackgroundColor=none;",
+        "text": "Auctioneer"
+      },
+      {
+        "id": "A_role_mark",
+        "parent": "A_actor",
+        "source": "",
+        "target": "",
+        "style": "curved=1;edgeStyle=none;startArrow=none;endArrow=none;strokeColor=#E07A5F;strokeWidth=1.5;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "O_actor",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.7;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=18;spacing=8;fontFamily=Arial;fontColor=#393C56;fontSize=17;labelBackgroundColor=none;",
+        "text": "Auction"
+      },
+      {
+        "id": "P_actor",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.7;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=18;spacing=8;fontFamily=Arial;fontColor=#393C56;fontSize=17;labelBackgroundColor=none;",
+        "text": "Participant"
+      },
+      {
+        "id": "P_role_mark",
+        "parent": "P_actor",
+        "source": "",
+        "target": "",
+        "style": "curved=1;edgeStyle=none;startArrow=none;endArrow=none;strokeColor=#E07A5F;strokeWidth=1.5;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "D_start",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.6;strokeColor=#E07A5F;fillColor=#F2CC8F;fontFamily=Arial;fontSize=16;spacing=7;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "Auction started"
+      },
+      {
+        "id": "dep_start_b",
+        "parent": "1",
+        "source": "D_start",
+        "target": "A_start",
+        "style": "edgeStyle=none;html=1;strokeColor=#E07A5F;strokeWidth=1.6;startArrow=none;endArrow=none;exitX=0;exitY=0.5;entryX=1;entryY=0.5;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "Kb9WIUt3qv34T2X7Q3ic-1",
+        "parent": "dep_start_b",
+        "source": "",
+        "target": "",
+        "style": "edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=21;rotation=180;labelBackgroundColor=none;fontColor=#393C56;",
+        "text": "D"
+      },
+      {
+        "id": "D_decide",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.6;strokeColor=#E07A5F;fillColor=#F2CC8F;fontFamily=Arial;fontSize=16;spacing=7;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "Auction closed; result available"
+      },
+      {
+        "id": "dep_decide_b",
+        "parent": "1",
+        "source": "D_decide",
+        "target": "A_decide",
+        "style": "edgeStyle=none;html=1;strokeColor=#E07A5F;strokeWidth=1.6;startArrow=none;endArrow=none;exitX=0;exitY=0.5;entryX=1;entryY=0.5;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "Kb9WIUt3qv34T2X7Q3ic-3",
+        "parent": "dep_decide_b",
+        "source": "",
+        "target": "",
+        "style": "edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=180;labelBackgroundColor=none;fontColor=#393C56;",
+        "text": "D"
+      },
+      {
+        "id": "D_bid",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.6;strokeColor=#E07A5F;fillColor=#F2CC8F;fontFamily=Arial;fontSize=16;spacing=7;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "Assigned bid   performed   At least one assigned bid performed"
+      },
+      {
+        "id": "dep_bid_a",
+        "parent": "1",
+        "source": "O_bid",
+        "target": "D_bid",
+        "style": "edgeStyle=none;html=1;strokeColor=#E07A5F;strokeWidth=1.6;startArrow=none;endArrow=none;exitX=1;exitY=0.5;entryX=0;entryY=0.5;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "dep_bid_a_D",
+        "parent": "dep_bid_a",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#393C56;fontSize=21;fontStyle=1;rotation=-64.94;resizable=0;labelBackgroundColor=none;",
+        "text": "D"
+      },
+      {
+        "id": "dep_bid_b",
+        "parent": "1",
+        "source": "D_bid",
+        "target": "P_bid",
+        "style": "edgeStyle=none;html=1;strokeColor=#E07A5F;strokeWidth=1.6;startArrow=none;endArrow=none;exitX=1;exitY=0.5;entryX=0;entryY=0.5;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "dep_bid_b_D",
+        "parent": "dep_bid_b",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#393C56;fontSize=21;fontStyle=1;rotation=-1.47;resizable=0;labelBackgroundColor=none;",
+        "text": "D"
+      },
+      {
+        "id": "Kb9WIUt3qv34T2X7Q3ic-4",
+        "parent": "1",
+        "source": "O_decide",
+        "target": "D_decide",
+        "style": "edgeStyle=none;html=1;strokeColor=#E07A5F;strokeWidth=1.6;startArrow=none;endArrow=none;fillColor=#F2CC8F;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "Kb9WIUt3qv34T2X7Q3ic-5",
+        "parent": "Kb9WIUt3qv34T2X7Q3ic-4",
+        "source": "",
+        "target": "",
+        "style": "edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=180;labelBackgroundColor=none;fontColor=#393C56;",
+        "text": "D"
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-14",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "",
+        "target": "",
+        "style": "shape=hexagon;perimeter=hexagonPerimeter;size=0.14;html=1;whiteSpace=wrap;strokeWidth=1.6;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=16;spacing=10;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "Create & focus artifact   makeArtifact(...); focus(ArtId)"
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-15",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "",
+        "target": "",
+        "style": "shape=hexagon;perimeter=hexagonPerimeter;size=0.14;html=1;whiteSpace=wrap;strokeWidth=1.6;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=16;spacing=10;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "Call start(Service)   on AuctionArtifact"
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-18",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "",
+        "target": "",
+        "style": "rounded=0;html=1;whiteSpace=wrap;strokeWidth=1.4;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=16;spacing=6;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "AuctionArtifact   shared domain entity"
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-19",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "rq_O_hfanHRNPlTsZUYV-18",
+        "target": "rq_O_hfanHRNPlTsZUYV-15",
+        "style": "edgeStyle=none;rounded=0;html=1;strokeWidth=1.4;strokeColor=#E07A5F;startArrow=none;endArrow=oval;endFill=0;endSize=9;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-21",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.7;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=18;spacing=8;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "start   successful !start plan"
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-22",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "rq_O_hfanHRNPlTsZUYV-14",
+        "target": "rq_O_hfanHRNPlTsZUYV-21",
+        "style": "edgeStyle=none;rounded=0;html=1;strokeWidth=1.8;strokeColor=#E07A5F;startArrow=none;endArrow=baseDash;endFill=0;endSize=15;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-23",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "rq_O_hfanHRNPlTsZUYV-15",
+        "target": "rq_O_hfanHRNPlTsZUYV-21",
+        "style": "edgeStyle=none;rounded=0;html=1;strokeWidth=1.8;strokeColor=#E07A5F;startArrow=none;endArrow=baseDash;endFill=0;endSize=15;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-24",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.7;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=18;spacing=8;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "decide   successful !decide plan"
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-28",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "",
+        "target": "",
+        "style": "shape=hexagon;perimeter=hexagonPerimeter;size=0.14;html=1;whiteSpace=wrap;strokeWidth=1.6;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=16;spacing=10;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "Call stop()   on AuctionArtifact"
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-29",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "rq_O_hfanHRNPlTsZUYV-18",
+        "target": "rq_O_hfanHRNPlTsZUYV-28",
+        "style": "edgeStyle=none;rounded=0;html=1;strokeWidth=1.4;strokeColor=#E07A5F;startArrow=none;endArrow=oval;endFill=0;endSize=9;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-30",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "rq_O_hfanHRNPlTsZUYV-28",
+        "target": "rq_O_hfanHRNPlTsZUYV-24",
+        "style": "endArrow=classic;html=1;rounded=0;defaultLabelBackgroundColor=page;fillColor=#F2CC8F;strokeColor=#E07A5F;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-31",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.7;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=18;spacing=8;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "bid   successful !bid plan by a committed participant"
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-34",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "rq_O_hfanHRNPlTsZUYV-32",
+        "target": "rq_O_hfanHRNPlTsZUYV-31",
+        "style": "edgeStyle=none;rounded=0;html=1;strokeWidth=1.8;strokeColor=#E07A5F;startArrow=none;endArrow=baseDash;endFill=0;endSize=15;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-32",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "",
+        "target": "",
+        "style": "shape=hexagon;perimeter=hexagonPerimeter;size=0.14;html=1;whiteSpace=wrap;strokeWidth=1.6;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=16;spacing=10;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "Find & focus artifact   lookupArtifact(Id, AId); focus(AId)"
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-33",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "",
+        "target": "",
+        "style": "shape=hexagon;perimeter=hexagonPerimeter;size=0.14;html=1;whiteSpace=wrap;strokeWidth=1.6;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=16;spacing=10;fontFamily=Arial;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "Wait, then bid(amount)   successful branch: random < 0.9"
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-37",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "rq_O_hfanHRNPlTsZUYV-18",
+        "target": "rq_O_hfanHRNPlTsZUYV-33",
+        "style": "edgeStyle=none;rounded=0;html=1;strokeWidth=1.4;strokeColor=#E07A5F;startArrow=none;endArrow=oval;endFill=0;endSize=9;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-35",
+        "parent": "rq_O_hfanHRNPlTsZUYV-6",
+        "source": "rq_O_hfanHRNPlTsZUYV-33",
+        "target": "rq_O_hfanHRNPlTsZUYV-31",
+        "style": "edgeStyle=none;rounded=0;html=1;strokeWidth=1.8;strokeColor=#E07A5F;startArrow=none;endArrow=baseDash;endFill=0;endSize=15;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "Kb9WIUt3qv34T2X7Q3ic-6",
+        "parent": "1",
+        "source": "O_start",
+        "target": "D_start",
+        "style": "edgeStyle=none;html=1;strokeColor=#E07A5F;strokeWidth=1.6;startArrow=none;endArrow=none;fillColor=#F2CC8F;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "Kb9WIUt3qv34T2X7Q3ic-7",
+        "parent": "Kb9WIUt3qv34T2X7Q3ic-6",
+        "source": "",
+        "target": "",
+        "style": "edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];rotation=180;labelBackgroundColor=none;fontColor=#393C56;",
+        "text": "D"
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-2",
+        "parent": "1",
+        "source": "mUN7QUVWxazm6ZizcDI6-2",
+        "target": "A_actor",
+        "style": "endArrow=classic;html=1;rounded=0;defaultLabelBackgroundColor=page;fillColor=#F2CC8F;strokeColor=#E07A5F;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-3",
+        "parent": "rq_O_hfanHRNPlTsZUYV-2",
+        "source": "",
+        "target": "",
+        "style": "edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=fontFamily,fontStyle,textOpacity,labelBorderWidth,defaultLabelBackgroundColor,labelPadding;defaultLabelBackgroundColor=page;fontSize=24;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "participate-in"
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-4",
+        "parent": "1",
+        "source": "mUN7QUVWxazm6ZizcDI6-2",
+        "target": "P_actor",
+        "style": "endArrow=classic;html=1;rounded=0;defaultLabelBackgroundColor=page;fillColor=#F2CC8F;strokeColor=#E07A5F;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "rq_O_hfanHRNPlTsZUYV-5",
+        "parent": "rq_O_hfanHRNPlTsZUYV-4",
+        "source": "",
+        "target": "",
+        "style": "edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];inheritText=fontFamily,fontStyle,textOpacity,labelBorderWidth,defaultLabelBackgroundColor,labelPadding;defaultLabelBackgroundColor=page;fontSize=24;fontColor=#393C56;labelBackgroundColor=none;",
+        "text": "participate-in"
+      },
+      {
+        "id": "mUN7QUVWxazm6ZizcDI6-2",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "ellipse;html=1;whiteSpace=wrap;strokeWidth=1.7;strokeColor=#E07A5F;fillColor=#F2CC8F;fontSize=18;spacing=8;fontFamily=Arial;fontColor=#393C56;fontSize=17;labelBackgroundColor=none;",
+        "text": "auction_capabilities"
+      },
+      {
+        "id": "mUN7QUVWxazm6ZizcDI6-3",
+        "parent": "mUN7QUVWxazm6ZizcDI6-2",
+        "source": "",
+        "target": "",
+        "style": "curved=1;edgeStyle=none;startArrow=none;endArrow=none;strokeColor=#E07A5F;strokeWidth=1.5;labelBackgroundColor=none;fontColor=default;",
+        "text": ""
+      },
+      {
+        "id": "notes_title",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#15202B;fontSize=29;align=left;verticalAlign=top;",
+        "text": "AUCTION / semantic contract and source trace"
+      },
+      {
+        "id": "ownership",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#15202B;fontSize=18;align=left;verticalAlign=top;",
+        "text": "1 / Goal reliance and actor association   auction = AND(start, bid, decide), all within Auction. mAuctioneer = {start, decide}; mParticipant = {bid}. participates-in describes Role-to-Organization association only. Three Goal Dependencies express who is expected to achieve the goals. Each has an external dependum and two directed D-marked legs. Auction's child goals are depender elements; they have no refinements of their own. Role-side dependee goals may be refined into Tasks. Dependency failure is possible and does not make the notation invalid."
+      },
+      {
+        "id": "plans",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#15202B;fontSize=18;align=left;verticalAlign=top;",
+        "text": "2 / Jason task mapping    start : makeArtifact; focus; start(Service). ASL 19-25.  decide : ?focusing(...); stop. ASL 27-30. The query retrieves the existing focus; it does not refocus.  bid : lookupArtifact; focus; if random < 0.9, wait and bid; otherwise .fail. ASL 32-42. The code says 0.9; its 80% comment is stale.  org-obedient.asl calls goalAchieved only after !Goal succeeds. A successful bid need not improve best_bid or become winner. AuctionArtifact.stop publishes currentWinner, including no_winner.  The AND task refinements show the necessary successful plan steps. The .fail branch is not modeled as an alternative achievement."
+      },
+      {
+        "id": "conditions",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#15202B;fontSize=18;align=left;verticalAlign=top;",
+        "text": "3 / Thesis extended iStar: evaluating the goals   Section IV-A / Fig. 4 / Table I: refinement and dependency values are propagated; leaf Conditions bind execution to the shared state.  The organizational children now obtain achievement via dependencies. They are not additionally assigned self.*SatisfiedAt >= 0 conditions. A MOISE administrative state must not override a failed actual-bid dependency in the goal model.  Setup/query leaf Tasks: pre = step.enabled; post = step.succeeded. Artifact-call Tasks: source operation contracts plus observed success. step is keyed by scheme run, role player and invocation. Goals use Achieve within one run; MOISE performance is a separate type. A successful protocol run need not achieve every normative iStar goal."
+      },
+      {
+        "id": "monitor",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#15202B;fontSize=18;align=left;verticalAlign=top;",
+        "text": "4 / Explicit observer interface for the OCL   AuctionMonitor is a required trace projection, not a Java source class. One instance per scheme run / auction Id. Integer times are in ms on one clock; -1 means the event has not occurred.   now startSatisfiedAt, bidEnabledAt, bidSatisfiedAt decideEnabledAt, decideSatisfiedAt : Integer bidCommittedBy, bidDoneBy, actualBidBy : Set(String) adminBidOverride : Boolean   Satisfied/enabled times come from MOISE, not artifact return times. bidDoneBy comes from done(Sch,bid,Ag); actualBidBy from successful bid calls, including non-winning bids. Do not infer either from winner. bidCommittedBy is frozen at the first bid satisfaction (current before it). adminBidOverride records only an observed successful admin command. These fields audit scheme status; they do not define normative goal values."
+      },
+      {
+        "id": "deadlines",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#15202B;fontSize=18;align=left;verticalAlign=top;",
+        "text": "5 / Deadline and recovery semantics   bid: ttf = 10000 ms. decide: ttf = 3600000 ms. OS 34-35. Use each obligation's activation/deadline from MOISE, including a later mission commitment; do not time from MAS startup.  AuctionObligation: one record per bid/decide obligation activation.  goal : String  -- bid or decide activatedAt, deadlineAt, endedAt : Integer unfulfilled : Boolean; monitor : AuctionMonitor  endedAt = first terminal engine time (fulfilled/unfulfilled/inactive), or -1 while pending. Use engine times, not notification receipt times. unfulfilled remains true after oblUnfulfilled; never erase the record.  WithinDeadline is a conformance norm: pending overtime also fails. Admin recovery allows progress but does not repair an expired duty. Thus the scheme can finish while the iStar bidding goal is unachieved."
+      },
+      {
+        "id": "sources",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#15202B;fontSize=17;align=left;verticalAlign=top;",
+        "text": "6 / Verified references and scope   Local JaCaMo examples/auction: src/org/auction-os.xml: 14-24, 28-50. src/agt/auction_capabilities.asl: 19-42, 53-57. src/env/auction_env/AuctionArtifact.java: 18-44. Resolved moise-1.1.jar: asl/org-obedient.asl; Scheme.isSatisfied and SchemeBoard.admCommand.   iStar 2.0 Language Guide : sections 2, 3, 5, 6.1, 6.2, 8. Supplied thesis PDF: section IV-A, Fig. 4, Table I (page 3).  ASL 53-57 handles oblUnfulfilled with goalSatisfied(bid). No blacklist task is added: the source contains only a TODO. Bid Dependency is instantiated per committed Participant enactment; the D_bid label requires at least one assigned successful performer, never a winning-bid inference."
+      },
+      {
+        "id": "notes_footer",
+        "parent": "1",
+        "source": "",
+        "target": "",
+        "style": "text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Arial;fontColor=#15202B;fontSize=17;align=left;verticalAlign=top;",
+        "text": "Standard iStar has no generic Goal-to-Goal Association. Cross-actor reliance uses Dependency; mission trace annotations are not semantic edges. The unchanged OCL audits sequence, evidence and deadlines, including administrative recovery; it does not erase normative dependency failure."
+      }
+    ]
+  },
+  "auction.csl": {
+    "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\examples\\auction\\auction.csl",
+    "sha256": "395a5621b1e59a84c6fbc29d8705f8ce0d13110a07c73a8134736160abb7f0c7",
+    "bytes": 3571
+  },
+  "auction.istar": {
+    "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\examples\\auction\\auction.istar",
+    "sha256": "8ce7d1a980ca90396a9fafac59261fb3d3cd090a76bd92d81ce51b744f012aa3",
+    "bytes": 4668
+  },
+  "auction-mapping.xml": {
+    "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\examples\\auction\\auction-mapping.xml",
+    "sha256": "e939a32dbf4426b1473bcd03b55917ddc862c4a5963af30c9efab1abff925ae1",
+    "bytes": 71528
+  },
+  "auction.ocl": {
+    "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\examples\\auction\\auction.ocl",
+    "sha256": "1acc17db74a662ffcfc370b70ee233cd45a6c4e339c35c50487b1abf8ffbe5fe",
+    "bytes": 558
+  },
+  "auction.jcm": {
+    "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\examples\\auction\\auction.jcm",
+    "sha256": "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb",
+    "bytes": 903
+  },
+  "sourceTaskSegments": [
+    {
+      "task": "A_start_t1",
+      "first": "0",
+      "after": "5",
+      "variables": "Id Sch S ArtId",
+      "artifactVariable": "ArtId",
+      "artifactClass": "auction_env.AuctionArtifact",
+      "schemeVariable": "Sch",
+      "allowMissingArtifactAtEntry": "true"
+    },
+    {
+      "task": "A_start_t2",
+      "first": "5",
+      "after": "6",
+      "variables": "Id Sch S ArtId",
+      "artifactVariable": "ArtId",
+      "artifactClass": "auction_env.AuctionArtifact",
+      "schemeVariable": "Sch",
+      "allowMissingArtifactAtEntry": "false"
+    },
+    {
+      "task": "decide_source_prefix",
+      "first": "0",
+      "after": "2",
+      "variables": "Id Sch ArtId",
+      "artifactVariable": "ArtId",
+      "artifactClass": "auction_env.AuctionArtifact",
+      "schemeVariable": "Sch",
+      "allowMissingArtifactAtEntry": "true"
+    },
+    {
+      "task": "A_decide_t2",
+      "first": "2",
+      "after": "3",
+      "variables": "Id Sch ArtId",
+      "artifactVariable": "ArtId",
+      "artifactClass": "auction_env.AuctionArtifact",
+      "schemeVariable": "Sch",
+      "allowMissingArtifactAtEntry": "false"
+    },
+    {
+      "task": "P_bid_t1",
+      "first": "0",
+      "after": "3",
+      "variables": "Id Sch AId",
+      "artifactVariable": "AId",
+      "artifactClass": "auction_env.AuctionArtifact",
+      "schemeVariable": "Sch",
+      "allowMissingArtifactAtEntry": "true"
+    },
+    {
+      "task": "P_bid_t2",
+      "first": "3",
+      "after": "4",
+      "variables": "Id Sch AId",
+      "artifactVariable": "AId",
+      "artifactClass": "auction_env.AuctionArtifact",
+      "schemeVariable": "Sch",
+      "allowMissingArtifactAtEntry": "false"
+    }
+  ]
+}

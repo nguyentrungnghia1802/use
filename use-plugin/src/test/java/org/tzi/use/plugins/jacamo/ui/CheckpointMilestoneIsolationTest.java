@@ -27,32 +27,32 @@ class CheckpointMilestoneIsolationTest {
         return cuts;
     }
 
-    @Test void stateMilestonesGroupIdenticalCslWhilePreservingEveryNativeTaskTransition() throws Exception {
+    @Test void sourceStatesRetainScopedTaskProgressEvenWhenCslIsIdentical() throws Exception {
         var cuts=recordedCuts();assertEquals(8,cuts.size());
         String scope=ExecutionScopeViews.admittedChoices(cuts).keySet().iterator().next();
         var cache=new PreparationCache();var prepared=cache.prepare(cuts,scope,true,true);
         assertEquals(8,prepared.audit().size(),"Every original exact cut remains in audit");
-        assertEquals(4,prepared.milestones().size(),"Task progress belongs to its CSL state's audit interval");
-        assertEquals(List.of(1,1,2,2,3,3,4,4),cuts.stream().map(c->prepared.numbers().get(c.id())).toList());
+        assertEquals(5,prepared.milestones().size(),"A source Task transition is distinct even when its scoped CSL is unchanged");
+        assertEquals(List.of(1,1,2,3,4,4,5,5),cuts.stream().map(c->prepared.numbers().get(c.id())).toList());
         var before=ExecutionScopeViews.project(cuts.get(2),scope);var after=ExecutionScopeViews.project(cuts.get(3),scope);
         assertEquals(before.businessState(),after.businessState(),"Identical CSL alone does not imply identical Task evidence");
         assertNotEquals(before.evaluations().stream().map(Evaluation::status).toList(),after.evaluations().stream().map(Evaluation::status).toList());
         assertEquals(cuts.getLast().id(),prepared.milestones().getLast().id(),"The grouped state must still display the exact latest source token");
         assertEquals("COMPLETE_OBSERVED",ExecutionScopeViews.goalVerdict(prepared.milestones().getLast()));
-        System.out.println("USER_RECORDING_MILESTONES scope="+scope+" boundaries=8 milestones=4 assignment="+cuts.stream().map(c->prepared.numbers().get(c.id())).toList());
+        System.out.println("USER_RECORDING_SOURCE_STATES scope="+scope+" boundaries=8 states=5 assignment="+cuts.stream().map(c->prepared.numbers().get(c.id())).toList());
     }
 
     @Test void groupedRepresentativeUpdateKeepsHistoricalNavigationAndOriginalAudit() throws Exception {
         var cuts=recordedCuts();String scope=ExecutionScopeViews.admittedChoices(cuts).keySet().iterator().next();
         SwingUtilities.invokeAndWait(()->{
             var panel=ObservedConformancePanel.liveResults(LiveGoalSummaryTest.model());var cache=new PreparationCache();
-            panel.showCheckpoint(cache.prepare(cuts.subList(0,7),scope,true,true));
+            var initial=cache.prepare(cuts.subList(0,7),scope,true,true);panel.showCheckpoint(initial);
             var selector=DetachedAuthoredWorkflowTest.find(panel,"observed-state-selector",JComboBox.class);
             selector.setSelectedIndex(2);
             panel.showCheckpoint(cache.prepare(cuts,scope,true,true));assertEquals(2,selector.getSelectedIndex());
             for(String other:ExecutionScopeViews.admittedChoices(cuts).keySet())if(!other.equals(scope))panel.selectExecution(other);
-            panel.selectExecution(scope);assertEquals(2,selector.getSelectedIndex());assertEquals(4,selector.getItemCount());
-            assertEquals(cuts.get(5).id(),panel.selectedCut().id());
+            panel.selectExecution(scope);assertEquals(2,selector.getSelectedIndex());assertEquals(5,selector.getItemCount());
+            assertEquals(initial.milestones().get(2).id(),panel.selectedCut().id());
             DetachedAuthoredWorkflowTest.find(panel,"observed-audit-toggle",JToggleButton.class).doClick();
             assertEquals(8,selector.getItemCount());
         });
@@ -67,8 +67,8 @@ class CheckpointMilestoneIsolationTest {
                 ExecutionScopeViewsTest.cut("b","same","changed elsewhere",List.of(other,a)),
                 ExecutionScopeViewsTest.cut("c","same","changed elsewhere",List.of(other,failed)));
         var prepared=new PreparationCache().prepare(cuts,"one",true,true);
-        assertEquals(List.of(1,1,1),cuts.stream().map(c->prepared.numbers().get(c.id())).toList());
-        assertEquals(3,prepared.audit().size());assertEquals("c",prepared.milestones().getFirst().id());
+        assertEquals(List.of(1,1,2),cuts.stream().map(c->prepared.numbers().get(c.id())).toList());
+        assertEquals(3,prepared.audit().size());assertEquals("b",prepared.milestones().getFirst().id());
         assertEquals("PENDING",ExecutionScopeViews.goalVerdict(prepared.milestones().getLast()),"A failed Task retains the existing native retry/pending aggregation");
         assertTrue(prepared.audit().getLast().evaluations().stream().anyMatch(r->r.status().equals("FAILED")&&r.evidence().equals("original failure")));
     }

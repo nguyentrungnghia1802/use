@@ -23,8 +23,14 @@ public final class OccurrenceGoalModelExpander {
         public GoalModel model(){return owned.model();}
     }
     private final GoalModel source;private final String canonicalHash;private final EngineSemanticsProfile profile;private final Map<String,Quantifier> policies;
+    private final Map<String,GoalViewRealizations.View> views;
+    private final Set<String> physicalViews;
     public OccurrenceGoalModelExpander(GoalModel source,EngineSemanticsProfile profile,Map<String,Quantifier> policies) {
+        this(source,profile,policies,Map.of(),Set.of());
+    }
+    public OccurrenceGoalModelExpander(GoalModel source,EngineSemanticsProfile profile,Map<String,Quantifier> policies,Map<String,GoalViewRealizations.View> views,Set<String> physicalViews) {
         this.source=new OwnedGoalModel(source,profile).model();this.profile=profile;canonicalHash=OwnedGoalModel.fingerprint(source);this.policies=Map.copyOf(policies);
+        this.views=Map.copyOf(views);this.physicalViews=Set.copyOf(physicalViews);
         for(String target:policies.keySet())if(source.getDependencies().stream().noneMatch(d->d.dependum().id().equals(target)))throw new IllegalArgumentException("OCCURRENCE_QUANTIFIER_TARGET_UNRESOLVED:"+target);
         for(var actor:source.getActors())for(var relation:actor.associations())if(relation.kind()==AssocKind.IS_A
                 &&(!profile.roleSpecialization()||!RoleSpecialization.admitted(source,actor,relation)))throw new IllegalArgumentException("UNSUPPORTED:INTENTIONAL_ROLE_INHERITANCE");
@@ -64,6 +70,11 @@ public final class OccurrenceGoalModelExpander {
                 else if(refinement instanceof OrRefinement or)refinements.add(new OrRefinement(id(player,or.parent()),id(player,or.child())));
                 else throw new IllegalArgumentException("OCCURRENCE_EXPANSION_REFINEMENT_UNSUPPORTED");
             }
+            for(var view:views.values())if(source.ownerOf(view.target()).orElseThrow().equals(original.name())) {
+                var providers=rows.stream().filter(p->p.sourceActor().equals(source.ownerOf(view.source()).orElseThrow())&&p.player().equals(player.player())).toList();
+                if(providers.size()!=1)throw new IllegalArgumentException("GOAL_VIEW_SAME_SCOPE_PLAYER_NOT_UNIQUE:"+view.target());
+                expandView(view,player,providers.getFirst(),elements,refinements,traces);
+            }
             for(var dependency:targets)if(dependency.depender().equals(player.sourceActor())) {
                 var children=new ArrayList<String>();
                 for(var recipient:bySource.get(dependency.dependee())) {
@@ -73,7 +84,20 @@ public final class OccurrenceGoalModelExpander {
                 if(policies.get(dependency.dependum().id())==Quantifier.ALL)refinements.add(new AndRefinement(id(player,dependency.dependerElmt()),children));
                 else children.forEach(child->refinements.add(new OrRefinement(id(player,dependency.dependerElmt()),child)));
             }
-            var resources=original.neededBys().stream().map(n->new NeededBy(id(player,n.resource()),id(player,n.task()))).toList();
+            var resources=new ArrayList<>(original.neededBys().stream().map(n->new NeededBy(id(player,n.resource()),id(player,n.task()))).toList());
+            for(var view:views.values())if(source.ownerOf(view.target()).orElseThrow().equals(original.name())) {
+                var provider=source.findActor(source.ownerOf(view.source()).orElseThrow()).orElseThrow();
+                var included=descendants(provider,view.source());
+                for(var needed:provider.neededBys())if(included.contains(needed.task())) {
+                    String resource=viewId(player,view,needed.resource());
+                    if(elements.stream().noneMatch(e->e.id().equals(resource))) {
+                        elements.add(copy(source.findElement(needed.resource()).orElseThrow(),resource));
+                        var performer=rows.stream().filter(p->p.sourceActor().equals(provider.name())&&p.player().equals(player.player())).findFirst().orElseThrow();
+                        traces.put(resource,new Trace(resource,needed.resource(),provider.name(),performer.player(),performer.role(),"REALIZATION_ELEMENT"));
+                    }
+                    resources.add(new NeededBy(resource,viewId(player,view,needed.task())));
+                }
+            }
             var associations=new ArrayList<Association>();
             for(var relation:original.associations()) {
                 if(relation.kind()==AssocKind.IS_A) {
@@ -86,12 +110,15 @@ public final class OccurrenceGoalModelExpander {
                 var target=bySource.getOrDefault(relation.target(),List.of());
                 if(relation.kind()==AssocKind.PARTICIPATES_IN) {
                     var targetActor=source.findActor(relation.target()).orElseThrow();
-                    if(original instanceof Agent&&targetActor instanceof Role) {
+                    if((original instanceof Agent||physicalViews.contains(original.name()))&&targetActor instanceof Role) {
                         var matching=target.stream().filter(p->p.player().equals(player.player())).toList();
                         if(matching.size()>1)throw new IllegalArgumentException("OCCURRENCE_PARTICIPATION_AMBIGUOUS");
                         matching.forEach(p->associations.add(new Association(player.actorType(),relation.kind(),p.actorType())));
                     }else if(original instanceof Role&&targetActor instanceof Agent) {
                         if(target.size()!=1)throw new IllegalArgumentException("OCCURRENCE_EXPANSION_ASSOCIATION_AMBIGUOUS");
+                        associations.add(new Association(player.actorType(),relation.kind(),target.getFirst().actorType()));
+                    }else if(original instanceof Role&&targetActor instanceof Role) {
+                        if(target.size()!=1)throw new IllegalArgumentException("OCCURRENCE_ROLE_ASSOCIATION_TARGET_NOT_UNIQUE");
                         associations.add(new Association(player.actorType(),relation.kind(),target.getFirst().actorType()));
                     }else throw new IllegalArgumentException("OCCURRENCE_PARTICIPATION_REQUIRES_AGENT_ROLE");
                 }else {
@@ -122,9 +149,27 @@ public final class OccurrenceGoalModelExpander {
             }
         }
         var owned=new OwnedGoalModel(expanded,profile);assertUnchanged();
-        String hash=SemanticJson.hash(List.of(VERSION,canonicalHash,policies,owned.hash(),SemanticJson.tree(cast),SemanticJson.tree(traces)));
+        String hash=SemanticJson.hash(List.of(VERSION,canonicalHash,policies,SemanticJson.tree(views),physicalViews.stream().sorted().toList(),owned.hash(),SemanticJson.tree(cast),SemanticJson.tree(traces)));
         return new Expansion(owned,cast,traces,hash);
     }
+    private Set<String> descendants(Actor actor,String root) {
+        var found=new LinkedHashSet<String>();var work=new ArrayDeque<String>();work.add(root);
+        while(!work.isEmpty()){String id=work.remove();if(!found.add(id))continue;for(var refinement:actor.refinements())if(refinement.parent().equals(id))work.addAll(GoalViewRealizations.children(refinement));}
+        return found;
+    }
+    private void expandView(GoalViewRealizations.View view,Player target,Player performer,List<IntentionalElement> elements,List<Refinement> refinements,Map<String,Trace> traces) {
+        var actor=source.findActor(performer.sourceActor()).orElseThrow();var included=descendants(actor,view.source());
+        for(String original:included)if(!original.equals(view.source())) {
+            String expanded=viewId(target,view,original);elements.add(copy(source.findElement(original).orElseThrow(),expanded));
+            traces.put(expanded,new Trace(expanded,original,performer.sourceActor(),performer.player(),performer.role(),"REALIZATION_ELEMENT"));
+        }
+        for(var refinement:actor.refinements())if(included.contains(refinement.parent())) {
+            String parent=refinement.parent().equals(view.source())?id(target,view.target()):viewId(target,view,refinement.parent());
+            if(refinement instanceof AndRefinement and)refinements.add(new AndRefinement(parent,and.children().stream().map(c->viewId(target,view,c)).toList()));
+            else if(refinement instanceof OrRefinement or)refinements.add(new OrRefinement(parent,viewId(target,view,or.child())));
+        }
+    }
+    private static String viewId(Player target,GoalViewRealizations.View view,String element){return "view_"+element+"_"+SemanticJson.hash(List.of(target.actorType(),target.roleInterval(),view.target(),view.source())).substring(0,24);}
     private static String receiver(Dependency dependency,Player player){return dependency.dependerElmt()+"_required_"+suffix(player);}
     private static String suffix(Player player){return SemanticJson.hash(List.of(player.actorType(),player.role(),player.roleInterval())).substring(0,24);}
     private static String id(Player player,String source){return player.actorType().equals(player.sourceActor())?source:source+"_"+suffix(player);}

@@ -19,8 +19,10 @@ public final class BridgeLocalExecutionControl extends LocalExecutionControl {
     private final ReasoningCycleGate gate=new ReasoningCycleGate();
     private final Map<String,Agent> agents=new LinkedHashMap<>();
     private final Set<String> pending=ConcurrentHashMap.newKeySet();
-    private final ThreadPoolExecutor signals=new ThreadPoolExecutor(4,4,0,TimeUnit.SECONDS,new ArrayBlockingQueue<>(4096),
-            r->{var t=new Thread(r,"jacamo-jason-cycle-signal");t.setDaemon(true);return t;},new ThreadPoolExecutor.AbortPolicy());
+    // One outstanding signal per admitted agent bounds this executor. Parked
+    // grants must not occupy a fixed worker pool and starve a different agent's
+    // already-admitted feedback/continuation during a checkpoint drain.
+    private final ExecutorService signals=Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("jacamo-jason-cycle-signal-",0).factory());
     private final AtomicBoolean stopped=new AtomicBoolean();
     private volatile String unavailable="";
     private long requestedAt;
@@ -33,6 +35,7 @@ public final class BridgeLocalExecutionControl extends LocalExecutionControl {
             rejectCapability("CONTROL_AGENT_SCHEDULER_OR_IDENTITY_UNSUPPORTED:"+arch.getAgName());return;
         }
         String id=identity.get().canonical();var old=agents.get(id);if(old!=null) return;
+        if(agents.size()>=4096){rejectCapability("CONTROL_AGENT_COHORT_CAPACITY");return;}
         // Admission must precede the new thread's first cycle. Never retroactively claim that boundary.
         if(arch.getThread()!=null && arch.getThread().isAlive()) {rejectCapability("CONTROL_AGENT_ADMITTED_AFTER_START:"+id);return;}
         arch.getTS().getSettings().setSync(true);arch.setControlInfraTier(this);
@@ -88,7 +91,10 @@ public final class BridgeLocalExecutionControl extends LocalExecutionControl {
             epoch=gate.epoch();if(!pending.add(agent.identity()))return;
         }
         try {signals.execute(()->{
-            try(var sourceStep=org.jacamo.checkpoint.runtime.ExecutionBarrier.enter("jason.control-grant")) {
+            // A synchronous interpreter needs a cycle grant to drain an already
+            // admitted Task. Use the SAME infra-tier identity as its cycle permit;
+            // unrelated future cycles remain outside the closed admission gate.
+            try(var sourceStep=org.jacamo.checkpoint.runtime.ExecutionBarrier.enterQueued(agent.architecture(),"jason.control-grant")) {
                 int cycle;
                 synchronized(this) {
                     if(runner.getAg(agent.name())!=agent.architecture() || agent.architecture().getThread()==null || !agent.architecture().getThread().isAlive())return;

@@ -119,6 +119,7 @@ final class MappingVocabulary {
         add(m,"bindings/oclClause","name context","");
         add(m,"bindings/operation","id owner signature clauses","task");
         add(m,"bindings/dependencyPopulation","target quantifier","");
+        add(m,"bindings/goalRealization","target source sourceGoal sourceRef scheme policy reason","");
         add(m,"observers/view","id name category keyFields","");
         add(m,"view/field","name type origin","");
         add(m,"observers/project","id viewRef tableRef keyFields","");
@@ -167,7 +168,7 @@ final class MappingVocabulary {
         add(m,"datasets/fieldCuts","id requestRef","");
         add(m,"datasets/clock","id requestRef","");
         add(m,"datasets/schemeCuts","id requestRef","population");
-        add(m,"datasets/npl","id requestRef","");
+        add(m,"datasets/npl","id requestRef","boardClass");
         add(m,"datasets/operationCuts","id requestRef","");
         add(m,"datasets/operationReferences","id requestRef argumentIndex","");
         add(m,"datasets/jasonSteps","id requestRef","");
@@ -177,6 +178,7 @@ final class MappingVocabulary {
         add(m,"datasets/artifactReferences","id requestRef","");
         add(m,"datasets/schemeReferences","id requestRef","");
         add(m,"tables/table","id dataset","");
+        add(m,"table/populationClosure","inventoryRef inventoryColumn referenceColumn proofAlias policy","");
         add(m,"table/where","path type equals","");
         add(m,"table/whereNot","path type equals","");
         add(m,"table/test","as path type equals negate","");

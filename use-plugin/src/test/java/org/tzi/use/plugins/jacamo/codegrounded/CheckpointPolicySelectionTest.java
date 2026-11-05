@@ -12,7 +12,20 @@ class CheckpointPolicySelectionTest {
    new ObservationCapabilityRequest("steps","jason.plan-boundaries.v1",true,Map.of("plans",List.of(Map.of("steps",List.of(Map.of("task","setup","artifactClass","domain.Service","allowMissingArtifactAtEntry",true),Map.of("task","CompleteTask","artifactClass","domain.Service","allowMissingArtifactAtEntry",false)))))));
   var rules=CheckpointPolicySelection.rules(requests,id->id.equals("CompleteTask"));
   assertEquals(2,rules.size());assertTrue(rules.stream().noneMatch(r->r.sourceIdentity().equals("observation:construction")));
-  assertEquals("TASK_POST",rules.getFirst().selectorKind());assertEquals(Set.of("CompleteTask"),rules.getFirst().operations());assertEquals("OPERATION_FAILURE",rules.getLast().selectorKind());
-  assertEquals("OPERATION_POST",CheckpointPolicySelection.rules(requests,id->false).getFirst().selectorKind());
+  assertEquals("TASK_POST",rules.getFirst().selectorKind());assertEquals(Set.of("CompleteTask"),rules.getFirst().operations());assertEquals("OPERATION_UNMAPPED_POST",rules.getLast().selectorKind());
+  assertEquals("OPERATION_UNMAPPED_POST",CheckpointPolicySelection.rules(requests,id->false).getFirst().selectorKind());
+ }
+ @Test void everyNativeSegmentIsSelectedIncludingUnboundEntryAndSourceOnlyTasks(){
+  var plans=List.of(Map.of("steps",List.of(
+    Map.of("task","Create","artifactClass","domain.Service","allowMissingArtifactAtEntry",true),
+    Map.of("task","Trace","artifactClass","domain.Service"),
+    Map.of("task","Operate","artifactClass","domain.Service"))),
+    Map.of("steps",List.of(Map.of("task","Notify","artifactClass",""))));
+  var request=new ObservationCapabilityRequest("steps","jason.plan-boundaries.v1",true,Map.of("plans",plans));
+  var rules=CheckpointPolicySelection.rules(List.of(request),Set.of("Create","Operate","Notify")::contains);
+  assertEquals(List.of(Set.of("Create"),Set.of("Operate"),Set.of("Notify")),rules.stream().map(VerifiedCheckpointProtocol.Rule::operations).toList());
+  assertEquals("",rules.getLast().artifactClass());
+  var policy=new VerifiedCheckpointProtocol.Policy("a".repeat(64),Map.of("source","b".repeat(64)),rules);
+  assertEquals(policy,VerifiedCheckpointProtocol.Policy.decode(policy.payload()));
  }
 }

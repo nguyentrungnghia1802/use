@@ -65,6 +65,9 @@ public final class OccurrenceProjection {
                     case "RUNTIME_AGENT" -> {
                         if(goals==null||!(goals.findActor(actor.attr("actor")).orElseThrow() instanceof org.vnu.sme.goal.dsl.istar.mm.Agent)||!binding.optional("roleBindingRef").isBlank()||!actor.optional("roleColumn").isBlank()||!actor.optional("roleLookup").isBlank())throw actor.location().error("OCCURRENCE_RUNTIME_AGENT_REQUIRED");
                     }
+                    case "PHYSICAL_PLAYER_VIEW" -> {
+                        if(goals==null||goals.findActor(actor.attr("actor")).isEmpty()||!binding.optional("roleBindingRef").isBlank()||!actor.optional("roleColumn").isBlank()||!actor.optional("roleLookup").isBlank())throw actor.location().error("OCCURRENCE_PHYSICAL_PLAYER_VIEW_INVALID");
+                    }
                     default -> throw actor.location().error("UNSUPPORTED:OCCURRENCE_ACTOR_KIND");
                 }
                 actors.add(new ActorRule(actor,role));
@@ -147,7 +150,7 @@ public final class OccurrenceProjection {
                             if(role==null||!role.cls().isSubClassifierOf(actor.roleType())||!player.cls().isSubClassifierOf(model.getClass("RuntimePlayer"))||!current(port,role,epoch,cut)||context==null
                                     ||!primary(port,player).equals(port.metadata(role,"rolePlayer"))||!primary(port,context).equals(port.metadata(role,"roleContext"))||!linked(port,"Plays",player,role)||!linked(port,"InContext",context,role)) {issues.add("EXACT_NATIVE_ENACTMENT_UNAVAILABLE:"+rule.attr("actor"));continue;}
                             interval=port.metadata(role,"xml:m0:lifetime");if(interval.isBlank()){issues.add("ENACTMENT_INTERVAL_UNAVAILABLE");continue;}
-                        }else if(rule.attr("kind").equals("RUNTIME_AGENT")) {
+                        }else if(Set.of("RUNTIME_AGENT","PHYSICAL_PLAYER_VIEW").contains(rule.attr("kind"))) {
                             var singleton=agentContext(port,player,epoch,cut);
                             if(!player.cls().isSubClassifierOf(model.getClass("AtomicAgent"))||singleton==null) {issues.add("CURRENT_PHYSICAL_AGENT_UNAVAILABLE");continue;}
                             interval=port.metadata(singleton,"xml:m0:lifetime");

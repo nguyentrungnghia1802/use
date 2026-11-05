@@ -17,6 +17,7 @@ public final class GenericBindingPlan {
     private final Map<String,Object> evidence;
     private final List<org.jacamo.bridge.contract.ObservationCapabilityRequest> requirements;
     private final Map<String,org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander.Quantifier> dependencyPopulations;
+    private final Map<String,org.tzi.use.plugins.jacamo.semantics.runtime.GoalViewRealizations.View> goalViews;
 
     GenericBindingPlan(MappingInputs inputs,NormalizedSourceModel source,org.jacamo.bridge.contract.ModelSnapshot official,CslRuleExecutor.Result csl,
             IStarRuleExecutor.Result goals,SemanticBindingIndex bindings,GoalRuntimeBindingPlan goalBindings) {
@@ -31,6 +32,7 @@ public final class GenericBindingPlan {
         }
         cslSource=csl.generatedSource();iStarSource=goals.generatedSource();this.bindings=bindings;this.goalBindings=goalBindings;
         dependencyPopulations=org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander.policies(inputs.specification(),goals.model());
+        goalViews=org.tzi.use.plugins.jacamo.semantics.runtime.GoalViewRealizations.compile(inputs.specification(),goals.model());
         var verificationTargets=new HashSet<String>();
         for(var node:inputs.specification().root().child("bindings").children("requirement")) {
             var element=goals.model().findElement(node.attr("target")).orElseThrow(()->node.location().error("VERIFICATION_TARGET_UNRESOLVED"));
@@ -45,6 +47,7 @@ public final class GenericBindingPlan {
         values.put("cslHash",cslHash);values.put("goalHash",goalHash);values.put("engineProfile",goals.profile().name());
         values.put("bindingsHash",bindings.hash());values.put("goalBindings",SemanticJson.tree(goalBindings));
         values.put("dependencyPopulations",SemanticJson.tree(dependencyPopulations));values.put("verificationTargets",verificationTargets.stream().sorted().toList());
+        values.put("goalRealizations",SemanticJson.tree(goalViews));
         // Located traces remain evidence, never mutable model/state or semantic aliases.
         values.put("cslTraces",SemanticJson.tree(csl.traces()));values.put("goalTraces",SemanticJson.tree(goals.traces()));
         values.put("omissions",SemanticJson.tree(csl.omissions()));
@@ -59,6 +62,8 @@ public final class GenericBindingPlan {
     public String hash(){return hash;}
     public List<org.jacamo.bridge.contract.ObservationCapabilityRequest> requirements(){return requirements;}
     public Map<String,org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander.Quantifier> dependencyPopulations(){return dependencyPopulations;}
+    public Map<String,org.tzi.use.plugins.jacamo.semantics.runtime.GoalViewRealizations.View> goalViews(){return goalViews;}
+    public Set<String> physicalActorViews(){return inputs.specification().root().child("runtime").children("occurrences").stream().flatMap(s->s.children("scope").stream()).flatMap(s->s.children("actor").stream()).filter(a->a.attr("kind").equals("PHYSICAL_PLAYER_VIEW")).map(a->a.attr("actor")).collect(java.util.stream.Collectors.toUnmodifiableSet());}
     public Map<String,Object> evidence(){return evidence;}
     public Map<String,String> ruleOptions(){return Map.of("inputFormat","JACAMO_MAPPING_XML/2.0","specificationHash",inputs.xml().sha256(),"genericPlanHash",hash);}
     public void requireComplement(org.tzi.use.plugins.jacamo.semantics.evidence.TraceComplement complement) {

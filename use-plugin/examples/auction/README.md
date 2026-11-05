@@ -1,76 +1,62 @@
-# Auction — project input và đặc tả hệ thống
+# Auction authored verification bundle
 
-Input thực thi là `auction.jcm` cùng project ASL/MOISE/Artifact/resources.
-`auction.csl`, `auction.istar`, `auction-mapping.xml`, `auction.ocl` là đặc tả hệ
-thống soạn thủ công, chưa tự động tạo; giao diện vẫn cho chọn/import chúng.
+Open Plugins > JaCaMo > use4Goal verification. Select auction.jcm, auction.csl,
+auction.istar, auction-mapping.xml and optional auction.ocl; then Prepare + Import
+and Start Runtime. Verified checkpoints is the main workflow. JaCaMo owns source
+execution; USE evaluates the exact admitted cut in its authoritative native MSystem.
 
-Mở USE → Plugins → JaCaMo → use4Goal verification. Chọn project .jcm và bộ đặc
-tả trên, Prepare + Import rồi Start Runtime. JaCaMo chạy JVM riêng qua TCP;
-CSL/AOL và iStar/ISCN dùng cùng authoritative USE MSystem.
+The Core auction_csl.drawio and auction_istar_final_fixed.drawio are the model
+authorities selected by the user on 2026-11-05. Their embedded canonical sources
+match this bundle. Historical test fixtures are preserved separately.
 
-XML mode AUTHORED nối source, identity/incarnation, context/player, field,
-operation/task/goal, observer và capability. XML không tạo model thay file CSL/iStar.
+CSL Auction belongs to auctionGroup.entities. auction_capabilities is a separate
+singleton-player OrgCtx with actual enactments, not Role inheritance. It does not
+participate in the Auction Entity through an invented execution association.
+Optional belief_best_bid is Real; Atom maps to String; ambiguous/missing optional
+beliefs remain undefined. The visible winner default spelling defaul is retained;
+actual observed source values supply runtime state.
 
-## OCL nằm ở đâu
+The iStar capability node is a Role, as declared in Draw.io. Its physical-player
+occurrence view represents the shared program available before mission assignment;
+it is neither an additional running agent nor a fabricated MOISE role enactment.
+Five Tasks share one Resource; the three original external Dependencies and two
+participates-in links are retained. There are no extra capability Dependencies.
+Explicit SAME_SCOPE_PLAYER_REFINEMENT_VIEW/1.0 XML declarations connect repeated
+Goal views with equal structured owner/sourceGoal metadata. Native evaluation
+uses the same player's captured source Task evidence in the same execution scope
+and Role interval. Unrelated players, reenactments and missing evidence cannot
+borrow achievement. The native Goal/Task engines remain authoritative.
 
-- CSL: cấu trúc theo Draw.io với lựa chọn Agent/OrgCtx đã được user xác nhận, hai population invariants gốc và
-  năm operation pre/post clauses trong annotation native OCL có version.
-- iStar: Goal conditions và Task pre/post gốc, cùng hai observer invariants.
-- .ocl ngoài: chỉ thêm yêu cầu tùy chọn; hiện comment-only. Không lặp các base
-  clauses. Khi thêm clause, khai báo oclClause/context và operation binding trong XML.
+P_bid_t2 requires step.succeeded. The source .fail branch is an actual failure;
+D_bid uses the explicitly drawn ANY successful assigned performer policy. Winner
+is not bid evidence. Administrative recovery permits source progress but never
+repairs failed Tasks, native truth or expired obligations.
 
-Cú pháp annotation riêng của tool, không phải core CSL/iStar:
+SchemeOrder and BidEvidence use actual public MOISE state history, successful bid
+receipts and the exact observed administrative override. Their time fields are
+source-clock MOISE transition publication times, not TCP receipt time or an
+assertion about private internal engine timestamps. WithinDeadline uses actual
+NPL activation/deadline/first-terminal times on the qualified logical source
+clock. It retains unfulfilled evidence after recovery. Norm population is closed
+only with same-cut physical board inventory, empty creation subscription and an
+exact continuous retained activation catalog. Missing evidence stays unknown.
 
-```text
-/* @use-native-ocl 1
-context ...
-inv/pre/post Name: ...
-*/
-```
+AuctioneerPopulation keeps size() = 1. Readiness activation latches only after a
+qualified roster and matching same-cut native population; later role loss fails.
+Native operation contracts and observer clauses are embedded @use-native-ocl 1
+annotations. Optional auction.ocl is comment-only to avoid duplicate clauses.
 
-Original parser đọc model/bỏ comment. Adapter đọc annotation có version, kiểm
-hash và compile bằng native USE OCL. Tool khác không hiểu annotation sẽ không
-kiểm các contract này. Duplicate/non-Boolean/unsupported/missing binding fail closed.
-Không có evaluator riêng hay suy diễn arbitrary requirements từ project JaCaMo.
+Each admitted native Task terminal holds its intention before the next deed.
+Other admitted Tasks on the same agent drain or park; operation/notification
+admission and source logical time join the whole supported barrier before READY.
+Source checkpoint identities come from the versioned policy and admitted mapping,
+not displayed State numbers. Unchanged CSL can accompany genuine local Task
+progress; other executions do not manufacture States in this execution.
 
-## Semantics và mâu thuẫn Draw.io
+Qualified PASS releases automatically after exact-cut presentation. Failure,
+missing evidence, disconnect or timeout retains the hold. Acknowledge & Continue
+records review and releases only that exact token; repeated failures can be
+reviewed independently. Every original state, error and evidence remains in history.
 
-Hai Draw.io Desktop được pin tại src/test/resources/auction-reference/diagram-v4.
-User đã chọn nhãn Agent/OrgCtx trong ảnh cho auction_capabilities, thay vì
-capability Role trong cslSource cũ. CSL có OrgCtx auction_capabilities riêng cho
-mỗi physical Jason agent; không còn Role cha hay specializes giữa các Role.
-CslAgentContexts là helper của adapter nối context đến đúng một AtomicAgent đã
-quan sát, không tạo agent thứ hai. Các optional belief JSON vẫn undefined khi
-không yêu cầu/quan sát; không lấy full mental-state stream.
-
-iStar có Agent auction_capabilities chứa các Task, Goal capability và Artifact
-Resources. Auctioneer/Participant giữ Goal trách nhiệm; dependency SAME_PLAYER
-chỉ nối tới capability của chính player đó trong cùng scheme. participates-in
-chỉ hiện với Role occurrence mà player thật sự enact; không ép mỗi agent đóng
-cả hai Role. Auction là context viewpoint, không phải agent JaCaMo mới.
-Profile ROLE_SPECIALIZATION_V1 giữ admission unary Goal <- Task đã có; model
-này không dùng Role inheritance. Original marking/propagation không đổi.
-
-Policy đã được yêu cầu trước vẫn giữ: Participant hoàn thành lượt thử với exact
-accepted .fail; Auction phải có bid thật được chấp nhận. O_bid_attempt và
-O_bid_accepted là delta công khai so với note success-only cũ, không gọi graph
-này là bản chép nguyên xi Draw.io. Java không chứa quyết định riêng cho Auction.
-Admin goalSatisfied không tạo actual bid; belief không phải world truth.
-
-Public confirmation order không phải exact internal truth-change order.
-WithinDeadline vẫn tắt theo yêu cầu trước; bật lại phải có observer/clock evidence.
-COMPLETE_OBSERVED là requirements đang bật ở observed cut, không phải full coverage.
-
-ZIP: examples/auction-current; historical/reference: reference/auction.
-
-Enactment display: `auction_capabilities` is an OrgCtx representing one physical Agent.
-`enactsRoles` in the mapping declares the possible Role types (CSL diagram: dashed `may enact`).
-AOL draws `enacts` only from the same frozen cut's `CslAgentContexts` and `Plays` links.
-It does not assign every Role to every Agent, invent Role ownership or change Goal/Task marking.
-
-Population lifecycle: `AuctioneerPopulation` keeps the exact `size() = 1` predicate.
-The mapping explicitly activates it once per group incarnation, after a qualified
-source roster contains the bound auctioneer and same-cut native roles are complete.
-Before activation the result is SKIPPED/awaiting readiness, not PASS. Activation is
-latched, so subsequent complete role loss is a real FAIL; incomplete evidence stays
-unavailable. An activation proof is included in body evidence and replay.
+See verification/source-checkpoints-20261105/MODEL-AUDIT.md and REPORT.md for
+source correspondence, executed evidence and acceptance limits.

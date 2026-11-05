@@ -63,8 +63,16 @@ public final class RuntimeTables {
             boolean projected=false,identity=false;
             if(table.children().size()>64)throw table.location().error("RUNTIME_TABLE_INSTRUCTION_LIMIT");
             for(Node operation:table.children()) {
-                if(identity)throw operation.location().error("IDENTITY_MUST_BE_LAST");
+                if(identity&&!operation.name().equals("populationClosure"))throw operation.location().error("IDENTITY_MUST_BE_LAST");
                 switch(operation.name()) {
+                    case "populationClosure" -> {
+                        if(!identity||table.children("populationClosure").size()!=1||table.children().getLast()!=operation
+                                ||!prior.contains(operation.attr("inventoryRef"))||!columns.contains(operation.attr("referenceColumn"))
+                                ||!aliases.contains(operation.attr("proofAlias"))
+                                ||!operation.attr("policy").equals("EXACT_CURRENT_PHYSICAL_REFERENCE_COVERAGE/1.0"))
+                            throw operation.location().error("TABLE_PHYSICAL_POPULATION_CLOSURE_INVALID");
+                        name(operation.attr("inventoryColumn"),operation);
+                    }
                     case "whereBound" -> {
                         beforeProjection(projected,operation);path(operation.attr("path"),operation);
                         Node declaration=specification.requireId(operation.attr("bindingRef"));
@@ -199,6 +207,7 @@ public final class RuntimeTables {
             var rows=new ArrayList<Working>();Completeness population=dataset.populationQuality();
             for(Row row:dataset.rows())rows.add(new Working(row,row.values(),new LinkedHashMap<>(),row.quality(),row.identity(),row.aliases(),row.proofs()));
             for(Node op:table.operations()) {
+                if(op.name().equals("populationClosure"))continue;
                 if(op.name().equals("firstBy")){rows=firstBy(rows,op,budget,diagnostics);continue;}
                 var next=new ArrayList<Working>();
                 for(Working row:rows) {
@@ -373,6 +382,19 @@ public final class RuntimeTables {
             }
             var output=new ArrayList<Row>();
             for(Working row:rows){population=merge(population,row.quality());output.add(new Row(row.identity(),row.columns(),row.quality(),row.proofs(),row.aliases()));}
+            if(!table.node().children("populationClosure").isEmpty()) {
+                var closure=table.node().child("populationClosure");
+                var inventory=results.get(closure.attr("inventoryRef"));
+                if(dataset.populationQuality()!=Completeness.UNAVAILABLE&&physicalPopulationClosed(output,inventory,closure,budget)) {
+                    population=Completeness.COMPLETE;
+                    String proof=SemanticJson.hash(Map.of("policy",closure.attr("policy"),
+                            "inventory",inventory.rows().stream().map(r->Map.of("identity",r.identity(),"proofs",r.proofs())).toList(),
+                            "references",output.stream().map(r->Map.of("identity",r.identity(),"reference",r.values().get(closure.attr("referenceColumn")),"proofs",r.proofs())).toList()));
+                    var certified=new ArrayList<Row>();
+                    for(var row:output){var evidence=new TreeMap<>(row.proofs());evidence.put("population:physical-closure",proof);certified.add(new Row(row.identity(),row.values(),row.quality(),evidence,row.aliases()));}
+                    output=certified;
+                }else {population=merge(population,Completeness.PARTIAL);diagnose(diagnostics,closure,"PHYSICAL_REFERENCE_POPULATION_UNPROVEN");}
+            }
             // Diagnostics may describe an explicitly optional value (for example a
             // future transition has no timestamp). They do not enumerate rows.
             // Unknown selectors/required values already mark their Working row
@@ -380,6 +402,32 @@ public final class RuntimeTables {
             results.put(table.node().attr("id"),new Result(output,population,diagnostics));
         }
         return Collections.unmodifiableMap(results);
+    }
+
+    /** An invocation prefix is not a closed Task population. It can nevertheless
+     * cover an explicitly selected CURRENT physical inventory exactly. Never
+     * infer absence from missing callbacks, a name, counts or a partial inventory. */
+    private static boolean physicalPopulationClosed(List<Row> rows,Result inventory,Node policy,Budget budget) {
+        if(inventory==null||inventory.populationQuality()!=Completeness.COMPLETE)return false;
+        var expected=new HashMap<String,Row>();
+        for(var object:inventory.rows()) {
+            budget.spend();
+            Object reference=object.values().get(policy.attr("inventoryColumn"));
+            if(!(reference instanceof String id)||object.quality()!=Completeness.COMPLETE||!id.equals(object.identity())
+                    ||!id.equals(object.proofs().get("physical-identity"))||!object.aliases().contains(id)
+                    ||!object.proofs().getOrDefault("source-cut","").matches("[0-9a-f]{64}")||expected.putIfAbsent(id,object)!=null)return false;
+        }
+        var covered=new HashSet<String>();
+        for(var row:rows) {
+            budget.spend();
+            Object reference=row.values().get(policy.attr("referenceColumn"));
+            if(!(reference instanceof String id)||row.quality()!=Completeness.COMPLETE||!covered.add(id))return false;
+            var object=expected.get(id);String prefix="join:"+policy.attr("proofAlias")+":";
+            if(object==null||!id.equals(row.proofs().get(prefix+"physical-identity"))
+                    ||!object.proofs().get("source-cut").equals(row.proofs().get("source-cut"))
+                    ||!object.proofs().get("source-cut").equals(row.proofs().get(prefix+"source-cut")))return false;
+        }
+        return covered.equals(expected.keySet());
     }
 
     /** An exported identity is a proven relation key, not a new source alias from a join. */

@@ -202,7 +202,17 @@ public final class BridgeAgArch extends AgArch {
         String correlation = UUID.randomUUID().toString();
         correlations.put(action, correlation);
         emitAction(RuntimeEventKind.STARTED, action, correlation);
-        super.act(action);
+        Map<String,Object> owner=Map.of();
+        for(var step:neutralSteps) {
+            var selected=step.dispatchOwner(action);
+            if(!selected.isEmpty()) {
+                if(!owner.isEmpty()&&!owner.equals(selected)) {
+                    stepActionUnavailable("ACTION_TASK_DISPATCH_AMBIGUOUS");owner=Map.of();break;
+                }
+                owner=selected;
+            }
+        }
+        try(var dispatch=TaskOperationDispatch.enter(owner)){super.act(action);}
     }
 
     @Override public java.util.Collection<jason.asSyntax.Literal> perceive() {

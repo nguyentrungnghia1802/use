@@ -6,14 +6,19 @@ admitted CSL, iStar, semantic mapping XML and optional OCL. There is no passive
 mode selector in this workflow. External observation compatibility APIs do not
 grant control over an independently launched producer.
 
-The producer loads a versioned `CHECKPOINT_POLICY/1.1` derived from admitted
-source requirements and native Task identities. Mapped terminal plan steps with
-an already bound artifact select Task POST cuts. Their domain operation failures
-also hold; source-domain operation completion is used where no such Task terminal
-is admitted. Observation-only workspace construction and framework bookkeeping
-are evidence providers, not business milestones. Its source identities, selectors,
+The producer loads a versioned `CHECKPOINT_POLICY/1.2` derived from admitted
+source requirements and native Task identities. Every mapped native Task segment
+selects a terminal cut, including creation/lookup segments and source-only Tasks.
+An intentionally unbound PRE does not exclude POST. Domain operation failures
+remain boundaries; successful operations are covered by a Task only with an exact
+local ActionExec/Op dispatch-identity receipt. Other domain calls on the same
+class retain fallback coverage. Declared scheme lifecycle providers select
+administrative effects and root-satisfaction transitions; required NPL lifecycle
+providers select unfulfilled events. These are verification triggers, not forced
+semantic verdicts. Observation-only workspace construction and framework bookkeeping
+remain evidence. Its source identities, selectors,
 program/input hashes and required native-check inventory are persisted alongside
-the owned launch evidence. Swing milestones do not select stop points.
+the owned launch evidence. Swing State numbers do not select stop points.
 
 At a selected source completion, JaCaMo closes admission. Work already admitted
 settles or yields at a supported await boundary. Causal queued work and normative
@@ -22,6 +27,20 @@ than the requested event; both identities are recorded. Jason cycles, CArtAgO
 operations/external sessions, NPL transitions and timers share this barrier.
 Logical source time stops only after quiescence. Artifact waits, Jason `.wait`
 and NPL deadlines resume against that same clock.
+The selected intention defers its next deed; a multi-act cycle yields after the
+current act. Other already admitted Tasks on the same agent drain before READY.
+Pending action/wait continuations and nested parents park without consuming a
+future Task. Atomic intentions cannot bypass the boundary. Their actual Jason
+objects, messages and feedback remain in place. The callback does not wait for
+USE while holding a listener or artifact lock.
+
+An invocation prefix cannot prove a complete physical population. An authored
+`populationClosure` with `EXACT_CURRENT_PHYSICAL_REFERENCE_COVERAGE/1.0` may
+certify a derived binding relation against a closed current physical inventory.
+Each existing object must have exactly one complete, physically witnessed
+reference from that same source cut. Missing/duplicate/stale references and
+partial inventories retain unknown coverage. This does not certify future Task
+invocations or change any native assertion.
 
 USE accepts the exact source watermark prefix into the existing authoritative
 native MSystem, then waits for its native Goal/Task/OCL result. Applicable required
@@ -35,7 +54,10 @@ preserves the timeline mode and numbering. The final settled native completion
 is also displayed after source release. Native invocation checks evicted from
 the RAM tail are recovered from the checked persisted prefix.
 Whole-MAS admission checks remain explicitly
-labelled when inspecting one execution. A future pending goal is progress; an applicable failed,
+labelled when inspecting one execution. A future pending goal is progress. At a
+source-declared settled scheme scope, its selected native roots must be fulfilled;
+pending/unknown roots retain the hold with their original marking intact. Other
+executions can still have future goals. An applicable failed,
 unknown, missing, skipped or erroneous check retains the hold. Publisher, socket
 control and durable disk ingress keep running while execution is held.
 
@@ -90,3 +112,35 @@ an official Maven cache entry. Source build/provenance instructions are in
 `../../../../jacamo/checkpoint-dependencies/README.md`. Executable acceptance and
 its limitations are recorded in `../../verification/verified-checkpoints` and
 the workspace `use/plan.md`.
+
+
+## Source Task checkpoint correction - 2026-11-05
+
+Checkpoint policy 1.2 selects each admitted native Task terminal, including setup
+Tasks whose PRE has no Artifact. It holds the completing intention before the
+next deed, without holding its entire physical agent prematurely. Other Tasks
+already admitted on that agent may drain or park. Exact local Op dispatch identity
+prevents an unrelated operation from borrowing Task coverage. Unmatched operations,
+failures, source administrative changes and unfulfilled norms retain fallback cuts.
+
+The synchronous controller admits causal cycle grants through the same agent
+owner as its source cycles. One virtual signal task per agent avoids starvation
+by parked idle grants; a bounded admitted cohort prevents unbounded concurrency.
+The whole operation/notification/queue/clock barrier remains the READY authority.
+
+The NPL dataset may declare a boardClass inventory scope. A closed current
+population requires complete same-cut physical board/workspace inventory and an
+exact NPL_RETAINED_ACTIVATION_CATALOG/1.0 for every selected board: continuous
+subscription from empty creation and identical retained activation keys. Late
+registration, changed watermarks, unavailable sources and missing activations
+retain PARTIAL/UNAVAILABLE. This never certifies the global normative lifetime
+population or substitutes callback receipt times for engine deadline annotations.
+
+The authored XML supports SAME_SCOPE_PLAYER_REFINEMENT_VIEW/1.0 Goal views.
+These are explicit repeated source identities, not inferred social Dependencies.
+The canonical diagram stays intact; the existing native refinement engine evaluates
+same-player, same-scope, exact Role-interval Task evidence. No truth literal or
+native engine modification is used to repair unconditioned Role Goals.
+
+Current correspondence and executable receipts are documented in
+../../verification/source-checkpoints-20261105/REPORT.md and MODEL-AUDIT.md.

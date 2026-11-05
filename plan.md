@@ -1,4 +1,12 @@
-# JaCaMo–USE: verified checkpoints
+**Source Task/Draw.io closeout 2026-11-05:** same-agent barrier and synchronous
+controller corrections, authoritative Auction model synchronization, 113 focused
+tests including live Auction, repeated review/replay, and current installed runtime
+identity proof are complete. See
+[source checkpoint report](use-plugin/verification/source-checkpoints-20261105/REPORT.md)
+and [executed gates](use-plugin/verification/source-checkpoints-20261105/PLAN.md).
+No fresh Computer Use/manual desktop acceptance is claimed for this closeout.
+
+# JaCaMoâ€“USE: verified checkpoints
 
 **Closeout 2026-11-02:** generic support across authored cases; implemented
 [`generic-checkpoints-20261102/PLAN.md`](use-plugin/verification/generic-checkpoints-20261102/PLAN.md).
@@ -8,7 +16,7 @@ assertions and fail-closed guarantees remain mandatory. All extension gates now
 have evidence; current acceptance and limits are in
 [`generic-checkpoints-20261102/REPORT.md`](use-plugin/verification/generic-checkpoints-20261102/REPORT.md).
 
-2026-10-31 · Repositories `use/` and `../jacamo/` · Branch `main`.
+2026-10-31 Â· Repositories `use/` and `../jacamo/` Â· Branch `main`.
 Apply `../AGENTS.md`. This supersedes the old performance/case-study plan,
 preserved with its evidence in pre-feature commit `fded6f66`.
 
@@ -115,7 +123,7 @@ Negotiate a separate versioned capability; keep existing Pause/Resume semantics.
   receipt. Acknowledgement is an override, not PASS or a domain repair. Keep the
   original Failure Point. Replay validates history without controlling a live MAS.
 
-State flow: `RUNNING → QUIESCING → VERIFYING → RUNNING` on qualified exact-cut
+State flow: `RUNNING â†’ QUIESCING â†’ VERIFYING â†’ RUNNING` on qualified exact-cut
 approval; failure goes to `HELD_FAILURE`; error/unknown/disconnect goes to
 `HELD_UNVERIFIED`. Held states continue only after explicit exact-token review and
 a producer release receipt. Stop remains available and terminates the owned runtime.
@@ -131,7 +139,7 @@ worker, existing native MSystem/Goal/Task/OCL engines, durable history/replay an
 review controls. Keep network/waits/preparation off EDT and retain one native writer.
 
 UI: Prepare + Import and Start use verification automatically; show `Running`, `Waiting for verification`,
-`Held — violation`, `Held — verification unavailable`, `Continuing`. Show execution,
+`Held â€” violation`, `Held â€” verification unavailable`, `Continuing`. Show execution,
 milestone and reason; put protocol details in Advanced/Audit. Bind **Acknowledge &
 Continue** to the active held token, disable while pending, and change status only
 from the producer receipt. Historical navigation must not redirect that command.
@@ -141,18 +149,18 @@ old states over the active source checkpoint.
 
 ### UI follow-up after user feedback (2026-10-31)
 
-The earlier S01–S08 evidence proved the opt-in protocol, not that the main UI
+The earlier S01â€“S08 evidence proved the opt-in protocol, not that the main UI
 selected it by default or rendered each result before release. The user observed
 the passive path catching up after the MAS finished and requested one main path.
 
-- [x] U01 — Remove passive/verified selector from the main authored workflow;
+- [x] U01 â€” Remove passive/verified selector from the main authored workflow;
   owned Prepare + Import always enables verification. Keep Jason cycle controls
   in Advanced with their original limited guarantee.
-- [x] U02 — Require exact-cut UI presentation before approval; presentation error
+- [x] U02 â€” Require exact-cut UI presentation before approval; presentation error
   holds and retains native truth. Source-token UI cuts bypass audit-prefix loading.
-- [x] U03 — Focused protocol/UI/history tests and real desktop external Auction;
+- [x] U03 â€” Focused protocol/UI/history tests and real desktop external Auction;
   prove displayed-before-release ordering, review via the actual button and UI heartbeat.
-- [x] U04 — Rebuild `target/new`, verify installed bytes/code sources, freeze new
+- [x] U04 â€” Rebuild `target/new`, verify installed bytes/code sources, freeze new
   evidence. Preserve the previous package and all prior logs/replay; no commit/push.
 
 Current follow-up evidence: [UI-FOLLOWUP.md](use-plugin/verification/verified-checkpoints/UI-FOLLOWUP.md).
@@ -172,18 +180,18 @@ freeze passed: `UI-final-final-package-receipt.json` and
 The user's normal full runs exposed gaps beyond the earlier bounded desktop
 handshake test. Treat the previous U/S receipts as historical bounded evidence.
 
-- [x] C01 — Select admitted semantic Task terminal/source-domain boundaries;
+- [x] C01 â€” Select admitted semantic Task terminal/source-domain boundaries;
   observation-only artifact construction must not create an initialization hold.
   Required unknown/error still holds at an applicable selected boundary.
-- [x] C02 — Stable execution identities and separate presentation timelines/cursors;
+- [x] C02 â€” Stable execution identities and separate presentation timelines/cursors;
   switching execution or CSL/iStar tabs cannot regroup/renumber the same history.
   A cut missing another execution cannot erase its retained qualified state.
-- [x] C03 — Repeated exact-token desktop acknowledgement; ensure pending state
+- [x] C03 â€” Repeated exact-token desktop acknowledgement; ensure pending state
   clears and the next failed checkpoint's button is enabled independently.
-- [x] C04 — Read an evicted invocation prefix from checked persisted evidence;
+- [x] C04 â€” Read an evicted invocation prefix from checked persisted evidence;
   present final settled native Task/Goal results after the last source release.
   Trace Execution 2's INCOMPLETE to its actual missing/stale evidence, never force PASS.
-- [x] C05 — Focused regressions and unchanged full Auction completion for both
+- [x] C05 â€” Focused regressions and unchanged full Auction completion for both
   executions, tab/scope navigation and two distinct failing desktop reviews;
   build/identify final `target/new`, retain existing user's run/evidence, no commit/push.
 
@@ -212,59 +220,59 @@ native requirements/results are not rewritten. No full clean verify or commit/pu
 
 ### Milestone isolation follow-up (2026-11-01)
 
-- [x] M01 — Check the reported disk journal and freeze exact native cuts; distinguish
+- [x] M01 â€” Check the reported disk journal and freeze exact native cuts; distinguish
   unchanged diagnostics from actual scoped Entity/Task changes. The 1,891-entry
   chain and native result hashes are verified; no cross-execution Entity copying
   is found. See `use-plugin/verification/milestone-isolation/REPORT.md`.
-- [x] M02 — Reproduce before fix and group only presentation-equivalent scoped
+- [x] M02 â€” Reproduce before fix and group only presentation-equivalent scoped
   cuts; retain the full audit and exact latest representative. Final 42 focused
   tests pass, including the authentic 8-cut / 5-milestone recording, proof ordering,
   retained Task failure and scope/audit navigation.
-- [x] M03 — Run unchanged external Auction with verified barriers, receipt ordering
+- [x] M03 â€” Run unchanged external Auction with verified barriers, receipt ordering
   and independent execution/tab/audit navigation. An observation-mode harness
   baseline is retained separately and does not satisfy this gate. The explicit
   verified run `live-1793520132787` proves eight DISPLAYED-before-APPROVE releases,
   both native roots/UI executions complete, and stable tab/audit navigation.
-- [x] M04 — Preserve the previous installed user run, package `target/new`, and
+- [x] M04 â€” Preserve the previous installed user run, package `target/new`, and
   check installed byte parity and actual loaded JaCaMo identity. The previous tree
   is `target/new-before-milestone-isolation-20261101`; the journal hash is unchanged.
   `milestone-final-package-receipt.json` proves the current plugin/bridge/GUI bytes,
   loaded patched JaCaMo SHA-256 `f5a31568fbc2487322d985e00ab6cecac987f2edc296bf14cd155c56c217275e`
   and installed-loader smoke. No commit/push or full clean verify.
 
-- [x] S00 — Push pre-feature checkpoint; inspect both source paths; create workspace
+- [x] S00 â€” Push pre-feature checkpoint; inspect both source paths; create workspace
   AGENTS and this plan. USE `fded6f66` pushed; JaCaMo remote already current.
-- [x] S01 — Prove admission/quiescence/time hooks and supported scopes; negative
+- [x] S01 â€” Prove admission/quiescence/time hooks and supported scopes; negative
   tests reject unsupported autonomous/timed components before strict-mode start.
   Extended source-hook evidence: `S01-extended-runtime/positive-proof.txt`,
   `S01-final-probes.log`, `S01-extended-admission-tests.log` and
   `S01-extended-profile-tests.log`. Scope is the owned local source-admitted MAS;
   raw threads/clocks, unsupported timer actions/platforms and remote execution
   are rejected. This checks S01 only, not the end-to-end feature or live Auction.
-- [x] S02 — Implement JaCaMo coordinator/SPI, participants, clocks and latched hold;
+- [x] S02 â€” Implement JaCaMo coordinator/SPI, participants, clocks and latched hold;
   add authenticated versioned protocol, exact tokens and idempotent release.
-- [x] S03 — Connect USE ingestion/verification decisions to exact cuts; preserve
+- [x] S03 â€” Connect USE ingestion/verification decisions to exact cuts; preserve
   native truth, identity, prefix ordering, durable queues and history/replay.
-- [x] S04 — Add mode/status/review UI; preserve per-execution failures and navigation.
-- [x] S05 — Test blocked next transition, in-flight drain, shared-agent executions,
+- [x] S04 â€” Add mode/status/review UI; preserve per-execution failures and navigation.
+- [x] S05 â€” Test blocked next transition, in-flight drain, shared-agent executions,
   clock behavior, required unknown/error, stale/duplicate replies, timeout,
   disconnect/reconnect, UI/monitor close, Stop, new epochs and listener cleanup.
-- [x] S06 — Build the modified JaCaMo artifact and wire it into the USE producer
+- [x] S06 â€” Build the modified JaCaMo artifact and wire it into the USE producer
   classpath/package deliberately. Verify actual code-source paths and SHA-256;
   do not silently replace official version bytes or load an old cached JAR.
-- [x] S07 — Unchanged external Auction live acceptance: repeated hold/verify/release,
+- [x] S07 â€” Unchanged external Auction live acceptance: repeated hold/verify/release,
   genuine failing required check held until review, retained failure, both executions,
   correct timeout semantics, no next admitted domain transition while held, replay.
-- [x] S08 — Deliver one runnable `use-assembly/target/new`, final source/JAR/evidence
+- [x] S08 â€” Deliver one runnable `use-assembly/target/new`, final source/JAR/evidence
   freeze and an honest support report. Separate live MAS/offscreen Swing from fresh
   manual desktop acceptance. No full clean verify or unrelated live case studies.
 
-DoD: S01–S08 proven by executable evidence; actual source hold and verified cut
+DoD: S01â€“S08 proven by executable evidence; actual source hold and verified cut
 agree; no unacknowledged release/lost admitted event, forced verdict or case-specific
 production logic; original failures remain; final package loads the intended JaCaMo
 implementation. Existing passive queue/replay evidence does not prove this feature.
 
-**Current status (2026-10-31): S01–S08 proven for the supported owned local source-admitted profile.**
+**Current status (2026-10-31): S01â€“S08 proven for the supported owned local source-admitted profile.**
 Source patches, identity checks and executable admission/time/lifecycle probes are
 in `../jacamo/checkpoint-dependencies/`. The initial blocked S01 findings below
 remain the baseline for the original unmodified dependencies, not the current
@@ -284,7 +292,7 @@ mutation, internal `await_time`/new external actions and actual NPL deadline exp
 can still change domain state. Strict startup now rejects before platform
 initialization; the old Jason Pause/Resume guarantee is unchanged. At that stage
 S01 remained unchecked because whole-platform admission/quiescence/logical time
-was unproven; S02–S05/S07 had not been implemented over the failed mandatory gate.
+was unproven; S02â€“S05/S07 had not been implemented over the failed mandatory gate.
 
 Evidence and the required dependency-scope extension are in
 [`S01-boundary.md`](use-plugin/verification/verified-checkpoints/S01-boundary.md).

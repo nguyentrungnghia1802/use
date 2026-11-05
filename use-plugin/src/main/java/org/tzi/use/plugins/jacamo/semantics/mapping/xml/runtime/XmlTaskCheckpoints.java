@@ -103,8 +103,19 @@ public final class XmlTaskCheckpoints {
             append(NativeInvocationEvaluation.prepare(List.of(entry.pre(),post),List.of(),List.of()));
         }
     }
-    private static String referenceHash(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingSpecification.Node definition,OccurrenceProjection.Scope scope,OccurrenceProjection.Member member,String task) {
-        var refs=new TreeMap<String,Object>();for(String attribute:List.of("stepSchemeColumn","stepArtifactColumn"))if(!definition.optional(attribute).isBlank())refs.put(attribute,scope.bindings().getOrDefault(definition.attr(attribute),""));refs.put("self",member.selves().getOrDefault(task,""));refs.put("resources",scope.resources());return new String(CanonicalJson.encode(refs),java.nio.charset.StandardCharsets.UTF_8);
+    private String referenceHash(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingSpecification.Node definition,OccurrenceProjection.Scope scope,OccurrenceProjection.Member member,String task) {
+        var refs=new TreeMap<String,Object>();for(String attribute:List.of("stepSchemeColumn","stepArtifactColumn"))if(!definition.optional(attribute).isBlank())refs.put(attribute,scope.bindings().getOrDefault(definition.attr(attribute),""));refs.put("self",member.selves().getOrDefault(task,""));refs.put("resources",scope.resources());
+        if(!program.xmlPlan().goalViews().isEmpty())refs.put("goalViews",viewReferences(scope,member,task));
+        return new String(CanonicalJson.encode(refs),java.nio.charset.StandardCharsets.UTF_8);
+    }
+    private Map<String,Object> viewReferences(OccurrenceProjection.Scope scope,OccurrenceProjection.Member performer,String task) {
+        var refs=new TreeMap<String,Object>();
+        for(var view:program.xmlPlan().goalViews().values())if(org.tzi.use.plugins.jacamo.semantics.runtime.GoalViewRealizations.includes(program.goalModel(),view,task)) {
+            String actor=program.goalModel().ownerOf(view.target()).orElseThrow();
+            var matching=scope.members().stream().filter(m->m.actor().equals(actor)&&m.player().equals(performer.player())).toList();
+            refs.put(view.target(),matching.size()==1?List.of(actor,matching.getFirst().player(),matching.getFirst().role(),matching.getFirst().interval()):List.of("EXACT_GOAL_VIEW_ENACTMENT_UNAVAILABLE"));
+        }
+        return refs;
     }
     private boolean same(Entry entry,Marker second){var first=entry.marker();return key(first).equals(key(second))&&first.actor().equals(second.actor())&&first.demand().equals(second.demand())&&first.goal().equals(second.goal())&&first.invocation().equals(second.invocation())&&compatibleReferences(entry,second);}
     private static Marker certify(Marker m,String certificate){return new Marker(m.scope(),m.actor(),m.player(),m.role(),m.interval(),m.task(),m.demand(),m.goal(),m.invocation(),m.phase(),m.entrySequence(),m.references(),certificate);}
@@ -121,7 +132,12 @@ public final class XmlTaskCheckpoints {
         Object oldArtifact=old.get("stepArtifactColumn");if(oldArtifact!=null&&!oldArtifact.equals("")&&!Objects.equals(oldArtifact,current.get("stepArtifactColumn")))return false;
         var oldResources=CanonicalJson.object(old.get("resources"));var nextResources=CanonicalJson.object(current.get("resources"));return oldResources.entrySet().stream().allMatch(e->Objects.equals(nextResources.get(e.getKey()),e.getValue()));
     }
-    private static boolean currentRole(Marker marker,List<OccurrenceProjection.Scope> scopes){return scopes.stream().anyMatch(s->s.complete()&&s.id().equals(marker.scope())&&s.members().stream().anyMatch(m->m.player().equals(marker.player())&&m.role().equals(marker.role())&&m.interval().equals(marker.interval())));}
+    private boolean currentRole(Marker marker,List<OccurrenceProjection.Scope> scopes){return scopes.stream().anyMatch(s->s.complete()&&s.id().equals(marker.scope())&&s.members().stream().anyMatch(m->m.player().equals(marker.player())&&m.role().equals(marker.role())&&m.interval().equals(marker.interval())&&sameViewReferences(marker,s,m)));}
+    private boolean sameViewReferences(Marker marker,OccurrenceProjection.Scope scope,OccurrenceProjection.Member performer) {
+        if(program.xmlPlan().goalViews().isEmpty())return true;
+        var saved=CanonicalJson.object(CanonicalJson.decode(marker.references().getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+        return Objects.equals(saved.get("goalViews"),viewReferences(scope,performer,marker.task()));
+    }
     /** Retention is not verification authority. A pending exact PRE survives temporary
      * unavailability, but terminal evaluation still requires a fresh complete cast/demand
      * and same() checks all invocation, actor, interval, episode and reference identities. */

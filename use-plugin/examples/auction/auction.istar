@@ -1,10 +1,13 @@
 // Auction iStar system specification. Based on Desktop
 // auction_istar_final_fixed.drawio, including Artifact Resources.
-// Notation: explicit AND children and same-player Agent/Role participation.
-// Capability Agent performs Tasks; Roles express the responsibilities it plays. Actor Auction is a context viewpoint, not a running agent.
-// Deliberate current-policy delta from success-only diagram notes:
-// P_bid_t2 completes an observed attempt, including only the exact .fail site
-// accepted by XML. O_bid additionally requires actual Artifact acceptance.
+// Actor kinds and graph follow the supplied Draw.io, including its capability Role.
+// The XML explicitly binds repeated views of the SAME source Goal to the SAME
+// physical player and scheme. Native refinement checks the real Task evidence.
+// These view correspondences are not additional social Dependencies.
+// Actor Auction is a context viewpoint, not a running agent.
+// The five Tasks and dependency endpoints follow the authoritative Core diagram.
+// P_bid_t2 requires source success; the .fail branch is not an achievement.
+// D_bid means at least one assigned participant successfully performs its bid.
 // Agent/program source, mission commitments, action receipts and self identity
 // are connected by XML, never inferred from names or console Winner messages.
 istar AuctionGoals {
@@ -12,14 +15,11 @@ istar AuctionGoals {
         goal O_root : Achieve
         goal O_start : Achieve > O_root
         goal O_bid : Achieve > O_root
-        goal O_bid_attempt : Achieve > O_bid
-        goal O_bid_accepted : Achieve > O_bid
-            condition {[ self.currentWinner <> 'no_winner' ]}
         goal O_decide : Achieve > O_root
     }
-    // Concrete agent type, with one runtime occurrence per actual player.
-    // Role responsibilities delegate to this SAME player's capability goal.
-    agent auction_capabilities {
+    // Shared program/capability viewpoint, as declared by the diagram's Role node.
+    // A physical-player view is not another MOISE Role enactment.
+    role auction_capabilities {
         auction_capabilities participates-in Auctioneer
         auction_capabilities participates-in Participant
         goal C_start : Achieve
@@ -39,9 +39,8 @@ istar AuctionGoals {
             post {[ step.succeeded ]}
         task P_bid_t2 > C_bid
             pre {[ step.enabled and self.running ]}
-            post {[ step.completed ]}
-        resource A_artifact > needed-by A_start_t2 > needed-by A_decide_t2
-        resource P_artifact > needed-by P_bid_t2
+            post {[ step.succeeded ]}
+        resource AuctionArtifact > needed-by A_start_t2 > needed-by A_decide_t2 > needed-by P_bid_t2
     }
     role Auctioneer {
         goal A_start : Achieve
@@ -50,32 +49,30 @@ istar AuctionGoals {
     role Participant {
         goal P_bid : Achieve
     }
-    depend Auctioneer.A_start -> goal D_capability_start -> auction_capabilities.C_start
-    depend Auctioneer.A_decide -> goal D_capability_decide -> auction_capabilities.C_decide
-    depend Participant.P_bid -> goal D_capability_bid -> auction_capabilities.C_bid
     depend Auction.O_start -> goal D_start -> Auctioneer.A_start
     depend Auction.O_decide -> goal D_decide -> Auctioneer.A_decide
-    depend Auction.O_bid_attempt -> goal D_bid -> Participant.P_bid
+    depend Auction.O_bid -> goal D_bid -> Participant.P_bid
 }
 
 // Behavioral observer contracts audit source-confirmed ordering/evidence.
 // They are not CSL Entities, nor definitions of Goal satisfaction.
-// Public confirmation times are not exact internal truth-change times.
+// MOISE public goal-state transition times use the source logical clock.
+// Their provenance is publication; private internal truth-change instants are not claimed.
 /* @use-native-ocl 1
 context AuctionMonitor
-inv ConfirmedSchemeOrder:
-    (self.bidEnabledConfirmedAt >= 0 implies
-        self.startSatisfiedConfirmedAt >= 0 and
-        self.startSatisfiedConfirmedAt <= self.bidEnabledConfirmedAt) and
-    (self.bidSatisfiedConfirmedAt >= 0 implies
-        self.bidEnabledConfirmedAt >= 0 and
-        self.bidEnabledConfirmedAt <= self.bidSatisfiedConfirmedAt) and
-    (self.decideEnabledConfirmedAt >= 0 implies
-        self.bidSatisfiedConfirmedAt >= 0 and
-        self.bidSatisfiedConfirmedAt <= self.decideEnabledConfirmedAt) and
-    (self.decideSatisfiedConfirmedAt >= 0 implies
-        self.decideEnabledConfirmedAt >= 0 and
-        self.decideEnabledConfirmedAt <= self.decideSatisfiedConfirmedAt)
+inv SchemeOrder:
+    (self.bidEnabledAt >= 0 implies
+        self.startSatisfiedAt >= 0 and
+        self.startSatisfiedAt <= self.bidEnabledAt) and
+    (self.bidSatisfiedAt >= 0 implies
+        self.bidEnabledAt >= 0 and
+        self.bidEnabledAt <= self.bidSatisfiedAt) and
+    (self.decideEnabledAt >= 0 implies
+        self.bidSatisfiedAt >= 0 and
+        self.bidSatisfiedAt <= self.decideEnabledAt) and
+    (self.decideSatisfiedAt >= 0 implies
+        self.decideEnabledAt >= 0 and
+        self.decideEnabledAt <= self.decideSatisfiedAt)
 
 -- Keep latest Desktop EXISTS semantics: at least one committed participant
 -- has both observed MOISE done evidence and a successful real bid, unless the
@@ -84,12 +81,28 @@ inv ConfirmedSchemeOrder:
 -- Role population is not mission commitment. Freeze bidCommittedBy at the first
 -- observed bid satisfaction; keep exact same-run/same-scheme player identities.
 context AuctionMonitor
-inv ObservedBidEvidence:
+inv BidEvidence:
     self.bidDoneBy->forAll(a |
         self.actualBidBy->includes(a)) and
-    (self.bidSatisfiedObserved implies
+    (self.bidSatisfiedAt >= 0 implies
         self.adminBidOverride or
         self.bidCommittedBy->exists(a |
             self.bidDoneBy->includes(a) and
             self.actualBidBy->includes(a)))
+*/
+
+// Restored from the authoritative diagram. Retain each actual activation;
+// administrative recovery never repairs an expired obligation.
+/* @use-native-ocl 1
+context AuctionObligation
+inv WithinDeadline:
+    self.deadlineAt =
+        self.activatedAt +
+        (if self.goal = 'bid' then 10000 else 3600000 endif)
+    and not self.unfulfilled
+    and
+        (if self.endedAt >= 0
+         then self.endedAt
+         else self.monitor.now
+         endif) <= self.deadlineAt
 */

@@ -18,22 +18,47 @@ final class VerifiedCheckpointBridge implements AutoCloseable {
     private final VerifiedCheckpointCoordinator coordinator;
     private final DurableFrameLog history;
     private final Map<String,Cached> receipts=new LinkedHashMap<>();
+    private final Map<String,ObservationCapabilityRequest> selectedSources=new HashMap<>();
+    private final Map<String,String> schemeRootStates=new HashMap<>();
+    private final Map<String,String> schemeRoots=new HashMap<>();
+    private final Set<String> selectedOccurrences=new HashSet<>();
     private volatile RuntimeSnapshot frozenSnapshot;
     private Request encodedRequest;private Map<String,Object> encodedWire;
     VerifiedCheckpointBridge(String session,String run,long generation,String revision,ObservationRequestPlan plan,
             Supplier<RuntimeSnapshot> capture,BooleanSupplier unchanged) throws Exception {
+        this(session,run,generation,revision,plan,capture,unchanged,null);
+    }
+    VerifiedCheckpointBridge(String session,String run,long generation,String revision,ObservationRequestPlan plan,
+            Supplier<RuntimeSnapshot> capture,BooleanSupplier unchanged,ModelSnapshot source) throws Exception {
         Path file=Path.of(System.getProperty("jacamo.checkpoint.policy"));
         policy=VerifiedCheckpointProtocol.Policy.decode(CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(file))));
         if(!policy.programHash().equals(plan.programHash()))throw new IllegalArgumentException("CHECKPOINT_POLICY_PROGRAM_NOT_ADMITTED");
         for(var rule:policy.rules()) {
-            var provider=rule.selectorKind().equals("TASK_POST")?"jason.plan-boundaries.v1":CartagoOperationHistory.PROVIDER;
+            var provider=switch(rule.selectorKind()){
+                case "TASK_POST"->"jason.plan-boundaries.v1";
+                case "SCHEME_POST"->MoiseSchemeCapability.PROVIDER;
+                case "NORM_TERMINAL"->NplLifecycleCapability.PROVIDER;
+                default->CartagoOperationHistory.PROVIDER;
+            };
             var selected=plan.requests().stream().filter(r->rule.sourceIdentity().equals("observation:"+r.id())&&r.provider().equals(provider)).toList();
             if(selected.size()!=1)throw new IllegalArgumentException("CHECKPOINT_SOURCE_SELECTION_NOT_ADMITTED");
+            selectedSources.put(rule.id(),selected.getFirst());
             var parameters=selected.getFirst().parameters();
+            if(rule.selectorKind().equals("SCHEME_POST")) {
+                if(source==null)throw new IllegalArgumentException("CHECKPOINT_SCHEME_SOURCE_REQUIRED");
+                var definitions=source.semanticContract().moiseOrganizations().stream().filter(o->o.name().equals(parameters.get("organization")))
+                        .flatMap(o->o.functionalSpecification().schemes().stream()).filter(s->s.schemeId().equals(parameters.get("scheme"))).toList();
+                if(definitions.size()!=1)throw new IllegalArgumentException("CHECKPOINT_SCHEME_SOURCE_NOT_UNIQUE");
+                var definition=definitions.getFirst();
+                var roots=definition.goals().stream().filter(g->g.metadata().semanticId().equals(definition.rootGoalSemanticId())).map(g->g.goalId()).toList();
+                if(roots.size()!=1)throw new IllegalArgumentException("CHECKPOINT_SCHEME_ROOT_NOT_UNIQUE");
+                schemeRoots.put(rule.id(),roots.getFirst());continue;
+            }
+            if(rule.selectorKind().equals("NORM_TERMINAL"))continue;
             if(rule.selectorKind().equals("TASK_POST")){
                 var tasks=new HashSet<String>();
                 for(Object raw:(List<?>)parameters.get("plans"))for(Object step:(List<?>)CanonicalJson.object(raw).get("steps")){
-                    var site=CanonicalJson.object(step);if(rule.artifactClass().equals(site.get("artifactClass"))&&!Boolean.TRUE.equals(site.get("allowMissingArtifactAtEntry")))tasks.add((String)site.get("task"));
+                    var site=CanonicalJson.object(step);if(rule.artifactClass().equals(Objects.toString(site.get("artifactClass"),"")))tasks.add((String)site.get("task"));
                 }
                 if(!tasks.containsAll(rule.operations()))throw new IllegalArgumentException("CHECKPOINT_TASK_SELECTION_NOT_ADMITTED");continue;
             }
@@ -51,6 +76,12 @@ final class VerifiedCheckpointBridge implements AutoCloseable {
             @Override public void append(Map<String,Object> event){history.append(CanonicalJson.encode(event,CanonicalJson.DEFAULT_MAX_BYTES));}
         },Duration.ofMillis(Long.getLong("jacamo.checkpoint.verificationTimeoutMillis",30000L)));
         jacamo.checkpoint.CheckpointBoot.registerCoordinator(coordinator);
+        var taskSources=new HashSet<String>();
+        for(var rule:policy.rules())if(rule.selectorKind().equals("TASK_POST")) {
+            String hash=Objects.toString(selectedSources.get(rule.id()).parameters().get("sourceHash"),"");
+            rule.operations().forEach(task->taskSources.add(hash+"/"+task));
+        }
+        BridgeRuntimeRegistry.checkpointTaskSources(taskSources);
     }
     void observe(RuntimeEvent event) {
         if(event.kind()==RuntimeEventKind.GAP) {
@@ -67,10 +98,37 @@ final class VerifiedCheckpointBridge implements AutoCloseable {
         if(VerificationObservation.present(event)){
             beforeObservation(VerificationObservation.require(event));
         }
+        observeLifecycle(event);
         if(event.subsystem().equals("cartago")&&event.entityId()!=null&&(event.kind()==RuntimeEventKind.SUCCEEDED||event.kind()==RuntimeEventKind.FAILED)) {
-            for(var rule:policy.rules())if(!rule.selectorKind().equals("TASK_POST")&&(!rule.selectorKind().equals("OPERATION_FAILURE")||event.kind()==RuntimeEventKind.FAILED)&&rule.artifactClass().equals(event.after().get("artifactTypeJavaClassName"))&&rule.operations().contains(event.after().get("operation"))) {
-                coordinator.trigger(new Boundary(policy.hash(),rule.id(),event.eventId(),Set.of("source:"+event.entityId().canonical()),rule.requiredChecks(),policy.inputHashes()));
+            for(var rule:policy.rules())if(rule.selectorKind().startsWith("OPERATION_")&&(!rule.selectorKind().equals("OPERATION_FAILURE")||event.kind()==RuntimeEventKind.FAILED)&&rule.artifactClass().equals(event.after().get("artifactTypeJavaClassName"))&&rule.operations().contains(event.after().get("operation"))) {
+                if(rule.selectorKind().equals("OPERATION_UNMAPPED_POST")&&event.kind()==RuntimeEventKind.SUCCEEDED&&selectedTaskDispatch(event))continue;
+                select(new Boundary(policy.hash(),rule.id(),event.eventId(),Set.of("source:"+event.entityId().canonical()),rule.requiredChecks(),policy.inputHashes()));
                 break;
+            }
+        }
+    }
+    /** Supplemental source lifecycle cuts. These select verification; they do
+     * not turn a norm event or an administrative action into a semantic FAIL. */
+    private synchronized void observeLifecycle(RuntimeEvent event) {
+        for(var rule:policy.rules()) {
+            if(rule.selectorKind().equals("NORM_TERMINAL")&&event.kind()==RuntimeEventKind.NORM_UNFULFILLED) {
+                select(new Boundary(policy.hash(),rule.id(),event.eventId(),Set.of(event.entityId()==null?"mas:"+coordinator.owner().run():"source:"+event.entityId().canonical()),rule.requiredChecks(),policy.inputHashes()));
+            }
+            if(!rule.selectorKind().equals("SCHEME_POST")||!(event.after().get(CapabilityObservation.KEY) instanceof Map<?,?> raw))continue;
+            var request=selectedSources.get(rule.id());var values=CanonicalJson.object(raw);if(!values.containsKey(request.id()))continue;
+            var receipt=CapabilityObservation.require(values.get(request.id()),request);var data=receipt.data();
+            if(receipt.quality()!=Completeness.COMPLETE||!"COMPLETE".equals(data.get("historyQuality")))continue;
+            String identity=Objects.toString(data.get("schemeIdentity"),"");
+            String state=data.get("goals") instanceof List<?> goals?goals.stream().map(CanonicalJson::object)
+                    .filter(g->schemeRoots.get(rule.id()).equals(g.get("name"))).map(g->Objects.toString(g.get("state"),"")).findFirst().orElse(""):"";
+            if(identity.isBlank()||state.isBlank()||state.equals("UNAVAILABLE"))continue;
+            String prior=schemeRootStates.put(rule.id()+":"+identity,state);
+            boolean terminal=rule.operations().contains("terminal")&&state.equals("SATISFIED")&&prior!=null&&!prior.equals(state);
+            boolean administrative=rule.operations().contains("administrative")&&event.kind()==RuntimeEventKind.SUCCEEDED&&data.get("administrativeEffect") instanceof Map<?,?> effect&&!effect.isEmpty();
+            if(terminal||administrative) {
+                var required=new TreeSet<>(rule.requiredChecks());
+                if(terminal)required.add(VerifiedCheckpointProtocol.SETTLED_CHECK_PREFIX+"source:"+identity);
+                select(new Boundary(policy.hash(),rule.id()+(terminal?":terminal":":administrative"),event.eventId(),Set.of("source:"+identity),required,policy.inputHashes()));
             }
         }
     }
@@ -81,9 +139,33 @@ final class VerifiedCheckpointBridge implements AutoCloseable {
         var active=coordinator.view().request();
         if(active!=null&&(active.boundary().sourceOccurrence().equals(occurrence)||active.drainedBoundaries().stream().anyMatch(b->b.sourceOccurrence().equals(occurrence))))return;
         for(var rule:policy.rules())if(rule.selectorKind().equals("TASK_POST")&&rule.operations().contains(observation.data().get("sourceStepId"))){
+            var bindings=CanonicalJson.object(observation.data().get("bindings"));
+            var sourceHash=selectedSources.get(rule.id()).parameters().get("sourceHash");
+            if(sourceHash!=null&&(!(bindings.get("instrumentation") instanceof Map<?,?> manifest)||!sourceHash.equals(manifest.get("sourceSha256"))))continue;
             String artifact=Objects.toString(observation.data().get("artifactIdentity"),"");
-            coordinator.trigger(new Boundary(policy.hash(),rule.id(),occurrence,Set.of(artifact.isBlank()?"mas:"+coordinator.owner().run():"source:"+artifact),rule.requiredChecks(),policy.inputHashes()));break;
+            String scheme=Objects.toString(observation.data().get("schemeIdentity"),"");
+            String scope=!artifact.isBlank()?artifact:!scheme.isBlank()?scheme:Objects.toString(observation.data().get("agentIdentity"),"");
+            if(!select(new Boundary(policy.hash(),rule.id(),occurrence,Set.of(scope.isBlank()?"mas:"+coordinator.owner().run():"source:"+scope),rule.requiredChecks(),policy.inputHashes())))break;
+            break;
         }
+    }
+    private synchronized boolean select(Boundary boundary) {
+        String key=boundary.checkpointId()+":"+boundary.sourceOccurrence();
+        if(selectedOccurrences.contains(key))return false;
+        if(selectedOccurrences.size()>=16384) {
+            coordinator.trigger(new Boundary(policy.hash(),"source-selection-capacity",key,Set.of("mas:"+coordinator.owner().run()),Set.of(VerifiedCheckpointProtocol.REQUIRED_CHECK),policy.inputHashes()));
+            coordinator.disconnected();return false;
+        }
+        selectedOccurrences.add(key);coordinator.trigger(boundary);return true;
+    }
+    private boolean selectedTaskDispatch(RuntimeEvent event) {
+        if(!(event.after().get("taskDispatch") instanceof Map<?,?> raw))return false;
+        var owner=CanonicalJson.object(raw);
+        if(!"LOCAL_ACTIONEXEC_OP_OBJECT_IDENTITY/1.0".equals(owner.get("authority"))
+                ||Objects.toString(owner.get("stepInvocation"),"").isBlank())return false;
+        return policy.rules().stream().anyMatch(rule->rule.selectorKind().equals("TASK_POST")
+                &&rule.artifactClass().equals(event.after().get("artifactTypeJavaClassName"))&&rule.operations().contains(owner.get("task"))
+                &&(selectedSources.get(rule.id()).parameters().get("sourceHash")==null||selectedSources.get(rule.id()).parameters().get("sourceHash").equals(owner.get("sourceHash"))));
     }
     RuntimeSnapshot frozenSnapshot(){var view=coordinator.view();return view.request()!=null&&view.request().cut()!=null?frozenSnapshot:null;}
     boolean active(){return coordinator.view().request()!=null;}
@@ -132,6 +214,7 @@ final class VerifiedCheckpointBridge implements AutoCloseable {
                 agents.put(id.canonical(),Map.of("thread",local.getThread()==null?"NOT_STARTED":Long.toString(local.getThread().threadId()),"receipt","KERNEL_ADMISSION_CLOSED_WITH_NO_ACTIVE_STEP"));
             }
             barrier.putAll(Map.of("run",proof.run(),"epoch",proof.epoch(),"requestedSequence",request.requestedSequence(),"frozenSequence",proof.sequence(),"sourceMillis",proof.sourceMillis(),"admissionClosed",proof.admissionClosed(),"clockFrozen",proof.clockFrozen(),"active",active,"pending",proof.pending(),"cohortReceipts",proof.completed()));barrier.put("agentCohort",agents);
+            barrier.put("taskContinuations",ExecutionBarrier.taskContinuations());
         }
         payload.put("barrier",barrier);
         payload.put("snapshot",cut==null?null:CanonicalJson.object(CanonicalJson.decode(cut.snapshot())));payload.put("ready",cut!=null&&proof!=null&&proof.clockFrozen());
@@ -140,5 +223,5 @@ final class VerifiedCheckpointBridge implements AutoCloseable {
         if(Boolean.TRUE.equals(value.get("ready")))history.append(CanonicalJson.encode(Map.of("kind","WIRE_REQUEST","request",value)));
         encodedRequest=request;encodedWire=value;return encodedWire;
     }
-    @Override public synchronized void close(){coordinator.close();history.close();}
+    @Override public synchronized void close(){coordinator.close();BridgeRuntimeRegistry.checkpointTaskSources(Set.of());history.close();}
 }

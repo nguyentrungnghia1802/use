@@ -97,6 +97,38 @@ class RuntimeTablesTest {
       </tables></runtime>
       """;
     private RuntimeTables tables(String runtime){return new RuntimeTables(MappingXmlReaderTest.parse(MappingXmlReaderTest.XML.replace("<runtime/>",runtime)));}
+    @Test void invocationPrefixClosesOnlyByExactSameCutPhysicalInventoryCoverage() {
+        String plan="""
+          <runtime><tables>
+           <table id="inventory" dataset="objects"><column name="uuid" path="identity" required="true"/><identity mode="PHYSICAL" path="identity"/></table>
+           <table id="bindings" dataset="steps">
+            <join tableRef="inventory" leftPath="domain" rightPath="uuid" as="creation" cardinality="ONE" required="true" knowledge="QUALIFIED_PHYSICAL_REFERENCE"/>
+            <column name="domain" path="domain" required="true"/><identity mode="PHYSICAL" path="identity"/>
+            <populationClosure inventoryRef="inventory" inventoryColumn="uuid" referenceColumn="domain" proofAlias="creation" policy="EXACT_CURRENT_PHYSICAL_REFERENCE_COVERAGE/1.0"/>
+           </table>
+          </tables></runtime>
+          """;
+        var executor=tables(plan);String cut="a".repeat(64);
+        var object=physical("artifact",Map.of("identity","artifact"),cut);
+        var binding=physical("scheme",Map.of("identity","scheme","domain","artifact"),cut);
+        var objects=new RuntimeTables.Dataset(List.of(object),Completeness.COMPLETE);
+        var prefix=new RuntimeTables.Dataset(List.of(binding),Completeness.PARTIAL);
+        var complete=executor.execute(Map.of("objects",objects,"steps",prefix)).get("bindings");
+        assertEquals(Completeness.COMPLETE,complete.populationQuality());
+        assertTrue(complete.rows().getFirst().proofs().get("population:physical-closure").matches("[0-9a-f]{64}"));
+        var absent=new RuntimeTables.Dataset(List.of(),Completeness.PARTIAL);
+        assertEquals(Completeness.PARTIAL,executor.execute(Map.of("objects",objects,"steps",absent)).get("bindings").populationQuality(),"An existing unbound artifact is missing evidence");
+        assertEquals(Completeness.COMPLETE,executor.execute(Map.of("objects",new RuntimeTables.Dataset(List.of(),Completeness.COMPLETE),"steps",absent)).get("bindings").populationQuality(),"Known empty current inventory does not invent future Tasks");
+        var duplicate=physical("another-scheme",Map.of("identity","another-scheme","domain","artifact"),cut);
+        assertEquals(Completeness.PARTIAL,executor.execute(Map.of("objects",objects,"steps",new RuntimeTables.Dataset(List.of(binding,duplicate),Completeness.PARTIAL))).get("bindings").populationQuality(),"Ambiguous ownership is not closure");
+        var stale=physical("scheme",binding.values(),"b".repeat(64));
+        assertEquals(Completeness.PARTIAL,executor.execute(Map.of("objects",objects,"steps",new RuntimeTables.Dataset(List.of(stale),Completeness.PARTIAL))).get("bindings").populationQuality(),"Stale positive evidence cannot close the current inventory");
+        assertEquals(Completeness.PARTIAL,executor.execute(Map.of("objects",new RuntimeTables.Dataset(List.of(object),Completeness.PARTIAL),"steps",prefix)).get("bindings").populationQuality(),"A partial inventory cannot establish absence");
+        var unproved=new RuntimeTables.Row("artifact",object.values(),Completeness.COMPLETE,Map.of("source-cut",cut),Set.of("artifact"));
+        assertEquals(Completeness.PARTIAL,executor.execute(Map.of("objects",new RuntimeTables.Dataset(List.of(unproved),Completeness.COMPLETE),"steps",prefix)).get("bindings").populationQuality(),"A matching name without physical authority cannot close population");
+        assertThrows(IllegalArgumentException.class,()->tables(plan.replace("proofAlias=\"creation\"","proofAlias=\"invented\"")));
+    }
+    private static RuntimeTables.Row physical(String id,Map<String,Object> values,String cut){return new RuntimeTables.Row(id,values,Completeness.COMPLETE,Map.of("source-cut",cut,"physical-identity",id),Set.of(id));}
     private RuntimeTables.Row row(String id,Map<String,Object> values){return new RuntimeTables.Row(id,values,Completeness.COMPLETE,Map.of("source-cut","verified-cut"),Set.of(id));}
     private Map<String,RuntimeTables.Dataset> data() {
         return Map.of("fact.scope",new RuntimeTables.Dataset(List.of(row("scope",Map.of("id","scope"))),Completeness.COMPLETE),

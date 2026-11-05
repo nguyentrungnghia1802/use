@@ -16,6 +16,15 @@ public final class GenericMappingEngine {
         var authored=new AuthoredModelLoader();
         var csl=inputs.authoredModels()?authored.csl(inputs):new CslRuleExecutor().prepare(inputs);
         var goals=inputs.authoredModels()?authored.goals(inputs):new IStarRuleExecutor().prepare(inputs);
+        var goalViews=org.tzi.use.plugins.jacamo.semantics.runtime.GoalViewRealizations.compile(inputs.specification(),goals.model());
+        for(var view:goalViews.values()) {
+            var file=inputs.specification().requireId(view.sourceRef());
+            if(!file.name().equals("file")||!file.attr("kind").equals("MOISE"))throw file.location().error("GOAL_VIEW_ADMITTED_MOISE_SOURCE_REQUIRED");
+            long matched=input.semanticContract().moiseOrganizations().stream().filter(o->o.metadata().evidence().stream().anyMatch(e->e.sourceDigest().equals(file.attr("sha256"))))
+                    .flatMap(o->o.functionalSpecification().schemes().stream()).filter(s->s.schemeId().equals(view.scheme()))
+                    .flatMap(s->s.goals().stream()).filter(g->g.goalId().equals(view.sourceGoal())).count();
+            if(matched!=1)throw file.location().error("GOAL_VIEW_SOURCE_GOAL_NOT_UNIQUE");
+        }
         var bindings=new ArrayList<SemanticBindingIndex.Binding>();var instructions=new LinkedHashMap<String,List<SemanticBindingIndex.Binding>>();
         for(Node node:inputs.specification().root().child("bindings").children("static")) {
             var selected=node.optional("selectRef").isEmpty()?List.<Map<String,String>>of(Map.of()):SourceSelections.require(selections,node.attr("selectRef"),node).stream().map(SourceSelectors.Row::values).toList();
@@ -61,7 +70,7 @@ public final class GenericMappingEngine {
             if(!Set.of("true","false").contains(node.attr("derived")))throw node.location().error("DERIVED_BOOLEAN_REQUIRED");
             boolean derived=Boolean.parseBoolean(node.attr("derived"));
             boolean structural=goals.model().getActors().stream().flatMap(a->a.refinements().stream()).anyMatch(r->r.parent().equals(target))
-                ||goals.model().getDependencies().stream().anyMatch(d->target.equals(d.dependerElmt()));
+                ||goals.model().getDependencies().stream().anyMatch(d->target.equals(d.dependerElmt()))||goalViews.containsKey(target);
             if(derived!=structural||element instanceof Task&&derived)throw node.location().error("DERIVED_STRUCTURE_MISMATCH");
             var self=bindings.stream().filter(b->Set.of(SemanticBindingIndex.Kind.ENTITY,SemanticBindingIndex.Kind.ROLE,SemanticBindingIndex.Kind.ORG_CONTEXT).contains(b.kind())&&b.targetId().equals(node.attr("self"))).toList();
             if(self.size()!=1)throw node.location().error("ELEMENT_SELF_BINDING_NOT_UNIQUE");

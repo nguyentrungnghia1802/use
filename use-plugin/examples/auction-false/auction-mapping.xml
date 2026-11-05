@@ -10,8 +10,8 @@
     <file id="src-artifact" path="src/env/auction_env/AuctionArtifact.java" sha256="f80f98185518348b3d62656aba6856fe6f2e20514e8f90ace29a6d07ac971563" kind="JAVA" />
     <file id="src-build" path="build.gradle" sha256="0c81b7f1b57c8f9b427280eb8967e820edaffe329540e4988ddd85e402175b40" kind="RESOURCE" />
   </sources>
-  <ocl sha256="16837702e057006d2083142a32f3a9791a1d2b86523115e2ede2a30e33902141" />
-  <models mode="AUTHORED" cslSha256="0b63df2e539ccc0af965cba1d42b40167545601fe69fbcfc775f98d75a79cff8" istarSha256="ec98189dbdecd123b9eb862f5ce714e0fa3e7cd6b636e093fc032945217b784e" />
+  <ocl sha256="1acc17db74a662ffcfc370b70ee233cd45a6c4e339c35c50487b1abf8ffbe5fe" />
+  <models mode="AUTHORED" cslSha256="395a5621b1e59a84c6fbc29d8705f8ce0d13110a07c73a8134736160abb7f0c7" istarSha256="8ce7d1a980ca90396a9fafac59261fb3d3cd090a76bd92d81ce51b744f012aa3" />
   <assertions>
     <require selectorRef="sel-org" field="instance" equals="aorg" />
     <require selectorRef="sel-org" field="spec" equals="auction-os.xml" />
@@ -117,6 +117,7 @@
 
 
 
+      <npl id="source-norms" requestRef="norm-lifecycle" boardClass="ora4mas.nopl.SchemeBoard" />
     </datasets>
     <tables>
       <table id="capability-agents" dataset="source-agents">
@@ -239,6 +240,7 @@
         <column name="domain" path="domainIdentity" required="true" />
         <column name="runId" path="bindings.capturedRun.sessionId" required="true" />
         <identity mode="PHYSICAL" path="identity" />
+        <populationClosure inventoryRef="observed-domain-state" inventoryColumn="uuid" referenceColumn="domain" proofAlias="creation" policy="EXACT_CURRENT_PHYSICAL_REFERENCE_COVERAGE/1.0" />
       </table>
       <table id="domain-operation-history" dataset="source-domain-operations">
         <column name="uuid" path="identity" required="true" />
@@ -253,6 +255,7 @@
         <identity mode="PHYSICAL" path="identity" />
       </table>
       <table id="qualified-monitor-scopes" dataset="source-scheme-history">
+        <whereExists tableRef="qualified-scheme-bindings" leftPath="identity" rightPath="scheme" as="createdDomain" />
         <join tableRef="qualified-scheme-bindings" leftPath="identity" rightPath="scheme" as="binding" cardinality="ONE" required="true" knowledge="QUALIFIED_PHYSICAL_REFERENCE" />
         <column name="physical" path="artifactIdentity" required="true" />
         <column name="schemeUid" path="identity" required="true" />
@@ -260,6 +263,7 @@
         <identity mode="PHYSICAL" path="identity" />
       </table>
       <table id="monitor-observations" dataset="source-scheme-history">
+        <whereExists tableRef="qualified-scheme-bindings" leftPath="identity" rightPath="scheme" as="createdDomain" />
         <join tableRef="qualified-scheme-bindings" leftPath="identity" rightPath="scheme" as="binding" cardinality="ONE" required="true" knowledge="QUALIFIED_PHYSICAL_REFERENCE" />
         <join tableRef="domain-operation-history" leftPath="binding.domain" rightPath="uuid" as="domainOps" cardinality="ONE" required="true" knowledge="QUALIFIED_PHYSICAL_REFERENCE" />
         <join tableRef="scheme-operation-history" leftPath="artifactIdentity" rightPath="uuid" as="schemeOps" cardinality="ONE" required="true" knowledge="QUALIFIED_PHYSICAL_REFERENCE" />
@@ -323,6 +327,7 @@
           <match path="state" type="String" equals="SATISFIED" />
         </firstMatch>
         <relativeTime as="decideSatisfiedTime" requestRef="source-clock" epochPath="decideSatisfiedConfirmation.value.publicationEpochMillis" sourceClockPath="clockIdentity" onMissing="unavailable-value" />
+        <sampleClock as="clockSample" requestRef="source-clock" sourceClockPath="clockIdentity" />
         <column name="confirmationComplete" path="confirmation.complete" required="true" />
         <column name="startSatisfiedFound" path="startSatisfiedConfirmation.found" required="false" />
         <column name="startSatisfiedTime" path="startSatisfiedTime" required="false" />
@@ -334,6 +339,7 @@
         <column name="decideEnabledTime" path="decideEnabledTime" required="false" />
         <column name="decideSatisfiedFound" path="decideSatisfiedConfirmation.found" required="false" />
         <column name="decideSatisfiedTime" path="decideSatisfiedTime" required="false" />
+        <column name="now" path="clockSample.now" required="false" />
         <column name="runId" path="binding.runId" required="true" />
         <column name="schemeUid" path="identity" required="true" />
 
@@ -444,6 +450,75 @@
         <column name="required" path="required" required="true" />
         <column name="complete" path="commitmentBindings.complete" required="true" />
       </table>
+      <table id="obligation-observations" dataset="source-norms">
+        <where path="modality" type="String" equals="OBLIGATION" />
+        <where path="raw.sourceLifecycle.aimTerm.supported" type="Boolean" equals="true" />
+        <where path="raw.sourceLifecycle.aimTerm.ground" type="Boolean" equals="true" />
+        <where path="raw.sourceLifecycle.subjectTerm.supported" type="Boolean" equals="true" />
+        <where path="raw.sourceLifecycle.subjectTerm.ground" type="Boolean" equals="true" />
+        <where path="raw.sourceLifecycle.maintenanceTerm.supported" type="Boolean" equals="true" />
+        <where path="raw.sourceLifecycle.maintenanceTerm.ground" type="Boolean" equals="true" />
+        <where path="raw.sourceLifecycle.aimTerm.key.kind" type="String" equals="LITERAL" />
+        <where path="raw.sourceLifecycle.aimTerm.key.namespace" type="String" equals="default" />
+        <where path="raw.sourceLifecycle.aimTerm.key.negative" type="Boolean" equals="false" />
+        <where path="raw.sourceLifecycle.aimTerm.key.functor" type="String" equals="done" />
+        <whereSize path="raw.sourceLifecycle.aimTerm.key.terms" equals="3" />
+        <where path="raw.sourceLifecycle.subjectTerm.key.kind" type="String" equals="LITERAL" />
+        <where path="raw.sourceLifecycle.subjectTerm.key.namespace" type="String" equals="default" />
+        <where path="raw.sourceLifecycle.subjectTerm.key.negative" type="Boolean" equals="false" />
+        <whereSize path="raw.sourceLifecycle.subjectTerm.key.terms" equals="0" />
+        <where path="raw.sourceLifecycle.maintenanceTerm.key.kind" type="String" equals="LITERAL" />
+        <where path="raw.sourceLifecycle.maintenanceTerm.key.namespace" type="String" equals="default" />
+        <where path="raw.sourceLifecycle.maintenanceTerm.key.negative" type="Boolean" equals="false" />
+        <where path="raw.sourceLifecycle.maintenanceTerm.key.functor" type="String" equals="enabled" />
+        <whereSize path="raw.sourceLifecycle.maintenanceTerm.key.terms" equals="2" />
+        <where path="raw.sourceLifecycle.aimTerm.key.terms.0.kind" type="String" equals="LITERAL" />
+        <where path="raw.sourceLifecycle.aimTerm.key.terms.0.namespace" type="String" equals="default" />
+        <where path="raw.sourceLifecycle.aimTerm.key.terms.0.negative" type="Boolean" equals="false" />
+        <whereSize path="raw.sourceLifecycle.aimTerm.key.terms.0.terms" equals="0" />
+        <where path="raw.sourceLifecycle.aimTerm.key.terms.1.kind" type="String" equals="LITERAL" />
+        <where path="raw.sourceLifecycle.aimTerm.key.terms.1.namespace" type="String" equals="default" />
+        <where path="raw.sourceLifecycle.aimTerm.key.terms.1.negative" type="Boolean" equals="false" />
+        <whereAny path="raw.sourceLifecycle.aimTerm.key.terms.1.functor" type="String">
+          <value equals="bid" />
+          <value equals="decide" />
+        </whereAny>
+        <whereSize path="raw.sourceLifecycle.aimTerm.key.terms.1.terms" equals="0" />
+        <where path="raw.sourceLifecycle.aimTerm.key.terms.2.kind" type="String" equals="LITERAL" />
+        <where path="raw.sourceLifecycle.aimTerm.key.terms.2.namespace" type="String" equals="default" />
+        <where path="raw.sourceLifecycle.aimTerm.key.terms.2.negative" type="Boolean" equals="false" />
+        <whereSize path="raw.sourceLifecycle.aimTerm.key.terms.2.terms" equals="0" />
+        <where path="raw.sourceLifecycle.maintenanceTerm.key.terms.0.kind" type="String" equals="LITERAL" />
+        <where path="raw.sourceLifecycle.maintenanceTerm.key.terms.0.namespace" type="String" equals="default" />
+        <where path="raw.sourceLifecycle.maintenanceTerm.key.terms.0.negative" type="Boolean" equals="false" />
+        <whereSize path="raw.sourceLifecycle.maintenanceTerm.key.terms.0.terms" equals="0" />
+        <where path="raw.sourceLifecycle.maintenanceTerm.key.terms.1.kind" type="String" equals="LITERAL" />
+        <where path="raw.sourceLifecycle.maintenanceTerm.key.terms.1.namespace" type="String" equals="default" />
+        <where path="raw.sourceLifecycle.maintenanceTerm.key.terms.1.negative" type="Boolean" equals="false" />
+        <whereFieldsEqual leftPath="raw.sourceLifecycle.maintenanceTerm.key.terms.1.functor" rightPath="raw.sourceLifecycle.aimTerm.key.terms.1.functor" type="String" />
+        <whereSize path="raw.sourceLifecycle.maintenanceTerm.key.terms.1.terms" equals="0" />
+        <whereFieldsEqual leftPath="raw.sourceLifecycle.subjectTerm.key.functor" rightPath="subject" type="String" />
+        <whereFieldsEqual leftPath="raw.sourceLifecycle.aimTerm.key.terms.2.functor" rightPath="subject" type="String" />
+        <whereFieldsEqual leftPath="raw.sourceLifecycle.aimTerm.key.terms.0.functor" rightPath="raw.boardObservationProof.artifactName" type="String" />
+        <whereFieldsEqual leftPath="raw.sourceLifecycle.maintenanceTerm.key.terms.0.functor" rightPath="raw.sourceLifecycle.aimTerm.key.terms.0.functor" type="String" />
+        <join tableRef="qualified-monitor-scopes" leftPath="boardArtifact" rightPath="physical" as="scope" cardinality="ONE" required="true" knowledge="QUALIFIED_PHYSICAL_REFERENCE" />
+        <relativeTime as="activated" requestRef="source-clock" epochPath="createdEpochMillis" sourceClockPath="clockIdentity" onMissing="unavailable-value" />
+        <relativeTime as="deadline" requestRef="source-clock" epochPath="deadlineEpochMillis" sourceClockPath="clockIdentity" onMissing="unavailable-value" />
+        <relativeTime as="terminal" requestRef="source-clock" epochPath="terminalEpochMillis" sourceClockPath="clockIdentity" onMissing="unavailable-value" />
+        <column name="runId" path="scope.runId" required="true" />
+        <column name="schemeUid" path="scope.schemeUid" required="true" />
+        <column name="player" path="subject" required="true" />
+        <column name="activation" path="activation" required="true" />
+        <column name="raw" path="raw" required="true" />
+        <column name="history" path="continuous" required="true" />
+        <column name="state" path="state" required="true" />
+        <column name="goal" path="raw.sourceLifecycle.aimTerm.key.terms.1.functor" required="true" />
+        <column name="activated" path="activated" required="false" />
+        <column name="deadline" path="deadline" required="false" />
+        <column name="terminal" path="terminal" required="false" />
+        <column name="unfulfilled" path="reportedUnfulfilled" required="false" />
+        <identity mode="PHYSICAL" path="identity" />
+      </table>
     </tables>
     <inputs>
       <input id="capability-agent-input" tableRef="capability-agents" identityKind="PHYSICAL" identityFields="player">
@@ -545,17 +620,15 @@
       <scope id="auction-execution" tableRef="execution-scopes" anchorColumn="group" contextColumn="group" keyFields="group scheme">
         <observer projectRef="project-monitor" subjectColumn="scheme" />
         <actor actor="Auction" tableRef="execution-scopes" scopeColumn="scheme" scopeKey="scheme" playerColumn="group" kind="CONTEXT_VIEWPOINT" cardinality="ONE" completeColumn="castComplete" />
-        <actor actor="auction_capabilities" tableRef="execution-agents" scopeColumn="scheme" scopeKey="scheme" playerColumn="player" kind="RUNTIME_AGENT" cardinality="MANY_NONEMPTY" completeColumn="castComplete" />
+        <actor actor="auction_capabilities" tableRef="execution-agents" scopeColumn="scheme" scopeKey="scheme" playerColumn="player" kind="PHYSICAL_PLAYER_VIEW" cardinality="MANY_NONEMPTY" completeColumn="castComplete" />
         <actor actor="Auctioneer" tableRef="execution-auctioneers" scopeColumn="scheme" scopeKey="scheme" playerColumn="player" kind="ROLE_OCCURRENCE" cardinality="ONE" roleLookup="EXACT_NATIVE_ENACTMENT" completeColumn="castComplete" />
         <actor actor="Participant" tableRef="execution-participants" scopeColumn="scheme" scopeKey="scheme" playerColumn="player" kind="ROLE_OCCURRENCE" cardinality="MANY_NONEMPTY" roleLookup="EXACT_NATIVE_ENACTMENT" completeColumn="castComplete" />
-        <self target="O_bid_accepted" origin="COLUMN" column="domain" optional="true" />
         <self target="A_start_t1" origin="COLUMN" column="domain" optional="true" />
         <self target="A_start_t2" origin="COLUMN" column="domain" optional="true" />
         <self target="A_decide_t2" origin="COLUMN" column="domain" optional="true" />
         <self target="P_bid_t1" origin="COLUMN" column="domain" optional="true" />
         <self target="P_bid_t2" origin="COLUMN" column="domain" optional="true" />
-        <resource target="A_artifact" column="domain" type="Auction" />
-        <resource target="P_artifact" column="domain" type="Auction" />
+        <resource target="AuctionArtifact" column="domain" type="Auction" />
       </scope>
     </occurrences>
     <taskDemands>
@@ -568,22 +641,29 @@
     <!-- Optional epistemic attributes are not inputs to these OCL/iStar requirements.
          Do not acquire full belief/cycle streams; leave those optional values undefined. -->
   </runtime>
-  <!-- Only observer state read by active authored contracts is materialized.
-       Raw NPL/source-clock requests remain trace evidence. To restore the disabled
-       WithinDeadline requirement use references/auction-mapping-full-observers.xml. -->
+  <!-- Diagram-authorized ordering, actual bid evidence and per-activation deadline observers. -->
   <observers>
     <view id="view-monitor" name="AuctionMonitor" category="CLASS" keyFields="runId schemeUid">
+      <field name="now" type="Integer" origin="qualified logical NPL source clock" />
 
-      <field name="startSatisfiedConfirmedAt" type="Integer" origin="MOISE_PUBLIC_CONFIRMATION/1.0 source callback, not internal truth time" />
-      <field name="bidEnabledConfirmedAt" type="Integer" origin="MOISE_PUBLIC_CONFIRMATION/1.0 source callback, not internal truth time" />
-      <field name="bidSatisfiedConfirmedAt" type="Integer" origin="MOISE_PUBLIC_CONFIRMATION/1.0 source callback, not internal truth time" />
-      <field name="decideEnabledConfirmedAt" type="Integer" origin="MOISE_PUBLIC_CONFIRMATION/1.0 source callback, not internal truth time" />
-      <field name="decideSatisfiedConfirmedAt" type="Integer" origin="MOISE_PUBLIC_CONFIRMATION/1.0 source callback, not internal truth time" />
+      <field name="startSatisfiedAt" type="Integer" origin="MOISE_PUBLIC_CONFIRMATION/1.0 source callback, not internal truth time" />
+      <field name="bidEnabledAt" type="Integer" origin="MOISE_PUBLIC_CONFIRMATION/1.0 source callback, not internal truth time" />
+      <field name="bidSatisfiedAt" type="Integer" origin="MOISE_PUBLIC_CONFIRMATION/1.0 source callback, not internal truth time" />
+      <field name="decideEnabledAt" type="Integer" origin="MOISE_PUBLIC_CONFIRMATION/1.0 source callback, not internal truth time" />
+      <field name="decideSatisfiedAt" type="Integer" origin="MOISE_PUBLIC_CONFIRMATION/1.0 source callback, not internal truth time" />
       <field name="bidSatisfiedObserved" type="Boolean" origin="qualified complete public MOISE state history contains SATISFIED; no timestamp assumption" />
       <field name="bidCommittedBy" type="Set(String)" origin="actual participant mission commitments frozen at first source satisfaction" />
       <field name="bidDoneBy" type="Set(String)" origin="actual MOISE done facts" />
       <field name="actualBidBy" type="Set(String)" origin="successful bound bid operation including non-improving bids" />
       <field name="adminBidOverride" type="Boolean" origin="successful exact administrative command, never actual bid" />
+    </view>
+    <view id="view-obligation" name="AuctionObligation" category="CLASS" keyFields="runId schemeUid player activation">
+      <field name="goal" type="String" origin="actual activated goal obligation" />
+      <field name="activatedAt" type="Integer" origin="NPL activation engine clock" />
+      <field name="deadlineAt" type="Integer" origin="NPL absolute deadline relative to source run clock" />
+      <field name="endedAt" type="Integer" origin="first actual terminal or known pending sentinel" />
+      <field name="unfulfilled" type="Boolean" origin="latched actual lifecycle terminal" />
+      <field name="monitor" type="AuctionMonitor" origin="exact same scheme and run" />
     </view>
     <view id="view-step" name="step" category="TUPLE" keyFields="run scheme player goalInvocation stepInvocation">
       <field name="enabled" type="Boolean" origin="STEP_ENABLED" />
@@ -591,6 +671,7 @@
       <field name="completed" type="Boolean" origin="STEP_COMPLETED" />
     </view>
     <project id="project-monitor" viewRef="view-monitor" tableRef="monitor-observations" keyFields="runId schemeUid">
+      <write field="now" column="now" mode="current" />
 
       <write field="bidCommittedBy" column="committed" mode="freeze-first-qualified" historyColumn="history" whenColumn="firstSatisfied" beforeFreeze="current" />
       <write field="bidDoneBy" column="done" mode="current" />
@@ -599,25 +680,40 @@
       <derive field="adminBidOverride" expression="calls-&gt;notEmpty()" completeColumn="adminHistory">
         <arg name="calls" column="adminCalls" type="Set(String)" />
       </derive>
-      <derive field="startSatisfiedConfirmedAt" expression="if found then timestamp else -1 endif" completeColumn="confirmationComplete">
+      <derive field="startSatisfiedAt" expression="if found then timestamp else -1 endif" completeColumn="confirmationComplete">
         <arg name="found" column="startSatisfiedFound" type="Boolean" />
         <arg name="timestamp" column="startSatisfiedTime" type="Integer" onMissing="undefined" />
       </derive>
-      <derive field="bidEnabledConfirmedAt" expression="if found then timestamp else -1 endif" completeColumn="confirmationComplete">
+      <derive field="bidEnabledAt" expression="if found then timestamp else -1 endif" completeColumn="confirmationComplete">
         <arg name="found" column="bidEnabledFound" type="Boolean" />
         <arg name="timestamp" column="bidEnabledTime" type="Integer" onMissing="undefined" />
       </derive>
-      <derive field="bidSatisfiedConfirmedAt" expression="if found then timestamp else -1 endif" completeColumn="confirmationComplete">
+      <derive field="bidSatisfiedAt" expression="if found then timestamp else -1 endif" completeColumn="confirmationComplete">
         <arg name="found" column="bidSatisfiedFound" type="Boolean" />
         <arg name="timestamp" column="bidSatisfiedTime" type="Integer" onMissing="undefined" />
       </derive>
-      <derive field="decideEnabledConfirmedAt" expression="if found then timestamp else -1 endif" completeColumn="confirmationComplete">
+      <derive field="decideEnabledAt" expression="if found then timestamp else -1 endif" completeColumn="confirmationComplete">
         <arg name="found" column="decideEnabledFound" type="Boolean" />
         <arg name="timestamp" column="decideEnabledTime" type="Integer" onMissing="undefined" />
       </derive>
-      <derive field="decideSatisfiedConfirmedAt" expression="if found then timestamp else -1 endif" completeColumn="confirmationComplete">
+      <derive field="decideSatisfiedAt" expression="if found then timestamp else -1 endif" completeColumn="confirmationComplete">
         <arg name="found" column="decideSatisfiedFound" type="Boolean" />
         <arg name="timestamp" column="decideSatisfiedTime" type="Integer" onMissing="undefined" />
+      </derive>
+    </project>
+    <project id="project-obligation" viewRef="view-obligation" tableRef="obligation-observations" keyFields="runId schemeUid player activation">
+      <lifecycle kind="NPL_REPORTED_SOURCE_CONTINUOUS_V1" column="raw" requestRef="norm-lifecycle" />
+      <write field="goal" column="goal" mode="current" />
+      <write field="activatedAt" column="activated" mode="current" />
+      <write field="deadlineAt" column="deadline" mode="current" />
+      <write field="unfulfilled" column="unfulfilled" mode="latch-true" historyColumn="history" />
+      <reference field="monitor" targetProject="project-monitor" subjectColumn="schemeUid" mode="retain-bound">
+        <key field="runId" column="runId" />
+        <key field="schemeUid" column="schemeUid" />
+      </reference>
+      <derive field="endedAt" expression="if state = 'ACTIVE' then -1 else terminal endif" completeColumn="history">
+        <arg name="state" column="state" type="String" />
+        <arg name="terminal" column="terminal" type="Integer" onMissing="undefined" />
       </derive>
     </project>
   </observers>
@@ -641,8 +737,6 @@
     <elementRuntime target="O_root" actor="Auction" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
     <elementRuntime target="O_start" actor="Auction" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
     <elementRuntime target="O_bid" actor="Auction" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
-    <elementRuntime target="O_bid_attempt" actor="Auction" self="Auction" derived="true" selfKind="ARTIFACT" reason="Declared ANY dependency over completed participation attempts" />
-    <elementRuntime target="O_bid_accepted" actor="Auction" self="Auction" derived="false" selfKind="ARTIFACT" reason="Source-backed Artifact field proves an actual accepted bid independently of participant attempts" />
     <elementRuntime target="O_decide" actor="Auction" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
     <elementRuntime target="A_start" actor="Auctioneer" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original refinement/dependency result" />
     <elementRuntime target="A_start_t1" actor="auction_capabilities" self="Auction" derived="false" selfKind="ARTIFACT" reason="Exact declared Jason step, never state-only task completion" stepScope="auction-execution" scopePolicy="EXACT_REFERENCES" stepSchemeColumn="scheme" stepArtifactColumn="domain" entryPolicy="ALLOW_UNBOUND_SELF_FOR_PURE_CALLBACK" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
@@ -662,7 +756,6 @@
     </elementRuntime>
     <elementRuntime target="P_bid_t2" actor="auction_capabilities" self="Auction" derived="false" selfKind="ARTIFACT" reason="Exact declared Jason step, never state-only task completion" stepScope="auction-execution" scopePolicy="EXACT_REFERENCES" stepSchemeColumn="scheme" stepArtifactColumn="domain" entryPolicy="EXACT_SELF" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
       <actionReceipt operationRef="op-bid" />
-      <acceptedFailure term=".fail" bodyType="internalAction" line="41" sourceFailure="GOAL_LISTENER_FAILED:ia_failed" />
       <variable name="step" viewRef="view-step" origin="STEP_TUPLE" />
     </elementRuntime>
     <oclClause name="Idle" context="context Auction::start(service : String)" />
@@ -670,16 +763,16 @@
     <oclClause name="RunningForBid" context="context Auction::bid(amount : Real)" />
     <oclClause name="RunningForStop" context="context Auction::stop()" />
     <oclClause name="Closed" context="context Auction::stop()" />
-    <oclClause name="ConfirmedSchemeOrder" context="context AuctionMonitor" />
-    <oclClause name="ObservedBidEvidence" context="context AuctionMonitor" />
-    <!-- TEMPORARY USER TEST: <oclClause name="WithinDeadline" context="context AuctionObligation" /> -->
+    <oclClause name="SchemeOrder" context="context AuctionMonitor" />
+    <oclClause name="BidEvidence" context="context AuctionMonitor" />
+    <oclClause name="WithinDeadline" context="context AuctionObligation" />
     <operation id="op-start" owner="Auction" signature="[&quot;auction_env.AuctionArtifact&quot;,&quot;start&quot;,[&quot;java.lang.String&quot;],&quot;void&quot;]" clauses="Idle Opened" task="A_start_t2" />
     <operation id="op-bid" owner="Auction" signature="[&quot;auction_env.AuctionArtifact&quot;,&quot;bid&quot;,[&quot;double&quot;],&quot;void&quot;]" clauses="RunningForBid" task="P_bid_t2" />
     <operation id="op-stop" owner="Auction" signature="[&quot;auction_env.AuctionArtifact&quot;,&quot;stop&quot;,[],&quot;void&quot;]" clauses="RunningForStop Closed" task="A_decide_t2" />
     <dependencyPopulation target="D_bid" quantifier="ANY" />
-    <dependencyPopulation target="D_capability_start" quantifier="SAME_PLAYER" />
-    <dependencyPopulation target="D_capability_decide" quantifier="SAME_PLAYER" />
-    <dependencyPopulation target="D_capability_bid" quantifier="SAME_PLAYER" />
+    <goalRealization target="A_start" source="C_start" sourceGoal="start" sourceRef="src-os" scheme="doAuction" policy="SAME_SCOPE_PLAYER_REFINEMENT_VIEW/1.0" reason="Draw.io A_start and rq_O_hfanHRNPlTsZUYV-21 share owner Auctioneer and sourceGoal start; preserve both views without adding a Dependency" />
+    <goalRealization target="A_decide" source="C_decide" sourceGoal="decide" sourceRef="src-os" scheme="doAuction" policy="SAME_SCOPE_PLAYER_REFINEMENT_VIEW/1.0" reason="Draw.io A_decide and rq_O_hfanHRNPlTsZUYV-24 share owner Auctioneer and sourceGoal decide; preserve both views without adding a Dependency" />
+    <goalRealization target="P_bid" source="C_bid" sourceGoal="bid" sourceRef="src-os" scheme="doAuction" policy="SAME_SCOPE_PLAYER_REFINEMENT_VIEW/1.0" reason="Draw.io P_bid and rq_O_hfanHRNPlTsZUYV-31 share owner Participant and sourceGoal bid; preserve both views without adding a Dependency" />
     <requirement target="O_root" />
     <static id="bind-capability-context" kind="ORG_CONTEXT" target="auction_capabilities" sourceKind="JACAMO_PROJECT" feature="name" value="auction" reason="Each XML-selected physical Jason agent is represented as a singleton OrgCtx, not a MOISE role">
       <metadata key="contextAbstraction" value="SINGLE_AGENT_CONTEXT/1.0" />

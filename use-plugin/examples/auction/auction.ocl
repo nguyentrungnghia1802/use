@@ -4,5 +4,5 @@
 -- Do not duplicate those names/bodies here: duplicates fail closed.
 -- Add native USE OCL clauses here, and bind their contexts/names in XML.
 -- No optional extra requirements are enabled by default.
--- WithinDeadline remains disabled by prior user request; enabling it requires
--- the corresponding source-clock/obligation observer declarations and evidence.
+-- WithinDeadline is embedded in auction.istar and bound in XML, following the
+-- user-confirmed Core diagram. Missing qualified source times remain undefined.

@@ -546,6 +546,9 @@ public final class ObservedConformancePanel extends JPanel {
                         ? java.util.stream.IntStream.range(0, auditCuts.size()).filter(i -> auditCuts.get(i).id().equals(value)).findFirst().orElse(ordinal)
                         : liveOnly && value != null ? milestoneNumbers.getOrDefault(value, 0) - 1 : ordinal;
                 setText(shown < 0 ? (value == null ? "Select state" : "Before first state") : (details.isSelected() ? "Boundary " : "State ") + (shown + 1));
+                if(checkpointTimeline&&!details.isSelected()&&shown>0&&shown<businessMilestones.size()
+                        &&businessMilestones.get(shown).businessState().equals(businessMilestones.get(shown-1).businessState()))
+                    setText(getText()+" · CSL unchanged");
                 setToolTipText(value == null ? null : value.toString());
                 return this;
             }

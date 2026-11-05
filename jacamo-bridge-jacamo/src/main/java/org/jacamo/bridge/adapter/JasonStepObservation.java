@@ -39,12 +39,12 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
     private long nextGoal,nextStep;private boolean closed;private volatile String failure="";
     private long actionStarts,actionStartsMatched,actionEnds,actionEndsMatched;private String unmatchedAction="";
     private static final class Episode {
-        final IntendedMeans means;final String token;Step active;
-        Episode(IntendedMeans means,String token){this.means=means;this.token=token;}
+        final IntendedMeans means;final String token;final Intention intention;Step active;
+        Episode(IntendedMeans means,String token,Intention intention){this.means=means;this.token=token;this.intention=intention;}
     }
     private static final class Step {
         final JasonPlanInstrumentation.Site site;final String token;final Episode episode;
-        final List<Map<String,Object>> receipts=new ArrayList<>();String phase="ENABLED",operation="";
+        final List<Map<String,Object>> receipts=new ArrayList<>();String phase="ENABLED",operation="";boolean barrierTask;
         Step(JasonPlanInstrumentation.Site site,String token,Episode episode){this.site=site;this.token=token;this.episode=episode;}
     }
     public JasonStepObservation(TransitionSystem ts,BridgeEntityId agent,String run,long generation,String revision,AgentProgramSemantic source,Path root,
@@ -71,6 +71,16 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
     public Map<String,Object> manifest(){return prepared.manifest();}
     public synchronized int activeGoals(){return episodes.size();}
     public String failure(){return failure;}
+    synchronized Map<String,Object> dispatchOwner(ActionExec action) {
+        var intention=action.getIntention();
+        if(closed||intention==null||intention.isFinished())return Map.of();
+        var episode=episodes.get(intention.peek().getTrigger());
+        if(episode==null||episode.active==null)return Map.of();
+        return Map.of("authority","LOCAL_ACTIONEXEC_OP_OBJECT_IDENTITY/1.0",
+                "task",episode.active.site.task(),"stepInvocation",episode.active.token,
+                "agentIdentity",agent.canonical(),"agentName",ts.getAgArch().getAgName(),
+                "sourceHash",prepared.manifest().get("sourceSha256"),"instrumentationHash",prepared.hash());
+    }
     @Override public synchronized void marker(TransitionSystem actual,JasonPlanInstrumentation.Site site,String phase) {
         if(closed)return;
         if(actual!=ts||!prepared.sites().contains(site))throw new IllegalArgumentException("STEP_OWNER_OR_SITE_MISMATCH");
@@ -81,15 +91,22 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
         if(episode==null) {
             if(!phase.equals("ENABLED"))throw new IllegalArgumentException("STEP_WITHOUT_ENTRY");
             if(episodes.size()>=MAX_GOALS)throw new IllegalArgumentException("STEP_GOAL_CAPACITY");
-            episode=new Episode(means,"jason-goal:"+run+":"+agent.incarnation()+":"+(++nextGoal));episodes.put(trigger,episode);
+            episode=new Episode(means,"jason-goal:"+run+":"+agent.incarnation()+":"+(++nextGoal),intention);episodes.put(trigger,episode);
         }
         if(episode.means!=means)throw new IllegalArgumentException("STEP_INTENDED_MEANS_MISMATCH");
         if(phase.equals("ENABLED")) {
             if(episode.active!=null)throw new IllegalArgumentException("STEP_ENTRY_WITHOUT_PRIOR_TERMINAL");
-            episode.active=new Step(site,"jason-step:"+run+":"+agent.incarnation()+":"+(++nextStep),episode);publish(episode.active,"");
+            episode.active=new Step(site,"jason-step:"+run+":"+agent.incarnation()+":"+(++nextStep),episode);
+            if(BridgeRuntimeRegistry.checkpointTask(Objects.toString(prepared.manifest().get("sourceSha256")),site.task())) {
+                Object local=BridgeRuntimeRegistry.agentArchitecture(ts.getAgArch().getAgName()).orElse(null);
+                if(local==null)for(var arch=ts.getAgArch();arch!=null;arch=arch.getNextAgArch())if(arch instanceof jason.infra.local.LocalAgArch){local=arch;break;}
+                if(local==null)throw new IllegalStateException("CHECKPOINT_TASK_AGENT_OWNER_UNAVAILABLE");
+                org.jacamo.checkpoint.runtime.ExecutionBarrier.beginTask(local,intention,episode.active.token);episode.active.barrierTask=true;
+            }
+            publish(episode.active,"");
         }else {
             var active=episode.active;if(active==null||!active.site.equals(site))throw new IllegalArgumentException("STEP_TERMINAL_WITHOUT_MATCHING_ENTRY");
-            active.phase="SUCCEEDED";publish(active,"");episode.active=null;
+            active.phase="SUCCEEDED";try{publish(active,"");}finally{finishTask(active);episode.active=null;}
         }
     }
     /** STARTED runs on the actual agent action path. Completion callbacks only
@@ -110,13 +127,34 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
     @Override public synchronized void goalFailed(Trigger trigger,Term reason) {try{failed(trigger,"GOAL_LISTENER_FAILED:"+Objects.toString(reason,""));}catch(RuntimeException missing){unavailable("GOAL_FAILURE_CAPTURE:"+missing.getClass().getSimpleName());}}
     private void failed(Trigger trigger,String reason) {
         if(closed)return;var episode=episodes.get(trigger);if(episode==null||episode.active==null)return;
-        var active=episode.active;active.phase="FAILED";publish(active,reason);episode.active=null;
+        var active=episode.active;active.phase="FAILED";try{publish(active,reason);}finally{finishTask(active);episode.active=null;}
     }
+    private static void finishTask(Step step){if(step.barrierTask)org.jacamo.checkpoint.runtime.ExecutionBarrier.endTask(step.token);}
     @Override public synchronized void goalFinished(Trigger trigger,GoalStates state) {
         if(closed)return;
+        // Jason also emits "dropped" while moving an atomic event into SE.
+        // Resolve that notification on the owning cycle, after the move, rather
+        // than treating an internal queue transfer as a missing terminal marker.
+        var candidate=episodes.get(trigger);
+        if(state==GoalStates.dropped&&candidate!=null&&candidate.active!=null) {
+            ts.runAtBeginOfNextCycle(()->resolveDropped(trigger,candidate));
+            return;
+        }
+        finishEpisode(trigger,state);
+    }
+    private synchronized void resolveDropped(Trigger trigger,Episode candidate) {
+        if(closed||episodes.get(trigger)!=candidate||candidate.active==null)return;
+        var all=ts.getC().getAllIntentions();
+        while(all.hasNext()) {
+            var intention=all.next();
+            if(intention==candidate.intention)for(var means:intention)if(means==candidate.means)return;
+        }
+        finishEpisode(trigger,GoalStates.dropped);
+    }
+    private void finishEpisode(Trigger trigger,GoalStates state) {
         try {
             if(state==GoalStates.failed)failed(trigger,"GOAL_LISTENER_FINISHED_FAILED");
-            var episode=episodes.remove(trigger);if(episode!=null)actions.values().removeIf(s->s.episode==episode);
+            var episode=episodes.remove(trigger);if(episode!=null){actions.values().removeIf(s->s.episode==episode);if(episode.active!=null&&episode.active.barrierTask){finishTask(episode.active);unavailable("TASK_TERMINAL_MARKER_UNAVAILABLE");}}
         }catch(RuntimeException missing){unavailable("GOAL_TERMINAL_CAPTURE:"+missing.getClass().getSimpleName());}
         // Dropped/finished without an after marker is not source execution false.
     }
