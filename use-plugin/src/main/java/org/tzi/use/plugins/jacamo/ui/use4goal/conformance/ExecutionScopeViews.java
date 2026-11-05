@@ -7,6 +7,7 @@ import org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePan
 
 /** Read-only projections of frozen execution evidence. No evaluation or identity inference. */
 public final class ExecutionScopeViews {
+ public static final String WHOLE_SYSTEM="__WHOLE_SYSTEM__";
  public static final String ALL="__ALL_EXECUTIONS__";
  public static Map<String,String> withAll(Map<String,String> choices){
   var result=new LinkedHashMap<String,String>(choices);result.put(ALL,"All");return Collections.unmodifiableMap(result);
@@ -21,7 +22,15 @@ public final class ExecutionScopeViews {
   for(String scope:scopes)
    rows.addAll(project(cut,scope).evaluations().stream().filter(r->!r.kind().equals("CHECKPOINT_CHECK")).toList());
   if(scopes.isEmpty())rows.addAll(cut.evaluations().stream().filter(r->!r.kind().equals("CHECKPOINT_CHECK")).toList());
-  for(var row:cut.evaluations())if(!row.kind().equals("GOAL_TASK")&&rows.stream().noneMatch(r->r.kind().equals(row.kind())&&r.element().equals(row.element())))rows.add(row);
+  for(var row:cut.evaluations()) {
+   if(row.kind().equals("GOAL_TASK"))continue;
+   var matching=rows.stream().filter(r->r.kind().equals(row.kind())&&r.element().equals(row.element())).toList();
+   // A global counterexample may lack an execution owner. Preserve its actual
+   // aggregate, labelled global, rather than showing only scoped Unknown rows.
+   boolean globalFailure=row.kind().equals("INVARIANT")&&row.status().equals("FAIL")&&matching.stream().noneMatch(r->r.status().equals("FAIL"));
+   if(globalFailure)rows.add(new Evaluation(row.element(),row.raw(),row.status(),row.quality(),row.evidence(),row.certifiedHistory(),row.required(),row.kind(),row.originalStatus(),row.player(),WHOLE_SYSTEM,row.occurrence()));
+   else if(matching.isEmpty())rows.add(row);
+  }
   if(rows.isEmpty())rows.addAll(cut.evaluations());
   var evidence=new TreeMap<String,Object>(cut.visualEvidence());evidence.put("selectedExecution",ALL);
   boolean failed=cut.failed()||rows.stream().anyMatch(r->r.required()&&Set.of("FAIL","VIOLATED").contains(r.status()));

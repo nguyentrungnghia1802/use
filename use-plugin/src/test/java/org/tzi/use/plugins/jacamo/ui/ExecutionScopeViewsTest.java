@@ -39,7 +39,9 @@ class ExecutionScopeViewsTest {
   var all=cut("1","open","done",List.of(goal("one","PENDING"),goal("two","FULFILLED"),global));
   var two=ExecutionScopeViews.project(all,"two");assertFalse(two.failed());assertEquals(global,two.evaluations().getFirst());
   assertEquals("COMPLETE_OBSERVED",ExecutionScopeViews.goalVerdict(two));
-  SwingUtilities.invokeAndWait(()->{var panel=ObservedConformancePanel.liveResults(LiveGoalSummaryTest.model());panel.setCuts(List.of(all));panel.selectExecution("two");assertEquals("COMPLETE_OBSERVED",DetachedAuthoredWorkflowTest.find(panel,"observed-verdict",JLabel.class).getText());assertEquals(global.element(),DetachedAuthoredWorkflowTest.find(panel,"live-ocl-checks",JTable.class).getValueAt(0,0));});
+  SwingUtilities.invokeAndWait(()->{var panel=ObservedConformancePanel.liveResults(LiveGoalSummaryTest.model());panel.setCuts(List.of(all));panel.selectExecution("two");assertEquals("COMPLETE_OBSERVED",DetachedAuthoredWorkflowTest.find(panel,"observed-verdict",JLabel.class).getText());assertEquals("Rule",DetachedAuthoredWorkflowTest.find(panel,"live-ocl-checks",JTable.class).getValueAt(0,0));
+   assertTrue(panel.selectedCut().evaluations().contains(global),"Original failure remains immutable audit evidence");
+   assertTrue(DetachedAuthoredWorkflowTest.find(panel,"checkpoint-diagnostics-note",JLabel.class).getText().contains("Checkpoint diagnostics: 1"));});
  }
  @Test void entityStateAndMilestonesAreScopedButNativeAuditAndGlobalOclRemainExact(){
   var failure=new Evaluation("Invariant","false","FAIL","KNOWN","evidence","",true,"INVARIANT_BODY","","","global","invocation");

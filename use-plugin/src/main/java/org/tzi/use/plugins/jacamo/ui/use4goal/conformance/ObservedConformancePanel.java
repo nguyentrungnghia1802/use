@@ -42,6 +42,7 @@ public final class ObservedConformancePanel extends JPanel {
     private final JTabbedPane liveDetailTabs=named(new JTabbedPane(),"live-detail-tabs");
     private final JLabel requirementScope=named(new JLabel("No selected verification state"),"observed-requirement-scope");
     private final DefaultTableModel liveChecks=new DefaultTableModel(new String[]{"Name","Body","Result"},0){@Override public boolean isCellEditable(int r,int c){return false;}};
+    private final JLabel liveDiagnosticNote = named(new JLabel("Checkpoint and Task diagnostics are retained in Audit details."), "checkpoint-diagnostics-note");
     private final JTable liveCheckTable=named(new JTable(liveChecks),"live-ocl-checks");
     private final JTable liveGoalTable=named(new JTable(liveGoals),"live-goal-status");
     private final JTextArea liveDetails=named(new JTextArea(),"live-evidence-details");
@@ -198,7 +199,7 @@ public final class ObservedConformancePanel extends JPanel {
                 }
                 audit.add(projected);
             }
-            var grouping=checkpoints&&!scope.isBlank()&&!ExecutionScopeViews.ALL.equals(scope)?CheckpointTimeline.group(audit):null;
+            var grouping=checkpoints&&!scope.isBlank()?CheckpointTimeline.group(audit):null;
             var milestones=grouping!=null?grouping.milestones():checkpoints?List.copyOf(audit):BusinessTimeline.summarize(audit);
             if(!checkpoints&&!scope.isBlank()&&!milestones.isEmpty()&&!audit.isEmpty()&&audit.getLast().businessKey().isBlank()){
                 var last=audit.getLast();var retained=new java.util.ArrayList<Cut>(milestones);var phase=retained.getLast();
@@ -353,7 +354,10 @@ public final class ObservedConformancePanel extends JPanel {
             for(int j=0;j<displayedInstances.size();j++)if(displayedInstances.get(j).equals(row)){liveInstanceTable.setRowSelectionInterval(j,j);break;}
             break;
         }
-        if(!row.kind().equals("GOAL_TASK"))for(int i=0;i<liveChecks.getRowCount();i++)if(row.element().equals(liveChecks.getValueAt(i,0))&&(row.kind().equals("INVARIANT_BODY")||row.evidence().equals(liveChecks.getValueAt(i,3)))){liveCheckTable.setRowSelectionInterval(i,i);liveCheckTable.scrollRectToVisible(liveCheckTable.getCellRect(i,0,true));break;}
+        if(!row.kind().equals("GOAL_TASK"))for(int i=0;i<displayedChecks.size();i++){
+            var shown=displayedChecks.get(i);
+            if(row.element().equals(shown.element())&&(row.kind().equals("INVARIANT_BODY")||row.evidence().equals(shown.evidence()))){liveCheckTable.setRowSelectionInterval(i,i);liveCheckTable.scrollRectToVisible(liveCheckTable.getCellRect(i,0,true));break;}
+        }
         // Row selection may render the aggregate. Restore the exact selected object witness afterwards.
         liveDetails.setText(row.element()+"\n"+row.status()+" | "+row.quality()+"\n"+row.evidence()+"\n"+row.certifiedHistory());liveDetails.setCaretPosition(0);liveDetailTabs.setSelectedIndex(1);
     }
@@ -448,9 +452,11 @@ public final class ObservedConformancePanel extends JPanel {
         cslVerificationPanel.add(cslNav, BorderLayout.NORTH);
 
         stateSnapshotText.setEditable(false);
+        var checkPanel=new JPanel(new BorderLayout(0,4));checkPanel.add(new JScrollPane(checks),BorderLayout.CENTER);
+        checkPanel.add(liveDiagnosticNote,BorderLayout.SOUTH);
         var cslSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 section("Accepted CSL / USE state (read-only)", new JScrollPane(stateSnapshotText)),
-                section("OCL / runtime checks", new JScrollPane(checks)));
+                section("OCL / runtime checks", checkPanel));
         cslSplit.setResizeWeight(0.40);
         cslVerificationPanel.add(cslSplit, BorderLayout.CENTER);
 
@@ -608,7 +614,10 @@ public final class ObservedConformancePanel extends JPanel {
         liveGoals.setRowCount(0);
         for(var row:liveRows)liveGoals.addRow(new Object[]{scopedLabel(row.label(),cut),PresentationResults.goal(row.status(),ExecutionScopeViews.ALL.equals(executionScope)&&historicalFailure(cut,row.id()))});
         liveChecks.setRowCount(0);
-        displayedChecks=cut==null?List.of():cut.evaluations().stream().filter(r->!r.kind().equals("GOAL_TASK")).toList();
+        displayedChecks=cut==null?List.of():PresentationResults.checks(cut);
+        long diagnosticCount=cut==null?0:cut.evaluations().stream().filter(r->r.kind().equals("CHECKPOINT_CHECK")).count();
+        long taskFailures=cut==null?0:cut.evaluations().stream().filter(r->r.kind().equals("EXECUTION_OUTCOME")).map(Evaluation::occurrence).distinct().count();
+        liveDiagnosticNote.setText("Checkpoint diagnostics: "+diagnosticCount+"; Task failures: "+taskFailures+". See Audit details.");
         if(cut==null){conformanceResultLabel.setText("NOT_EVALUATED");riskResultLabel.setText("UNAVAILABLE");requirementScope.setText("No selected verification state");cslRequirementScope.setText("No selected verification state");displayedInstances=List.of();liveInstances.setRowCount(0);liveDetails.setText("");stateSnapshotText.setText("");statePrevButton.setEnabled(false);stateNextButton.setEnabled(false);jumpCheckpointButton.setEnabled(false);cslStatePrevButton.setEnabled(false);cslStateNextButton.setEnabled(false);cslJumpCheckpointButton.setEnabled(false);return;}
         var selected=liveRows.stream().filter(r->r.resultRole().equals("Selected requirement")).map(LiveGoalSummary.Row::label).toList();
         Object inventory=cut.visualEvidence().get("requirementInventory");
@@ -617,7 +626,7 @@ public final class ObservedConformancePanel extends JPanel {
         requirementScope.setText(scope+" | Every authored OCL invariant remains required.");
         cslRequirementScope.setText(scope+" | Every authored OCL invariant remains required.");
         requirementScope.setToolTipText("COMPLETE_OBSERVED applies to these requirements at the selected observed cut. Supporting skill summaries may remain UNKNOWN. Missing demand is not proof of non-applicability; overall source coverage is reported separately.");
-        for(var row:cut.evaluations())if(!row.kind().equals("GOAL_TASK"))liveChecks.addRow(new Object[]{checkLabel(row,cut),PresentationResults.body(row),PresentationResults.truth(row.status())});
+        for(var row:displayedChecks)liveChecks.addRow(new Object[]{checkLabel(row,cut),PresentationResults.body(row),PresentationResults.truth(row.status())});
         stateSnapshotText.setText((!executionScope.isBlank()||!details.isSelected())&&!cut.businessState().isBlank()?cut.businessState():cut.state());stateSnapshotText.setCaretPosition(0);
         conformanceResultLabel.setText(verdict(cut));
         conformanceResultLabel.setToolTipText("Selected execution: independent Goal/Task root and scoped native OCL, including applicable shared structural rules");
@@ -662,6 +671,7 @@ public final class ObservedConformancePanel extends JPanel {
         return (element==null?historySummary.firstFailure():historySummary.goals().getOrDefault(element,Integer.MAX_VALUE))<=position;
     }
     private String checkLabel(Evaluation row,Cut cut){
+        if(row.context().equals(ExecutionScopeViews.WHOLE_SYSTEM))return row.element()+" · Whole system";
         if(!ExecutionScopeViews.ALL.equals(executionScope)||row.context().isBlank())return row.element();
         String context=row.context().split(" / ",2)[0];
         return row.element()+" · "+executionLabels.getOrDefault(context,context);
