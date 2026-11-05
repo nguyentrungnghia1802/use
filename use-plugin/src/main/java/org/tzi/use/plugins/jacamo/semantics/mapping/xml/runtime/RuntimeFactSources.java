@@ -171,6 +171,8 @@ public final class RuntimeFactSources {
     private Map<String,RuntimeTables.Dataset> capture(RuntimeSnapshot cut,String run,long generation,RuntimeEvent event,CaptureContext context) {
         if(run==null||run.isBlank()||generation<0)throw new IllegalArgumentException("RUNTIME_DATASET_EPOCH_REQUIRED");
         SnapshotAdmission.require(cut,Map.of());
+        if(definitions.stream().anyMatch(d->d.node().name().equals("facts")&&d.authority().equals("jason")&&d.kind()==RuntimeFactKind.AGENT)
+                &&JasonAgentInventory.supplied(cut)&&!JasonAgentInventory.complete(cut,run))throw new IllegalArgumentException("JASON_AGENT_INVENTORY_MISMATCH");
         if(cut.facts().size()>16384)throw new IllegalArgumentException("RUNTIME_FACT_CAPACITY");
         var identities=new HashSet<String>();for(var fact:cut.facts())if(!identities.add(fact.id().canonical()))throw new IllegalArgumentException("RUNTIME_FACT_IDENTITY_COLLISION");
         String proof=SemanticJson.hash(Map.of("run",run,"generation",generation,"revision",cut.modelRevision(),"cut",cut.snapshotId(),"state",cut.stateFingerprint(),"watermarks",SemanticJson.tree(cut.endWatermarks())));
@@ -400,6 +402,10 @@ public final class RuntimeFactSources {
         return withPopulation(definition,rows,population,cut,run,proof);
     }
     private RuntimeTables.Dataset withPopulation(Definition definition,List<RuntimeTables.Row> rows,Completeness population,RuntimeSnapshot cut,String run,String proof) {
+        if(definition.node().name().equals("facts")&&definition.authority().equals("jason")&&definition.kind()==RuntimeFactKind.AGENT
+                &&population==Completeness.COMPLETE&&JasonAgentInventory.complete(cut,run)) {
+            rows.replaceAll(row->{var qualified=new LinkedHashMap<>(row.proofs());qualified.put("jason-agent-inventory",proof);return new RuntimeTables.Row(row.identity(),row.values(),row.quality(),qualified,row.aliases());});
+        }
         if(MoisePopulationClosure.POLICY.equals(definition.node().optional("population"))&&moise!=null
                 &&rows.stream().allMatch(r->r.quality()==Completeness.COMPLETE)&&MoisePopulationClosure.complete(cut,definition.kind(),run)) {
             population=Completeness.COMPLETE;

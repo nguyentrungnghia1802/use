@@ -54,6 +54,8 @@ public final class ObservedConformancePresenter {
         rows.addAll(base.evaluations());
         var evidence=new LinkedHashMap<>(base.visualEvidence());
         evidence.put("verifiedCheckpointToken",checkpoint.token());evidence.put("verifiedCheckpointResultHash",checkpoint.resultHash());evidence.put("verifiedCheckpointUseHash",checkpoint.useHash());
+        var admission=new TreeMap<String,Object>();checks.forEach((id,check)->admission.put(id,check.payload()));
+        evidence.put("nativeAdmissionChecks",Map.copyOf(admission));
         var barrier=CanonicalJson.object(checkpoint.request().getOrDefault("barrier",Map.of()));
         String sourceTrace=base.trace()+"\nSource causes: "+checkpoint.request().getOrDefault("sourceOccurrences",List.of())
                 +"\nRequested sequence: "+barrier.getOrDefault("requestedSequence","unavailable")

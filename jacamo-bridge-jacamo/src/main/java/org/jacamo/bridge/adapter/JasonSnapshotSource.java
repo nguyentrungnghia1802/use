@@ -34,6 +34,7 @@ public final class JasonSnapshotSource implements SnapshotSource {
     private final AtomicLong sequence = new AtomicLong();
     private volatile Consumer<RuntimeEvent> observer;
     private volatile Completeness completeness = Completeness.UNAVAILABLE;
+    private volatile Map<String,Object> agentInventory=Map.of();
 
     public JasonSnapshotSource(String sessionId) {
         this.sessionId = java.util.Objects.requireNonNull(sessionId);
@@ -87,12 +88,13 @@ public final class JasonSnapshotSource implements SnapshotSource {
         }
     }
     @Override public Map<String,Object> captureMetadata(){return Map.of("cutAuthority","LAST_PUBLISHED_CYCLE_CACHE_AND_SOURCE_SEQUENCE_UNDER_PUBLICATION_LOCK","liveInterpreterEvidence","EVIDENCE_ONLY","globalAtomicity","UNSUPPORTED",
-            "structuredJasonObservation",BridgeRuntimeRegistry.structuredJasonObservation());}
+            "structuredJasonObservation",BridgeRuntimeRegistry.structuredJasonObservation(),"agentInventory",agentInventory);}
 
     @Override public List<RuntimeFact> capture() {
         BaseLocalMAS runner = BaseLocalMAS.getRunner();
         if (runner == null) {
             completeness = Completeness.UNAVAILABLE;
+            agentInventory=Map.of();
             return List.of();
         }
         var facts = new ArrayList<RuntimeFact>();
@@ -137,6 +139,8 @@ public final class JasonSnapshotSource implements SnapshotSource {
         }
         completeness = allIdentities ? Completeness.COMPLETE : Completeness.PARTIAL;
         facts.sort(Comparator.comparing(fact -> fact.id().canonical()));
+        agentInventory=allIdentities?org.jacamo.bridge.contract.JasonAgentInventory.payload(sessionId,sequence.get(),
+                facts.stream().filter(f->f.kind()==RuntimeFactKind.AGENT).map(f->f.id().canonical()).toList()):Map.of();
         return facts;
     }
 

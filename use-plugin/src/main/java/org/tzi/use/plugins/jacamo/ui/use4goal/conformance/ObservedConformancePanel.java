@@ -90,6 +90,7 @@ public final class ObservedConformancePanel extends JPanel {
     private final JLabel stateStepInfoLabel = named(new JLabel("State 0 / 0"),"observed-state-position");
     private final JLabel conformanceResultLabel = new JLabel("NOT_EVALUATED", SwingConstants.CENTER);
     private final JLabel riskResultLabel = named(new JLabel("UNAVAILABLE", SwingConstants.CENTER), "observed-quality");
+    private final JLabel istarDataCoverageLabel = named(new JLabel("UNAVAILABLE", SwingConstants.CENTER), "istar-data-coverage");
     private final DefaultTableModel oclGoalModel = new DefaultTableModel(
             new String[]{"Goal / Task / OCL", "Raw", "Qualified / propagated", "Quality", "Evidence", "Last certified history"}, 0) {
         @Override public boolean isCellEditable(int row, int column) { return false; }
@@ -411,7 +412,7 @@ public final class ObservedConformancePanel extends JPanel {
         cslMilestonesButton.setVisible(milesVisible);
         updatePosition(cut);
         stateSnapshotText.setText((!executionScope.isBlank()||!details.isSelected())&&!cut.businessState().isBlank()?cut.businessState():cut.state()); stateSnapshotText.setCaretPosition(0);
-        counterexampleTraceArea.setText(cut.trace()); counterexampleTraceArea.setCaretPosition(0);
+        counterexampleTraceArea.setText(liveOnly?VerificationDataCoverage.diagnostics(cut,VerificationDataCoverage.assess(cut)):cut.trace()); counterexampleTraceArea.setCaretPosition(0);
         selectionListener.accept(cut);
         if(liveOnly){renderLive(cut);return;}
         for (Evaluation row : cut.evaluations()) if(details.isSelected()||row.required()||java.util.Set.of("FAIL","ERROR","VIOLATED").contains(row.status()))oclGoalModel.addRow(new Object[]{row.element(), row.raw(), row.status(), row.quality(), row.evidence(),row.certifiedHistory()});
@@ -459,6 +460,8 @@ public final class ObservedConformancePanel extends JPanel {
                 section("OCL / runtime checks", checkPanel));
         cslSplit.setResizeWeight(0.40);
         cslVerificationPanel.add(cslSplit, BorderLayout.CENTER);
+        var cslCoverage=section("Data coverage",riskResultLabel);
+        cslCoverage.setPreferredSize(new Dimension(500,65));cslVerificationPanel.add(cslCoverage,BorderLayout.SOUTH);
 
         // Build iStar Verification Panel
         istarVerificationPanel = new JPanel(new BorderLayout(5, 5));
@@ -473,13 +476,15 @@ public final class ObservedConformancePanel extends JPanel {
         riskResultLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         var verdictPanel = section("Verification result", conformanceResultLabel);
         verdictPanel.setPreferredSize(new Dimension(800, 65));
-        istarVerificationPanel.add(verdictPanel, BorderLayout.SOUTH);
+        istarDataCoverageLabel.setFont(new Font(Font.SANS_SERIF,Font.BOLD,14));
+        var istarFooter=new JPanel(new GridLayout(1,2,5,0));
+        istarFooter.add(verdictPanel);istarFooter.add(section("Data coverage",istarDataCoverageLabel));
+        istarVerificationPanel.add(istarFooter, BorderLayout.SOUTH);
 
         // Hidden panel for backward-compatibility with tests querying deleted/hidden components
         hiddenPanel = new JPanel();
         hiddenPanel.setVisible(false);
         hiddenPanel.add(liveDetailTabs);
-        hiddenPanel.add(riskResultLabel);
         hiddenPanel.add(auditToggle);
         hiddenPanel.add(details);
         auditToggle.addActionListener(e -> {
@@ -618,7 +623,7 @@ public final class ObservedConformancePanel extends JPanel {
         long diagnosticCount=cut==null?0:cut.evaluations().stream().filter(r->r.kind().equals("CHECKPOINT_CHECK")).count();
         long taskFailures=cut==null?0:cut.evaluations().stream().filter(r->r.kind().equals("EXECUTION_OUTCOME")).map(Evaluation::occurrence).distinct().count();
         liveDiagnosticNote.setText("Checkpoint diagnostics: "+diagnosticCount+"; Task failures: "+taskFailures+". See Audit details.");
-        if(cut==null){conformanceResultLabel.setText("NOT_EVALUATED");riskResultLabel.setText("UNAVAILABLE");requirementScope.setText("No selected verification state");cslRequirementScope.setText("No selected verification state");displayedInstances=List.of();liveInstances.setRowCount(0);liveDetails.setText("");stateSnapshotText.setText("");statePrevButton.setEnabled(false);stateNextButton.setEnabled(false);jumpCheckpointButton.setEnabled(false);cslStatePrevButton.setEnabled(false);cslStateNextButton.setEnabled(false);cslJumpCheckpointButton.setEnabled(false);return;}
+        if(cut==null){conformanceResultLabel.setText("NOT_EVALUATED");riskResultLabel.setText("UNAVAILABLE");istarDataCoverageLabel.setText("UNAVAILABLE");requirementScope.setText("No selected verification state");cslRequirementScope.setText("No selected verification state");displayedInstances=List.of();liveInstances.setRowCount(0);liveDetails.setText("");stateSnapshotText.setText("");statePrevButton.setEnabled(false);stateNextButton.setEnabled(false);jumpCheckpointButton.setEnabled(false);cslStatePrevButton.setEnabled(false);cslStateNextButton.setEnabled(false);cslJumpCheckpointButton.setEnabled(false);return;}
         var selected=liveRows.stream().filter(r->r.resultRole().equals("Selected requirement")).map(LiveGoalSummary.Row::label).toList();
         Object inventory=cut.visualEvidence().get("requirementInventory");
         boolean explicitSelection=cut.selectedRequirements()||inventory instanceof java.util.Map<?,?> values&&values.get("selectedIntentionalElements") instanceof List<?> ids&&!ids.isEmpty();
@@ -630,9 +635,11 @@ public final class ObservedConformancePanel extends JPanel {
         stateSnapshotText.setText((!executionScope.isBlank()||!details.isSelected())&&!cut.businessState().isBlank()?cut.businessState():cut.state());stateSnapshotText.setCaretPosition(0);
         conformanceResultLabel.setText(verdict(cut));
         conformanceResultLabel.setToolTipText("Selected execution: independent Goal/Task root and scoped native OCL, including applicable shared structural rules");
-        riskResultLabel.setToolTipText(cut.trace());
-        String overall="";
-        riskResultLabel.setText("<html>"+overall+cut.requirements().replace(" | Last completion delay:","<br>Last completion delay:")+"<br>Sources: "+cut.coverage()+" / "+cut.freshness()+"</html>");
+        var dataCoverage=VerificationDataCoverage.assess(cut);
+        riskResultLabel.setToolTipText(VerificationDataCoverage.diagnostics(cut,dataCoverage));
+        String freshness=cut.freshness().equals("CURRENT_OBSERVED")?cut.visualEvidence().containsKey("verifiedCheckpointToken")?"Current checkpoint":"Current observation":"Evidence is not current";
+        riskResultLabel.setText("<html>Data coverage: "+dataCoverage.status()+"<br>"+freshness+"</html>");
+        istarDataCoverageLabel.setText(riskResultLabel.getText());istarDataCoverageLabel.setToolTipText(riskResultLabel.getToolTipText());
         showGoalInstances(liveGoalTable.getSelectedRow());
     }
 

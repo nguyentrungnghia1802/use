@@ -1,3 +1,10 @@
+**Population coverage 2026-11-06:** versioned current agent inventory, exact native
+mapping reconciliation and visible scoped data coverage are implemented. Authored
+constraints and raw source/history quality remain unchanged. Focused tests, live
+Auction, offscreen presentation and installed runtime identities are documented in
+[population coverage report](use-plugin/verification/population-coverage-20261106/REPORT.md)
+and [evidence gates](use-plugin/verification/population-coverage-20261106/PLAN.md).
+
 **Source Task/Draw.io closeout 2026-11-05:** same-agent barrier and synchronous
 controller corrections, authoritative Auction model synchronization, 113 focused
 tests including live Auction, repeated review/replay, and current installed runtime

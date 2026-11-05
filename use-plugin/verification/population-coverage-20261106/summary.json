@@ -1,0 +1,368 @@
+{
+  "method": "EXACT_CURRENT_POPULATION_AND_NATIVE_REQUIREMENT_COVERAGE",
+  "focusedTests": {
+    "focused-build-current.log": {
+      "tests": 109,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "c7b86e63db5b3f6f816af4c4ae5ccd5188b79daf587802d180319dfa960ee81b",
+      "classes": [
+        "org.jacamo.bridge.contract.JasonAgentInventoryTest",
+        "org.jacamo.bridge.contract.VerifiedCheckpointProtocolTest",
+        "org.jacamo.bridge.adapter.JasonAgentInventorySourceTest",
+        "org.jacamo.bridge.adapter.JasonStructuredObservationTest",
+        "org.jacamo.bridge.adapter.VerifiedCheckpointAuthenticationTest",
+        "org.jacamo.bridge.adapter.VerifiedCheckpointGapTest",
+        "org.jacamo.bridge.adapter.VerifiedCheckpointOperationOwnershipTest",
+        "org.jacamo.bridge.adapter.VerifiedCheckpointSharedIntentionsTest",
+        "org.tzi.use.plugins.jacamo.codegrounded.VerifiedCheckpointInventoryTest",
+        "org.tzi.use.plugins.jacamo.codegrounded.VerifiedCheckpointServiceTest",
+        "org.tzi.use.plugins.jacamo.semantics.xml.AgentContextPopulationTest",
+        "org.tzi.use.plugins.jacamo.semantics.xml.CurrentAuctionBundleTest",
+        "org.tzi.use.plugins.jacamo.semantics.xml.EmptyObserverPopulationTest",
+        "org.tzi.use.plugins.jacamo.semantics.xml.ExecutionConstraintScopeTest",
+        "org.tzi.use.plugins.jacamo.semantics.xml.InvariantActivationTest",
+        "org.tzi.use.plugins.jacamo.semantics.xml.NativePopulationLimitTest",
+        "org.tzi.use.plugins.jacamo.semantics.xml.RuntimeFactSourcesTest",
+        "org.tzi.use.plugins.jacamo.semantics.xml.RuntimeTablesTest",
+        "org.tzi.use.plugins.jacamo.semantics.xml.XmlRuntimeBatchTest",
+        "org.tzi.use.plugins.jacamo.semantics.xml.XmlRuntimeMappingTest",
+        "org.tzi.use.plugins.jacamo.ui.AllExecutionPresentationTest",
+        "org.tzi.use.plugins.jacamo.ui.CheckpointPresentationRegressionTest",
+        "org.tzi.use.plugins.jacamo.ui.ExecutionScopeViewsTest",
+        "org.tzi.use.plugins.jacamo.ui.VerificationDataCoverageTest",
+        "org.tzi.use.plugins.jacamo.ui.VerifiedCheckpointControlsTest"
+      ]
+    },
+    "ui-build.log": {
+      "tests": 22,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "ad6873e299ee873592cdff3c90e046c008c4bd45ad34dac5d8a946174580d8bd",
+      "classes": [
+        "org.tzi.use.plugins.jacamo.ui.AllExecutionPresentationTest",
+        "org.tzi.use.plugins.jacamo.ui.CheckpointPresentationRegressionTest",
+        "org.tzi.use.plugins.jacamo.ui.ExecutionScopeViewsTest",
+        "org.tzi.use.plugins.jacamo.ui.VerificationDataCoverageTest",
+        "org.tzi.use.plugins.jacamo.ui.VerifiedCheckpointControlsTest"
+      ]
+    }
+  },
+  "liveAuction": {
+    "directory": "auction-1793900743958",
+    "producerRun": "20261106-004545-260-fe60069f",
+    "sourceUnchanged": true,
+    "presentedCuts": 8,
+    "automaticReleaseReceipts": 8,
+    "reviewedFailureReleaseReceipts": 0,
+    "settledScopes": [
+      "source:beid:v1:moise/organisation/scheme-board/aorg/sch_a1/51272386-9550-421a-81c6-418d42401ac1%3Abc227063-babf-490d-9503-5ba1d739a32c",
+      "source:beid:v1:moise/organisation/scheme-board/aorg/sch_a2/51272386-9550-421a-81c6-418d42401ac1%3Aa15ad09e-8ef0-4e38-9a80-d8ea2b140870"
+    ],
+    "applicableUnavailable": [],
+    "sourceFailures": [],
+    "producerLogs": {
+      "stderrPath": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\owned-runtime\\adb3b2bd-e5dc-48d2-bbb8-1a92a69d841f\\producer.stderr.log",
+      "stderrSha256": "517666bf3164106b19df3ee1ad3523290c92ef42bc71f626c24c7e81e2370562",
+      "sourceFailureLines": []
+    },
+    "sourceFileHashes": {
+      ".gradle\\8.10.2\\checksums\\checksums.lock": "5cd82bee7e8a64dd5a57b9778b698f237dd81d955b504a0d06dad76f6f25c219",
+      ".gradle\\8.10.2\\checksums\\sha1-checksums.bin": "731eca32ae537e41cfad3f732ee6f6b300ba47c66adb2713eaac5848ea8ea63e",
+      ".gradle\\8.10.2\\dependencies-accessors\\gc.properties": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      ".gradle\\8.10.2\\executionHistory\\executionHistory.bin": "c129e34e9943fd6237d7df12f5dfe989741da3417ff5e8197460ce5ebf3ba8b3",
+      ".gradle\\8.10.2\\executionHistory\\executionHistory.lock": "7212a4b2ecf292c468a2678156839dd3547f79672a2dc213a9834bed15c34251",
+      ".gradle\\8.10.2\\fileChanges\\last-build.bin": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+      ".gradle\\8.10.2\\fileHashes\\fileHashes.bin": "8e5e07f248174ac734426d46c7375b4ef413e59262ffb109716218aac2075574",
+      ".gradle\\8.10.2\\fileHashes\\fileHashes.lock": "a2ecc52318934515dcdb1ee788aab51c6d19cbf3a27d8107ea0855362861ae64",
+      ".gradle\\8.10.2\\fileHashes\\resourceHashesCache.bin": "ec5bc066e2dd1dd28c0570813eac70b832c3c0923c00e6605eae7efd2745ec5b",
+      ".gradle\\8.10.2\\gc.properties": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      ".gradle\\buildOutputCleanup\\buildOutputCleanup.lock": "31b9d1c7dbc3e8ee28849d96528cc389a4840d3d27a92ab836114d457984cda5",
+      ".gradle\\buildOutputCleanup\\cache.properties": "3f531893de6a0f6625d63808f91e56ea4329f716a4311d24683f0254134f9b53",
+      ".gradle\\buildOutputCleanup\\outputFiles.bin": "3fc2176ed9089280b122eb00cb6a2103927c46095e5bf8cba69fcb15b05ee5c0",
+      ".gradle\\file-system.probe": "9f7befb5c4d2deb554878b65f46dabaa6aea854743913bd0a4603de7f827643e",
+      ".gradle\\vcs-1\\gc.properties": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      ".jcm-deps.gradle": "9a2fa8b8322b6b62bfd475f616cd1a71df74cc444cb5d640bc521cc37c2f2f2b",
+      "auction.jcm": "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb",
+      "gradle\\wrapper\\gradle-wrapper.jar": "2db75c40782f5e8ba1fc278a5574bab070adccb2d21ca5a6e5ed840888448046",
+      "gradle\\wrapper\\gradle-wrapper.properties": "dafb226d06402c4b7d9c1a9b6833c26eaa117c08d2b4a16636a2d54ea8abc33f",
+      "gradlew": "1ce03a421a975125820e1e4b7230f6a151617255b39cf84758505c7e67b316fa",
+      "gradlew.bat": "2209f919a22528af59a2af2ad97e8d056cca18e39f7d87aa3fd549a73b180150",
+      "logging.properties": "ebdd68146d523b3105fe112c9c89b4601aec89f38dba94a2f4fb9faa967dae79",
+      "readme.txt": "e4d83b69b3674918b33800dc8490af8f55f335422c467b710de6aef8a28e08a3",
+      "src\\agt\\auction_capabilities.asl": "31679b13210114b211dad862ad86af352cc9003ac9527ea7268e3a1d0f9cfe1b",
+      "src\\env\\auction_env\\AuctionArtifact.java": "34036fc220274853e39f93682cdb22c350fe6a06739669860f2a66afe606ff4b",
+      "src\\org\\auction-os.xml": "d2481d4ee3c45b2cead42f942a3943684e86facee992870356ca4d1e47d16f9a"
+    },
+    "barriersClosedDrainedClockFrozen": true,
+    "exactIdentityChecksAndHashesReconciled": true,
+    "sourceLedger": {
+      "path": "C:\\WINDOWS\\TEMP\\jacamo-bridge-spool\\verified-checkpoints-8736248584416503350.frames",
+      "sha256": "02edf6fb86b95cf426907bf97ad6944ff56cc315726a7fd28412ad9c168fb522",
+      "kinds": {
+        "REQUEST": 9,
+        "FROZEN": 9,
+        "WIRE_REQUEST": 8,
+        "DECISION": 8,
+        "RELEASE_INTENT": 8,
+        "RELEASE_RECEIPT": 8,
+        "HOLD_UNVERIFIED": 1,
+        "STOP": 1
+      }
+    },
+    "shutdownHolds": [
+      {
+        "checkpoint": "observer-disconnected",
+        "diagnostic": "CHECKPOINT_OBSERVER_DISCONNECTED"
+      }
+    ],
+    "finalCoverage": "INCOMPLETE",
+    "finalOriginalRoots": [
+      {
+        "scope": "beid:v1:moise/organisation/scheme-board/aorg/sch_a2/51272386-9550-421a-81c6-418d42401ac1%3Aa15ad09e-8ef0-4e38-9a80-d8ea2b140870",
+        "roots": [
+          {
+            "sourceElement": "O_root",
+            "aggregateStatus": "FULFILLED",
+            "quality": "DERIVED_INPUT_UNAVAILABLE",
+            "executionQuality": "KNOWN_DERIVED_HISTORY",
+            "historicalExecutionCertificates": 11
+          }
+        ]
+      },
+      {
+        "scope": "beid:v1:moise/organisation/scheme-board/aorg/sch_a1/51272386-9550-421a-81c6-418d42401ac1%3Abc227063-babf-490d-9503-5ba1d739a32c",
+        "roots": [
+          {
+            "sourceElement": "O_root",
+            "aggregateStatus": "FULFILLED",
+            "quality": "DERIVED_INPUT_UNAVAILABLE",
+            "executionQuality": "KNOWN_DERIVED_HISTORY",
+            "historicalExecutionCertificates": 11
+          }
+        ]
+      }
+    ],
+    "finalInvariantOutcomes": [
+      {
+        "constraintId": "NATIVE:AuctionMonitor::BidEvidence",
+        "contextClass": "AuctionMonitor",
+        "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+        "expression": "(self.bidDoneBy->forAll(a : String | self.actualBidBy->includes(a)) and ((self.bidSatisfiedAt >= 0) implies (self.adminBidOverride or self.bidCommittedBy->exists(a : String | (self.bidDoneBy->includes(a) and self.actualBidBy->includes(a))))))",
+        "outcome": "PASS"
+      },
+      {
+        "constraintId": "NATIVE:AuctionMonitor::SchemeOrder",
+        "contextClass": "AuctionMonitor",
+        "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+        "expression": "(((((self.bidEnabledAt >= 0) implies ((self.startSatisfiedAt >= 0) and (self.startSatisfiedAt <= self.bidEnabledAt))) and ((self.bidSatisfiedAt >= 0) implies ((self.bidEnabledAt >= 0) and (self.bidEnabledAt <= self.bidSatisfiedAt)))) and ((self.decideEnabledAt >= 0) implies ((self.bidSatisfiedAt >= 0) and (self.bidSatisfiedAt <= self.decideEnabledAt)))) and ((self.decideSatisfiedAt >= 0) implies ((self.decideEnabledAt >= 0) and (self.decideEnabledAt <= self.decideSatisfiedAt))))",
+        "outcome": "PASS"
+      },
+      {
+        "constraintId": "NATIVE:OrgContext::CslV4RoleCompatibility",
+        "contextClass": "OrgContext",
+        "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN",
+        "expression": "self.roles->forAll(r1 : RoleOccurrence, r2 : RoleOccurrence | ((((r1 = r2) or (r1.player <> r2.player)) or (r1.oclIsKindOf(auctioneer) and r2.oclIsKindOf(auctioneer))) or (r1.oclIsKindOf(participant) and r2.oclIsKindOf(participant))))",
+        "outcome": "SKIPPED"
+      },
+      {
+        "constraintId": "NATIVE:auctionGroup::AuctioneerPopulation",
+        "contextClass": "auctionGroup",
+        "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+        "expression": "(self.auctioneer->size = 1)",
+        "outcome": "PASS"
+      },
+      {
+        "constraintId": "NATIVE:auctionGroup::ParticipantPopulation",
+        "contextClass": "auctionGroup",
+        "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+        "expression": "(self.participant->size <= 300)",
+        "outcome": "PASS"
+      }
+    ],
+    "requirementInventory": {
+      "requiredInvariants": [
+        "NATIVE:AuctionMonitor::BidEvidence",
+        "NATIVE:AuctionMonitor::SchemeOrder",
+        "NATIVE:auctionGroup::AuctioneerPopulation",
+        "NATIVE:auctionGroup::ParticipantPopulation"
+      ],
+      "selectedIntentionalElements": [
+        "O_root"
+      ],
+      "supportingInvariants": [
+        "NATIVE:OrgContext::CslV4RoleCompatibility"
+      ],
+      "version": "NATIVE_CONTRACT_INVENTORY/1.0"
+    },
+    "releases": [
+      {
+        "sequence": 1,
+        "checkpoint": "task-post:execution-steps:A_start_t1",
+        "token": "4dfdf9c7-b474-4d14-9d07-6e6db547c38c",
+        "reviewedFailure": false,
+        "nativeResultHash": "8c7602b0681fcc067fc50651b7917014438bafab8be2f1572a9a4082ae0192bf",
+        "resultHash": "cc529a6a34f17098ea8573e994983ca16b4f5eb5edab082848856ee93ff062b9",
+        "acceptedUseCutHash": "5e66ac88212d1f0078c0c554aef192822365bda745e6838dc921af8c08ee702d"
+      },
+      {
+        "sequence": 2,
+        "checkpoint": "task-post:execution-steps:A_start_t2",
+        "token": "99cb9af7-d924-4a08-a248-d82094707e24",
+        "reviewedFailure": false,
+        "nativeResultHash": "bc090bc82aa93ca447c5b1c7cd05a186518c3f9a264c36b1f9401c77080d8fb6",
+        "resultHash": "0752f7e36893063d24ec1654303a8771b6d581c319ab2eb9f8eaca80ae768e8a",
+        "acceptedUseCutHash": "68495e4daeef5a0dfd84479895c966ae7ad6608041b43264ac798b81fbc244d2"
+      },
+      {
+        "sequence": 3,
+        "checkpoint": "task-post:execution-steps:P_bid_t1",
+        "token": "06b8f7ea-aa74-4951-b3fb-10837fd07f6e",
+        "reviewedFailure": false,
+        "nativeResultHash": "94022ba943a073b168f8a4aee0056ce888f65234eb37c124f8fa2ea92490a9b1",
+        "resultHash": "9c36c263428cf26c377c879e0f24099af792635ea06771611ac0fa6d519dd52c",
+        "acceptedUseCutHash": "64b2ab6b1fad8099c7afc7c0e64fb0415a5f4fc35a0cb7d691881a52cd8045c3"
+      },
+      {
+        "sequence": 4,
+        "checkpoint": "task-post:execution-steps:P_bid_t2",
+        "token": "dcc925b7-f8ab-400c-ac6f-8f4b916d3f2c",
+        "reviewedFailure": false,
+        "nativeResultHash": "b9a5f6784acf9ceea9d991f66d2ac525b96c4df44871fc3aed01a478bc6b9a77",
+        "resultHash": "e418ca60b61c114d62525dad3a4012529bfe86569578881b0ffd1e5ec61d4219",
+        "acceptedUseCutHash": "acffd15da996b93cb57a100db9a4529957ca4dbae43d6cd77545778d75e435af"
+      },
+      {
+        "sequence": 5,
+        "checkpoint": "task-post:execution-steps:P_bid_t2",
+        "token": "3b7fa047-8e63-43b0-9ffa-929356f85254",
+        "reviewedFailure": false,
+        "nativeResultHash": "8a5bbd28b4dc53b679357a4f8a024312b4a8d61540fcbed902b8fa8c015899a3",
+        "resultHash": "265ba2ce169c8497d7b7b458c13cbfcd624d43270174595b768ce6ef6d5058c1",
+        "acceptedUseCutHash": "e61c0cabd68c51f7ebee98cf0490869d96bbf252725135d8100b0b032577221a"
+      },
+      {
+        "sequence": 6,
+        "checkpoint": "task-post:execution-steps:P_bid_t2",
+        "token": "08b552bd-4ad0-40a5-ae5f-05bb4151b4a9",
+        "reviewedFailure": false,
+        "nativeResultHash": "71a430c23d586354edd89dc0949d71917aa1c6ffd1f078a9bcbe7c4b96ae0a85",
+        "resultHash": "474dc62fea0eba15e00fdbe44c3592bd6173c84dbea0bcfb5b3c0f8a84816e38",
+        "acceptedUseCutHash": "483f0d0217376d1aa8373340cc38060bf2e2c7beb3377801bf2c80f9c21f7f98"
+      },
+      {
+        "sequence": 7,
+        "checkpoint": "task-post:execution-steps:A_decide_t2",
+        "token": "a7c04a73-620d-4670-a935-739884bef521",
+        "reviewedFailure": false,
+        "nativeResultHash": "da58e1b031d7f693943b1c33d350814df32e70227877a2eb07f48dad207fbe31",
+        "resultHash": "de1c523a3b71ec45d32cfb39683aab32d06229d7ed308d99a9cd1ffc9b22f30d",
+        "acceptedUseCutHash": "2dfe51db91afc03d6df15862af3c3f8ddca5ca69a46eb8ec7eecf4e203e0e15c"
+      },
+      {
+        "sequence": 8,
+        "checkpoint": "scheme-post:scheme-history:terminal",
+        "token": "83d1a213-97aa-42cc-8a42-8f839acf5f39",
+        "reviewedFailure": false,
+        "nativeResultHash": "6f6e8b6cef0ea6b55f3192f97ed7618871928a640b2736c95d759bd2220cb3dd",
+        "resultHash": "02bc7188248dde75fc01da62f1b37b88638cff83a832b6b475ec9c3c1364a5b4",
+        "acceptedUseCutHash": "d4bddfaccc8262910e4bd958b6ebf3fa7b56ef023069bbfb037849324ab5073e"
+      }
+    ],
+    "localRawEvidence": {
+      "cut-06b8f7ea-aa74-4951-b3fb-10837fd07f6e.json.gz": "ec0b3c5cff18e0470aed55e4bdcbaef18248c719e847c551cee7733524cf1852",
+      "cut-08b552bd-4ad0-40a5-ae5f-05bb4151b4a9.json.gz": "23c4a79286ba47033032edd2612a94569e3455aef6555bf5232acda63647f7d8",
+      "cut-3b7fa047-8e63-43b0-9ffa-929356f85254.json.gz": "795408333a2326936b2336d73c5750880affb252b024f82fdea9bef609be91bd",
+      "cut-4dfdf9c7-b474-4d14-9d07-6e6db547c38c.json.gz": "cee37a9d9b952cecff676a657d0b9c4517ce9e77c21eac162467327fabdad528",
+      "cut-83d1a213-97aa-42cc-8a42-8f839acf5f39.json.gz": "3e37f6700859c3d15790bcd5ba9362b2b8d41a77555370dface631aececcf774",
+      "cut-99cb9af7-d924-4a08-a248-d82094707e24.json.gz": "c146d2aec211877e52ae17c456a3be5751c65c53f5ed2712f5a736e381e25822",
+      "cut-a7c04a73-620d-4670-a935-739884bef521.json.gz": "0af548b5c8161df4ee675ee28beebcf685d5dd618214060da6730ed94b48b54c",
+      "cut-dcc925b7-f8ab-400c-ac6f-8f4b916d3f2c.json.gz": "780f369973a81d75bd3f6bfe28465905f3a26e7e95c34de3cfb21ffb338b6888",
+      "final-native.json.gz": "451a740e2b92dd45a03a2f71eb6f38bbfdd46cc77d3f2bfb62e4c67dc97a5758"
+    }
+  },
+  "presentation": {
+    "cuts": [
+      {
+        "compatibility": "PASS",
+        "dataCoverage": "COMPLETE",
+        "nativeResultHash": "8c7602b0681fcc067fc50651b7917014438bafab8be2f1572a9a4082ae0192bf",
+        "rawSourceCoverage": "INCOMPLETE",
+        "token": "4dfdf9c7-b474-4d14-9d07-6e6db547c38c"
+      },
+      {
+        "compatibility": "PASS",
+        "dataCoverage": "COMPLETE",
+        "nativeResultHash": "bc090bc82aa93ca447c5b1c7cd05a186518c3f9a264c36b1f9401c77080d8fb6",
+        "rawSourceCoverage": "INCOMPLETE",
+        "token": "99cb9af7-d924-4a08-a248-d82094707e24"
+      },
+      {
+        "compatibility": "PASS",
+        "dataCoverage": "COMPLETE",
+        "nativeResultHash": "94022ba943a073b168f8a4aee0056ce888f65234eb37c124f8fa2ea92490a9b1",
+        "rawSourceCoverage": "INCOMPLETE",
+        "token": "06b8f7ea-aa74-4951-b3fb-10837fd07f6e"
+      },
+      {
+        "compatibility": "PASS",
+        "dataCoverage": "COMPLETE",
+        "nativeResultHash": "b9a5f6784acf9ceea9d991f66d2ac525b96c4df44871fc3aed01a478bc6b9a77",
+        "rawSourceCoverage": "INCOMPLETE",
+        "token": "dcc925b7-f8ab-400c-ac6f-8f4b916d3f2c"
+      },
+      {
+        "compatibility": "PASS",
+        "dataCoverage": "COMPLETE",
+        "nativeResultHash": "8a5bbd28b4dc53b679357a4f8a024312b4a8d61540fcbed902b8fa8c015899a3",
+        "rawSourceCoverage": "INCOMPLETE",
+        "token": "3b7fa047-8e63-43b0-9ffa-929356f85254"
+      },
+      {
+        "compatibility": "PASS",
+        "dataCoverage": "COMPLETE",
+        "nativeResultHash": "71a430c23d586354edd89dc0949d71917aa1c6ffd1f078a9bcbe7c4b96ae0a85",
+        "rawSourceCoverage": "INCOMPLETE",
+        "token": "08b552bd-4ad0-40a5-ae5f-05bb4151b4a9"
+      },
+      {
+        "compatibility": "PASS",
+        "dataCoverage": "COMPLETE",
+        "nativeResultHash": "da58e1b031d7f693943b1c33d350814df32e70227877a2eb07f48dad207fbe31",
+        "rawSourceCoverage": "INCOMPLETE",
+        "token": "a7c04a73-620d-4670-a935-739884bef521"
+      },
+      {
+        "compatibility": "PASS",
+        "dataCoverage": "COMPLETE",
+        "nativeResultHash": "6f6e8b6cef0ea6b55f3192f97ed7618871928a640b2736c95d759bd2220cb3dd",
+        "rawSourceCoverage": "INCOMPLETE",
+        "token": "83d1a213-97aa-42cc-8a42-8f839acf5f39"
+      }
+    ],
+    "manualDesktopAcceptance": false,
+    "method": "OFFSCREEN_AUTHENTIC_CHECKPOINT_PRESENTATION",
+    "ui": {
+      "allVerdict": "COMPLETE_OBSERVED",
+      "dataCoverageLabel": "<html>Data coverage: COMPLETE<br>Current checkpoint</html>",
+      "displayedStates": 7,
+      "retainedAuditCuts": 8,
+      "scopedVerdicts": {
+        "Execution 1 \u2014 Auction \u00b7 id='a2'": "COMPLETE_OBSERVED",
+        "Execution 2 \u2014 Auction \u00b7 id='a1'": "COMPLETE_OBSERVED"
+      }
+    }
+  },
+  "packageReceiptSha256": "5abfafb45e3577ca7db0a737b38b2117eae4b30c3cf9a162bbbe474bef20af9b",
+  "authoredModelsUnchanged": true,
+  "deadlineAssertionActive": false,
+  "manualDesktopAcceptance": false,
+  "legacyEventPrefixesNotUpgraded": true,
+  "artifacts": {
+    "csl-verification-coverage.png": "689e2db157637f2255f8da1c43ff35328de6fad9bc0fd0e6eab8429410324496",
+    "istar-verification-coverage.png": "15886eb6a8e5867847ca9857169bb5cb0f061ea5600850952ae6e2c0923ca5c5",
+    "launcher-cli.log": "75f943d3d2ac0ac7dee35ba39e6caca0929ceb2a8e5e433277603814f172165a"
+  }
+}

@@ -184,7 +184,7 @@ public final class ConstraintCoverageResolver {
         }
         boolean organization=kind(cls,"OrgContext")||kind(cls,"RoleOccurrence");
         boolean inventory=engine!=null&&engine.xmlCase()&&organization&&sources.get("cartago")==Completeness.COMPLETE
-                &&xmlInventoryComplete(cls,engine);
+                &&(org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.MappedPopulationInventory.complete(cls,engine)||xmlInventoryComplete(cls,engine));
         if(!populationComplete(cls,sources)&&!inventory)return false;
         if(engine!=null&&engine.xmlCase()&&(kind(cls,"DomainEntity")||kind(cls,"OrgContext")||kind(cls,"RoleOccurrence"))) {
             var objects=engine.system().state().allObjects().stream().filter(o->o.cls().isSubClassifierOf(cls)).toList();

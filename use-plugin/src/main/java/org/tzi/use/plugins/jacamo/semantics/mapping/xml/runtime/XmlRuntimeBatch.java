@@ -24,6 +24,7 @@ public final class XmlRuntimeBatch {
     private final RoleBeliefProjection beliefViews;
     private final List<BoundRule> rules;
     private final boolean currentInventory;
+    private final String programHash;
     public XmlRuntimeBatch(MappingSpecification specification,MModel model,String programHash) {
         this(specification,model,programHash,null,List.of());
     }
@@ -34,6 +35,7 @@ public final class XmlRuntimeBatch {
         this(specification,model,programHash,source,requests,bindings,null);
     }
     public XmlRuntimeBatch(MappingSpecification specification,MModel model,String programHash,ModelSnapshot source,List<ObservationCapabilityRequest> requests,org.tzi.use.plugins.jacamo.semantics.mapping.SemanticBindingIndex bindings,org.vnu.sme.goal.dsl.istar.mm.GoalModel goals) {
+        this.programHash=programHash;
         sources=new RuntimeFactSources(specification,source,requests);tables=new RuntimeTables(specification,bindings);
         currentInventory=specification.nodes().stream().anyMatch(n->MoisePopulationClosure.POLICY.equals(n.optional("population")));
         observers=new ObserverProjection(specification,model,programHash);
@@ -109,6 +111,7 @@ public final class XmlRuntimeBatch {
             invalidated.put(object,port.metadata(object,"xml:m0:key"));writer.invalidate(port,object,"CURRENT_CUT_NOT_YET_QUALIFIED");
         }
         var outcomes=new ArrayList<M0RuleExecutor.Outcome>();var retirements=new ArrayList<Retirement>();
+        var populationReceipts=new TreeMap<String,Object>();
         var roleScopes=new IdentityHashMap<MObject,Boolean>();
         // A retained player object is not evidence of its presence in this cut.
         var currentPlayers=Collections.newSetFromMap(new IdentityHashMap<MObject,Boolean>());
@@ -118,9 +121,10 @@ public final class XmlRuntimeBatch {
         }
         for(BoundRule rule:rules) {
             var table=selected.get(rule.table().attr("id"));
+            var mappedMembers=new TreeSet<String>();String populationAuthority="";boolean populationCertified=true;
             var writes=rule.rule().children("upsertInstance");
             Node roleWrite=writes.size()==1&&writes.getFirst().optional("membership").equals("roles")?writes.getFirst():null;
-            if(currentInventory&&roleWrite!=null)for(var object:port.objects())if(writer.owns(port,object)&&object.cls().name().equals(roleWrite.attr("contextType")))
+            if(roleWrite!=null)for(var object:port.objects())if(writer.owns(port,object)&&object.cls().name().equals(roleWrite.attr("contextType")))
                 roleScopes.merge(object,table.populationQuality()==Completeness.COMPLETE,(a,b)->a&&b);
             boolean qualified=table.populationQuality()==Completeness.COMPLETE;var present=new HashSet<String>();
             var scoped=new HashSet<String>();String scopeField=rule.input().optional("reconcileScopeField");
@@ -133,7 +137,8 @@ public final class XmlRuntimeBatch {
                 if(currentInventory&&roleWrite!=null&&!currentPlayers.contains(port.find(Objects.toString(row.values().get(roleWrite.attr("playerFrom")),""))))quality=Completeness.PARTIAL;
                 var input=new M0RuleExecutor.Input(rule.input().attr("id"),epoch,row.identity(),cut.snapshotId(),quality,row.values(),row.proofs(),row.aliases());
                 var outcome=writer.execute(port,rule.rule().attr("id"),input);outcomes.add(outcome);
-                if(currentInventory&&roleWrite!=null&&!outcome.status().equals("MAPPED")) {
+                if(outcome.object()!=null&&outcome.status().equals("MAPPED"))mappedMembers.add(outcome.object().name());
+                if(roleWrite!=null&&!outcome.status().equals("MAPPED")) {
                     Object identity=row.values().get(roleWrite.attr("contextFrom"));MObject context=identity instanceof String id?port.find(id):null;
                     if(context!=null)roleScopes.put(context,false);
                 }
@@ -147,7 +152,11 @@ public final class XmlRuntimeBatch {
                     String authority=!inventory.isBlank()?MoisePopulationClosure.POLICY:
                             currentInventory&&sources.definition(rule.table().attr("dataset")).name().equals("facts")
                             &&sources.authority(rule.table().attr("dataset")).equals("cartago")
-                            &&sources.kind(rule.table().attr("dataset"))==RuntimeFactKind.WORKSPACE?"CARTAGO_WORKSPACE_INVENTORY_V1":"";
+                            &&sources.kind(rule.table().attr("dataset"))==RuntimeFactKind.WORKSPACE?"CARTAGO_WORKSPACE_INVENTORY_V1":
+                            row.proofs().containsKey("jason-agent-inventory")?JasonAgentInventory.POLICY:"";
+                    if(populationAuthority.isEmpty())populationAuthority=authority;
+                    else if(!populationAuthority.equals(authority))populationCertified=false;
+                    if(authority.isBlank())populationCertified=false;
                     port.metadata(outcome.object(),"xml:m0:population-authority",table.populationQuality()==Completeness.COMPLETE?authority:"");
                     port.metadata(outcome.object(),"xml:m0:population-proof",table.populationQuality()==Completeness.COMPLETE?row.proofs().getOrDefault("source-cut",""):"");
                     port.metadata(outcome.object(),"xml:m0:population-cut",cut.snapshotId());
@@ -163,6 +172,9 @@ public final class XmlRuntimeBatch {
                     }
                 }
             }
+            if(writes.size()==1)populationReceipts.put(rule.rule().attr("id"),Map.of("target",writes.getFirst().attr("targetType"),
+                    "complete",qualified&&populationCertified&&mappedMembers.size()==table.rows().size()&&!populationAuthority.isBlank(),
+                    "authority",populationAuthority,"members",List.copyOf(mappedMembers)));
             if(!rule.input().optional("reconcileMissing").isEmpty())retirements.add(new Retirement(rule,qualified,Set.copyOf(present),Set.copyOf(scoped)));
         }
         // This instruction concerns observed role membership intervals only. Physical disposal still
@@ -180,10 +192,11 @@ public final class XmlRuntimeBatch {
         }
         for(var entry:invalidated.entrySet())if("INCOMPLETE".equals(port.metadata(entry.getKey(),"xml:m0:quality"))&&outcomes.stream().noneMatch(o->o.object()==entry.getKey()&&Set.of("MAPPED","INCOMPLETE").contains(o.status())))
             outcomes.add(new M0RuleExecutor.Outcome("CURRENT-CUT-INVALIDATION","INCOMPLETE",entry.getValue(),entry.getKey(),"CURRENT_SOURCE_ROW_UNAVAILABLE"));
-        if(currentInventory)for(var object:port.objects())if(writer.owns(port,object)&&object.cls().isSubClassifierOf(port.readState().system().model().getClass("OrgContext"))) {
+        if(currentInventory||JasonAgentInventory.complete(cut,run))for(var object:port.objects())if(writer.owns(port,object)&&object.cls().isSubClassifierOf(port.readState().system().model().getClass("OrgContext"))) {
             port.metadata(object,"xml:m0:roles-quality",roleScopes.getOrDefault(object,true)?"COMPLETE":"INCOMPLETE");
             port.metadata(object,"xml:m0:roles-cut",cut.snapshotId());
         }
+        MappedPopulationInventory.record(port,programHash,epoch,cut.snapshotId(),populationReceipts);
         invariantActivation.apply(port,epoch,cut.snapshotId(),selected);
         outcomes.addAll(beliefViews.apply(port,epoch,cut.snapshotId(),captured));
         outcomes.addAll(observers.apply(port,epoch,cut.snapshotId(),selected,run,generation));
