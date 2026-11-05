@@ -91,9 +91,11 @@ inv BidEvidence:
             self.actualBidBy->includes(a)))
 */
 
-// Restored from the authoritative diagram. Retain each actual activation;
-// administrative recovery never repairs an expired obligation.
-/* @use-native-ocl 1
+// The diagram keeps the normative deadline requirement. This executable example
+// temporarily disables that assertion by explicit user choice; native NPL timers
+// and Task/Goal execution checks remain active.
+/* Temporarily disabled by the user on 2026-11-05.
+The preserved body below is not an active native OCL annotation.
 context AuctionObligation
 inv WithinDeadline:
     self.deadlineAt =

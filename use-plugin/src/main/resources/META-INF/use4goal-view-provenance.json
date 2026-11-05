@@ -268,12 +268,13 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarView.java",
       "sourceSha256": "87e24b31b69fb9a7518a1a75e24d1e24cc474ac9b77ab63ddcedc8cbb2e35c95",
       "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/use4goal/istar/IStarView.java",
-      "targetSha256": "e5caea80833dbf0be47f9433d2fe6253924baec7e646ec0528b623feb7fc1b2e",
+      "targetSha256": "fa5afe3a7bf24ba0bed814d435f04e44be13ec9538b757b67be80f8bd88bbce7",
       "patches": [
         "PACKAGE_RELOCATION",
         "DETACH_CLEANUP",
         "NO_PROCESS_CONSOLE_FALLBACK",
-        "USE_ROUTING_AND_DECLARATIVE_MODEL_PRESENTATION_20261104"
+        "USE_ROUTING_AND_DECLARATIVE_MODEL_PRESENTATION_20261104",
+        "OPTIONAL_MODEL_BROWSER_FOR_CURRENT_INSTANCE_CARDS"
       ]
     },
     {

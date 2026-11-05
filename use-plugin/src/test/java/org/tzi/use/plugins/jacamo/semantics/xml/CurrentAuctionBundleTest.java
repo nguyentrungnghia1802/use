@@ -16,8 +16,35 @@ class CurrentAuctionBundleTest {
   var source=GenericMappingEngineTest.official(root.resolve("auction.jcm"));
   var program=new GenericMappingEngine().map(source,restored);
   var built=new CodeGroundedNativePipeline().buildCanonicalProgram(source,NativeProjectionMode.AUTO,program);
-  assertEquals(8,built.xmlPreparation().authored().clauses().size());
+  assertEquals(7,built.xmlPreparation().authored().clauses().size());
   assertNotNull(built.nativeResult().state().system().model().getClassInvariant("auctionGroup::AuctioneerPopulation"));
+ }
+
+ @Test void intentionalAuthoringRefreshRepinsBytesWithoutRelaxingFrozenChecksumValidation(@org.junit.jupiter.api.io.TempDir Path temporary)throws Exception {
+   for(String file:List.of("auction.csl","auction.istar","auction.ocl","auction-mapping.xml","auction.mrv"))Files.copy(Path.of("examples/auction").resolve(file),temporary.resolve(file));
+   Path csl=temporary.resolve("auction.csl"),xml=temporary.resolve("auction-mapping.xml"),project=Path.of("examples/auction/auction.jcm");
+   Files.writeString(csl,Files.readString(csl)+"\n// Deliberate authoring revision.\n");
+   var error=assertThrows(IllegalArgumentException.class,()->MappingInputs.read(project,xml,temporary.resolve("auction.ocl"),csl,temporary.resolve("auction.istar"),false));
+   assertTrue(error.getMessage().contains("AUTHORED_MODEL_CHECKSUM_MISMATCH"));
+   var refresh=new ProcessBuilder("python","tools/refresh-authored-hashes.py","--mrv",temporary.resolve("auction.mrv").toString()).redirectErrorStream(true).start();
+   assertTrue(refresh.waitFor(15,java.util.concurrent.TimeUnit.SECONDS));assertEquals(0,refresh.exitValue(),new String(refresh.getInputStream().readAllBytes(),java.nio.charset.StandardCharsets.UTF_8));
+   var revised=MappingInputs.read(project,xml,temporary.resolve("auction.ocl"),csl,temporary.resolve("auction.istar"),false);
+   assertEquals(revised.xml().sha256(),MappingInputs.fromFrozen(revised.xml().bytes(),revised.ocl().bytes(),revised.sources(),"revised").xml().sha256());
+   Files.writeString(csl,Files.readString(csl)+"// Another edit.\n");
+   assertThrows(IllegalArgumentException.class,()->MappingInputs.read(project,xml,temporary.resolve("auction.ocl"),csl,temporary.resolve("auction.istar"),false));
+ }
+
+ @Test void selectedExternalAuctionImportsTheEditedMrvModelsWithDeadlineDisabled()throws Exception {
+  Path project=Path.of("D:/_CODE_BANK/Project_/vnu-sme-lab/jacamo/examples/auction/auction.jcm"),root=Path.of("examples/auction");
+  assertTrue(Files.isRegularFile(project),"Actual user-selected external Auction must exist for this receipt");
+  var source=GenericMappingEngineTest.official(project);
+  var inputs=MappingInputs.read(project,root.resolve("auction-mapping.xml"),root.resolve("auction.ocl"),root.resolve("auction.csl"),root.resolve("auction.istar"),false);
+  var program=new GenericMappingEngine().map(source,inputs);
+  var built=new CodeGroundedNativePipeline().buildCanonicalProgram(source,NativeProjectionMode.AUTO,program);
+  assertEquals(7,built.xmlPreparation().authored().clauses().size());
+  assertNull(built.nativeResult().state().system().model().getClassInvariant("AuctionObligation::WithinDeadline"));
+  assertNotNull(built.nativeResult().state().system().model().getClassInvariant("auctionGroup::ParticipantPopulation"));
+  var frozen=MappingInputs.fromFrozen(inputs.xml().bytes(),inputs.ocl().bytes(),inputs.sources(),"edited-mrv");assertEquals(inputs.xml().sha256(),frozen.xml().sha256());
  }
 
  @Test void falseBundleUsesTheSameAdmittedModelsAndRetainsItsSourceFault()throws Exception {
@@ -29,7 +56,7 @@ class CurrentAuctionBundleTest {
   var faulty=Files.readString(root.resolve("src/env/auction_env/AuctionArtifact.java"));
   var stopBody=faulty.substring(faulty.indexOf("public void stop()"),faulty.indexOf("public void bid("));
   assertFalse(stopBody.contains("updateValue(false)"),"The intentional missing stop transition stays unchanged");
-  for(String file:List.of("auction.csl","auction.istar","auction.ocl"))assertArrayEquals(Files.readAllBytes(Path.of("examples/auction").resolve(file)),Files.readAllBytes(root.resolve(file)));
+  for(String file:List.of("auction.csl","auction.ocl"))assertArrayEquals(Files.readAllBytes(Path.of("examples/auction").resolve(file)),Files.readAllBytes(root.resolve(file)));
  }
  @Test void cleanFiveInputBundleBuildsRealModelsAndNativeContractsWithoutReferenceInputs()throws Exception {
   Path root=Path.of("examples/auction"),reference=Path.of("src/test/resources/auction-reference/authored-v1");
@@ -44,7 +71,7 @@ class CurrentAuctionBundleTest {
   assertEquals(Set.of("auctioneer","participant"),org.tzi.use.plugins.jacamo.semantics.mapping.CanonicalUseBindingAdapter.enactedRoles(built.nativeResult().state().system().model().getClass("auction_capabilities")));
   var layout=org.tzi.use.plugins.jacamo.ui.use4goal.csl.CslLayoutBuilder.build(program.cslModel(),Map.of("auction_capabilities",Set.of("auctioneer","participant")));
   assertEquals(2,layout.edges.stream().filter(e->e.kind()==org.tzi.use.plugins.jacamo.ui.use4goal.csl.CslEdgeKind.ENACTMENT).count());
-  var embedded=built.xmlPreparation().authored().clauses();assertEquals(8,embedded.size());
+  var embedded=built.xmlPreparation().authored().clauses();assertEquals(7,embedded.size());
   assertEquals(5,embedded.stream().filter(c->c.specification().kind()!=org.tzi.use.plugins.jacamo.semantics.mapping.ocl.AuthoredOclSpecificationLoader.Kind.INVARIANT).count());
   assertTrue(new org.tzi.use.plugins.jacamo.semantics.mapping.ocl.AuthoredOclSpecificationLoader().parseOptional(Files.readAllBytes(root.resolve("auction.ocl")),"optional").clauses().isEmpty());
   var factory=javax.xml.parsers.DocumentBuilderFactory.newInstance();factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl",true);
@@ -67,11 +94,13 @@ class CurrentAuctionBundleTest {
   assertNotNull(built.nativeResult().state().system());assertTrue(program.goalModel().findElement("O_bid_accepted").isEmpty());assertTrue(program.goalModel().findElement("O_bid_attempt").isEmpty());assertTrue(program.cslModel().findEntity("Auction").isPresent());
   assertEquals(Files.readString(root.resolve("auction.csl")),diagram.getDocumentElement().getAttribute("cslSource"));
   var intentional=factory.newDocumentBuilder().parse(Path.of("Core/auction/auction_istar_final_fixed.drawio").toFile());
-  assertEquals(Files.readString(root.resolve("auction.istar")),intentional.getDocumentElement().getAttribute("istarSource"));
+  var original=new org.tzi.use.semantic.engine.frontend.IStarFrontend().compile(intentional.getDocumentElement().getAttribute("istarSource"),"Core",org.tzi.use.semantic.engine.api.EngineSemanticsProfile.ROLE_SPECIALIZATION_V1).requireModel();
+  assertEquals(org.tzi.use.semantic.engine.api.OwnedGoalModel.fingerprint(original),org.tzi.use.semantic.engine.api.OwnedGoalModel.fingerprint(program.goalModel()),"Only the explicitly disabled observer contract differs from the Core graph");
   assertTrue(Files.readString(root.resolve("auction.istar")).contains("depend Auction.O_bid -> goal D_bid -> Participant.P_bid"));
   assertFalse(Files.readString(root.resolve("auction-mapping.xml")).contains("<acceptedFailure"));
   assertTrue(Files.readString(root.resolve("auction.istar")).contains("context AuctionObligation"));
-  assertTrue(Files.readString(root.resolve("auction-mapping.xml")).contains("<oclClause name=\"WithinDeadline\""));
-  for(String model:List.of("auction.csl","auction.istar"))assertArrayEquals(Files.readAllBytes(root.resolve(model)),Files.readAllBytes(Path.of("examples/auction-false").resolve(model)));
+  assertFalse(Files.readString(root.resolve("auction-mapping.xml")).contains("<oclClause name=\"WithinDeadline\""));
+  assertTrue(embedded.stream().noneMatch(c->c.specification().name().equals("WithinDeadline")));
+  for(String model:List.of("auction.csl"))assertArrayEquals(Files.readAllBytes(root.resolve(model)),Files.readAllBytes(Path.of("examples/auction-false").resolve(model)));
  }
 }

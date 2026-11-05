@@ -97,6 +97,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private ObservationRequirementsPanel observationRequirements;
     private org.tzi.use.plugins.jacamo.ui.use4goal.csl.CslView cslView;
     private org.tzi.use.plugins.jacamo.ui.use4goal.istar.IStarView istarView;
+    private org.tzi.use.plugins.jacamo.ui.use4goal.state.IStarInstancesPanel istarInstances;
     private org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel observedConformance;
     private final org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePresenter observedPresenter;
     private org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult observedDisplayedResult;
@@ -221,7 +222,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
                             // The user may switch execution while this worker prepares
                             // the immutable cut. Preserve that choice at publication.
                             if(!panel.executionScope().equals(scope))prepared=new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparationCache().prepare(prepared.all(),panel.executionScope(),true,true);
-                            panel.showCheckpoint(prepared);observedDisplayedResult=cut.result();
+                            panel.showCheckpoint(prepared);if(istarInstances!=null)istarInstances.update(prepared.all());observedDisplayedResult=cut.result();
                             runtimeProgress.setText("Checkpoint "+checkpoint.checkpoint()+" · USE state "+cut.currentVersion()+" · evaluated and displayed · JaCaMo waiting for decision");
                             refreshRuntime();
                             // Flush this exact immutable cut before acknowledging presentation.
@@ -343,6 +344,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         } else if(semanticEvidence!=null) {diagnosticTabs().remove(semanticEvidence);semanticEvidence=null;}
     }
     private void detachSemanticViews() {
+        if(istarInstances!=null){istarInstances.dispose();istarInstances=null;}
         if(runtimeStateViews!=null){runtimeStateViews.dispose();if(observedWorkflow){cslTabs.remove(runtimeStateViews.aolPanel);istarTabs.remove(runtimeStateViews.iscnPanel);}else{tabs.remove(runtimeStateViews.aolPanel);tabs.remove(runtimeStateViews.iscnPanel);}runtimeStateViews=null;}
         if(cslView!=null){cslView.detachModel();if(observedWorkflow)cslTabs.remove(cslView);else diagnosticTabs().remove(cslView);cslView=null;}
         if(istarView!=null){istarView.detachModel();if(observedWorkflow)istarTabs.remove(istarView);else diagnosticTabs().remove(istarView);istarView=null;}
@@ -353,8 +355,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private void refreshGraphVisibility(){
         if(runtimeStateViews!=null){
             boolean aolVisible = observedWorkflow ? tabs.isShowing()&&tabs.getSelectedComponent()==cslTabs&&cslTabs.getSelectedComponent()==runtimeStateViews.aolPanel : tabs.isShowing()&&tabs.getSelectedComponent()==runtimeStateViews.aolPanel;
-            boolean iscnVisible = observedWorkflow ? tabs.isShowing()&&tabs.getSelectedComponent()==istarTabs&&istarTabs.getSelectedComponent()==runtimeStateViews.iscnPanel : tabs.isShowing()&&tabs.getSelectedComponent()==runtimeStateViews.iscnPanel;
-            runtimeStateViews.setActive(aolVisible, iscnVisible);
+            boolean iscnVisible = observedWorkflow ? tabs.isShowing()&&tabs.getSelectedComponent()==istarTabs&&istarTabs.getSelectedComponent()==istarInstances : tabs.isShowing()&&tabs.getSelectedComponent()==runtimeStateViews.iscnPanel;
+            runtimeStateViews.setActive(aolVisible, false);if(istarInstances!=null)istarInstances.setActive(iscnVisible);
         }
     }
     private void refreshObservedConformance(org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult result) {
@@ -380,7 +382,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
             @Override protected void done(){
                 try {
                     var cuts=get();
-                    if(presentation==presentationEpoch&&(!checkpointLive||settledCheckpoint&&facade.verifiedCheckpointState().state().equals("RUNNING"))&&epoch==viewEpoch && observedConformance==panel && displayedNativeModel==model&&panel.executionScope().equals(requestedScope)){if(settledCheckpoint)panel.showCheckpoint(cuts);else panel.applyPrepared(cuts);runtimeProgress.setText(progress);observedDisplayedResult=result;observedDisplayedHistory=history;}
+                    if(presentation==presentationEpoch&&(!checkpointLive||settledCheckpoint&&facade.verifiedCheckpointState().state().equals("RUNNING"))&&epoch==viewEpoch && observedConformance==panel && displayedNativeModel==model&&panel.executionScope().equals(requestedScope)){if(settledCheckpoint)panel.showCheckpoint(cuts);else panel.applyPrepared(cuts);if(istarInstances!=null)istarInstances.update(cuts.all());runtimeProgress.setText(progress);observedDisplayedResult=result;observedDisplayedHistory=history;}
                 }catch(Exception error){
                     if(epoch==viewEpoch && observedConformance==panel)setStatus("Observed evidence unavailable: "+error.getMessage());
                 }finally{observedRefreshPending=false;}
@@ -401,6 +403,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
             CanonicalJson.object(declarative.getOrDefault("dependencyPopulations",Map.of())).forEach((id,value)->policies.put(id,org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander.Quantifier.valueOf(value.toString())));
             runtimeStateViews=new org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews(models.csl(),models.goals(),policies);
             runtimeStateViews.setActive(false,false);
+            istarInstances=new org.tzi.use.plugins.jacamo.ui.use4goal.state.IStarInstancesPanel(models.goals());
             observedConformance.onSelectedCut(runtimeStateViews::select);
             observedConformance.onExecutionSelected(runtimeStateViews::selectScope);
             runtimeStateViews.onScopeSelected(observedConformance::selectExecution);
@@ -410,7 +413,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
             cslTabs.addTab("Verification", observedConformance.cslVerificationPanel());
             istarTabs.removeAll();
             istarTabs.addTab("Model", istarView);
-            istarTabs.addTab("State", runtimeStateViews.iscnPanel);
+            istarTabs.addTab("State", istarInstances);
             istarTabs.addTab("Verification", observedConformance);
 
         }else{

@@ -34,6 +34,7 @@ public final class IStarView extends JPanel implements View, PrintableView {
     private final Placement placement;
     private Path sourceFile;
     private GoalModel model;
+    private boolean modelBrowserVisible=true;
     private Map<String, NodeBadge> badges = Collections.emptyMap();
     private Map<String, String> actorLabelOverrides = Collections.emptyMap();
     private Map<String, String> nodeLabelOverrides = Collections.emptyMap();
@@ -137,8 +138,18 @@ public final class IStarView extends JPanel implements View, PrintableView {
         if(this.model==model)return;
         this.model = model;
         diagram.setModel(model);
+        rebuildModelContent();
+    }
+
+    /** Instance cards reuse the authored graph without repeating its model browser. */
+    public void setModelBrowserVisible(boolean visible) {
+        if(modelBrowserVisible==visible)return;
+        modelBrowserVisible=visible;rebuildModelContent();
+    }
+
+    private void rebuildModelContent() {
         modelContent.removeAll();
-        if (model == null) {
+        if (model == null || !modelBrowserVisible) {
             modelContent.add(new JScrollPane(diagram), BorderLayout.CENTER);
         } else {
             JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,

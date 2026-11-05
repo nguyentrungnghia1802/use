@@ -92,7 +92,7 @@ public final class MappingInputs {
     private static TraceComplement.Asset selectedModel(Path path,String id,String extension,String format,String hash)throws IOException {
         if(!path.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(extension))throw new IllegalArgumentException("AUTHORED_MODEL_EXTENSION_REQUIRED:"+extension);
         var asset=TraceComplement.Asset.of(id,format,bounded(path,MAX_FILE));
-        if(!asset.sha256().equals(hash))throw new IllegalArgumentException("AUTHORED_MODEL_CHECKSUM_MISMATCH:"+id);
+        if(!asset.sha256().equals(hash))throw new IllegalArgumentException("AUTHORED_MODEL_CHECKSUM_MISMATCH:"+id+" — selected file changed; refresh its explicit hash in the mapping XML before preparing a new run (tools/refresh-authored-hashes.py).");
         return asset;
     }
     private static String derivedId(MappingSpecification spec){return spec.root().attr("jcmRef")+":bridge-derived";}

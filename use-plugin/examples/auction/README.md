@@ -1,3 +1,19 @@
+# Current example policy - 2026-11-05
+
+The user temporarily disabled WithinDeadline in auction.istar and removed its
+XML oclClause binding. The original body is retained as a plain inactive comment.
+ParticipantPopulation remains active. Model hashes match these exact authored bytes.
+This example-specific policy overrides the older active-deadline description below;
+Core Draw.io and auction-false retain the original deadline policy. Native NPL
+clocks/deadlines, source holds, Goal/Task failures and other assertions are unchanged.
+A failed source Task can still produce Incomplete; this edit does not force PASS.
+
+After editing authored inputs, update their explicit XML hashes using
+`python tools/refresh-authored-hashes.py --mrv examples/auction/auction.mrv` from
+the plugin directory, then Prepare + Import again. Existing runs remain frozen.
+If disabling a named contract, also disable its explicit XML binding; the utility
+refreshes digests only and never changes verification requirements.
+
 # Auction authored verification bundle
 
 Open Plugins > JaCaMo > use4Goal verification. Select auction.jcm, auction.csl,
