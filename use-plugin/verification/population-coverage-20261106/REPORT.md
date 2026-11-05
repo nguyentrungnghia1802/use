@@ -145,3 +145,8 @@ Compact evidence is in summary.json, presentation-receipt.json, package-receipt.
 and the two facet PNGs. Large gzip cuts, raw producer/spool data, failed-attempt
 logs, runtime work and unrelated Draw.io backups remain local. No transport
 credentials are included in this report or the committed receipts.
+
+Source and compact evidence delivery: commit
+39318f4bfaa1d9045d0451e361de2ddd6c93a570 was pushed to use origin/main and the remote
+head matched the local hash. The final checklist update is documentation only.
+The sibling jacamo source required no new changes in this follow-up.

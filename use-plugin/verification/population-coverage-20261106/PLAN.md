@@ -32,8 +32,12 @@ stay on their authored group. WithinDeadline remains explicitly inactive.
       existing failure, All and repeated exact-token review semantics retained.
 - [x] Focused build/tests and unchanged external Auction live acceptance.
 - [x] Refresh target/new, verify actual loaded/pinned runtime and plugin identities.
-- [ ] Commit/push only tested source and compact evidence; preserve local raw logs,
+- [x] Commit/push only tested source and compact evidence; preserve local raw logs,
       replays, generated layouts and unrelated Draw.io backups.
 
 No gate is complete until its evidence is recorded. Fresh manual desktop/Computer
 Use is outside this implementation acceptance unless separately authorized.
+
+Source delivery: 39318f4bfaa1d9045d0451e361de2ddd6c93a570 was pushed to origin/main
+and the remote branch hash was independently checked. This checklist closeout is
+documentation only; it does not change the tested/installed production artifacts.
