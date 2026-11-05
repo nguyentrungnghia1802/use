@@ -1,0 +1,506 @@
+{
+  "method": "ALL_ATTEMPTS_NATIVE_RECEIPT_RECONCILIATION",
+  "focusedTests": 52,
+  "manualDesktopAcceptance": false,
+  "productionChanges": false,
+  "attempts": [
+    {
+      "directory": "hello-world-1793904703222",
+      "producerRun": "20261106-015144-235-480c14c1",
+      "nativeOutcomesReached": true,
+      "sourceUnchanged": true,
+      "presentedCuts": 14,
+      "nativeGoalCounts": {
+        "FULFILLED": 2
+      },
+      "operationChecks": {
+        "POST:PASS": 13,
+        "PRE:PASS": 13
+      },
+      "reviewedFailureCount": 0,
+      "requiredEvidenceGaps": [],
+      "reconciledApprovalReceipts": 14,
+      "rawSourceCoverage": "INCOMPLETE",
+      "supportingSkipped": [
+        {
+          "id": "NATIVE:OrgContext::CslV4RoleCompatibility",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN"
+        }
+      ],
+      "finalBusinessObjects": {
+        "Console:Console_2641782ecfc06602ca08": {
+          "name": "'gui'",
+          "numMsg": "1",
+          "workspace": "'cartago:workspace:1ff2c8a8-aae4-4973-991c-793726fbccf1:/main/usa:3229912e-026f-46fd-bc9d-9e22f4d31983'"
+        },
+        "Console:Console_a2c58970b9f18a99b533": {
+          "name": "'gui'",
+          "numMsg": "12",
+          "workspace": "'cartago:workspace:1ff2c8a8-aae4-4973-991c-793726fbccf1:/main/jacamo:df7da1cd-b248-440b-a21f-0340f07ca9b9'"
+        },
+        "Console:Console_d8ff9edce02bf0af4d24": {
+          "name": "'gui'",
+          "numMsg": "1",
+          "workspace": "'cartago:workspace:1ff2c8a8-aae4-4973-991c-793726fbccf1:/main/italy:d692b197-d4ce-41bc-b390-3d04c0ee652f'"
+        },
+        "Console:Console_df031a303c12d240ab3e": {
+          "name": "'gui'",
+          "numMsg": "0",
+          "workspace": "'cartago:workspace:1ff2c8a8-aae4-4973-991c-793726fbccf1:/main/brazil:448c2f7c-273e-46dc-80f0-0d5611914419'"
+        },
+        "Console:Console_ffe439a7c221be541234": {
+          "name": "'gui'",
+          "numMsg": "0",
+          "workspace": "'cartago:workspace:1ff2c8a8-aae4-4973-991c-793726fbccf1:/main/france:881657e5-310d-4d68-b469-eba8d916c94a'"
+        },
+        "GreetingRun:GreetingRun_bdbd398747029ad299e2": {
+          "workspace": "'cartago:workspace:1ff2c8a8-aae4-4973-991c-793726fbccf1:/main/jacamo:df7da1cd-b248-440b-a21f-0340f07ca9b9'"
+        }
+      },
+      "presentation": {
+        "allVerdict": "COMPLETE_OBSERVED",
+        "executions": {
+          "Execution 1 \u2014 Console": "COMPLETE_OBSERVED"
+        },
+        "rawAuditCuts": 14,
+        "visibleStates": 14
+      },
+      "dataCoverage": {
+        "COMPLETE": 14
+      }
+    },
+    {
+      "directory": "house-building-1793904755891",
+      "producerRun": "20261106-015236-877-96614a70",
+      "nativeOutcomesReached": false,
+      "sourceUnchanged": true,
+      "presentedCuts": 10,
+      "nativeGoalCounts": {
+        "PENDING": 15
+      },
+      "operationChecks": {
+        "POST:PASS": 27,
+        "PRE:PASS": 27
+      },
+      "reviewedFailureCount": 0,
+      "requiredEvidenceGaps": [
+        {
+          "reason": "Verification unavailable: BridgeProtocolException:VERIFIED_CHECKPOINT_REQUEST_FAILED",
+          "state": "HELD_UNVERIFIED",
+          "token": "c5819739-00a3-4f35-9dc0-74b29f091acd"
+        }
+      ],
+      "reconciledApprovalReceipts": 10,
+      "rawSourceCoverage": "INCOMPLETE",
+      "supportingSkipped": [
+        {
+          "id": "NATIVE:OrgContext::CslV4RoleCompatibility",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN"
+        }
+      ],
+      "finalBusinessObjects": {
+        "BuildingRun:BuildingRun_0e442975474b1e0eba15": {
+          "workspace": "'cartago:workspace:0ef8018d-b574-4374-84a1-24227c72204a:/main:a538c429-e38a-4ea2-a8d8-8f3b35500389'"
+        },
+        "ProcurementAuction:ProcurementAuction_0275168b558a89e0e304": {
+          "currentBid": "1450.0",
+          "currentWinner": "'companyD7'",
+          "maxValue": "2000",
+          "name": "'auction_for_SitePreparation'",
+          "task": "'SitePreparation'",
+          "workspace": "'cartago:workspace:0ef8018d-b574-4374-84a1-24227c72204a:/main:a538c429-e38a-4ea2-a8d8-8f3b35500389'"
+        },
+        "ProcurementAuction:ProcurementAuction_12c4d0f92fb59616e789": {
+          "currentBid": "890.0",
+          "currentWinner": "'companyE'",
+          "maxValue": "1000",
+          "name": "'auction_for_Walls'",
+          "task": "'Walls'",
+          "workspace": "'cartago:workspace:0ef8018d-b574-4374-84a1-24227c72204a:/main:a538c429-e38a-4ea2-a8d8-8f3b35500389'"
+        },
+        "ProcurementAuction:ProcurementAuction_397b5b8783166c3e13f9": {
+          "currentBid": "2500.0",
+          "currentWinner": "'no_winner'",
+          "maxValue": "2500",
+          "name": "'auction_for_WindowsDoors'",
+          "task": "'WindowsDoors'",
+          "workspace": "'cartago:workspace:0ef8018d-b574-4374-84a1-24227c72204a:/main:a538c429-e38a-4ea2-a8d8-8f3b35500389'"
+        },
+        "ProcurementAuction:ProcurementAuction_b37579015324ce756a80": {
+          "currentBid": "500.0",
+          "currentWinner": "'no_winner'",
+          "maxValue": "500",
+          "name": "'auction_for_ElectricalSystem'",
+          "task": "'ElectricalSystem'",
+          "workspace": "'cartago:workspace:0ef8018d-b574-4374-84a1-24227c72204a:/main:a538c429-e38a-4ea2-a8d8-8f3b35500389'"
+        },
+        "ProcurementAuction:ProcurementAuction_bbf72952305932e419b1": {
+          "currentBid": "1090.0",
+          "currentWinner": "'companyE'",
+          "maxValue": "2000",
+          "name": "'auction_for_Roof'",
+          "task": "'Roof'",
+          "workspace": "'cartago:workspace:0ef8018d-b574-4374-84a1-24227c72204a:/main:a538c429-e38a-4ea2-a8d8-8f3b35500389'"
+        },
+        "ProcurementAuction:ProcurementAuction_d5f2342b8e4cc8722904": {
+          "currentBid": "500.0",
+          "currentWinner": "'no_winner'",
+          "maxValue": "500",
+          "name": "'auction_for_Plumbing'",
+          "task": "'Plumbing'",
+          "workspace": "'cartago:workspace:0ef8018d-b574-4374-84a1-24227c72204a:/main:a538c429-e38a-4ea2-a8d8-8f3b35500389'"
+        },
+        "ProcurementAuction:ProcurementAuction_dd24c5c95085f262def6": {
+          "currentBid": "890.0",
+          "currentWinner": "'companyE'",
+          "maxValue": "1000",
+          "name": "'auction_for_Floors'",
+          "task": "'Floors'",
+          "workspace": "'cartago:workspace:0ef8018d-b574-4374-84a1-24227c72204a:/main:a538c429-e38a-4ea2-a8d8-8f3b35500389'"
+        }
+      }
+    },
+    {
+      "directory": "house-building-1793905151296",
+      "producerRun": "20261106-015912-391-49292a44",
+      "nativeOutcomesReached": true,
+      "sourceUnchanged": true,
+      "presentedCuts": 31,
+      "nativeGoalCounts": {
+        "FULFILLED": 15
+      },
+      "operationChecks": {
+        "PRE:PASS": 126,
+        "POST:PASS": 126
+      },
+      "reviewedFailureCount": 0,
+      "requiredEvidenceGaps": [],
+      "reconciledApprovalReceipts": 31,
+      "rawSourceCoverage": "INCOMPLETE",
+      "supportingSkipped": [
+        {
+          "id": "NATIVE:OrgContext::CslV4RoleCompatibility",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN"
+        }
+      ],
+      "finalBusinessObjects": {
+        "BuildProgress:BuildProgress_1fdeaf785824daa987dd": {
+          "buildRoofAt": "614",
+          "buildWallsAt": "587",
+          "fitDoorsAt": "603",
+          "fitWindowsAt": "606",
+          "installElectricalSystemAt": "639",
+          "installPlumbingAt": "636",
+          "layFloorsAt": "576",
+          "paintExteriorAt": "653",
+          "paintInteriorAt": "665",
+          "prepareSiteAt": "563",
+          "workspace": "'cartago:workspace:60286a26-4d40-48af-b27f-e55c13f4a3f8:/main:d80b21ee-06c1-45f1-ad94-da712f93a1b4'"
+        },
+        "BuildingRun:BuildingRun_d511583181f3eb0dd117": {
+          "workspace": "'cartago:workspace:60286a26-4d40-48af-b27f-e55c13f4a3f8:/main:d80b21ee-06c1-45f1-ad94-da712f93a1b4'"
+        },
+        "ProcurementAuction:ProcurementAuction_0802274b82975c2a9dbb": {
+          "currentBid": "1100.0",
+          "currentWinner": "'companyC3'",
+          "maxValue": "1200",
+          "name": "'auction_for_Painting'",
+          "task": "'Painting'",
+          "workspace": "'cartago:workspace:60286a26-4d40-48af-b27f-e55c13f4a3f8:/main:d80b21ee-06c1-45f1-ad94-da712f93a1b4'"
+        },
+        "ProcurementAuction:ProcurementAuction_482fd54c7130afc84af2": {
+          "currentBid": "1224.0",
+          "currentWinner": "'companyD3'",
+          "maxValue": "2500",
+          "name": "'auction_for_WindowsDoors'",
+          "task": "'WindowsDoors'",
+          "workspace": "'cartago:workspace:60286a26-4d40-48af-b27f-e55c13f4a3f8:/main:d80b21ee-06c1-45f1-ad94-da712f93a1b4'"
+        },
+        "ProcurementAuction:ProcurementAuction_6ae51d1a43443be8d5ff": {
+          "currentBid": "1090.0",
+          "currentWinner": "'companyE'",
+          "maxValue": "2000",
+          "name": "'auction_for_Roof'",
+          "task": "'Roof'",
+          "workspace": "'cartago:workspace:60286a26-4d40-48af-b27f-e55c13f4a3f8:/main:d80b21ee-06c1-45f1-ad94-da712f93a1b4'"
+        },
+        "ProcurementAuction:ProcurementAuction_74f520979c9c618d8270": {
+          "currentBid": "890.0",
+          "currentWinner": "'companyE'",
+          "maxValue": "1000",
+          "name": "'auction_for_Walls'",
+          "task": "'Walls'",
+          "workspace": "'cartago:workspace:60286a26-4d40-48af-b27f-e55c13f4a3f8:/main:d80b21ee-06c1-45f1-ad94-da712f93a1b4'"
+        },
+        "ProcurementAuction:ProcurementAuction_898590aeac1c1e147794": {
+          "currentBid": "300.0",
+          "currentWinner": "'companyA'",
+          "maxValue": "500",
+          "name": "'auction_for_Plumbing'",
+          "task": "'Plumbing'",
+          "workspace": "'cartago:workspace:60286a26-4d40-48af-b27f-e55c13f4a3f8:/main:d80b21ee-06c1-45f1-ad94-da712f93a1b4'"
+        },
+        "ProcurementAuction:ProcurementAuction_9204a0464bc5efe8ee2b": {
+          "currentBid": "890.0",
+          "currentWinner": "'companyE'",
+          "maxValue": "1000",
+          "name": "'auction_for_Floors'",
+          "task": "'Floors'",
+          "workspace": "'cartago:workspace:60286a26-4d40-48af-b27f-e55c13f4a3f8:/main:d80b21ee-06c1-45f1-ad94-da712f93a1b4'"
+        },
+        "ProcurementAuction:ProcurementAuction_9d5b95ad77d3524d4f85": {
+          "currentBid": "1850.0",
+          "currentWinner": "'companyB'",
+          "maxValue": "2000",
+          "name": "'auction_for_SitePreparation'",
+          "task": "'SitePreparation'",
+          "workspace": "'cartago:workspace:60286a26-4d40-48af-b27f-e55c13f4a3f8:/main:d80b21ee-06c1-45f1-ad94-da712f93a1b4'"
+        },
+        "ProcurementAuction:ProcurementAuction_e5e36d398674ca70a12d": {
+          "currentBid": "300.0",
+          "currentWinner": "'companyC5'",
+          "maxValue": "500",
+          "name": "'auction_for_ElectricalSystem'",
+          "task": "'ElectricalSystem'",
+          "workspace": "'cartago:workspace:60286a26-4d40-48af-b27f-e55c13f4a3f8:/main:d80b21ee-06c1-45f1-ad94-da712f93a1b4'"
+        }
+      }
+    },
+    {
+      "directory": "house-building-1793905514144",
+      "producerRun": "20261106-020515-237-4dd77623",
+      "nativeOutcomesReached": true,
+      "sourceUnchanged": true,
+      "presentedCuts": 31,
+      "nativeGoalCounts": {
+        "FULFILLED": 15
+      },
+      "operationChecks": {
+        "POST:PASS": 120,
+        "PRE:PASS": 120
+      },
+      "reviewedFailureCount": 0,
+      "requiredEvidenceGaps": [],
+      "reconciledApprovalReceipts": 31,
+      "rawSourceCoverage": "INCOMPLETE",
+      "supportingSkipped": [
+        {
+          "id": "NATIVE:OrgContext::CslV4RoleCompatibility",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN"
+        }
+      ],
+      "finalBusinessObjects": {
+        "BuildProgress:BuildProgress_6afdba9a831ab5f810bf": {
+          "buildRoofAt": "620",
+          "buildWallsAt": "590",
+          "fitDoorsAt": "607",
+          "fitWindowsAt": "611",
+          "installElectricalSystemAt": "641",
+          "installPlumbingAt": "642",
+          "layFloorsAt": "578",
+          "paintExteriorAt": "657",
+          "paintInteriorAt": "669",
+          "prepareSiteAt": "565",
+          "workspace": "'cartago:workspace:841adeae-4bb2-46cf-aa03-107cd92593f0:/main:d8479827-ed33-42d6-bd96-d314ac274986'"
+        },
+        "BuildingRun:BuildingRun_1a2869eeba7711503024": {
+          "workspace": "'cartago:workspace:841adeae-4bb2-46cf-aa03-107cd92593f0:/main:d8479827-ed33-42d6-bd96-d314ac274986'"
+        },
+        "ProcurementAuction:ProcurementAuction_1db76a96710304f1c9e1": {
+          "currentBid": "840.0",
+          "currentWinner": "'companyE'",
+          "maxValue": "1000",
+          "name": "'auction_for_Walls'",
+          "task": "'Walls'",
+          "workspace": "'cartago:workspace:841adeae-4bb2-46cf-aa03-107cd92593f0:/main:d8479827-ed33-42d6-bd96-d314ac274986'"
+        },
+        "ProcurementAuction:ProcurementAuction_26d8e63180172f875306": {
+          "currentBid": "890.0",
+          "currentWinner": "'companyE'",
+          "maxValue": "1000",
+          "name": "'auction_for_Floors'",
+          "task": "'Floors'",
+          "workspace": "'cartago:workspace:841adeae-4bb2-46cf-aa03-107cd92593f0:/main:d8479827-ed33-42d6-bd96-d314ac274986'"
+        },
+        "ProcurementAuction:ProcurementAuction_4580009daa25eee0139d": {
+          "currentBid": "1090.0",
+          "currentWinner": "'companyE'",
+          "maxValue": "2000",
+          "name": "'auction_for_Roof'",
+          "task": "'Roof'",
+          "workspace": "'cartago:workspace:841adeae-4bb2-46cf-aa03-107cd92593f0:/main:d8479827-ed33-42d6-bd96-d314ac274986'"
+        },
+        "ProcurementAuction:ProcurementAuction_658663dd659cbbba1ef6": {
+          "currentBid": "300.0",
+          "currentWinner": "'companyC3'",
+          "maxValue": "500",
+          "name": "'auction_for_ElectricalSystem'",
+          "task": "'ElectricalSystem'",
+          "workspace": "'cartago:workspace:841adeae-4bb2-46cf-aa03-107cd92593f0:/main:d8479827-ed33-42d6-bd96-d314ac274986'"
+        },
+        "ProcurementAuction:ProcurementAuction_b16c1bdd79e8935b22f4": {
+          "currentBid": "300.0",
+          "currentWinner": "'companyA'",
+          "maxValue": "500",
+          "name": "'auction_for_Plumbing'",
+          "task": "'Plumbing'",
+          "workspace": "'cartago:workspace:841adeae-4bb2-46cf-aa03-107cd92593f0:/main:d8479827-ed33-42d6-bd96-d314ac274986'"
+        },
+        "ProcurementAuction:ProcurementAuction_b914bd9d45d546b23893": {
+          "currentBid": "1145.0",
+          "currentWinner": "'companyD7'",
+          "maxValue": "2000",
+          "name": "'auction_for_SitePreparation'",
+          "task": "'SitePreparation'",
+          "workspace": "'cartago:workspace:841adeae-4bb2-46cf-aa03-107cd92593f0:/main:d8479827-ed33-42d6-bd96-d314ac274986'"
+        },
+        "ProcurementAuction:ProcurementAuction_cee9e17342ab44f8c471": {
+          "currentBid": "1100.0",
+          "currentWinner": "'companyC3'",
+          "maxValue": "1200",
+          "name": "'auction_for_Painting'",
+          "task": "'Painting'",
+          "workspace": "'cartago:workspace:841adeae-4bb2-46cf-aa03-107cd92593f0:/main:d8479827-ed33-42d6-bd96-d314ac274986'"
+        },
+        "ProcurementAuction:ProcurementAuction_da3e80449bc587422c6e": {
+          "currentBid": "1695.0",
+          "currentWinner": "'companyD1'",
+          "maxValue": "2500",
+          "name": "'auction_for_WindowsDoors'",
+          "task": "'WindowsDoors'",
+          "workspace": "'cartago:workspace:841adeae-4bb2-46cf-aa03-107cd92593f0:/main:d8479827-ed33-42d6-bd96-d314ac274986'"
+        }
+      },
+      "presentation": {
+        "allVerdict": "COMPLETE_OBSERVED",
+        "executions": {
+          "Execution 1 \u2014 ProcurementAuction, ProcurementAuction, ProcurementAuction, ProcurementAuction, ProcurementAuction, ProcurementAuction, ProcurementAuction, ProcurementAuction": "COMPLETE_OBSERVED"
+        },
+        "rawAuditCuts": 31,
+        "visibleStates": 24
+      },
+      "dataCoverage": {
+        "COMPLETE": 31
+      }
+    },
+    {
+      "directory": "house-building-1793905863758",
+      "producerRun": "20261106-021104-751-814d173f",
+      "nativeOutcomesReached": true,
+      "sourceUnchanged": true,
+      "presentedCuts": 34,
+      "nativeGoalCounts": {
+        "FULFILLED": 15
+      },
+      "operationChecks": {
+        "POST:PASS": 126,
+        "PRE:PASS": 126
+      },
+      "reviewedFailureCount": 0,
+      "requiredEvidenceGaps": [],
+      "reconciledApprovalReceipts": 34,
+      "rawSourceCoverage": "INCOMPLETE",
+      "supportingSkipped": [
+        {
+          "id": "NATIVE:OrgContext::CslV4RoleCompatibility",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN"
+        }
+      ],
+      "finalBusinessObjects": {
+        "BuildProgress:BuildProgress_3abd0419a38a6eb83e35": {
+          "buildRoofAt": "637",
+          "buildWallsAt": "605",
+          "fitDoorsAt": "622",
+          "fitWindowsAt": "623",
+          "installElectricalSystemAt": "654",
+          "installPlumbingAt": "657",
+          "layFloorsAt": "594",
+          "paintExteriorAt": "671",
+          "paintInteriorAt": "683",
+          "prepareSiteAt": "581",
+          "workspace": "'cartago:workspace:bb6310c5-f404-4967-ab2b-dff93c537328:/main:7542d46a-4b28-45a0-9824-45e08644731e'"
+        },
+        "BuildingRun:BuildingRun_bca27ad6ddeffea0b619": {
+          "workspace": "'cartago:workspace:bb6310c5-f404-4967-ab2b-dff93c537328:/main:7542d46a-4b28-45a0-9824-45e08644731e'"
+        },
+        "ProcurementAuction:ProcurementAuction_82621526451a3f0aebc1": {
+          "currentBid": "1784.0",
+          "currentWinner": "'companyD5'",
+          "maxValue": "2500",
+          "name": "'auction_for_WindowsDoors'",
+          "task": "'WindowsDoors'",
+          "workspace": "'cartago:workspace:bb6310c5-f404-4967-ab2b-dff93c537328:/main:7542d46a-4b28-45a0-9824-45e08644731e'"
+        },
+        "ProcurementAuction:ProcurementAuction_883de731278b6519db96": {
+          "currentBid": "1100.0",
+          "currentWinner": "'companyC4'",
+          "maxValue": "1200",
+          "name": "'auction_for_Painting'",
+          "task": "'Painting'",
+          "workspace": "'cartago:workspace:bb6310c5-f404-4967-ab2b-dff93c537328:/main:7542d46a-4b28-45a0-9824-45e08644731e'"
+        },
+        "ProcurementAuction:ProcurementAuction_93b2c53fafe2eaad968b": {
+          "currentBid": "300.0",
+          "currentWinner": "'companyC2'",
+          "maxValue": "500",
+          "name": "'auction_for_ElectricalSystem'",
+          "task": "'ElectricalSystem'",
+          "workspace": "'cartago:workspace:bb6310c5-f404-4967-ab2b-dff93c537328:/main:7542d46a-4b28-45a0-9824-45e08644731e'"
+        },
+        "ProcurementAuction:ProcurementAuction_a727fa5456a1fd1aaad7": {
+          "currentBid": "936.0",
+          "currentWinner": "'companyD8'",
+          "maxValue": "2000",
+          "name": "'auction_for_SitePreparation'",
+          "task": "'SitePreparation'",
+          "workspace": "'cartago:workspace:bb6310c5-f404-4967-ab2b-dff93c537328:/main:7542d46a-4b28-45a0-9824-45e08644731e'"
+        },
+        "ProcurementAuction:ProcurementAuction_c4a261143a601a5c469b": {
+          "currentBid": "300.0",
+          "currentWinner": "'companyA'",
+          "maxValue": "500",
+          "name": "'auction_for_Plumbing'",
+          "task": "'Plumbing'",
+          "workspace": "'cartago:workspace:bb6310c5-f404-4967-ab2b-dff93c537328:/main:7542d46a-4b28-45a0-9824-45e08644731e'"
+        },
+        "ProcurementAuction:ProcurementAuction_e20b5a1a1ec5d2f36ce5": {
+          "currentBid": "890.0",
+          "currentWinner": "'companyE'",
+          "maxValue": "1000",
+          "name": "'auction_for_Floors'",
+          "task": "'Floors'",
+          "workspace": "'cartago:workspace:bb6310c5-f404-4967-ab2b-dff93c537328:/main:7542d46a-4b28-45a0-9824-45e08644731e'"
+        },
+        "ProcurementAuction:ProcurementAuction_e79a85ec33c3d7ba07c1": {
+          "currentBid": "1090.0",
+          "currentWinner": "'companyE'",
+          "maxValue": "2000",
+          "name": "'auction_for_Roof'",
+          "task": "'Roof'",
+          "workspace": "'cartago:workspace:bb6310c5-f404-4967-ab2b-dff93c537328:/main:7542d46a-4b28-45a0-9824-45e08644731e'"
+        },
+        "ProcurementAuction:ProcurementAuction_fd38f7d3a52eb3dacb2b": {
+          "currentBid": "890.0",
+          "currentWinner": "'companyE'",
+          "maxValue": "1000",
+          "name": "'auction_for_Walls'",
+          "task": "'Walls'",
+          "workspace": "'cartago:workspace:bb6310c5-f404-4967-ab2b-dff93c537328:/main:7542d46a-4b28-45a0-9824-45e08644731e'"
+        }
+      },
+      "presentation": {
+        "allVerdict": "COMPLETE_OBSERVED",
+        "executions": {
+          "Execution 1 \u2014 ProcurementAuction, ProcurementAuction, ProcurementAuction, ProcurementAuction, ProcurementAuction, ProcurementAuction, ProcurementAuction, ProcurementAuction": "COMPLETE_OBSERVED"
+        },
+        "rawAuditCuts": 34,
+        "visibleStates": 23
+      },
+      "dataCoverage": {
+        "COMPLETE": 34
+      }
+    }
+  ],
+  "stabilityFullyProven": false,
+  "remainingIssue": "Initial House Building attempt lost checkpoint control requests after an approved cut; root cause not reproduced in three diagnostic reruns. Retain original failure."
+}

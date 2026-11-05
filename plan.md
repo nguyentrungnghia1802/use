@@ -1,3 +1,10 @@
+**Additional authored-case audit 2026-11-06:** Hello World completed, and House
+Building completed in three diagnostic reruns after an initial control-channel
+error. Required checkpoint data coverage and offscreen execution-scoped results
+passed. The intermittent system fault remains unlocalized; no blanket stability
+sign-off is claimed. No production semantics changed. See the
+[audit report](use-plugin/verification/additional-cases-20261106/REPORT.md).
+
 **Population coverage 2026-11-06:** versioned current agent inventory, exact native
 mapping reconciliation and visible scoped data coverage are implemented. Authored
 constraints and raw source/history quality remain unchanged. Focused tests, live

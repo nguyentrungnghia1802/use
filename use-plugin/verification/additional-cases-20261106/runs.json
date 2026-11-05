@@ -1,0 +1,17 @@
+{
+  "hello-world": {
+    "directory": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-cases-20261106\\hello-world-1793904703222",
+    "state": "FINISHED",
+    "exitCode": 0
+  },
+  "house-building": {
+    "directory": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-cases-20261106\\house-building-1793905863758",
+    "state": "FINISHED",
+    "previousDirectories": [
+      "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-cases-20261106\\house-building-1793904755891",
+      "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-cases-20261106\\house-building-1793905151296",
+      "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\additional-cases-20261106\\house-building-1793905514144"
+    ],
+    "exitCode": 0
+  }
+}
