@@ -1,0 +1,16 @@
+NATURAL_CUT a4769d4d-2725-40b5-90c3-1d6c3fc7f3ac task-post:execution-steps:A_start_t1 QUIESCING
+NATURAL_CUT 39a2c79b-8944-4c1a-8a8e-a8f3e2db8a46 task-post:execution-steps:A_start_t2 QUIESCING
+NATURAL_CUT c38674de-914b-4d9a-ad7b-bff09a72646d task-post:execution-steps:P_bid_t1 QUIESCING
+NATURAL_CUT f9aefbbb-e552-4688-80d1-6d781bc86e08 task-post:execution-steps:P_bid_t2 QUIESCING
+NATURAL_CUT da4e3aa7-2dcb-4ece-a113-edc68377dd91 task-post:execution-steps:P_bid_t2 VERIFYING
+NATURAL_CUT ac43c3a6-608d-4771-aaee-e7c7d96403fe task-post:execution-steps:P_bid_t2 QUIESCING
+NATURAL_CUT 8f5a6d17-0572-4058-8ac7-b2e092742fa3 task-post:execution-steps:P_bid_t2 QUIESCING
+NATURAL_CUT 974b48c6-9441-4eb4-ab72-8cf027210017 task-post:execution-steps:P_bid_t2 QUIESCING
+NATURAL_CUT b56a3e9e-b949-40a3-9f45-eccfb163f392 task-post:execution-steps:P_bid_t2 QUIESCING
+NATURAL_CUT b8068fac-116b-4d57-acfa-346c500d2781 task-post:execution-steps:A_decide_t2 QUIESCING
+NATURAL_CUT 4891912e-78e1-4a25-98c9-d8bad5ba6257 scheme-post:scheme-history:terminal QUIESCING
+NATURAL_CUT e894c0b4-469c-4743-b8e8-1460be899d23 norm-terminal:norm-lifecycle QUIESCING
+NATURAL_CUT 7ff70e1c-790d-4bc5-81ff-cba16feb312b scheme-post:scheme-history:administrative QUIESCING
+NATURAL_CUT 7f3907a0-8f08-47eb-a538-574ca012cb41 task-post:execution-steps:A_decide_t2 QUIESCING
+NATURAL_CUT 0cb672bf-5b5f-4e30-bc08-742b3499c84f scheme-post:scheme-history:terminal QUIESCING
+NATURAL_AUCTION_VERIFICATION_AUDIT_PASS
