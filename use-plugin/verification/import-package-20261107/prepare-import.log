@@ -1,0 +1,4 @@
+LOADED org.jacamo.bridge.contract.JasonAgentInventory D:\_CODE_BANK\Project_\08_Thesis\use\use-assembly\target\new\lib\plugins\use-jacamo-plugin-1.0.1.jar SHA256=3831f846abc4de14e363ddc758f4d49d5460438261693b890d6e061026d9b684
+LOADED org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources D:\_CODE_BANK\Project_\08_Thesis\use\use-assembly\target\new\lib\plugins\use-jacamo-plugin-1.0.1.jar SHA256=3831f846abc4de14e363ddc758f4d49d5460438261693b890d6e061026d9b684
+IMPORTED model=AuctionState producerPID=16968
+PACKAGED_PREPARE_IMPORT_PASS

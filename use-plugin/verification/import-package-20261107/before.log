@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\tools\update-runnable-plugin.py", line 89, in <module>
+    main()
+    ~~~~^^
+  File "D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\tools\update-runnable-plugin.py", line 52, in main
+    counts = validate(plugin, [contract, engine])
+  File "D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\tools\update-runnable-plugin.py", line 34, in validate
+    raise RuntimeError('SHADED_DEPENDENCY_CLASS_MISSING:' + name) from None
+RuntimeError: SHADED_DEPENDENCY_CLASS_MISSING:org/jacamo/bridge/contract/JasonAgentInventory.class
