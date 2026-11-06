@@ -1,0 +1,6 @@
+Picked up JAVA_TOOL_OPTIONS:  -Djava.util.logging.config.file=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\verification\checkpoint-transport-ui-20261106\bridge-debug.properties
+SOURCE_CUT 8a6fdfc1-20be-4e3e-a6a0-5ad9b7793510 task-post:execution-steps:A_start_t1 QUIESCING
+SOURCE_CUT 6da8a455-f6c0-4fe4-918a-ade224d3edc2 task-post:execution-steps:A_start_t2 QUIESCING
+SOURCE_CUT fd7f9a7c-3661-4b71-a481-8127e466abba task-post:execution-steps:P_bid_t1 QUIESCING
+SOURCE_CUT 4ad9b844-3e9e-481e-aabd-7c4ad18f6bb5 task-post:execution-steps:P_bid_t2 QUIESCING
+SOURCE_CUT 5458a010-c701-4443-b68b-92fd2b08ba84 task-post:execution-steps:P_bid_t2 QUIESCING

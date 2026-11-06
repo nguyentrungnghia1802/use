@@ -23,6 +23,23 @@ public final class RuntimeEventJournal {
     private long ordinal, bytes, decodedBytes;
     private boolean gap;
     private String diagnostic = "";
+    // Writer-authenticated physical prefixes let readers check all earlier bytes
+    // without reparsing earlier semantic results. Each gzip member is one record.
+    // The optional bounded index is acceleration only; older/large histories keep
+    // the original full chain scan. No evidence is evicted from disk.
+    private record Anchor(long bytes,String physicalHash,String chain,String interval) { }
+    private static final int MAX_ANCHORS=65536;
+    private final java.util.ArrayList<Anchor> anchors=new java.util.ArrayList<>();
+    private final java.security.MessageDigest physicalDigest=digest();
+    public record RangeReadStats(long checkedBytes,long parsedRecords,long decodedResults,boolean indexed,long elapsedNanos) { }
+    private volatile RangeReadStats lastRangeRead=new RangeReadStats(0,0,0,false,0);
+    public RangeReadStats lastRangeRead(){return lastRangeRead;}
+    private static java.security.MessageDigest digest(){try{return java.security.MessageDigest.getInstance("SHA-256");}catch(java.security.NoSuchAlgorithmException impossible){throw new IllegalStateException(impossible);}}
+    private void rememberAnchor(){
+        if(anchors.size()>=MAX_ANCHORS){anchors.clear();return;}
+        try{anchors.add(new Anchor(bytes,java.util.HexFormat.of().formatHex(((java.security.MessageDigest)physicalDigest.clone()).digest()),chain,interval));}
+        catch(CloneNotSupportedException unavailable){anchors.clear();}
+    }
     public RuntimeEventJournal(Path directory, int capacity, long maxBytes) {
         this(directory,capacity,maxBytes,false);
     }
@@ -33,6 +50,7 @@ public final class RuntimeEventJournal {
         try {
             Files.createDirectories(directory);
             path = Files.createTempFile(directory, "runtime-", compressed?".jsonl.gz":".jsonl");
+            rememberAnchor();
         } catch (java.io.IOException error) { throw new IllegalStateException("JOURNAL_CREATE_FAILED", error); }
     }
     public synchronized boolean append(String kind, Map<String, Object> payload, RuntimeVerificationResult result) {
@@ -62,7 +80,10 @@ public final class RuntimeEventJournal {
             byte[] stored=compressed?JournalStreams.compress(line):line;
             if (bytes + stored.length > maxBytes - 4096) { fail("JOURNAL_OVERFLOW"); return false; }
             Files.write(path, stored, StandardOpenOption.APPEND);
-            bytes += stored.length;decodedBytes+=line.length;chain = hash; add(new RuntimeHistoryPage.Entry(ordinal++, kind, interval, result, true,stateCommands)); return true;
+            bytes += stored.length;decodedBytes+=line.length;chain = hash;
+            physicalDigest.update(stored);
+            if(!anchors.isEmpty())rememberAnchor();
+            add(new RuntimeHistoryPage.Entry(ordinal++, kind, interval, result, true,stateCommands)); return true;
         } catch (RuntimeException | java.io.IOException error) { fail("JOURNAL_IO_OR_PAYLOAD_ERROR:" + error.getMessage()); return false; }
     }
     private void fail(String reason) {
@@ -135,21 +156,42 @@ public final class RuntimeEventJournal {
     /** One checked streaming scan for a prefix no longer in the RAM tail. The
      * visitor must not mutate the journal; parsing/IO stays off the native EDT. */
     public void visitRange(long from,long end,java.util.function.Consumer<RuntimeHistoryPage.Entry> visitor){
+        visitRange(from,end,kind->true,visitor);
+    }
+    /** Filtering avoids decoding audit copies; their bytes and chain are still
+     * verified exactly as every other record in the committed prefix. */
+    public void visitRange(long from,long end,java.util.function.Predicate<String> include,java.util.function.Consumer<RuntimeHistoryPage.Entry> visitor){
         if(javax.swing.SwingUtilities.isEventDispatchThread())throw new IllegalStateException("PERSISTED_HISTORY_REQUIRES_WORKER");
-        long physical,total;synchronized(this){if(from<0||end<from||end>ordinal||gap)throw new IllegalStateException("HISTORY_PREFIX_UNAVAILABLE:"+diagnostic);physical=bytes;total=ordinal;}
+        long started=System.nanoTime(),parsed=0,decoded=0;
+        long physical,total;Anchor begin=null,finish=null;
+        synchronized(this){if(from<0||end<from||end>ordinal||gap)throw new IllegalStateException("HISTORY_PREFIX_UNAVAILABLE:"+diagnostic);physical=bytes;total=ordinal;
+            if(end<anchors.size()){begin=anchors.get((int)from);finish=anchors.get((int)end);}}
         try{if(Files.isSymbolicLink(path)||Files.size(path)>maxBytes)throw new IllegalStateException("HISTORY_FILE_UNSAFE");}catch(java.io.IOException error){throw new IllegalStateException("HISTORY_READ_FAILED",error);}
-        String previous="",activeInterval="CORE_ONLY";
-        try(var reader=JournalStreams.reader(path,physical,compressed)){
-            for(long position=0;position<end;position++){
+        // Authenticate the complete physical prefix against the sole writer's
+        // digest, including bytes before 'from'. Corruption cannot hide behind a
+        // seek offset or an audit filter. Concurrent appends remain outside it.
+        if(finish!=null)try(var input=JournalStreams.input(path,finish.bytes(),false)){
+            var checked=digest();byte[] block=new byte[65536];long count=0;int n;
+            while((n=input.read(block))!=-1){checked.update(block,0,n);count+=n;}
+            if(count!=finish.bytes()||!java.util.HexFormat.of().formatHex(checked.digest()).equals(finish.physicalHash()))throw new IllegalStateException("HISTORY_PHYSICAL_PREFIX_CORRUPT");
+        }catch(java.io.IOException error){throw new IllegalStateException("HISTORY_READ_FAILED",error);}
+        if(finish!=null&&from==end){lastRangeRead=new RangeReadStats(finish.bytes(),0,0,true,System.nanoTime()-started);return;}
+        long offset=begin==null?0:begin.bytes(),limit=finish==null?physical:finish.bytes();
+        String previous=begin==null?"":begin.chain(),activeInterval=begin==null?"CORE_ONLY":begin.interval();
+        try(var reader=JournalStreams.reader(path,offset,limit-offset,compressed)){
+            for(long position=begin==null?0:from;position<end;position++){
                 String line=reader.readLine();if(line==null)throw new IllegalStateException("HISTORY_TRUNCATED");
+                parsed++;
                 var body=new LinkedHashMap<>(CanonicalJson.object(CanonicalJson.decode(line.getBytes(StandardCharsets.UTF_8))));
                 String hash=(String)body.remove("entryHash");
                 if(((Number)body.get("ordinal")).longValue()!=position||!previous.equals(body.get("previousHash"))||!ExternalOclConstraintService.sha256(CanonicalJson.encode(body)).equals(hash))throw new IllegalStateException("HISTORY_CHAIN_CORRUPT:"+position);
                 previous=hash;if(body.containsKey("verificationInterval"))activeInterval=(String)body.get("verificationInterval");
-                if(position>=from){var result=RuntimeVerificationResult.fromMap(CanonicalJson.object(body.get("result")));visitor.accept(new RuntimeHistoryPage.Entry(position,(String)body.get("kind"),activeInterval,result,true));}
+                if(position>=from&&include.test((String)body.get("kind"))){var result=RuntimeVerificationResult.fromMap(CanonicalJson.object(body.get("result")));decoded++;visitor.accept(new RuntimeHistoryPage.Entry(position,(String)body.get("kind"),activeInterval,result,true));}
             }
-            if(end==total&&reader.readLine()!=null)throw new IllegalStateException("HISTORY_PREFIX_LENGTH_MISMATCH");
+            if(finish!=null&&!previous.equals(finish.chain()))throw new IllegalStateException("HISTORY_CHAIN_ANCHOR_MISMATCH");
+            if((finish!=null||end==total)&&reader.readLine()!=null)throw new IllegalStateException("HISTORY_PREFIX_LENGTH_MISMATCH");
         }catch(java.io.IOException error){throw new IllegalStateException("HISTORY_READ_FAILED",error);}
+        finally{lastRangeRead=new RangeReadStats(limit,parsed,decoded,finish!=null,System.nanoTime()-started);}
     }
     public synchronized boolean hasGap() { return gap; }
     public synchronized String diagnostic() { return diagnostic; }

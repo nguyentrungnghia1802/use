@@ -11,6 +11,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** Manifest-selected live audit. No injected operations, verdicts, seeds or GUI windows. */
 public final class AuthoredCaseVerificationAudit {
+    static RuntimeEventJournal journal(DefaultJaCaMoFacade facade)throws Exception {
+        var owner=DefaultJaCaMoFacade.class.getDeclaredField("nativeWorkspace");owner.setAccessible(true);var workspace=owner.get(facade);
+        var projector=workspace.getClass().getDeclaredField("runtimeProjector");projector.setAccessible(true);
+        return ((NativeRuntimeProjector)projector.get(workspace)).coordinator().journal();
+    }
     static void dump(DefaultJaCaMoFacade facade,Path evidence,String prefix)throws Exception {
         for(long pid:List.of(facade.ownedProducerStatus().pid(),ProcessHandle.current().pid())) {
             Path file=evidence.resolve(prefix+(pid==ProcessHandle.current().pid()?"-consumer-threads.txt":"-producer-threads.txt"));
@@ -24,9 +29,9 @@ public final class AuthoredCaseVerificationAudit {
         var core=CanonicalJson.object(snapshot.result().semantic().observation().getOrDefault("originalEngine",Map.of()));
         for(Object raw:(List<?>)core.getOrDefault("contexts",List.of())) {
             var context=CanonicalJson.object(raw);
-            for(Object value:CanonicalJson.object(context.getOrDefault("occurrences",Map.of())).values()) {
-                var occurrence=CanonicalJson.object(value);
-                result.put(context.get("context")+" / "+occurrence.get("sourceElement"),Objects.toString(occurrence.get("aggregateStatus")));
+            for(var entry:CanonicalJson.object(context.getOrDefault("occurrences",Map.of())).entrySet()) {
+                var occurrence=CanonicalJson.object(entry.getValue());if(!"GOAL".equals(occurrence.get("elementKind")))continue;
+                result.put(context.get("context")+" / "+entry.getKey(),Objects.toString(occurrence.get("aggregateStatus")));
             }
         }
         return result;
@@ -36,16 +41,19 @@ public final class AuthoredCaseVerificationAudit {
         catch(Throwable failure){failure.printStackTrace();System.exit(1);}
     }
     static void run(Path models,Path evidence)throws Exception {
-        models=models.toRealPath();Files.createDirectories(evidence);Path checkout=Path.of("..").toRealPath();
-        var manifest=CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(models.resolve("case-manifest.json"))));
+        models=models.toRealPath();Files.createDirectories(evidence);Path checkout=Path.of(System.getProperty("audit.checkout","..")).toRealPath();
+        Path inputManifest=Path.of(System.getProperty("audit.inputs",models.resolve("case-manifest.json").toString()));
+        var manifest=CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(inputManifest)));
         var inputs=CanonicalJson.object(manifest.get("inputs"));
         var original=VerifiedCheckpointsAuctionIT.sourceHashes(models);
         var host=new Session();var facade=new DefaultJaCaMoFacade(checkout,host);facade.verifiedCheckpointMode(true);facade.nextJournalBudgetBytes(536870912);
         var cuts=new ConcurrentHashMap<String,Map<String,VerifiedCheckpointProtocol.Check>>();
         var cutHashes=new ConcurrentHashMap<String,String>();var operations=new ConcurrentHashMap<String,Object>();
+        var historyReads=new ConcurrentHashMap<String,Object>();
         var failures=new ArrayList<Object>();var gaps=new ArrayList<Object>();var reviewed=new HashSet<String>();
+        int transportPrefix=Integer.getInteger("audit.transport.prefix",0);boolean prefixChecked=false;
         var ledgerSummary=new ArrayList<Object>();boolean reached=false;String last="",dumped="";long activity=System.nanoTime();
-        AutoCloseable presentation=facade.registerCheckpointPresenter((view,cut,checks)->{
+        JaCaMoFacade.CheckpointPresenter recorder=(view,cut,checks)->{
             try {
                 assertEquals(cut.result().resultHash(),RuntimeVerificationResult.fromMap(cut.result().toMap()).resultHash());
                 NaturalAuctionVerificationAudit.save(evidence.resolve("cut-"+view.token()+".json.gz"),Map.of("view",Map.of("token",view.token(),"checkpoint",view.checkpoint(),"reason",view.reason()),
@@ -56,13 +64,17 @@ public final class AuthoredCaseVerificationAudit {
                         operations.put(row.id()+":"+row.kind()+":"+row.invocation(),Map.of("id",row.id(),"kind",row.kind(),"verdict",row.verdict().name(),"invocation",row.invocation(),"expression",row.expression(),"witness",witness));
                     }
                 cutHashes.put(view.token(),cut.result().resultHash());cuts.put(view.token(),Map.copyOf(checks));
+                historyReads.put(view.token(),SemanticJson.tree(journal(facade).lastRangeRead()));
                 return CompletableFuture.completedFuture(null);
             }catch(Throwable error){return CompletableFuture.failedFuture(error);}
-        });
+        };
+        var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",models.resolve((String)inputs.get("mapping")),models.resolve((String)inputs.get("ocl")),models.resolve((String)inputs.get("csl")),models.resolve((String)inputs.get("istar")),false);
+        Path classpath=Path.of(System.getProperty("audit.runtime.classpath",checkout.resolve("jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt").toString()));
+        var workbench=Boolean.getBoolean("audit.workbench")?new LiveCheckpointWorkbench(facade,selection,classpath,recorder,evidence):null;
+        AutoCloseable presentation=workbench==null?facade.registerCheckpointPresenter(recorder):workbench;
         try {
-            var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",models.resolve((String)inputs.get("mapping")),models.resolve((String)inputs.get("ocl")),models.resolve((String)inputs.get("csl")),models.resolve((String)inputs.get("istar")),false);
-            facade.prepareOwnedProducer(models.resolve((String)inputs.get("jcm")),selection,checkout.resolve("jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt"));
-            var system=host.system();assertNotNull(system);facade.startRuntime();long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(420);
+            Path project=models.resolve((String)inputs.get("jcm"));if(workbench==null)facade.prepareOwnedProducer(project,selection,classpath);else workbench.prepare(project);
+            var system=host.system();assertNotNull(system);if(workbench==null)facade.startRuntime();else workbench.start();long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(420);
             while(System.nanoTime()<end) {
                 assertSame(system,host.system());var view=facade.verifiedCheckpointState();
                 if(!view.token().isBlank()&&!view.token().equals(last)){last=view.token();activity=System.nanoTime();System.out.println("SOURCE_CUT "+view.token()+" "+view.checkpoint()+" "+view.state());}
@@ -85,6 +97,9 @@ public final class AuthoredCaseVerificationAudit {
                     gaps.add(Map.of("token",view.token(),"state",view.state(),"reason",view.reason()));break;
                 }
                 var status=goals(facade.verificationSnapshot());
+                // Explicitly bounded protocol/UI regression; it makes NO claim
+                // about business completion or unknown capability/resource goals.
+                if(transportPrefix>0&&cuts.size()>=transportPrefix&&view.state().equals("RUNNING")){prefixChecked=true;break;}
                 if(!status.isEmpty()&&status.values().stream().allMatch("FULFILLED"::equals)&&view.state().equals("RUNNING")&&System.nanoTime()-activity>TimeUnit.SECONDS.toNanos(6)){reached=true;break;}
                 Thread.sleep(100);
             }
@@ -95,10 +110,16 @@ public final class AuthoredCaseVerificationAudit {
             var summary=new TreeMap<String,Object>();summary.put("method","MANIFEST_SELECTED_UNCHANGED_SOURCE_NATIVE_CHECKPOINTS");summary.put("inputs",inputs);summary.put("producerRun",run);
             summary.put("presentedCuts",cuts.size());summary.put("reviewedFailures",failures);summary.put("requiredEvidenceGaps",gaps);summary.put("nativeGoals",goals(snapshot));summary.put("nativeOutcomesReached",reached);
             summary.put("sourceUnchanged",original.equals(VerifiedCheckpointsAuctionIT.sourceHashes(models)));summary.put("sourceHashes",original);summary.put("sourceDecisions",ledgerSummary);summary.put("operationChecks",operations.values());summary.put("manualDesktopAcceptance",false);
+            summary.put("historyReads",historyReads);
+            summary.put("transportPrefixChecked",prefixChecked);summary.put("requestedTransportPrefix",transportPrefix);
             Files.write(evidence.resolve("audit-receipt.json"),CanonicalJson.encode(summary));
-            assertTrue((Boolean)summary.get("sourceUnchanged"));assertTrue(gaps.isEmpty(),"Required evidence unavailable: "+gaps);assertTrue(reached,"Native outcome not reached; "+summary.get("nativeGoals"));assertFalse(cuts.isEmpty());
-            assertTrue(operations.values().stream().map(CanonicalJson::object).anyMatch(r->r.get("kind").equals("PRE")&&r.get("verdict").equals("PASS")),"Need a real native operation PRE");
-            assertTrue(operations.values().stream().map(CanonicalJson::object).anyMatch(r->r.get("kind").equals("POST")&&r.get("verdict").equals("PASS")),"Need a real native operation POST");
+            if(workbench!=null)workbench.receipt();
+            assertTrue((Boolean)summary.get("sourceUnchanged"));assertTrue(gaps.isEmpty(),"Required evidence unavailable: "+gaps);
+            if(transportPrefix>0)assertTrue(prefixChecked,"Required protocol/UI prefix was not completed");else assertTrue(reached,"Native outcome not reached; "+summary.get("nativeGoals"));assertFalse(cuts.isEmpty());
+            if(transportPrefix==0){
+                assertTrue(operations.values().stream().map(CanonicalJson::object).anyMatch(r->r.get("kind").equals("PRE")&&r.get("verdict").equals("PASS")),"Need a real native operation PRE");
+                assertTrue(operations.values().stream().map(CanonicalJson::object).anyMatch(r->r.get("kind").equals("POST")&&r.get("verdict").equals("PASS")),"Need a real native operation POST");
+            }
         }finally{try{presentation.close();}finally{facade.stopOwnedProducer();facade.close();}}
     }
 }

@@ -1,0 +1,14 @@
+Picked up JAVA_TOOL_OPTIONS:  -Djava.util.logging.config.file=D:\_CODE_BANK\Project_\08_Thesis\use\use-plugin\verification\checkpoint-transport-ui-20261106\bridge-debug.properties
+SOURCE_CUT f40f1863-e200-49e7-939f-bce9a52ec33d task-post:execution-steps:A_start_t1 QUIESCING
+SOURCE_CUT 9d33a454-f427-46e5-bed4-653a2853edeb task-post:execution-steps:A_start_t2 QUIESCING
+SOURCE_CUT 63c3f6ae-173d-4e18-a325-10b7508c3fae task-post:execution-steps:P_bid_t1 QUIESCING
+SOURCE_CUT 2619cc7e-c93f-446a-8a8c-655fa09c7ea7 task-post:execution-steps:P_bid_t2 QUIESCING
+SOURCE_CUT 4eae26ca-e5b5-46b2-b6fa-d21a280d2f47 task-post:execution-steps:P_bid_t2 VERIFYING
+SOURCE_CUT 9f944c76-2e97-41c3-b323-a94bfb73427f task-post:execution-steps:P_bid_t2 QUIESCING
+SOURCE_CUT 230e53c1-d0d8-4064-965a-db1e448ab776 task-post:execution-steps:P_bid_t2 QUIESCING
+SOURCE_CUT fd4a7d13-000d-4fec-9023-b0ca0f93e125 norm-terminal:norm-lifecycle QUIESCING
+SOURCE_CUT 6bbb6a2a-f329-4ec3-9295-dec143c1c733 scheme-post:scheme-history:administrative QUIESCING
+SOURCE_CUT 14a677c9-1ba4-44bf-9dfd-93f313efa779 scheme-post:scheme-history:administrative QUIESCING
+SOURCE_CUT 759f377a-99a5-4ede-a2fb-661516f20756 task-post:execution-steps:A_decide_t2 QUIESCING
+SOURCE_CUT 55b3d091-b6f1-4eb0-99fa-e808f6defb0e scheme-post:scheme-history:terminal QUIESCING
+AUTHORED_CASE_VERIFICATION_AUDIT_PASS

@@ -106,24 +106,25 @@ public final class VerifiedCheckpointInventory {
     /** Invocation checks belong to their captured PRE/POST states in the accepted
      * prefix. Applying the frozen state snapshot must not erase those outcomes. */
     public static Map<String,Check> evaluatePrefix(VerificationSnapshot cut,List<RuntimeHistoryPage.Entry> prefix,long fromOrdinal,long endOrdinal) {
-        var rows=new TreeMap<>(evaluate(cut));boolean missing=endOrdinal>fromOrdinal&&(prefix.isEmpty()||prefix.getFirst().ordinal()>fromOrdinal);boolean unknown=missing;
-        boolean failed=rows.get(VerifiedCheckpointProtocol.REQUIRED_CHECK).truth().equals("FAIL");
-        unknown|=!Set.of("PASS","FAIL").contains(rows.get(VerifiedCheckpointProtocol.REQUIRED_CHECK).truth());
-        for(var entry:prefix)if(!entry.kind().equals("CHECKPOINT_AUDIT")&&!entry.result().freshness().equals("TRACE_ONLY")&&entry.ordinal()>=fromOrdinal&&entry.ordinal()<endOrdinal&&entry.result().semantic()!=null
-                &&entry.result().sessionId().equals(cut.result().sessionId())&&entry.result().generation()==cut.result().generation()&&entry.result().modelRevision().equals(cut.result().modelRevision()))for(var check:entry.result().semantic().constraints()) {
+        var rows=new TreeMap<>(evaluate(cut));boolean missing=endOrdinal>fromOrdinal&&(prefix.isEmpty()||prefix.getFirst().ordinal()>fromOrdinal);
+        for(var entry:prefix)if(entry.ordinal()>=fromOrdinal&&entry.ordinal()<endOrdinal)addPrefixChecks(cut,entry,rows);
+        if(missing)rows.put("native.invocation-prefix",new Check("UNKNOWN","APPLICABLE","REQUIRED_INVOCATION_PREFIX_NOT_RETAINED"));
+        return aggregatePrefix(rows);
+    }
+    private static final Set<String> INVOCATION_KINDS=Set.of("PRE","POST","TASK_PRE","TASK_POST","INVOCATION_CONFORMANCE","TASK_INVOCATION");
+    private static void addPrefixChecks(VerificationSnapshot cut,RuntimeHistoryPage.Entry entry,Map<String,Check> rows){
+        if(entry.kind().equals("CHECKPOINT_AUDIT")||entry.result().freshness().equals("TRACE_ONLY")||entry.result().semantic()==null
+                ||!entry.result().sessionId().equals(cut.result().sessionId())||entry.result().generation()!=cut.result().generation()||!entry.result().modelRevision().equals(cut.result().modelRevision()))return;
+        for(var check:entry.result().semantic().constraints()) {
             // A transient cast-readiness diagnostic has no captured invocation
             // PRE/POST state. Its applicability is checked at the frozen cut.
             // Actual invocation failures/unknowns cannot be repaired by that cut.
-            if(!Set.of("PRE","POST","TASK_PRE","TASK_POST","INVOCATION_CONFORMANCE","TASK_INVOCATION").contains(check.kind())
+            if(!INVOCATION_KINDS.contains(check.kind())
                     &&!(check.kind().equals("RUNTIME_BINDING")&&!check.invocation().isBlank())
                     &&!(check.kind().equals("INVOCATION")&&!check.contextObject().isBlank()))continue;
             String truth=switch(check.verdict()){case PASS->"PASS";case FAIL->"FAIL";case ERROR->"ERROR";default->"UNKNOWN";};
             rows.put("prefix:"+entry.ordinal()+":"+check.id()+":"+check.invocation(),new Check(truth,"APPLICABLE",check.diagnostic()));
-            failed|=truth.equals("FAIL");unknown|=!Set.of("PASS","FAIL").contains(truth);
         }
-        if(missing)rows.put("native.invocation-prefix",new Check("UNKNOWN","APPLICABLE","REQUIRED_INVOCATION_PREFIX_NOT_RETAINED"));
-        rows.put(VerifiedCheckpointProtocol.REQUIRED_CHECK,new Check(failed?"FAIL":unknown?"UNKNOWN":"PASS","APPLICABLE",failed?"APPLICABLE_NATIVE_CHECK_FAILED":unknown?"APPLICABLE_REQUIRED_EVIDENCE_INCOMPLETE":"APPLICABLE_NATIVE_INVENTORY_PASSED"));
-        return Map.copyOf(rows);
     }
     public static Map<String,Check> evaluatePrefix(VerificationSnapshot cut,RuntimeEventJournal journal,long from,long end){
         var tail=journal.retainedEntries();
@@ -131,11 +132,10 @@ public final class VerifiedCheckpointInventory {
         var rows=new TreeMap<>(evaluate(cut));
         // Preserve every invocation result without keeping a second full history
         // in RAM. Eviction of a disk-persisted record is not missing evidence.
-        journal.visitRange(from,end,entry->{
-            if(entry.kind().equals("CHECKPOINT_AUDIT")||entry.result().freshness().equals("TRACE_ONLY")||entry.result().semantic()==null||entry.result().semantic().constraints().stream().noneMatch(c->Set.of("PRE","POST","TASK_PRE","TASK_POST","INVOCATION_CONFORMANCE","TASK_INVOCATION","RUNTIME_BINDING","INVOCATION").contains(c.kind())))return;
-            var one=evaluatePrefix(cut,List.of(entry),entry.ordinal(),entry.ordinal()+1);
-            one.forEach((id,value)->{if(id.startsWith("prefix:"))rows.put(id,value);});
-        });
+        journal.visitRange(from,end,kind->!kind.equals("CHECKPOINT_AUDIT"),entry->addPrefixChecks(cut,entry,rows));
+        return aggregatePrefix(rows);
+    }
+    private static Map<String,Check> aggregatePrefix(Map<String,Check> rows){
         boolean fail=rows.values().stream().anyMatch(c->c.applicability().equals("APPLICABLE")&&c.truth().equals("FAIL"));
         boolean unknown=rows.values().stream().anyMatch(c->c.applicability().equals("APPLICABLE")&&!Set.of("PASS","FAIL").contains(c.truth()));
         rows.put(VerifiedCheckpointProtocol.REQUIRED_CHECK,new Check(fail?"FAIL":unknown?"UNKNOWN":"PASS","APPLICABLE",fail?"APPLICABLE_NATIVE_CHECK_FAILED":unknown?"APPLICABLE_REQUIRED_EVIDENCE_INCOMPLETE":"APPLICABLE_NATIVE_INVENTORY_PASSED"));return Map.copyOf(rows);

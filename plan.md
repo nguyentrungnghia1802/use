@@ -1,4 +1,12 @@
-**Additional authored-case audit 2026-11-06:** Hello World completed, and House
+**Checkpoint reply/startup repair 2026-11-06:** live capability lock coupling and
+receipt retries depending on a later cut are repaired with failing-before/passing-
+after regressions. Checked history seeks, immutable snapshot cost reuse and
+source-only verified presentation address history/EDT/startup churn. 80 focused
+tests, live House Building/Hello World, a bounded Auction transport/UI regression,
+and installed House Building passed. Original native verdicts and unknown evidence
+remain unchanged. See the [repair report](use-plugin/verification/checkpoint-transport-ui-20261106/REPORT.md).
+
+**Earlier authored-case audit 2026-11-06:** Hello World completed, and House
 Building completed in three diagnostic reruns after an initial control-channel
 error. Required checkpoint data coverage and offscreen execution-scoped results
 passed. The intermittent system fault remains unlocalized; no blanket stability

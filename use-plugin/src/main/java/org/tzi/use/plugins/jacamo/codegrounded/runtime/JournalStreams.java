@@ -13,7 +13,12 @@ final class JournalStreams {
   return output.toByteArray();
  }
  static InputStream input(Path path,long physicalBytes,boolean compressed)throws IOException{
-  var bounded=new FilterInputStream(Files.newInputStream(path)){
+  return input(path,0,physicalBytes,compressed);
+ }
+ static InputStream input(Path path,long offset,long physicalBytes,boolean compressed)throws IOException{
+  var file=Files.newInputStream(path);
+  try{file.skipNBytes(offset);}catch(IOException error){file.close();throw error;}
+  var bounded=new FilterInputStream(file){
    long remaining=physicalBytes;
    @Override public int read()throws IOException{if(remaining==0)return -1;int value=super.read();if(value>=0)remaining--;return value;}
    @Override public int read(byte[] target,int offset,int length)throws IOException{
@@ -24,7 +29,10 @@ final class JournalStreams {
   try{return compressed?new GZIPInputStream(bounded,65536):bounded;}catch(IOException error){bounded.close();throw error;}
  }
  static BufferedReader reader(Path path,long physicalBytes,boolean compressed)throws IOException{
-  return new BufferedReader(new InputStreamReader(input(path,physicalBytes,compressed),StandardCharsets.UTF_8),8192){
+  return reader(path,0,physicalBytes,compressed);
+ }
+ static BufferedReader reader(Path path,long offset,long physicalBytes,boolean compressed)throws IOException{
+  return new BufferedReader(new InputStreamReader(input(path,offset,physicalBytes,compressed),StandardCharsets.UTF_8),8192){
    final char[] chunk=new char[8192];int position,count;boolean ended;
    @Override public String readLine()throws IOException{
     if(ended)return null;var line=new StringBuilder();

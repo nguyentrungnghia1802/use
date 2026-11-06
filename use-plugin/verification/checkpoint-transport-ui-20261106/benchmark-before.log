@@ -1,0 +1,1 @@
+{"appendNanos":1194631500,"checksHash":"7dd01beb3e0400734de580350bbcd546573d3708242e9e80c7d81cc6bdff1d04","decodedBytes":43156497,"journalEntries":180,"nativeResultHash":"5d48d02890ed082835e019d9ac30ad2efe8a66d7215e34e801b2bea1051e8e82","physicalBytes":3808785,"range":[150,180],"readNanos":[871416600,975073800,1095902000],"readStats":"Original full-prefix scan"}

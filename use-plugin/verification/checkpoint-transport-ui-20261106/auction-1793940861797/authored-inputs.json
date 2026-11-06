@@ -1,0 +1,9 @@
+{
+  "inputs": {
+    "jcm": "auction.jcm",
+    "csl": "auction.csl",
+    "istar": "auction.istar",
+    "mapping": "auction-mapping.xml",
+    "ocl": "auction.ocl"
+  }
+}

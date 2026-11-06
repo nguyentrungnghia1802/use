@@ -10,6 +10,20 @@ import org.tzi.use.plugins.jacamo.semantics.evidence.*;
 import org.tzi.use.plugins.jacamo.verification.VerificationOutcome;
 
 class VerifiedCheckpointInventoryTest {
+    @Test void indexedDiskAndRetainedPrefixKeepIdenticalInvocationTruthIncludingUnknownAndError(@org.junit.jupiter.api.io.TempDir java.nio.file.Path directory)throws Exception {
+        var current=cut(List.of(invariant(VerificationOutcome.PASS)),List.of());
+        for(var verdict:SemanticVerdict.values()) {
+            var journal=new RuntimeEventJournal(directory,2,4*1024*1024,true);var retained=new ArrayList<RuntimeHistoryPage.Entry>();
+            var invocation=cut(List.of(invariant(VerificationOutcome.PASS)),List.of(new SemanticConstraintResult("post","POST","Domain","x","source","self.valid",verdict,"native value","original invocation evidence",1,"invocation",Map.of())));
+            for(int i=0;i<8;i++) {assertTrue(journal.append(i==1?"CHECKPOINT_AUDIT":"OPERATION_POST",Map.of(),i==0||i==1?invocation.result():current.result()));retained.add(journal.retainedEntries().getLast());}
+            var expected=evaluateExpected(verdict);
+            var disk=VerifiedCheckpointInventory.evaluatePrefix(current,journal,0,8);
+            assertEquals(expected.equals("ERROR")?"UNKNOWN":expected,disk.get(VerifiedCheckpointProtocol.REQUIRED_CHECK).truth());
+            assertEquals(VerifiedCheckpointInventory.evaluatePrefix(current,retained,0,8),disk);
+            assertEquals(expected,disk.get("prefix:0:post:invocation").truth());assertFalse(disk.keySet().stream().anyMatch(id->id.startsWith("prefix:1:")));
+        }
+    }
+    private static String evaluateExpected(SemanticVerdict verdict){return switch(verdict){case PASS->"PASS";case FAIL->"FAIL";case ERROR->"ERROR";default->"UNKNOWN";};}
     @Test void persistedPrefixEvictionIsNotMissingButRetainsActualFailedInvocation(@org.junit.jupiter.api.io.TempDir java.nio.file.Path directory)throws Exception {
         var current=cut(List.of(invariant(VerificationOutcome.PASS)),List.of());var journal=new RuntimeEventJournal(directory,2,4*1024*1024);
         var failed=cut(List.of(invariant(VerificationOutcome.PASS)),List.of(new SemanticConstraintResult("post","POST","Domain","x","source","self.valid",SemanticVerdict.FAIL,"false","original native failure",1,"invocation",Map.of())));

@@ -13,7 +13,7 @@ import org.jacamo.checkpoint.runtime.ExecutionBarrier;
 
 /** Official adapter: admitted source selectors, durable held-token history and wire values. */
 final class VerifiedCheckpointBridge implements AutoCloseable {
-    private record Cached(String hash,Map<String,Object> receipt){ }
+    private record Cached(String hash,Map<String,Object> response){ }
     private final VerifiedCheckpointProtocol.Policy policy;
     private final VerifiedCheckpointCoordinator coordinator;
     private final DurableFrameLog history;
@@ -180,7 +180,7 @@ final class VerifiedCheckpointBridge implements AutoCloseable {
         else if(command.action()!=VerifiedCheckpointProtocol.Action.STATUS) {
             String hash=VerifiedCheckpointProtocol.hash(command.payload());var prior=receipts.get(command.commandId());
             if(prior!=null) {
-                if(!prior.hash().equals(hash))throw new IllegalArgumentException("CHECKPOINT_COMMAND_ID_COLLISION");receipt=prior.receipt();
+                if(!prior.hash().equals(hash))throw new IllegalArgumentException("CHECKPOINT_COMMAND_ID_COLLISION");return prior.response();
             } else {
                 var view=coordinator.view();Map<String,Object> request=wireRequest(view.request());
                 if(request==null||!Identity.decode(CanonicalJson.object(request.get("identity"))).equals(command.identity()))throw new IllegalArgumentException("CHECKPOINT_WIRE_IDENTITY_STALE_OR_FOREIGN");
@@ -188,7 +188,15 @@ final class VerifiedCheckpointBridge implements AutoCloseable {
                 command.checks().forEach((id,c)->checks.put(id,new VerifiedCheckpointCoordinator.Check(Truth.valueOf(c.truth()),Applicability.valueOf(c.applicability()),c.diagnostic())));
                 var decided=coordinator.decide(new Decision(new Owner(identity.session(),identity.run(),identity.generation(),identity.revision()),identity.token(),identity.sequence(),identity.barrierEpoch(),identity.policyHash(),identity.producerHash(),command.acceptedUseCutHash(),command.resultHash(),identity.executionScope(),command.commandId(),Action.valueOf(command.action().name()),checks,command.diagnostic()));
                 receipt=Map.of("commandId",decided.commandId(),"token",decided.token(),"released",decided.released(),"state",decided.state().name(),"resultHash",decided.originalResultHash(),"acceptedUseCutHash",decided.acceptedUseCutHash(),"diagnostic",decided.diagnostic(),"barrierEpoch",decided.barrierEpoch());
-                receipts.put(command.commandId(),new Cached(hash,receipt));
+                // A decision response is a receipt for THIS command. Replaying
+                // it must not capture/encode another cut, whose cohort/evidence
+                // can be unavailable while this receipt is already durable.
+                // Keep it compact; current requests/checks belong to STATUS.
+                var response=new LinkedHashMap<String,Object>();
+                response.put("version",VerifiedCheckpointProtocol.VERSION);response.put("state",decided.state().name());response.put("request",null);
+                response.put("resultHash",decided.originalResultHash());response.put("acceptedUseCutHash",decided.acceptedUseCutHash());
+                response.put("diagnostic",decided.diagnostic());response.put("receipt",receipt);
+                var saved=Collections.unmodifiableMap(response);receipts.put(command.commandId(),new Cached(hash,saved));return saved;
             }
         }
         var view=coordinator.view();var rows=new TreeMap<String,Object>();view.checks().forEach((id,c)->rows.put(id,Map.of("truth",c.truth().name(),"applicability",c.applicability().name(),"diagnostic",c.diagnostic())));

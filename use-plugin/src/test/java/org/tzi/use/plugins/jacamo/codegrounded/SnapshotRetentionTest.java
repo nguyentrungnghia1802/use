@@ -5,6 +5,32 @@ import static org.tzi.use.plugins.jacamo.codegrounded.RuntimeVerificationFixture
 import org.junit.jupiter.api.Test;
 
 class SnapshotRetentionTest {
+    @Test void statusPollingAndExactCompletionReuseTheSameCheckedEncodedCost() throws Exception {
+        try(var projector=projector()) {
+            var original=projector.coordinator().verificationSnapshot();long encoded=original.estimatedBytes();
+            var history=new org.tzi.use.plugins.jacamo.codegrounded.runtime.SnapshotRetention(4,16L*1024*1024);
+            history.retain(original);long before=history.retainedBytes();
+            var validated=new org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot(original.currentVersion(),original.result(),original.profile(),original.metadata(),original.image());
+            history.validateCompletion(validated);
+            var published=new org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot(original.currentVersion(),original.result(),original.profile(),original.metadata(),original.image());
+            history.complete(published);
+            for(int i=0;i<100;i++)assertEquals(before,history.retainedBytes());
+            assertEquals(encoded,published.estimatedBytes());assertSame(published,history.snapshots().getFirst());
+            var counter=history.getClass().getDeclaredField("sizingOperations");counter.setAccessible(true);assertEquals(1L,counter.getLong(history),"Immutable retained/pinned copies must not be re-encoded by status polling");
+            history.clear();assertEquals(0,history.retainedBytes());
+        }
+    }
+
+    @Test void changedImageOrResultCannotReuseThePreviousCutCostOrBypassTheBudget() throws Exception {
+        try(var projector=projector()) {
+            var original=projector.coordinator().verificationSnapshot();
+            var history=new org.tzi.use.plugins.jacamo.codegrounded.runtime.SnapshotRetention(4,Math.max(1024,original.estimatedBytes()*2+100));history.retain(original);
+            var large=new org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot.StateImage(original.image().objects(),original.image().links(),original.image().soil()+"x".repeat(200000));
+            var changed=new org.tzi.use.plugins.jacamo.codegrounded.runtime.VerificationSnapshot(original.currentVersion(),original.result(),original.profile(),original.metadata(),large);
+            assertThrows(IllegalStateException.class,()->history.validateCompletion(changed));
+            assertSame(original,history.snapshots().getFirst());assertEquals(original.result().resultHash(),history.snapshots().getFirst().result().resultHash());
+        }
+    }
     @Test void pinsFailurePreviousAndConfirmationAcrossTailEviction() throws Exception {
         try(var projector=projector()) {
             var coordinator=projector.coordinator();var history=coordinator.snapshots();

@@ -209,11 +209,14 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
                 if(checkpointPresentation==null||!java.awt.GraphicsEnvironment.isHeadless()&&!isShowing())throw new IllegalStateException("CHECKPOINT_VIEW_NOT_SHOWING");
                 refreshSemanticViews();showResultsWindow();
                 var panel=observedConformance;if(panel==null)throw new IllegalStateException("CHECKPOINT_MODEL_VIEW_UNAVAILABLE");
-                long ticket=++presentationEpoch,epoch=viewEpoch;String scope=panel.executionScope();checkpointLive=true;
-                new javax.swing.SwingWorker<org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparedCuts,Void>() {
+                long ticket=++presentationEpoch,epoch=viewEpoch;checkpointLive=true;
+                class CheckpointPresentation extends javax.swing.SwingWorker<org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparedCuts,Void> {
+                    private java.util.List<org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.Cut> captured;
+                    private final String scope=panel.executionScope();
+                    CheckpointPresentation(java.util.List<org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.Cut> captured){this.captured=captured;}
                     @Override protected org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparedCuts doInBackground(){
-                        var cuts=observedPresenter.captureCheckpoint(cut,checkpoint,checks);
-                        return new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparationCache().prepare(cuts,scope,true,true);
+                        if(captured==null)captured=observedPresenter.captureCheckpoint(cut,checkpoint,checks);
+                        return new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparationCache().prepare(captured,scope,true,true);
                     }
                     @Override protected void done(){
                         try {
@@ -221,7 +224,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
                             var prepared=get();
                             // The user may switch execution while this worker prepares
                             // the immutable cut. Preserve that choice at publication.
-                            if(!panel.executionScope().equals(scope))prepared=new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.PreparationCache().prepare(prepared.all(),panel.executionScope(),true,true);
+                            if(!panel.executionScope().equals(scope)){new CheckpointPresentation(captured).execute();return;}
                             panel.showCheckpoint(prepared);if(istarInstances!=null)istarInstances.update(prepared.all());observedDisplayedResult=cut.result();
                             runtimeProgress.setText("Checkpoint "+checkpoint.checkpoint()+" · USE state "+cut.currentVersion()+" · evaluated and displayed · JaCaMo waiting for decision");
                             refreshRuntime();
@@ -231,7 +234,8 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
                             displayed.complete(null);
                         }catch(Exception failure){displayed.completeExceptionally(failure);}
                     }
-                }.execute();
+                }
+                new CheckpointPresentation(null).execute();
             }catch(Exception failure){displayed.completeExceptionally(failure);}
         });
         return displayed;
@@ -360,6 +364,12 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         }
     }
     private void refreshObservedConformance(org.tzi.use.plugins.jacamo.codegrounded.runtime.RuntimeVerificationResult result) {
+        // A verified run has one presentation authority, from the first Start:
+        // presentCheckpoint renders an exact cut before its release. Replaying
+        // raw ingress here used to animate startup prefixes, then append late
+        // "settled" states between source checkpoints. Diagnostics/replay retain
+        // that history without replacing the reviewed live state.
+        if(observedWorkflow&&facade.verifiedCheckpointMode()&&facade.stepReplayStatus()==null)return;
         boolean settledCheckpoint=checkpointLive&&facade.verifiedCheckpointState().state().equals("RUNNING");
         if(checkpointLive&&!settledCheckpoint)return;
         if(observedConformance==null || observedRefreshPending)return;

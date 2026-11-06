@@ -1,0 +1,29 @@
+{
+  "house-building": {
+    "directory": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\checkpoint-transport-ui-20261106\\house-building-1793942276469",
+    "state": "FINISHED",
+    "previousDirectories": [
+      "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\checkpoint-transport-ui-20261106\\house-building-1793938321267",
+      "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\checkpoint-transport-ui-20261106\\house-building-1793939860045",
+      "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\checkpoint-transport-ui-20261106\\house-building-1793940192368"
+    ],
+    "exitCode": 0
+  },
+  "hello-world": {
+    "directory": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\checkpoint-transport-ui-20261106\\hello-world-1793942438358",
+    "state": "FINISHED",
+    "previousDirectories": [
+      "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\checkpoint-transport-ui-20261106\\hello-world-1793940039472"
+    ],
+    "exitCode": 0
+  },
+  "auction": {
+    "directory": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\checkpoint-transport-ui-20261106\\auction-1793942135852",
+    "state": "FINISHED",
+    "previousDirectories": [
+      "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\checkpoint-transport-ui-20261106\\auction-1793940374500",
+      "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\verification\\checkpoint-transport-ui-20261106\\auction-1793940861797"
+    ],
+    "exitCode": 0
+  }
+}

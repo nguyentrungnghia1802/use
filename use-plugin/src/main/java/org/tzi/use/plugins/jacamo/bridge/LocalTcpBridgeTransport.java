@@ -52,7 +52,7 @@ public final class LocalTcpBridgeTransport implements BridgeTransport {
             if(payload.length>maxFrameBytes)throw new BridgeProtocolException("BRIDGE_REQUEST_TOO_LARGE");
             var out=new DataOutputStream(socket.getOutputStream());out.writeInt(payload.length);out.write(payload);out.flush();
             return readFrame(new DataInputStream(socket.getInputStream()));
-        }catch(Exception failed){throw new BridgeProtocolException("VERIFIED_CHECKPOINT_REQUEST_FAILED",failed);}
+        }catch(Exception failed){throw new BridgeProtocolException("VERIFIED_CHECKPOINT_REQUEST_FAILED:"+failed.getClass().getSimpleName(),failed);}
     }
     @Override public byte[] control(org.jacamo.bridge.contract.RuntimeControlContract.Request request) {
         ensureOpen();try(Socket socket=connect()) {

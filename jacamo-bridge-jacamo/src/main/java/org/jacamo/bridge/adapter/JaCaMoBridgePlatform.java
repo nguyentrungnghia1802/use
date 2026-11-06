@@ -368,11 +368,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
         server = new LocalTcpBridgeServer(InetAddress.getLoopbackAddress(), bridgePort, secret, MAX_FRAME_BYTES,
                 EVENT_CAPACITY, 64L * 1024 * 1024, handshake, model, runtime, gap,request->encode(MessageType.CONTROL_STATUS,
                         projectKey,generation,distribution,capabilities(latestRuntimeSnapshot),Completeness.COMPLETE,control(request).payload()));
-        server.checkpointHandler(command->{
-            var checkpoints=verifiedCheckpoints;
-            Map<String,Object> payload=checkpoints==null?Map.of("version",org.jacamo.bridge.contract.VerifiedCheckpointProtocol.VERSION,"state","NOT_STARTED","diagnostic",jacamo.checkpoint.CheckpointBoot.verified()?"WAITING_FOR_ADMITTED_POLICY":"PASSIVE_MODE"):checkpoints.command(command);
-            return encode(MessageType.CHECKPOINT_STATUS,projectKey,generation,distribution,capabilities(latestRuntimeSnapshot),Completeness.COMPLETE,payload);
-        },()->{var checkpoints=verifiedCheckpoints;if(checkpoints!=null)checkpoints.disconnected();});
+        server.checkpointHandler(command->checkpointReply(command,projectKey,generation,distribution),()->{var checkpoints=verifiedCheckpoints;if(checkpoints!=null)checkpoints.disconnected();});
         java.util.Arrays.fill(secret, (byte) 0);
         server.start();
         publishing = true;
@@ -535,6 +531,15 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                 ? Completeness.COMPLETE : Completeness.PARTIAL;
     }
 
+    byte[] checkpointReply(org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Command command,String projectKey,long generation,DistributionFingerprint distribution) {
+        var checkpoints=verifiedCheckpoints;
+        Map<String,Object> payload=checkpoints==null?Map.of("version",org.jacamo.bridge.contract.VerifiedCheckpointProtocol.VERSION,"state","NOT_STARTED","diagnostic",jacamo.checkpoint.CheckpointBoot.verified()?"WAITING_FOR_ADMITTED_POLICY":"PASSIVE_MODE"):checkpoints.command(command);
+        // This channel acknowledges a frozen cut/decision, not a fresh runtime
+        // capability poll. In particular, after release those providers may be
+        // busy with the next operation. Never make its receipt wait on their
+        // source/scheduler monitors. Admission uses the handshake and exact cut.
+        return encode(MessageType.CHECKPOINT_STATUS,projectKey,generation,distribution,List.of(),Completeness.COMPLETE,payload);
+    }
     private byte[] encode(MessageType type, String projectKey, long generation,
                           DistributionFingerprint distribution, List<Capability> capabilities,
                           Completeness completeness, Map<String, Object> payload) {
