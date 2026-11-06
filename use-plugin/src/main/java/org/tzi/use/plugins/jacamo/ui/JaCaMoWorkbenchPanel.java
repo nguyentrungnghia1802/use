@@ -86,8 +86,9 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     private final JLabel checkpointMode=named(new JLabel("Verified checkpoints"),"checkpoint-execution-mode");
     private final JLabel checkpointStatus=named(new JLabel("Passive observation"),"verified-checkpoint-status");
     private final JLabel checkpointResultStatus=named(new JLabel("Passive observation"),"verified-checkpoint-result-status");
-    private final JButton acknowledgeCheckpoint=named(new JButton("Acknowledge & Continue"),"acknowledge-checkpoint");
-    private final JButton acknowledgeResultCheckpoint=named(new JButton("Acknowledge & Continue"),"acknowledge-result-checkpoint");
+    private final JButton acknowledgeCheckpoint=named(new JButton("Continue"),"acknowledge-checkpoint");
+    private final JButton acknowledgeResultCheckpoint=named(new JButton("Continue"),"acknowledge-result-checkpoint");
+    private final VerificationStatusBadge verificationBadge=new VerificationStatusBadge();
     private final JTabbedPane tabs=named(new JTabbedPane(),"workbench-tabs");
     private final JTabbedPane cslTabs=named(new JTabbedPane(),"csl-tabs");
     private final JTabbedPane istarTabs=named(new JTabbedPane(),"istar-tabs");
@@ -174,7 +175,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         if(!observedWorkflow)prepareProducer.addActionListener(event->{var chooser=createProjectChooser(jcmBrowseHint());if(chooser.showOpenDialog(this)==JFileChooser.APPROVE_OPTION)prepareOwnedProject(chooser.getSelectedFile().toPath());});
         prepareProducer.setToolTipText("Stage a copy, launch an owned external JaCaMo JVM and import into this USE session; Start Runtime releases reasoning");
         stopProducer.addActionListener(event->stopOwnedProject());
-        restartProducer.addActionListener(event->executeBackground("JaCaMo restart failed",facade::restartOwnedProducer,this::refreshRuntime));
+        restartProducer.addActionListener(event->{verificationBadge.reset();executeBackground("JaCaMo restart failed",facade::restartOwnedProducer,this::refreshRuntime);});
         String configuredClasspath=System.getProperty("use.jacamo.runtime.classpath-file","").trim();
         Path checkoutClasspath=RUNTIME_LIBS_BROWSE_FOLDER.resolve("jacamo-bridge-classpath.txt");
         Path suggestedClasspath=facade.defaultRuntimeClasspathFile();
@@ -226,6 +227,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
                             // the immutable cut. Preserve that choice at publication.
                             if(!panel.executionScope().equals(scope)){new CheckpointPresentation(captured).execute();return;}
                             panel.showCheckpoint(prepared);if(istarInstances!=null)istarInstances.update(prepared.all());observedDisplayedResult=cut.result();
+                            verificationBadge.displayed(cut.result().sessionId()+":"+cut.result().generation()+":"+cut.result().modelRevision(),checkpoint.token(),captured.getLast(),checks);
                             runtimeProgress.setText("Checkpoint "+checkpoint.checkpoint()+" · USE state "+cut.currentVersion()+" · evaluated and displayed · JaCaMo waiting for decision");
                             refreshRuntime();
                             // Flush this exact immutable cut before acknowledging presentation.
@@ -274,7 +276,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         boolean showGui=showProducerGui.isSelected();
         boolean verified=observedWorkflow||facade.verifiedCheckpointMode();
         executeBackground("Import failed", () -> {if(owned){try{facade.verifiedCheckpointMode(verified);}catch(UnsupportedOperationException ignored){}}if(facade.journalBudgetSupported())facade.nextJournalBudgetBytes(budget);if(owned)facade.prepareOwnedProducer(normalized,selection,classpath,showGui);else if(selection==null)facade.importProject(normalized);else facade.importProject(normalized,selection);}, () -> {
-            checkpointLive=false;presentationEpoch++;
+            checkpointLive=false;presentationEpoch++;verificationBadge.reset();
             refreshRuntime();
             setStatus("Imported " + normalized);
             writeReadyEvidence(normalized);
@@ -286,11 +288,12 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     }
 
     public void startRuntime() {
+        verificationBadge.reset();
         showResultsWindow();
         executeBackground("Runtime start failed", facade::startRuntime, ()->{refreshRuntime();showResultsWindow();});
     }
     public void stopMonitorSession(){if(backgroundOperations!=0){setStatus("WORKBENCH_BUSY: wait for the current operation");return;}viewEpoch++;executeBackground("Stop monitor failed",facade::stopMonitorSession,this::refreshRuntime);}
-    public void restartMonitorSession(){if(backgroundOperations!=0){setStatus("WORKBENCH_BUSY: wait for the current operation");return;}viewEpoch++;executeBackground("Restart monitor failed",facade::restartMonitorSession,this::refreshRuntime);}
+    public void restartMonitorSession(){if(backgroundOperations!=0){setStatus("WORKBENCH_BUSY: wait for the current operation");return;}viewEpoch++;verificationBadge.reset();executeBackground("Restart monitor failed",facade::restartMonitorSession,this::refreshRuntime);}
 
     public void exportNativeUse(Path destination) {
         executeBackground(".use export failed", () -> facade.exportNativeUse(destination),
@@ -305,19 +308,15 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     public void refreshRuntime() {
         refreshWorkflowControls();
         var held=facade.verifiedCheckpointState();
-        String checkpointText=switch(held.state()) {
-            case "QUIESCING","VERIFYING"->"Waiting for verification";
-            case "HELD_FAILURE"->"Held — violation";
-            case "HELD_UNVERIFIED"->"Held — verification unavailable";
-            case "RUNNING"->"Running";
-            default->observedWorkflow||facade.verifiedCheckpointMode()?"Verified checkpoints — ready to start":"Passive observation";
-        };
-        if(held.pending())checkpointText="Continuing";
-        if(!held.checkpoint().isBlank())checkpointText+=" · "+held.checkpoint();
-        checkpointStatus.setText(checkpointText);checkpointResultStatus.setText(checkpointText);
-        String checkpointTip=held.reason()+" | executions="+held.executionScope()+" | token="+held.token()+" | result="+held.resultHash();
+        var badge=verificationBadge.status(held,facade.ownedProducerStatus().state(),facade.workflowStatus().state());
+        VerificationStatusBadge.apply(checkpointStatus,badge);VerificationStatusBadge.apply(checkpointResultStatus,badge);
+        String checkpointTip="Completed refers to terminal selected requirements in all currently observed executions; it does not mean the MAS process has exited. Historical issues remain recorded. | "+held.reason()+" | checkpoint="+held.checkpoint()+" | executions="+held.executionScope()+" | token="+held.token()+" | result="+held.resultHash();
         checkpointStatus.setToolTipText(checkpointTip);checkpointResultStatus.setToolTipText(checkpointTip);
-        acknowledgeCheckpoint.setEnabled(held.reviewable());acknowledgeResultCheckpoint.setEnabled(held.reviewable());
+        boolean canContinue=held.reviewable()&&!held.pending();
+        acknowledgeCheckpoint.setVisible(canContinue);acknowledgeResultCheckpoint.setVisible(canContinue);
+        acknowledgeCheckpoint.setEnabled(canContinue);acknowledgeResultCheckpoint.setEnabled(canContinue);
+        String reviewTip="Record review and continue this exact checkpoint. Original state, verdict and evidence remain in history.";
+        acknowledgeCheckpoint.setToolTipText(reviewTip);acknowledgeResultCheckpoint.setToolTipText(reviewTip);
         runtimeState.setText(facade.runtimeStatus().state().name());
         var program=facade.semanticProgramEvidence();
         if(program!=displayedProgram&&!program.equals(displayedProgram)) {
@@ -446,7 +445,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
             resultsWindow=new javax.swing.JDialog(owner,"use4Goal — Verification results",java.awt.Dialog.ModalityType.MODELESS);
             resultsWindow.setName("use4goal-results-window");resultsWindow.setDefaultCloseOperation(javax.swing.JDialog.HIDE_ON_CLOSE);
             resultsWindow.add(tabs,BorderLayout.CENTER);
-            var checkpointControls=new JPanel(new BorderLayout());checkpointControls.setBorder(javax.swing.BorderFactory.createEmptyBorder(6,12,6,12));checkpointControls.add(checkpointResultStatus,BorderLayout.WEST);checkpointControls.add(acknowledgeResultCheckpoint,BorderLayout.EAST);
+            var checkpointControls=checkpointHeader(checkpointResultStatus,acknowledgeResultCheckpoint);checkpointControls.setBorder(javax.swing.BorderFactory.createEmptyBorder(6,12,6,12));
             acknowledgeResultCheckpoint.addActionListener(event->reviewActiveCheckpoint());resultsWindow.add(checkpointControls,BorderLayout.NORTH);
             resultsWindow.setSize(1250,780);resultsWindow.setLocationRelativeTo(owner);
         }
@@ -464,7 +463,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         acknowledgeCheckpoint.addActionListener(event->reviewActiveCheckpoint());
         controls.add(button("Show results","show-results",this::showResultsWindow));
         var advancedToggle=named(new javax.swing.JToggleButton("Advanced controls"),"show-advanced");controls.add(advancedToggle);panel.add(controls);
-        var checkpointControls=new JPanel(new FlowLayout(FlowLayout.LEADING, 6, 2));checkpointControls.add(checkpointMode);checkpointControls.add(new JLabel("·"));checkpointControls.add(checkpointStatus);checkpointControls.add(acknowledgeCheckpoint);panel.add(checkpointControls);
+        var checkpointControls=checkpointHeader(checkpointStatus,acknowledgeCheckpoint);checkpointControls.add(checkpointMode,BorderLayout.WEST);panel.add(checkpointControls);
         var sourceStatus=new JPanel(new FlowLayout(FlowLayout.LEADING, 6, 2));sourceStatus.add(new JLabel("Bridge:"));sourceStatus.add(runtimeState);sourceStatus.add(new JLabel("·"));sourceStatus.add(producerState);panel.add(sourceStatus);
         var progressRow=new JPanel(new FlowLayout(FlowLayout.LEADING, 6, 1));progressRow.add(runtimeProgress);panel.add(progressRow);
         var summaryRow=new JPanel(new FlowLayout(FlowLayout.LEADING, 6, 1));summaryRow.add(programSummary);panel.add(summaryRow);
@@ -773,11 +772,17 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
     }
 
     private void setStatus(String message) { status.setText(displayMessage(message)); }
+    static JPanel checkpointHeader(JLabel status,JButton continuation){
+        var header=named(new JPanel(new BorderLayout()),"verification-status-header");
+        var right=new JPanel(new FlowLayout(FlowLayout.TRAILING,6,2));right.add(status);right.add(continuation);
+        header.add(right,BorderLayout.EAST);return header;
+    }
     private void reviewActiveCheckpoint(){
         var active=facade.verifiedCheckpointState();
         if(!active.reviewable())return;
         acknowledgeCheckpoint.setEnabled(false);acknowledgeResultCheckpoint.setEnabled(false);
         var result=facade.acknowledgeVerifiedCheckpoint(active.token(),active.resultHash());
+        refreshRuntime();
         result.whenComplete((receipt,error)->javax.swing.SwingUtilities.invokeLater(()->{
             if(error!=null)errorPresenter.accept("Checkpoint continuation unavailable: "+error.getMessage());refreshRuntime();
         }));

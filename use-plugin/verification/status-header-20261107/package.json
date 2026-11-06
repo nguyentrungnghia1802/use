@@ -1,0 +1,29 @@
+{
+  "validatedClasses": {
+    "jacamo-bridge-contract-1.0.0.jar": 133,
+    "use-jacamo-semantic-engine-7.5.0.jar": 297
+  },
+  "backup": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\work\\package-backups\\20261107-024742-validated-plugin",
+  "files": {
+    "lib/plugins/use-jacamo-plugin-1.0.1.jar": "f1e39cae8305bf17ec2f614a865770159f87fb229dd48dcdad671a56e02683fb",
+    "bridge/lib/jacamo-bridge-contract-1.0.0.jar": "6f1c480091538487ae4cfa7ea6ca7f77f95167f89f0e13f7a830c5f1ff4411f0",
+    "bridge/lib/jacamo-bridge-jacamo-1.0.0.jar": "0c332fde009e45861ff20ed99588568a2c151085c4dbe1139a6c5e8a89237ae9"
+  },
+  "preparedProducer": {
+    "runId": "20261107-024745-302-f1f04f6d",
+    "selectedJars": {
+      "jacamo-bridge-contract-1.0.0.jar": {
+        "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\lib\\jacamo-bridge-contract-1.0.0.jar",
+        "sha256": "6f1c480091538487ae4cfa7ea6ca7f77f95167f89f0e13f7a830c5f1ff4411f0"
+      },
+      "jacamo-bridge-jacamo-1.0.0.jar": {
+        "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\lib\\jacamo-bridge-jacamo-1.0.0.jar",
+        "sha256": "0c332fde009e45861ff20ed99588568a2c151085c4dbe1139a6c5e8a89237ae9"
+      },
+      "jacamo-1.3.1-checkpoint-SNAPSHOT.jar": {
+        "path": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jacamo-1.3.1-checkpoint-SNAPSHOT.jar",
+        "sha256": "aca1163c73b854123526f52c22c0ea8c6f9bc772376c5fb73d20a1aa4c6af155"
+      }
+    }
+  }
+}
