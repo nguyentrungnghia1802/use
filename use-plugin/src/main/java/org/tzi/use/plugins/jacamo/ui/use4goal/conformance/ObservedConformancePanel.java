@@ -31,7 +31,7 @@ public final class ObservedConformancePanel extends JPanel {
         public Cut(String id,String trace,String state,List<Evaluation> evaluations,String coverage,String freshness,boolean failed){this(id,trace,state,evaluations,coverage,freshness,failed,state,"","");}
         public Cut { evaluations = List.copyOf(evaluations); visualEvidence=java.util.Map.copyOf(visualEvidence); }
     }
-    private static final int NARROW_SPLIT_WIDTH = 550;
+    private static final int NARROW_SPLIT_WIDTH = 500;
     private final boolean liveOnly;
     private LiveGoalSummary liveSummary;
     private java.util.List<LiveGoalSummary.Row> liveRows=java.util.List.of();

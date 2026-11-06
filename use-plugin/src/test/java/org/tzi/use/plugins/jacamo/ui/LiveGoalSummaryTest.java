@@ -104,7 +104,7 @@ class LiveGoalSummaryTest {
    try{
     owner.add(panel);owner.setSize(1450,850);owner.addNotify();owner.validate();
     assertEquals(JSplitPane.HORIZONTAL_SPLIT,split.getOrientation(),"Wide window places Goals on left and Tasks on right");
-    panel.istarVerificationPanel().setSize(480,800);panel.istarVerificationPanel().doLayout();
+    panel.istarVerificationPanel().setSize(450,800);panel.istarVerificationPanel().doLayout();
     assertEquals(JSplitPane.VERTICAL_SPLIT,split.getOrientation(),"Narrow window places Goals on top and Tasks on bottom");
     panel.istarVerificationPanel().setSize(1100,800);panel.istarVerificationPanel().doLayout();
     assertEquals(JSplitPane.HORIZONTAL_SPLIT,split.getOrientation());
