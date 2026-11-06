@@ -27,10 +27,20 @@ class AllExecutionPresentationTest {
             assertTrue(checks.getValueAt(0,0).toString().contains("Execution 1"));
             assertEquals("self.valid",checks.getValueAt(0,1));assertEquals("True",checks.getValueAt(0,2));
             var goals=DetachedAuthoredWorkflowTest.find(panel,"live-goal-status",JTable.class);
-            assertEquals(2,goals.getColumnCount());
+            var tasks=DetachedAuthoredWorkflowTest.find(panel,"live-task-status",JTable.class);
+            assertEquals(2,goals.getColumnCount());assertEquals(2,tasks.getColumnCount());
             for(int i=0;i<goals.getRowCount();i++)assertTrue(Set.of("Complete","Incomplete","Unknown").contains(goals.getValueAt(i,1)));
+            for(int i=0;i<tasks.getRowCount();i++)assertTrue(Set.of("Complete","Incomplete","Unknown").contains(tasks.getValueAt(i,1)));
+            goals.setRowSelectionInterval(0,0);
+            var instances=DetachedAuthoredWorkflowTest.find(panel,"live-goal-instances",JTable.class);
+            assertEquals(2,instances.getRowCount(),"All execution scope preserves both executions in Agent instances");
+            assertTrue(instances.getValueAt(0,1).toString().contains("Execution 1"));
+            assertTrue(instances.getValueAt(1,1).toString().contains("Execution 2"));
             panel.selectExecution("two");assertEquals("COMPLETE_OBSERVED",DetachedAuthoredWorkflowTest.find(panel,"observed-verdict",JLabel.class).getText());
+            assertEquals(1,instances.getRowCount(),"Selecting Execution 2 restricts Agent instances to Execution 2");
+            assertTrue(instances.getValueAt(0,1).toString().contains("Execution 2"));
             panel.selectExecution(ExecutionScopeViews.ALL);assertEquals("VIOLATION",DetachedAuthoredWorkflowTest.find(panel,"observed-verdict",JLabel.class).getText());
+            assertEquals(2,instances.getRowCount());
         });
         assertFalse(failed.failed());assertEquals("PASS",ExecutionScopeViewsTest.check("y","PASS").get("verdict"));
     }

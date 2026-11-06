@@ -47,7 +47,7 @@ class ScopedFailureNavigationTest {
             assertTrue(detail.getText().contains("second object"));assertTrue(detail.getText().contains("sensor-2"));
             assertFalse(detail.getText().contains("foreign raw body"));
             assertEquals(1,DetachedAuthoredWorkflowTest.find(panel,"live-ocl-checks",JTable.class).getRowCount(),"Body witnesses must not become duplicate required OCL table rows");
-            assertTrue(points.getItemAt(0).toString().startsWith("Milestone "));
+            assertTrue(points.getItemAt(0).toString().startsWith("State "));
             DetachedAuthoredWorkflowTest.find(panel,"observed-audit-toggle",JToggleButton.class).doClick();
             assertTrue(points.getItemAt(0).toString().startsWith("Boundary 2"));
             points.setSelectedIndex(3);assertEquals("scope-cut-3",panel.selectedCut().id());

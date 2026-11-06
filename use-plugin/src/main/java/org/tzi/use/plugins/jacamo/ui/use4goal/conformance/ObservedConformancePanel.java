@@ -31,20 +31,37 @@ public final class ObservedConformancePanel extends JPanel {
         public Cut(String id,String trace,String state,List<Evaluation> evaluations,String coverage,String freshness,boolean failed){this(id,trace,state,evaluations,coverage,freshness,failed,state,"","");}
         public Cut { evaluations = List.copyOf(evaluations); visualEvidence=java.util.Map.copyOf(visualEvidence); }
     }
+    private static final int NARROW_SPLIT_WIDTH = 550;
     private final boolean liveOnly;
     private LiveGoalSummary liveSummary;
     private java.util.List<LiveGoalSummary.Row> liveRows=java.util.List.of();
+    private java.util.List<LiveGoalSummary.Row> goalRows=java.util.List.of();
+    private java.util.List<LiveGoalSummary.Row> taskRows=java.util.List.of();
     private List<Evaluation> displayedInstances=List.of();
     private List<Evaluation> displayedChecks=List.of();
-    private final DefaultTableModel liveGoals=new DefaultTableModel(new String[]{"Goal / Task","Result"},0){@Override public boolean isCellEditable(int r,int c){return false;}};
-    private final DefaultTableModel liveInstances=new DefaultTableModel(new String[]{"Player","Context","Raw","Certified","Quality / reason"},0){@Override public boolean isCellEditable(int r,int c){return false;}};
+    private record OccurrenceEntry(String key,String recordType,String occurrenceId,String episode,String invocationId,String checkpointId,String checkpointLabel,String resultLabel,String rawStatus,String certifiedStatus,String quality,String role,String evidence,String certifiedHistory){}
+    private record AgentInstanceGroup(String key,String player,String subjectLabel,String context,String executionLabel,String resultLabel,List<Evaluation> currentEvaluations,List<OccurrenceEntry> history){}
+    private List<AgentInstanceGroup> displayedAgentRows=List.of();
+    private List<OccurrenceEntry> displayedOccurrences=List.of();
+    private String selectedElementId="";
+    private String selectedAgentKey="";
+    private String selectedOccurrenceKey="";
+    private boolean updatingElementSelection,updatingAgentSelection,updatingOccurrenceSelection;
+    private final DefaultTableModel liveGoals=new DefaultTableModel(new String[]{"Goal","Result"},0){@Override public boolean isCellEditable(int r,int c){return false;}};
+    private final DefaultTableModel liveTasks=new DefaultTableModel(new String[]{"Task","Result"},0){@Override public boolean isCellEditable(int r,int c){return false;}};
+    private final DefaultTableModel liveInstances=new DefaultTableModel(new String[]{"Agent / Player","Execution","Result"},0){@Override public boolean isCellEditable(int r,int c){return false;}};
+    private final DefaultTableModel liveOccurrences=new DefaultTableModel(new String[]{"Type","Occurrence","Invocation","Checkpoint","Result"},0){@Override public boolean isCellEditable(int r,int c){return false;}};
     private final JTable liveInstanceTable=named(new JTable(liveInstances),"live-goal-instances");
+    private final JTable liveOccurrenceTable=named(new JTable(liveOccurrences),"live-agent-occurrences");
+    private final JLabel selectedElementLabel=named(new JLabel("No Goal or Task selected — select a Goal or Task above to inspect agent instances"),"selected-goal-task-label");
+    private JSplitPane goalTaskSplitPane;
     private final JTabbedPane liveDetailTabs=named(new JTabbedPane(),"live-detail-tabs");
     private final JLabel requirementScope=named(new JLabel("No selected verification state"),"observed-requirement-scope");
     private final DefaultTableModel liveChecks=new DefaultTableModel(new String[]{"Name","Body","Result"},0){@Override public boolean isCellEditable(int r,int c){return false;}};
     private final JLabel liveDiagnosticNote = named(new JLabel("Checkpoint and Task diagnostics are retained in Audit details."), "checkpoint-diagnostics-note");
     private final JTable liveCheckTable=named(new JTable(liveChecks),"live-ocl-checks");
     private final JTable liveGoalTable=named(new JTable(liveGoals),"live-goal-status");
+    private final JTable liveTaskTable=named(new JTable(liveTasks),"live-task-status");
     private final JTextArea liveDetails=named(new JTextArea(),"live-evidence-details");
     private final JTextArea counterexampleTraceArea = new JTextArea();
     private final JTextArea stateSnapshotText = new JTextArea();
@@ -350,10 +367,17 @@ public final class ObservedConformancePanel extends JPanel {
         if(target<0){intervalIds=java.util.Set.of(point.cut().id());setCuts(allCuts);target=0;}
         updateSelectedCounterexampleState(target);
         var row=point.evaluation();if(row==null){liveDetails.setText(point.cut().trace());liveDetailTabs.setSelectedIndex(1);return;}
-        if(row.kind().equals("GOAL_TASK"))for(int i=0;i<liveRows.size();i++)if(liveRows.get(i).id().equals(row.element())){
-            liveGoalTable.setRowSelectionInterval(i,i);showGoalInstances(i);
-            for(int j=0;j<displayedInstances.size();j++)if(displayedInstances.get(j).equals(row)){liveInstanceTable.setRowSelectionInterval(j,j);break;}
-            break;
+        if(row.kind().equals("GOAL_TASK")){
+            selectElementById(row.element());
+            String groupKey=agentGroupKey(row.context(),row.player(),row.occurrence());
+            for(int j=0;j<displayedAgentRows.size();j++)if(displayedAgentRows.get(j).key().equals(groupKey)||displayedAgentRows.get(j).currentEvaluations().contains(row)){
+                liveInstanceTable.setRowSelectionInterval(j,j);
+                for(int k=0;k<displayedOccurrences.size();k++)if(displayedOccurrences.get(k).occurrenceId().equals(row.occurrence())){
+                    liveOccurrenceTable.setRowSelectionInterval(k,k);
+                    break;
+                }
+                break;
+            }
         }
         if(!row.kind().equals("GOAL_TASK"))for(int i=0;i<displayedChecks.size();i++){
             var shown=displayedChecks.get(i);
@@ -427,20 +451,94 @@ public final class ObservedConformancePanel extends JPanel {
         cslStateStepInfoLabel.setText(text);
     }
 
+    @Override public void doLayout() {
+        updateGoalTaskSplitOrientation();
+        super.doLayout();
+    }
+
+    private void updateGoalTaskSplitOrientation() {
+        if (goalTaskSplitPane == null) return;
+        int width = istarVerificationPanel != null && istarVerificationPanel.getWidth() > 0
+                ? istarVerificationPanel.getWidth()
+                : goalTaskSplitPane.getWidth() > 0 ? goalTaskSplitPane.getWidth() : getWidth();
+        if (width <= 0) return;
+        int desired = width < NARROW_SPLIT_WIDTH ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT;
+        if (goalTaskSplitPane.getOrientation() != desired) {
+            goalTaskSplitPane.setOrientation(desired);
+            goalTaskSplitPane.setDividerLocation(0.5);
+        }
+    }
+
     private JPanel buildLiveResults(){
-        var goals=liveGoalTable;var checks=liveCheckTable;
-        int[] widths={600,130};for(int i=0;i<widths.length;i++)goals.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
-        int[] instanceWidths={110,110,100,100,350};for(int i=0;i<instanceWidths.length;i++)liveInstanceTable.getColumnModel().getColumn(i).setPreferredWidth(instanceWidths[i]);
-        goals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);liveDetails.setEditable(false);liveDetails.setLineWrap(true);liveDetails.setWrapStyleWord(true);
-        goals.getSelectionModel().addListSelectionListener(e->{if(!e.getValueIsAdjusting()){showGoalInstances(goals.getSelectedRow());if(goals.getSelectedRow()>=0)liveDetailTabs.setSelectedIndex(0);}});
+        var goals=liveGoalTable;var tasks=liveTaskTable;var checks=liveCheckTable;
+        int[] widths={420,120};
+        for(int i=0;i<widths.length;i++){
+            goals.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
+            tasks.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
+        }
+        int[] instanceWidths={180,260,120};for(int i=0;i<instanceWidths.length;i++)liveInstanceTable.getColumnModel().getColumn(i).setPreferredWidth(instanceWidths[i]);
+        int[] occurrenceWidths={150,160,160,130,100};for(int i=0;i<occurrenceWidths.length;i++)liveOccurrenceTable.getColumnModel().getColumn(i).setPreferredWidth(occurrenceWidths[i]);
+        goals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tasks.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        liveDetails.setEditable(false);liveDetails.setLineWrap(true);liveDetails.setWrapStyleWord(true);
+        goals.getSelectionModel().addListSelectionListener(e->{
+            if(e.getValueIsAdjusting()||updatingElementSelection)return;
+            int row=goals.getSelectedRow();
+            if(row>=0&&row<goalRows.size()){
+                updatingElementSelection=true;
+                try{tasks.clearSelection();}finally{updatingElementSelection=false;}
+                String nextId=goalRows.get(row).id();
+                if(!nextId.equals(selectedElementId)){selectedElementId=nextId;selectedAgentKey="";selectedOccurrenceKey="";}
+                showSelectedElementInstances();
+                liveDetailTabs.setSelectedIndex(0);
+            }else if(tasks.getSelectedRow()<0){
+                selectedElementId="";selectedAgentKey="";selectedOccurrenceKey="";
+                showSelectedElementInstances();
+            }
+        });
+        tasks.getSelectionModel().addListSelectionListener(e->{
+            if(e.getValueIsAdjusting()||updatingElementSelection)return;
+            int row=tasks.getSelectedRow();
+            if(row>=0&&row<taskRows.size()){
+                updatingElementSelection=true;
+                try{goals.clearSelection();}finally{updatingElementSelection=false;}
+                String nextId=taskRows.get(row).id();
+                if(!nextId.equals(selectedElementId)){selectedElementId=nextId;selectedAgentKey="";selectedOccurrenceKey="";}
+                showSelectedElementInstances();
+                liveDetailTabs.setSelectedIndex(0);
+            }else if(goals.getSelectedRow()<0){
+                selectedElementId="";selectedAgentKey="";selectedOccurrenceKey="";
+                showSelectedElementInstances();
+            }
+        });
         checks.getSelectionModel().addListSelectionListener(e->{if(!e.getValueIsAdjusting()){int row=checks.getSelectedRow();if(row>=0&&row<displayedChecks.size()){var value=displayedChecks.get(row);liveDetails.setText(value.element()+"\n"+value.status()+" | "+value.quality()+"\n"+value.evidence());liveDetails.setCaretPosition(0);liveDetailTabs.setSelectedIndex(1);}}});
         checks.getColumnModel().getColumn(0).setPreferredWidth(240);
         checks.getColumnModel().getColumn(1).setPreferredWidth(500);
         checks.getColumnModel().getColumn(2).setMaxWidth(100);
         liveInstanceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        liveInstanceTable.getSelectionModel().addListSelectionListener(e->{if(!e.getValueIsAdjusting())showInstanceEvidence();});
-        liveDetailTabs.addTab("Instances",new JScrollPane(liveInstanceTable));liveDetailTabs.addTab("Evidence",new JScrollPane(liveDetails));
-        goals.setToolTipText("Goals and Tasks share one list, identified by type. Complete requires qualified fulfilled evidence; missing evidence stays Unknown.");
+        liveInstanceTable.getSelectionModel().addListSelectionListener(e->{
+            if(e.getValueIsAdjusting()||updatingAgentSelection)return;
+            int idx=liveInstanceTable.getSelectedRow();
+            if(idx>=0&&idx<displayedAgentRows.size()){
+                String nextKey=displayedAgentRows.get(idx).key();
+                if(!nextKey.equals(selectedAgentKey)){selectedAgentKey=nextKey;selectedOccurrenceKey="";}
+            }else{
+                selectedAgentKey="";selectedOccurrenceKey="";
+            }
+            showInstanceEvidence();
+        });
+        liveOccurrenceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        liveOccurrenceTable.getSelectionModel().addListSelectionListener(e->{
+            if(e.getValueIsAdjusting()||updatingOccurrenceSelection)return;
+            int idx=liveOccurrenceTable.getSelectedRow();
+            selectedOccurrenceKey=idx>=0&&idx<displayedOccurrences.size()?displayedOccurrences.get(idx).key():"";
+            renderSelectedOccurrenceDetail();
+        });
+        liveDetailTabs.addTab("Instances",new JPanel());liveDetailTabs.addTab("Evidence",new JPanel());
+        goals.setToolTipText("Goals defined in the iStar model with owner actor. Complete requires qualified fulfilled evidence; missing evidence stays Unknown.");
+        tasks.setToolTipText("Tasks defined in the iStar model with owner actor. Complete requires qualified fulfilled evidence; missing evidence stays Unknown.");
+        liveInstanceTable.setToolTipText("Agent / player instances for the selected Goal or Task in the current Execution and State. Unassigned instances are shown as Not assigned when confirmed by source evidence.");
+        liveOccurrenceTable.setToolTipText("Occurrences and runtime invocations for the selected agent instance up to the current State. Short IDs are shown here; full IDs and evidence appear below.");
 
         setupNavigation(executionSelector, stateSelectorCombo, statePrevButton, stateNextButton, jumpCheckpointButton, milestonesButton, stateStepInfoLabel, failureFilter, failurePoints);
         setupNavigation(cslExecutionSelector, cslStateSelectorCombo, cslStatePrevButton, cslStateNextButton, cslJumpCheckpointButton, cslMilestonesButton, cslStateStepInfoLabel, cslFailureFilter, cslFailurePoints);
@@ -464,12 +562,52 @@ public final class ObservedConformancePanel extends JPanel {
         cslCoverage.setPreferredSize(new Dimension(500,65));cslVerificationPanel.add(cslCoverage,BorderLayout.SOUTH);
 
         // Build iStar Verification Panel
-        istarVerificationPanel = new JPanel(new BorderLayout(5, 5));
+        istarVerificationPanel = new JPanel(new BorderLayout(5, 5)) {
+            @Override public void doLayout() {
+                updateGoalTaskSplitOrientation();
+                super.doLayout();
+            }
+        };
         istarVerificationPanel.setName("istar-verification-panel");
         istarVerificationPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        istarVerificationPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override public void componentResized(java.awt.event.ComponentEvent e) {
+                updateGoalTaskSplitOrientation();
+            }
+        });
         var istarNav = buildNavComponent(requirementScope, executionSelector, stateSelectorCombo, statePrevButton, stateNextButton, jumpCheckpointButton, milestonesButton, stateStepInfoLabel, failureFilter, failurePoints);
         istarVerificationPanel.add(istarNav, BorderLayout.NORTH);
-        istarVerificationPanel.add(section("Goal / Task results", new JScrollPane(goals)), BorderLayout.CENTER);
+
+        var goalsSection = section("Goals", new JScrollPane(goals));
+        var tasksSection = section("Tasks", new JScrollPane(tasks));
+        goalsSection.setMinimumSize(new Dimension(160, 90));
+        tasksSection.setMinimumSize(new Dimension(160, 90));
+        goalTaskSplitPane = named(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, goalsSection, tasksSection), "goal-task-split");
+        goalTaskSplitPane.setResizeWeight(0.5);
+        goalTaskSplitPane.setOneTouchExpandable(true);
+
+        selectedElementLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+        selectedElementLabel.setBorder(new EmptyBorder(2, 4, 2, 4));
+        var instancesSection = section("Agent instances", new JScrollPane(liveInstanceTable));
+        var occurrencesSection = section("Occurrences & invocations", new JScrollPane(liveOccurrenceTable));
+        var evidenceSection = section("Evidence details", new JScrollPane(liveDetails));
+        instancesSection.setMinimumSize(new Dimension(180, 90));
+        occurrencesSection.setMinimumSize(new Dimension(180, 75));
+        evidenceSection.setMinimumSize(new Dimension(180, 75));
+        var rightDetailSplit = named(new JSplitPane(JSplitPane.VERTICAL_SPLIT, occurrencesSection, evidenceSection), "occurrence-evidence-split");
+        rightDetailSplit.setResizeWeight(0.45);
+        rightDetailSplit.setOneTouchExpandable(true);
+        var agentDetailSplit = named(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, instancesSection, rightDetailSplit), "agent-detail-split");
+        agentDetailSplit.setResizeWeight(0.42);
+        agentDetailSplit.setOneTouchExpandable(true);
+        var agentDetailPanel = new JPanel(new BorderLayout(4, 4));
+        agentDetailPanel.add(selectedElementLabel, BorderLayout.NORTH);
+        agentDetailPanel.add(agentDetailSplit, BorderLayout.CENTER);
+
+        var istarMainSplit = named(new JSplitPane(JSplitPane.VERTICAL_SPLIT, goalTaskSplitPane, agentDetailPanel), "istar-main-split");
+        istarMainSplit.setResizeWeight(0.46);
+        istarMainSplit.setOneTouchExpandable(true);
+        istarVerificationPanel.add(istarMainSplit, BorderLayout.CENTER);
 
         conformanceResultLabel.setName("observed-verdict");
         conformanceResultLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
@@ -614,16 +752,40 @@ public final class ObservedConformancePanel extends JPanel {
     private JPanel section(String title,Component content){var panel=new JPanel(new BorderLayout());panel.setBorder(BorderFactory.createTitledBorder(title));panel.add(content,BorderLayout.CENTER);return panel;}
     private void renderLive(Cut cut){
         if(liveSummary==null)return;
+        String priorElement=selectedElementId;
+        String priorAgent=selectedAgentKey;
+        String priorOccurrence=selectedOccurrenceKey;
         liveRows=liveSummary.rows(cut==null?List.of():cut.evaluations());
+        goalRows=liveRows.stream().filter(LiveGoalSummary.Row::isGoal).toList();
+        taskRows=liveRows.stream().filter(LiveGoalSummary.Row::isTask).toList();
         // The M1 row set/order never depends on callback count or runtime population.
-        liveGoals.setRowCount(0);
-        for(var row:liveRows)liveGoals.addRow(new Object[]{scopedLabel(row.label(),cut),PresentationResults.goal(row.status(),ExecutionScopeViews.ALL.equals(executionScope)&&historicalFailure(cut,row.id()))});
+        updatingElementSelection=true;
+        try{
+            liveGoals.setRowCount(0);
+            for(var row:goalRows)liveGoals.addRow(new Object[]{scopedLabel(row.ownerLabel(),cut),PresentationResults.goal(row.status(),ExecutionScopeViews.ALL.equals(executionScope)&&historicalFailure(cut,row.id()))});
+            liveTasks.setRowCount(0);
+            for(var row:taskRows)liveTasks.addRow(new Object[]{scopedLabel(row.ownerLabel(),cut),PresentationResults.goal(row.status(),ExecutionScopeViews.ALL.equals(executionScope)&&historicalFailure(cut,row.id()))});
+            restoreElementSelection(priorElement);
+        }finally{updatingElementSelection=false;}
+        selectedAgentKey=priorAgent;
+        selectedOccurrenceKey=priorOccurrence;
         liveChecks.setRowCount(0);
         displayedChecks=cut==null?List.of():PresentationResults.checks(cut);
         long diagnosticCount=cut==null?0:cut.evaluations().stream().filter(r->r.kind().equals("CHECKPOINT_CHECK")).count();
         long taskFailures=cut==null?0:cut.evaluations().stream().filter(r->r.kind().equals("EXECUTION_OUTCOME")).map(Evaluation::occurrence).distinct().count();
         liveDiagnosticNote.setText("Checkpoint diagnostics: "+diagnosticCount+"; Task failures: "+taskFailures+". See Audit details.");
-        if(cut==null){conformanceResultLabel.setText("NOT_EVALUATED");riskResultLabel.setText("UNAVAILABLE");istarDataCoverageLabel.setText("UNAVAILABLE");requirementScope.setText("No selected verification state");cslRequirementScope.setText("No selected verification state");displayedInstances=List.of();liveInstances.setRowCount(0);liveDetails.setText("");stateSnapshotText.setText("");statePrevButton.setEnabled(false);stateNextButton.setEnabled(false);jumpCheckpointButton.setEnabled(false);cslStatePrevButton.setEnabled(false);cslStateNextButton.setEnabled(false);cslJumpCheckpointButton.setEnabled(false);return;}
+        if(cut==null){
+            conformanceResultLabel.setText("NOT_EVALUATED");riskResultLabel.setText("UNAVAILABLE");istarDataCoverageLabel.setText("UNAVAILABLE");
+            requirementScope.setText("No selected verification state");cslRequirementScope.setText("No selected verification state");
+            selectedElementLabel.setText("No Goal or Task selected — select a Goal or Task above to inspect agent instances");
+            displayedInstances=List.of();displayedAgentRows=List.of();displayedOccurrences=List.of();
+            updatingAgentSelection=true;try{liveInstances.setRowCount(0);}finally{updatingAgentSelection=false;}
+            updatingOccurrenceSelection=true;try{liveOccurrences.setRowCount(0);}finally{updatingOccurrenceSelection=false;}
+            liveDetails.setText("");stateSnapshotText.setText("");
+            statePrevButton.setEnabled(false);stateNextButton.setEnabled(false);jumpCheckpointButton.setEnabled(false);
+            cslStatePrevButton.setEnabled(false);cslStateNextButton.setEnabled(false);cslJumpCheckpointButton.setEnabled(false);
+            return;
+        }
         var selected=liveRows.stream().filter(r->r.resultRole().equals("Selected requirement")).map(LiveGoalSummary.Row::label).toList();
         Object inventory=cut.visualEvidence().get("requirementInventory");
         boolean explicitSelection=cut.selectedRequirements()||inventory instanceof java.util.Map<?,?> values&&values.get("selectedIntentionalElements") instanceof List<?> ids&&!ids.isEmpty();
@@ -640,7 +802,35 @@ public final class ObservedConformancePanel extends JPanel {
         String freshness=cut.freshness().equals("CURRENT_OBSERVED")?cut.visualEvidence().containsKey("verifiedCheckpointToken")?"Current checkpoint":"Current observation":"Evidence is not current";
         riskResultLabel.setText("<html>Data coverage: "+dataCoverage.status()+"<br>"+freshness+"</html>");
         istarDataCoverageLabel.setText(riskResultLabel.getText());istarDataCoverageLabel.setToolTipText(riskResultLabel.getToolTipText());
-        showGoalInstances(liveGoalTable.getSelectedRow());
+        showSelectedElementInstances();
+        if(failureFocus!=null&&failureFocus.cut().id().equals(cut.id())&&failureFocus.evaluation()!=null&&!failureFocus.evaluation().kind().equals("GOAL_TASK")){
+            var row=failureFocus.evaluation();
+            liveDetails.setText(row.element()+"\n"+row.status()+" | "+row.quality()+"\n"+row.evidence()+"\n"+row.certifiedHistory());
+            liveDetails.setCaretPosition(0);
+        }
+    }
+
+    private void restoreElementSelection(String elementId){
+        if(elementId==null||elementId.isBlank()){selectedElementId="";return;}
+        for(int i=0;i<goalRows.size();i++)if(goalRows.get(i).id().equals(elementId)){liveGoalTable.setRowSelectionInterval(i,i);selectedElementId=elementId;return;}
+        for(int i=0;i<taskRows.size();i++)if(taskRows.get(i).id().equals(elementId)){liveTaskTable.setRowSelectionInterval(i,i);selectedElementId=elementId;return;}
+        selectedElementId="";
+    }
+
+    private void selectElementById(String elementId){
+        updatingElementSelection=true;
+        try{
+            liveGoalTable.clearSelection();
+            liveTaskTable.clearSelection();
+            restoreElementSelection(elementId);
+        }finally{updatingElementSelection=false;}
+        showSelectedElementInstances();
+    }
+
+    private LiveGoalSummary.Row findSelectedRow(){
+        if(selectedElementId==null||selectedElementId.isBlank())return null;
+        for(var row:liveRows)if(row.id().equals(selectedElementId))return row;
+        return null;
     }
 
     private String scopedLabel(String label,Cut cut){
@@ -648,28 +838,320 @@ public final class ObservedConformancePanel extends JPanel {
         var context=ExecutionScopeViews.contexts(cut).stream().filter(c->executionScope.equals(c.get("context"))).findFirst().orElse(java.util.Map.of());
         return label+" · "+ExecutionScopeViews.actorLabel(context,new java.util.ArrayList<>(executionLabels.keySet()).indexOf(executionScope)+1);
     }
-    private void showGoalInstances(int index){
-        int prior=liveInstanceTable.getSelectedRow();
-        String selected=prior>=0&&prior<displayedInstances.size()?displayedInstances.get(prior).occurrence():"";
-        liveInstances.setRowCount(0);
-        displayedInstances=List.of();
-        if(index<0||index>=liveRows.size()){liveDetails.setText("");return;}
-        var row=liveRows.get(index);liveDetails.setText(row.detail());liveDetails.setCaretPosition(0);
+
+    private static String agentGroupKey(String context,String player,String occurrence){
+        return (context==null?"":context)+"\u0000"+(player!=null&&!player.isBlank()?player:"occurrence:"+(occurrence==null?"":occurrence));
+    }
+
+    private String executionLabelFor(String context,int fallbackOrdinal){
+        if(context==null||context.isBlank()||"UNAVAILABLE".equalsIgnoreCase(context))return "Unavailable";
+        if(executionLabels.containsKey(context))return executionLabels.get(context);
+        if(context.startsWith("beid:v1:"))return PresentationResults.shortId(context);
+        return context.length()>30?"Context "+fallbackOrdinal:context;
+    }
+
+    private void showSelectedElementInstances(){
+        String priorAgent=selectedAgentKey;
+        String priorOccurrence=selectedOccurrenceKey;
+        var row=findSelectedRow();
+        Cut cut=selectedCut();
+        if(row==null||cut==null){
+            updatingAgentSelection=true;try{liveInstances.setRowCount(0);}finally{updatingAgentSelection=false;}
+            updatingOccurrenceSelection=true;try{liveOccurrences.setRowCount(0);}finally{updatingOccurrenceSelection=false;}
+            displayedInstances=List.of();displayedAgentRows=List.of();displayedOccurrences=List.of();
+            selectedElementLabel.setText("No Goal or Task selected — select a Goal or Task above to inspect agent instances");
+            if(cut==null||(failureFocus==null&&liveCheckTable.getSelectedRow()<0))liveDetails.setText("");
+            return;
+        }
+        String summaryStatus=PresentationResults.goal(row.status(),ExecutionScopeViews.ALL.equals(executionScope)&&historicalFailure(cut,row.id()));
+        selectedElementLabel.setText("Selected "+(row.isGoal()?"Goal: ":"Task: ")+scopedLabel(row.ownerLabel(),cut)+" ("+summaryStatus+")");
         displayedInstances=row.instances();
-        var contexts=new java.util.TreeSet<String>();displayedInstances.stream().map(Evaluation::context).filter(c->!c.isBlank()).forEach(contexts::add);
-        var contextLabels=new java.util.LinkedHashMap<String,String>();for(String context:contexts)contextLabels.put(context,executionLabels.getOrDefault(context,context.length()>30?"Context "+(contextLabels.size()+1):context));
-        for(var instance:displayedInstances)liveInstances.addRow(new Object[]{playerLabel(instance.player()),contextLabels.getOrDefault(instance.context(),"Unavailable"),instance.originalStatus(),instance.status(),instance.quality()});
-        if(!selected.isBlank())for(int i=0;i<displayedInstances.size();i++)if(selected.equals(displayedInstances.get(i).occurrence())){liveInstanceTable.setRowSelectionInterval(i,i);break;}
+        var contexts=new java.util.TreeSet<String>();
+        displayedInstances.stream().map(Evaluation::context).filter(c->!c.isBlank()).forEach(contexts::add);
+        var contextLabels=new java.util.LinkedHashMap<String,String>();
+        for(String context:contexts)contextLabels.put(context,executionLabelFor(context,contextLabels.size()+1));
+        var grouped=new java.util.LinkedHashMap<String,java.util.List<Evaluation>>();
+        for(var instance:displayedInstances){
+            grouped.computeIfAbsent(agentGroupKey(instance.context(),instance.player(),instance.occurrence()),k->new java.util.ArrayList<>()).add(instance);
+        }
+        var groups=new java.util.ArrayList<AgentInstanceGroup>();
+        for(var entry:grouped.entrySet()){
+            var evals=List.copyOf(entry.getValue());
+            var first=evals.getFirst();
+            String subj=PresentationResults.subjectLabel(first.player());
+            String execLbl=first.context().isBlank()?"Unavailable":contextLabels.getOrDefault(first.context(),executionLabelFor(first.context(),1));
+            String resLbl=PresentationResults.agentAggregateResult(evals);
+            var history=collectAgentHistory(row.id(),first.context(),first.player(),evals,cut);
+            groups.add(new AgentInstanceGroup(entry.getKey(),first.player(),subj,first.context(),execLbl,resLbl,evals,history));
+        }
+        displayedAgentRows=List.copyOf(groups);
+        int restoreIdx=-1;
+        updatingAgentSelection=true;
+        try{
+            liveInstances.setRowCount(0);
+            for(int i=0;i<displayedAgentRows.size();i++){
+                var g=displayedAgentRows.get(i);
+                liveInstances.addRow(new Object[]{g.subjectLabel(),g.executionLabel(),g.resultLabel()});
+                if(!priorAgent.isBlank()&&g.key().equals(priorAgent))restoreIdx=i;
+            }
+            if(restoreIdx>=0){
+                liveInstanceTable.setRowSelectionInterval(restoreIdx,restoreIdx);
+                selectedAgentKey=priorAgent;
+                selectedOccurrenceKey=priorOccurrence;
+            }else{
+                selectedAgentKey="";
+                selectedOccurrenceKey="";
+            }
+        }finally{updatingAgentSelection=false;}
+        if(restoreIdx>=0){
+            showInstanceEvidence();
+        }else{
+            updatingOccurrenceSelection=true;try{liveOccurrences.setRowCount(0);}finally{updatingOccurrenceSelection=false;}
+            displayedOccurrences=List.of();
+            liveDetails.setText(row.detail());
+            liveDetails.setCaretPosition(0);
+        }
     }
+
     private void showInstanceEvidence(){
-        int goal=liveGoalTable.getSelectedRow(),instance=liveInstanceTable.getSelectedRow();
-        if(goal<0||goal>=liveRows.size()||instance<0||instance>=displayedInstances.size())return;
-        var row=liveRows.get(goal);var evidence=displayedInstances.get(instance);
-        liveDetails.setText(row.label()+"\nPlayer: "+evidence.player()+"\nContext: "+evidence.context()+"\nOccurrence: "+evidence.occurrence()+"\nRaw: "+evidence.originalStatus()+" | Certified: "+evidence.status()+"\nQuality: "+evidence.quality()+"\n"+evidence.evidence()+"\n"+evidence.certifiedHistory());liveDetails.setCaretPosition(0);
+        String priorOccurrence=selectedOccurrenceKey;
+        var row=findSelectedRow();
+        int idx=liveInstanceTable.getSelectedRow();
+        if(row==null||idx<0||idx>=displayedAgentRows.size()){
+            updatingOccurrenceSelection=true;try{liveOccurrences.setRowCount(0);}finally{updatingOccurrenceSelection=false;}
+            displayedOccurrences=List.of();
+            if(row!=null){liveDetails.setText(row.detail());liveDetails.setCaretPosition(0);}
+            return;
+        }
+        var group=displayedAgentRows.get(idx);
+        displayedOccurrences=group.history();
+        int restoreOccIdx=-1;
+        updatingOccurrenceSelection=true;
+        try{
+            liveOccurrences.setRowCount(0);
+            for(int i=0;i<displayedOccurrences.size();i++){
+                var entry=displayedOccurrences.get(i);
+                String occDisplay=entry.occurrenceId().isBlank()?"—":PresentationResults.shortId(entry.occurrenceId())+(entry.episode().isBlank()?"":" ["+PresentationResults.shortId(entry.episode())+"]");
+                String invDisplay=entry.invocationId().isBlank()?"—":PresentationResults.shortId(entry.invocationId());
+                liveOccurrences.addRow(new Object[]{entry.recordType(),occDisplay,invDisplay,entry.checkpointLabel(),entry.resultLabel()});
+                if(!priorOccurrence.isBlank()&&entry.key().equals(priorOccurrence))restoreOccIdx=i;
+            }
+            if(restoreOccIdx>=0){
+                liveOccurrenceTable.setRowSelectionInterval(restoreOccIdx,restoreOccIdx);
+                selectedOccurrenceKey=priorOccurrence;
+            }else{
+                selectedOccurrenceKey="";
+            }
+        }finally{updatingOccurrenceSelection=false;}
+        renderSelectedOccurrenceDetail();
     }
-    private static String playerLabel(String identity){
-        if(identity.isBlank())return "Unavailable";
-        try{return org.jacamo.bridge.contract.BridgeEntityId.parse(identity).localId();}catch(org.jacamo.bridge.contract.ContractException invalid){return identity;}
+
+    private void renderSelectedOccurrenceDetail(){
+        var row=findSelectedRow();
+        int agentIdx=liveInstanceTable.getSelectedRow();
+        if(row==null||agentIdx<0||agentIdx>=displayedAgentRows.size())return;
+        var group=displayedAgentRows.get(agentIdx);
+        int occIdx=liveOccurrenceTable.getSelectedRow();
+        var sb=new StringBuilder();
+        sb.append(row.label()).append('\n');
+        sb.append("Agent / Player: ").append(group.subjectLabel()).append(" (full ID: ").append(group.player().isBlank()?"Unavailable":group.player()).append(")\n");
+        sb.append("Execution: ").append(group.executionLabel()).append(" (full ID: ").append(group.context().isBlank()?"Unavailable":group.context()).append(")\n");
+        sb.append("Current Result: ").append(group.resultLabel()).append(" | Recorded occurrences & invocations: ").append(displayedOccurrences.size()).append('\n');
+        if(occIdx>=0&&occIdx<displayedOccurrences.size()){
+            var entry=displayedOccurrences.get(occIdx);
+            sb.append("\n--- Selected Record ---\n");
+            appendOccurrenceDetail(sb,entry);
+        }
+        sb.append("\n--- Full Occurrence & Invocation History ---\n");
+        int index=1;
+        for(var entry:displayedOccurrences){
+            sb.append("\n[").append(index++).append("] ");
+            appendOccurrenceDetail(sb,entry);
+        }
+        liveDetails.setText(sb.toString());
+        liveDetails.setCaretPosition(0);
+    }
+
+    private static void appendOccurrenceDetail(StringBuilder sb,OccurrenceEntry entry){
+        sb.append("Type: ").append(entry.recordType()).append(" | Result: ").append(entry.resultLabel()).append('\n');
+        sb.append("Occurrence ID: ").append(entry.occurrenceId().isBlank()?"—":entry.occurrenceId());
+        if(!entry.episode().isBlank())sb.append(" | Episode: ").append(entry.episode());
+        if(!entry.role().isBlank())sb.append(" | Role: ").append(entry.role());
+        sb.append('\n');
+        sb.append("Invocation ID: ").append(entry.invocationId().isBlank()?"—":entry.invocationId()).append('\n');
+        sb.append("Checkpoint: ").append(entry.checkpointLabel()).append(" (boundary ID: ").append(entry.checkpointId()).append(")\n");
+        sb.append("Raw: ").append(entry.rawStatus()).append(" | Certified: ").append(entry.certifiedStatus()).append(" | Quality: ").append(entry.quality()).append('\n');
+        if(!entry.evidence().isBlank())sb.append("Evidence: ").append(entry.evidence()).append('\n');
+        if(!entry.certifiedHistory().isBlank())sb.append("Certified history: ").append(entry.certifiedHistory()).append('\n');
+    }
+
+    private List<OccurrenceEntry> collectAgentHistory(String elementId,String contextId,String playerId,List<Evaluation> currentEvaluations,Cut currentCut){
+        var prefix=historyPrefixFor(currentCut);
+        var currentOccIds=currentEvaluations.stream().map(Evaluation::occurrence).collect(java.util.stream.Collectors.toSet());
+        var entries=new java.util.ArrayList<OccurrenceEntry>();
+        var lastOccurrenceState=new java.util.HashMap<String,String>();
+        var seenInvocations=new java.util.LinkedHashSet<String>();
+        for(var cut:prefix){
+            String cpLabel=checkpointLabelFor(cut);
+            var occMaps=structuredOccurrencesFor(cut,contextId,elementId,playerId);
+            for(var eval:cut.evaluations()){
+                if(!"GOAL_TASK".equals(eval.kind())||!eval.element().equals(elementId))continue;
+                if(!java.util.Objects.equals(eval.context(),contextId)||!java.util.Objects.equals(eval.player(),playerId))continue;
+                if(playerId.isBlank()&&!currentOccIds.contains(eval.occurrence()))continue;
+                var occMap=occMaps.getOrDefault(eval.occurrence(),java.util.Map.of());
+                String episode=extractEpisode(occMap);
+                String role=java.util.Objects.toString(occMap.getOrDefault("role",""),"");
+                String occKey=eval.occurrence()+"\u0000"+episode;
+                String stateSig=eval.status()+"\u0000"+eval.originalStatus()+"\u0000"+eval.quality();
+                if(!stateSig.equals(lastOccurrenceState.get(occKey))){
+                    lastOccurrenceState.put(occKey,stateSig);
+                    String entryKey="OCC\u0000"+occKey+"\u0000"+cut.id()+"\u0000"+entries.size();
+                    entries.add(new OccurrenceEntry(entryKey,"Occurrence",eval.occurrence(),episode,"",cut.id(),cpLabel,PresentationResults.agentResult(eval),eval.originalStatus(),eval.status(),eval.quality(),role,eval.evidence(),eval.certifiedHistory()));
+                }
+                if(occMap.get("executionEvidence") instanceof java.util.Map<?,?> execEv){
+                    for(var certEntry:execEv.entrySet()){
+                        if(!(certEntry.getValue() instanceof java.util.Map<?,?> rawCert))continue;
+                        var cert=ExecutionScopeViews.object(rawCert);
+                        String kind=java.util.Objects.toString(cert.getOrDefault("kind","CERTIFICATE"),"CERTIFICATE");
+                        String invId=java.util.Objects.toString(cert.getOrDefault("invocation",""),"");
+                        String demandEp=java.util.Objects.toString(cert.getOrDefault("demandEpisode",episode),episode);
+                        String stateVer=java.util.Objects.toString(cert.getOrDefault("stateVersion",""),"");
+                        String stateHash=java.util.Objects.toString(cert.getOrDefault("stateHash",""),"");
+                        String policy=java.util.Objects.toString(cert.getOrDefault("policy",""),"");
+                        String failReason=java.util.Objects.toString(cert.getOrDefault("failureReason",""),"");
+                        if(invId.isBlank()&&policy.isBlank())continue;
+                        String certSig="CERT\u0000"+eval.occurrence()+"\u0000"+invId+"\u0000"+kind+"\u0000"+stateHash;
+                        if(seenInvocations.add(certSig)){
+                            String certRes="TASK_FAILED".equals(kind)?"Failed":"TASK_COMPLETED".equals(kind)?"Complete":PresentationResults.agentResult(eval);
+                            String certEv="policy="+policy+"; kind="+kind+"; invocation="+invId+"; stateVersion="+stateVer+"; stateHash="+stateHash+(failReason.isBlank()?"":"; failureReason="+failReason);
+                            String cpWithVer=stateVer.isBlank()?cpLabel:cpLabel+" (v"+stateVer+")";
+                            entries.add(new OccurrenceEntry(certSig,"Invocation ("+kind+")",eval.occurrence(),demandEp,invId,cut.id(),cpWithVer,certRes,kind,eval.status(),eval.quality(),role,certEv,eval.certifiedHistory()));
+                        }
+                    }
+                }
+            }
+            for(var cm:structuredConstraintsFor(cut,contextId,elementId,playerId)){
+                String kind=java.util.Objects.toString(cm.getOrDefault("kind",""),"");
+                var witness=ExecutionScopeViews.object(cm.get("witness"));
+                String invId=java.util.Objects.toString(cm.getOrDefault("invocation",witness.getOrDefault("stepInvocation",witness.getOrDefault("goalInvocation",""))),"");
+                String occId=java.util.Objects.toString(witness.getOrDefault("occurrence",""),"");
+                if(occId.isBlank()&&!occMaps.isEmpty())occId=occMaps.keySet().iterator().next();
+                if(occId.isBlank()&&!currentEvaluations.isEmpty())occId=currentEvaluations.getFirst().occurrence();
+                String ep=java.util.Objects.toString(witness.getOrDefault("demandEpisode",""),"");
+                String role=java.util.Objects.toString(witness.getOrDefault("role",""),"");
+                String verdict=java.util.Objects.toString(cm.getOrDefault("verdict",""),"");
+                String diag=java.util.Objects.toString(cm.getOrDefault("diagnostic",""),"");
+                String expr=java.util.Objects.toString(cm.getOrDefault("expression",""),"");
+                String backendVal=java.util.Objects.toString(cm.getOrDefault("backendValue",""),"");
+                String stateVer=java.util.Objects.toString(cm.getOrDefault("stateVersion",""),"");
+                String sig="CONSTR\u0000"+kind+"\u0000"+occId+"\u0000"+invId+"\u0000"+verdict+"\u0000"+stateVer;
+                if(seenInvocations.add(sig)){
+                    seenInvocations.add("EVAL_DEDUP\u0000"+kind+"\u0000"+invId);
+                    String resLabel="EXECUTION_OUTCOME".equals(kind)?("FAIL".equals(verdict)?"Failed":"Complete"):PresentationResults.truth(verdict);
+                    String evText="expression="+expr+"; backendValue="+backendVal+"; diagnostic="+diag+"; witness="+witness;
+                    String cpWithVer=stateVer.isBlank()?cpLabel:cpLabel+" (v"+stateVer+")";
+                    entries.add(new OccurrenceEntry(sig,"Invocation ("+kind+")",occId,ep,invId,cut.id(),cpWithVer,resLabel,backendVal,verdict,diag,role,evText,""));
+                }
+            }
+            for(var eval:cut.evaluations()){
+                if(!java.util.Set.of("TASK_PRE","TASK_POST","TASK_INVOCATION","INVOCATION_CONFORMANCE","EXECUTION_OUTCOME","GOAL_CONDITION").contains(eval.kind()))continue;
+                if(!matchesConstraintEvaluation(eval,elementId,contextId,playerId))continue;
+                String invId=eval.occurrence();
+                if(seenInvocations.contains("EVAL_DEDUP\u0000"+eval.kind()+"\u0000"+invId))continue;
+                String occId=!occMaps.isEmpty()?occMaps.keySet().iterator().next():(currentEvaluations.isEmpty()?"":currentEvaluations.getFirst().occurrence());
+                String sig="EVAL\u0000"+eval.kind()+"\u0000"+occId+"\u0000"+invId+"\u0000"+eval.status();
+                if(seenInvocations.add(sig)){
+                    String resLabel="EXECUTION_OUTCOME".equals(eval.kind())&&java.util.Set.of("EXECUTION_FAILED","FAIL","FAILED").contains(eval.status())?"Failed":PresentationResults.truth(eval.status());
+                    entries.add(new OccurrenceEntry(sig,"Invocation ("+eval.kind()+")",occId,"",invId,cut.id(),cpLabel,resLabel,eval.raw(),eval.status(),eval.quality(),"",eval.evidence(),eval.certifiedHistory()));
+                }
+            }
+        }
+        return List.copyOf(entries);
+    }
+
+    private List<Cut> historyPrefixFor(Cut currentCut){
+        if(currentCut==null)return List.of();
+        int idx=-1;
+        for(int i=0;i<auditCuts.size();i++)if(auditCuts.get(i).id().equals(currentCut.id())){idx=i;break;}
+        if(idx<0)return List.of(currentCut);
+        String targetOwner=runtimeOwner(currentCut);
+        var result=new java.util.ArrayList<Cut>();
+        for(int i=0;i<=idx;i++){
+            var c=auditCuts.get(i);
+            String owner=runtimeOwner(c);
+            if(targetOwner.isBlank()||owner.isBlank()||targetOwner.equals(owner))result.add(c);
+        }
+        return result.isEmpty()?List.of(currentCut):List.copyOf(result);
+    }
+
+    private static String runtimeOwner(Cut cut){
+        if(cut==null)return "";
+        Object core=cut.visualEvidence().get("originalEngine");
+        return core instanceof java.util.Map<?,?> engine&&engine.get("identity")!=null
+                ?org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(engine.get("identity"))
+                :"";
+    }
+
+    private String checkpointLabelFor(Cut cut){
+        if(cut==null)return "—";
+        int m=milestoneNumbers.getOrDefault(cut.id(),0);
+        if(!details.isSelected()&&m>0)return "State "+m;
+        int b=-1;
+        for(int i=0;i<auditCuts.size();i++)if(auditCuts.get(i).id().equals(cut.id())){b=i+1;break;}
+        if(b>0)return (m>0?"State "+m+" · ":"")+"Boundary "+b;
+        return PresentationResults.shortId(cut.id());
+    }
+
+    private static java.util.Map<String,java.util.Map<String,Object>> structuredOccurrencesFor(Cut cut,String contextId,String elementId,String playerId){
+        var result=new java.util.LinkedHashMap<String,java.util.Map<String,Object>>();
+        for(var ctx:ExecutionScopeViews.contexts(cut)){
+            if(!java.util.Objects.equals(java.util.Objects.toString(ctx.get("context"),""),contextId))continue;
+            var occs=ExecutionScopeViews.object(ctx.get("occurrences"));
+            for(var entry:occs.entrySet()){
+                var occ=ExecutionScopeViews.object(entry.getValue());
+                if(!elementId.equals(java.util.Objects.toString(occ.get("sourceElement"),"")))continue;
+                if(!playerId.equals(java.util.Objects.toString(occ.getOrDefault("player",""),"")))continue;
+                result.put(entry.getKey(),occ);
+            }
+        }
+        return result;
+    }
+
+    private static List<java.util.Map<String,Object>> structuredConstraintsFor(Cut cut,String contextId,String elementId,String playerId){
+        var result=new java.util.ArrayList<java.util.Map<String,Object>>();
+        for(var ctx:ExecutionScopeViews.contexts(cut)){
+            if(!java.util.Objects.equals(java.util.Objects.toString(ctx.get("context"),""),contextId))continue;
+            if(!(ctx.get("executionConstraints") instanceof List<?> list))continue;
+            for(Object item:list){
+                var cm=ExecutionScopeViews.object(item);
+                String kind=java.util.Objects.toString(cm.getOrDefault("kind",""),"");
+                if(!java.util.Set.of("TASK_PRE","TASK_POST","TASK_INVOCATION","INVOCATION_CONFORMANCE","EXECUTION_OUTCOME","GOAL_CONDITION").contains(kind))continue;
+                var witness=ExecutionScopeViews.object(cm.get("witness"));
+                String target=java.util.Objects.toString(witness.getOrDefault("targetTaskId",witness.getOrDefault("targetGoalId",witness.getOrDefault("element",""))),"");
+                String id=java.util.Objects.toString(cm.getOrDefault("id",""),"");
+                if(!elementId.equals(target)&&!elementId.equals(id)&&!id.endsWith(":"+elementId)&&!id.endsWith("::"+elementId))continue;
+                String wPlayer=java.util.Objects.toString(witness.getOrDefault("player",""),"");
+                if(!playerId.isBlank()&&!wPlayer.isBlank()&&!playerId.equals(wPlayer))continue;
+                result.add(cm);
+            }
+        }
+        return result;
+    }
+
+    private static boolean matchesConstraintEvaluation(Evaluation eval,String elementId,String contextId,String playerId){
+        String el=eval.element()==null?"":eval.element();
+        if(!el.equals(elementId)&&!el.endsWith(":"+elementId)&&!el.endsWith("::"+elementId))return false;
+        if(!contextId.isBlank()&&!eval.context().isBlank()&&!eval.context().equals(contextId)&&!eval.context().startsWith(contextId+" / "))return false;
+        if(!playerId.isBlank()&&!eval.player().isBlank()&&!eval.player().equals(playerId))return false;
+        return true;
+    }
+
+    private static String extractEpisode(java.util.Map<String,Object> occMap){
+        if(occMap.get("key") instanceof java.util.Map<?,?> rawKey){
+            var k=ExecutionScopeViews.object(rawKey);
+            return java.util.Objects.toString(k.getOrDefault("episode",""),"");
+        }
+        return "";
     }
 
     private boolean historicalFailure(Cut selected,String element){

@@ -7,7 +7,14 @@ import org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePan
 /** Presentation only: fixed M1 rows, conservative summary of the current admitted
  * occurrences. Original iStar marking/quantifiers remain the semantic authority. */
 public final class LiveGoalSummary {
- public record Row(String id,String label,String status,String originalStatus,String detail,String resultRole,String counts,List<Evaluation> instances){public Row{instances=List.copyOf(instances);}}
+ public record Row(String id,String label,String status,String originalStatus,String detail,String resultRole,String counts,List<Evaluation> instances){
+  public Row{instances=List.copyOf(instances);}
+  public boolean isGoal(){return label!=null&&label.startsWith("Goal: ");}
+  public boolean isTask(){return label!=null&&label.startsWith("Task: ");}
+  public String ownerLabel(){if(label==null)return id;if(label.startsWith("Goal: "))return label.substring("Goal: ".length());if(label.startsWith("Task: "))return label.substring("Task: ".length());return label;}
+ }
+ public List<Row> goalRows(List<Evaluation> evaluations){return rows(evaluations).stream().filter(Row::isGoal).toList();}
+ public List<Row> taskRows(List<Evaluation> evaluations){return rows(evaluations).stream().filter(Row::isTask).toList();}
  private final Map<String,String> declarations=new LinkedHashMap<>();
  public LiveGoalSummary(GoalModel model){
   for(var actor:model.getActors())for(var e:actor.elements())if(e instanceof Goal||e instanceof Task)declarations.put(e.id(),(e instanceof Goal?"Goal: ":"Task: ")+actor.name()+"::"+e.id());
