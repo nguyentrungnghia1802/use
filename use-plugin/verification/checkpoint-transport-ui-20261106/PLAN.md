@@ -19,7 +19,8 @@ source/artifact/scheduler/Swing locks. Authored models/assertions remain unchang
   and Auction as needed for the shared paths. No clean verify.
 - [x] Incrementally refresh target/new, verify actual loaded runtime identities
   and rerun installed House Building through the live workbench.
-- [ ] Commit/push proved work and report limitations.
+- [x] Commit/push proved work and report limitations (feature commit
+  `c0d6b64fdd5e814879b19eafab4d6967aac57509` verified on `origin/main`).
 
 Native Goal/Task/OCL semantics and their UNKNOWN/FUTURE distinctions are not
 changed. No manual desktop/Computer Use acceptance is implied by offscreen tests.

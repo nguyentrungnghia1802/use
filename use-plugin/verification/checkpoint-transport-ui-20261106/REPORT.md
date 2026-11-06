@@ -152,6 +152,9 @@ the packaged official adapter SHA-256 is
 `a2c8296f9c82079384b1db97537a9e36cef3a42a150486be33ee1579f29c384c`.
 The installed live run uses its own preparation script, bundled source inputs and
 producer framework classpath, not development production classes.
+`installed-producer-identity.json` also matches that live producer run to its
+retained preparation receipt and verifies the selected installed adapter and
+JaCaMo JAR paths/hashes. No bridge secret is copied into the audit.
 
 Authored CSL/iStar/XML/OCL/JCM, native Goal/Task/OCL semantics, policy selection,
 exact-token release, frozen source clocks and fail-closed behavior are preserved.
