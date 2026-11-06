@@ -515,6 +515,7 @@ public final class ObservedConformancePanel extends JPanel {
         checks.getColumnModel().getColumn(0).setPreferredWidth(240);
         checks.getColumnModel().getColumn(1).setPreferredWidth(500);
         checks.getColumnModel().getColumn(2).setMaxWidth(100);
+        checks.getColumnModel().getColumn(2).setCellRenderer(new TruthResultCellRenderer());
         liveInstanceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         liveInstanceTable.getSelectionModel().addListSelectionListener(e->{
             if(e.getValueIsAdjusting()||updatingAgentSelection)return;
