@@ -1,0 +1,9 @@
+Moise Http Server running on http://192.168.0.103:3271
+Agent mind inspector is running at http://192.168.0.103:3272
+Nov 07, 2026 1:56:00 PM ora4mas.nopl.OrgArt ora4masOperationTemplate
+INFO: error. normative failure, details: fail(role_cardinality(auctioneer,probeGroupA,2,1))
+SECOND_AUCTIONEER_SAME_GROUP REJECTED performer=otherAuctioneer reason=Error adopting role auctioneer detail=reason(fail(role_cardinality(auctioneer,probeGroupA,2,1)))
+cartago.CartagoException
+	at cartago.util.agent.CartagoBasicContext.focus(CartagoBasicContext.java:545)
+	at AuctionSetupAuthorityProbe.run(AuctionSetupAuthorityProbe.java:42)
+	at AuctionSetupAuthorityProbe.main(AuctionSetupAuthorityProbe.java:22)

@@ -1,0 +1,16 @@
+{
+  "method": "ISOLATED_REAL_CARTAGO_MOISE_OPERATIONS_NOT_FULL_JASON_MAS_OR_USE_VERDICT",
+  "sourceFiles": {
+    "D:\\_CODE_BANK\\Project_\\vnu-sme-lab\\jacamo\\examples\\auction\\auction.jcm": "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb",
+    "D:\\_CODE_BANK\\Project_\\vnu-sme-lab\\jacamo\\examples\\auction\\src\\agt\\auction_capabilities.asl": "31679b13210114b211dad862ad86af352cc9003ac9527ea7268e3a1d0f9cfe1b",
+    "D:\\_CODE_BANK\\Project_\\vnu-sme-lab\\jacamo\\examples\\auction\\src\\org\\auction-os.xml": "d2481d4ee3c45b2cead42f942a3943684e86facee992870356ca4d1e47d16f9a",
+    "D:\\_CODE_BANK\\Project_\\vnu-sme-lab\\jacamo\\examples\\auction\\src\\env\\auction_env\\AuctionArtifact.java": "34036fc220274853e39f93682cdb22c350fe6a06739669860f2a66afe606ff4b"
+  },
+  "loadedFrameworkArtifacts": {
+    "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\cartago-3.1-checkpoint-SNAPSHOT.jar": "888f431d03311fa5777b671455b4de3c15179540aa058d3e73cea066f2f37b82",
+    "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\checkpoint-runtime-1.0.0-SNAPSHOT.jar": "be844afb1706ac65976fa8b9fbaf3e6e3b39214c9c6067e44cc33b9b2ef77ee6",
+    "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\jason-interpreter-3.3.2-checkpoint-SNAPSHOT.jar": "135dc5e0ca1cafea23ac891b0b45f2673d36990d7711f0d5605705b23998de72",
+    "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\moise-1.1.jar": "2b7d0415c5ec0bcf060a430c7d12753aa02bdf769172922d10ff2909870161a8",
+    "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\bridge\\runtime\\npl-0.6.1-checkpoint-SNAPSHOT.jar": "55a1417b6937ec66b22ac1c7159c4408623e31642bc7c92d517b4bfc78f8ddcc"
+  }
+}

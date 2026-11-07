@@ -1,0 +1,24 @@
+Moise Http Server running on http://192.168.0.103:3271
+Agent mind inspector is running at http://192.168.0.103:3272
+Nov 07, 2026 1:56:44 PM ora4mas.nopl.OrgArt ora4masOperationTemplate
+INFO: error. normative failure, details: fail(role_cardinality(auctioneer,probeGroupA,2,1))
+SECOND_AUCTIONEER_SAME_GROUP REJECTED performer=otherAuctioneer reason=Error adopting role auctioneer detail=reason(fail(role_cardinality(auctioneer,probeGroupA,2,1)))
+The maintenance condition of norm n1 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+The maintenance condition of norm n2 seems to point to a norm id (not ) that does not exit. Therefore 'not ' is considered literally as the maintenance condition!
+OTHER_AGENT_FOCUS_SCHEME SUCCESS performer=otherAuctioneer
+Nov 07, 2026 1:56:44 PM ora4mas.nopl.OrgArt ora4masOperationTemplate
+INFO: error. normative failure, details: fail(mission_permission(otherAuctioneer,mAuctioneer,sch_probe))
+OTHER_AGENT_COMMIT_BEFORE_CREATOR REJECTED performer=otherAuctioneer reason=Error committing to mission mAuctioneer detail=reason(fail(mission_permission(otherAuctioneer,mAuctioneer,sch_probe)))
+CREATOR_COMMIT SUCCESS performer=setupCreator
+SCHEME_SETUP_COMPLETE scheme=sch_probe owner=setupCreator
+SECOND_AUCTIONEER_DIFFERENT_GROUP SUCCESS performer=otherAuctioneer
+Nov 07, 2026 1:56:44 PM ora4mas.nopl.OrgArt ora4masOperationTemplate
+INFO: error. normative failure, details: fail(mission_cardinality(mAuctioneer,sch_probe,2,1))
+OTHER_GROUP_AUCTIONEER_COMMIT_ORIGINAL_SCHEME REJECTED performer=otherAuctioneer reason=Error committing to mission mAuctioneer detail=reason(fail(mission_cardinality(mAuctioneer,sch_probe,2,1)))
+OTHER_AUCTIONEER_CREATE_FOCUS_START SUCCESS performer=otherAuctioneer
+Nov 07, 2026 1:56:44 PM ora4mas.nopl.OrgArt ora4masOperationTemplate
+INFO: error. normative failure, details: fail(ach_not_committed_goal(sch_probe,start,otherAuctioneer))
+OTHER_AUCTIONEER_REPORT_ORGANISATIONAL_START REJECTED performer=otherAuctioneer reason=Error achieving goal start detail=reason(fail(ach_not_committed_goal(sch_probe,start,otherAuctioneer)))
+CREATOR_START_ALREADY_RUNNING REJECTED performer=setupCreator reason=The protocol is already running and so you cannot start it! detail=null
+OTHER_AGENT_START_CREATOR_ARTIFACT SUCCESS performer=otherAuctioneer
+AUCTION_SETUP_AUTHORITY_PROBE_PASS
