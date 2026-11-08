@@ -60,7 +60,7 @@ public final class ObservedConformancePresenter {
         String sourceTrace=base.trace()+"\nSource causes: "+checkpoint.request().getOrDefault("sourceOccurrences",List.of())
                 +"\nRequested sequence: "+barrier.getOrDefault("requestedSequence","unavailable")
                 +"; frozen sequence: "+barrier.getOrDefault("frozenSequence","unavailable");
-        var shown=new Cut("source-checkpoint:"+checkpoint.token()+":"+base.id(),sourceTrace,base.state(),rows,base.coverage(),base.freshness(),base.failed()||checks.values().stream().anyMatch(c->c.truth().equals("FAIL")),"checkpoint:"+checkpoint.token(),base.requirements(),base.businessState(),base.executionMilestones(),base.selectedRequirements(),base.businessPopulationEmpty(),evidence);
+        var shown=new Cut("source-checkpoint:"+checkpoint.token()+":"+base.id(),sourceTrace,base.state(),rows,base.coverage(),base.freshness(),base.failed()||checks.values().stream().anyMatch(c->c.applicability().equals("APPLICABLE")&&c.truth().equals("FAIL")),"checkpoint:"+checkpoint.token(),base.requirements(),base.businessState(),base.executionMilestones(),base.selectedRequirements(),base.businessPopulationEmpty(),evidence);
         checkpointCuts.put(checkpoint.token(),shown);return List.copyOf(checkpointCuts.values());
     }
     /** Live window has no historical navigation: never parse the disk prefix or
@@ -211,6 +211,7 @@ public final class ObservedConformancePresenter {
                 var core = CanonicalJson.object(raw);
                 for (Object item : (List<?>) core.getOrDefault("contexts", List.of())) {
                     var context = CanonicalJson.object(item);
+                    var contextTargets = org.tzi.use.plugins.jacamo.semantics.runtime.RequirementInventory.targetsForContext(inventory, context);
                     var occurrences = CanonicalJson.object(context.getOrDefault("occurrences", Map.of()));
                     for (var entry : new TreeMap<>(occurrences).entrySet()) {
                         var occurrence = CanonicalJson.object(entry.getValue());
@@ -233,11 +234,15 @@ public final class ObservedConformancePresenter {
                         boolean historical=Set.of("KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(executionQuality)
                                 &&!executionEvidence.isEmpty()&&"PINNED_NATIVE_CUT".equals(core.get("evaluated"));
                         if(historical||currentProof){qualified=propagated;quality=executionQuality;}
-                        boolean terminalFailure=historical&&"FAILED".equals(occurrence.get("executionStatus"))&&executionEvidence.values().stream().map(CanonicalJson::object).anyMatch(p->"TASK_FAILED".equals(p.get("kind"))&&"CERTIFIED_TERMINAL_EXECUTION/1.0".equals(p.get("policy"))&&!Objects.toString(p.get("invocation"),"").isBlank());
-                        if(terminalFailure)qualified="FAILED";
+                        String executionStatus=Objects.toString(occurrence.getOrDefault("executionStatus",""));
+                        boolean terminalFailure=(historical||currentProof)&&Set.of("FAILED","VIOLATED").contains(executionStatus)
+                                &&(currentProof||executionEvidence.values().stream().map(CanonicalJson::object).anyMatch(p->"TASK_FAILED".equals(p.get("kind"))&&"CERTIFIED_TERMINAL_EXECUTION/1.0".equals(p.get("policy"))&&!Objects.toString(p.get("invocation"),"").isBlank()));
+                        if(terminalFailure)qualified=executionStatus;
+                        else if((historical||currentProof)&&"FULFILLED".equals(executionStatus))qualified="FULFILLED";
                         if("SOURCE_NOT_ASSIGNED".equals(executionQuality)&&"PINNED_NATIVE_CUT".equals(core.get("evaluated"))&&"OBSERVED_PREFIX".equals(core.get("historyQuality"))){qualified="NOT_ASSIGNED";quality=executionQuality;}
-                        boolean requiredElement=requiredElements.isEmpty()||requiredElements.contains(occurrence.getOrDefault("sourceElement",entry.getKey()));
-                        failed |= requiredElement&&qualified.equals("VIOLATED");
+                        boolean requiredElement=(contextTargets.isEmpty()||contextTargets.contains(occurrence.getOrDefault("sourceElement",entry.getKey())))
+                                &&!"NOT_ASSIGNED".equals(qualified)&&!"SOURCE_NOT_ASSIGNED".equals(quality);
+                        failed |= requiredElement&&Set.of("VIOLATED","FAILED").contains(qualified);
                         String identity = "context=" + context.getOrDefault("context", "UNAVAILABLE")
                                 + "; occurrence=" + entry.getKey() + "; player=" + occurrence.getOrDefault("player", "UNAVAILABLE")
                                 + "; role=" + occurrence.getOrDefault("role", "UNAVAILABLE")
@@ -267,7 +272,7 @@ public final class ObservedConformancePresenter {
                 rows.add(new Evaluation(constraint.id(), constraint.backendValue(), status,
                         constraint.diagnostic(), constraint.contextObject() + " / " + constraint.invocation() + " / expression="+constraint.expression()+" / witness=" + constraint.witness(),"",!condition&&!execution&&(!constraint.kind().equals("INVARIANT_BODY")||semantic.constraints().stream().noneMatch(c->c.id().equals(constraint.id())&&c.kind().equals("INVARIANT")))&&(!Set.of("INVARIANT","INVARIANT_BODY").contains(constraint.kind())||requiredInvariants.contains(constraint.id())||!supportingInvariants.contains(constraint.id())),constraint.kind(),"","",constraint.contextObject(),constraint.invocation()));
             }
-            for(var required:requiredElements)if(rows.stream().noneMatch(r->r.kind().equals("GOAL_TASK")&&r.element().equals(required)))
+            for(var required:requiredElements)if(rows.stream().noneMatch(r->r.kind().equals("GOAL_TASK")&&r.element().equals(required)&&!r.status().equals("NOT_ASSIGNED")))
                 rows.add(new Evaluation(Objects.toString(required),"UNAVAILABLE","UNKNOWN","REQUIRED_INTENTIONAL_RESULT_MISSING","No admitted occurrence for selected requirement","",true,"GOAL_TASK"));
             for(var required:requiredInvariants)if(semantic.constraints().stream().noneMatch(c->c.id().equals(required)&&c.kind().equals("INVARIANT")))
                 rows.add(new Evaluation(Objects.toString(required),"UNAVAILABLE","UNKNOWN","REQUIRED_CONTRACT_RESULT_MISSING","Declared native invariant has no aggregate result at this cut","",true,"INVARIANT"));

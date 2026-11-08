@@ -50,32 +50,52 @@ public final class SemanticResultAdapter {
         var sources=dependencies.get(id).stream().map(child->derivedQuality(child,inputs,dependencies,new HashSet<>(stack))).toList();
         if(sources.stream().anyMatch("HISTORY_GAP"::equals))return "HISTORY_GAP";
         if(sources.stream().allMatch("SOURCE_NOT_ASSIGNED"::equals))return "SOURCE_NOT_ASSIGNED";
-        return sources.stream().allMatch(value->value.equals("KNOWN")||value.equals("KNOWN_DERIVED"))?"KNOWN_DERIVED":"DERIVED_INPUT_UNAVAILABLE";
+        var active=sources.stream().filter(v->!"SOURCE_NOT_ASSIGNED".equals(v)).toList();
+        return active.stream().allMatch(value->value.equals("KNOWN")||value.equals("KNOWN_DERIVED"))?"KNOWN_DERIVED":"DERIVED_INPUT_UNAVAILABLE";
     }
+    private enum Truth { TOP, BOTTOM, UNKNOWN, NOT_ASSIGNED }
     /** Adds execution qualification without overwriting current observation quality.
      * Only admitted original leaf completions may establish historical proofs. */
     static Object execution(Object rendered,Use4GoalRuntimeSessionAdapter session,RuntimeEngineSessionOwner.Cut cut,ExecutionEvidence ledger) {
         var context=CanonicalJson.object(rendered);var occurrences=CanonicalJson.object(context.get("occurrences"));
         var history=session.checkpoint();var proofs=new HashMap<String,Map<String,Object>>();
         var qualities=new HashMap<String,String>();var dependencies=new HashMap<String,Set<String>>();
+        var andChildren=new HashMap<String,List<String>>();var orChildren=new HashMap<String,List<String>>();var depChildren=new HashMap<String,List<String>>();
         var model=session.topology().instance().model();
         model.getActors().forEach(actor->actor.refinements().forEach(refinement->{
-            var children=refinement instanceof org.vnu.sme.goal.dsl.istar.mm.AndRefinement and?and.children():List.of(((org.vnu.sme.goal.dsl.istar.mm.OrRefinement)refinement).child());
-            dependencies.computeIfAbsent(refinement.parent(),x->new HashSet<>()).addAll(children);
+            if(refinement instanceof org.vnu.sme.goal.dsl.istar.mm.AndRefinement and){
+                andChildren.computeIfAbsent(and.parent(),x->new ArrayList<>()).addAll(and.children());
+                dependencies.computeIfAbsent(and.parent(),x->new HashSet<>()).addAll(and.children());
+            } else {
+                var or=(org.vnu.sme.goal.dsl.istar.mm.OrRefinement)refinement;
+                orChildren.computeIfAbsent(or.parent(),x->new ArrayList<>()).add(or.child());
+                dependencies.computeIfAbsent(or.parent(),x->new HashSet<>()).add(or.child());
+            }
         }));
-        model.getDependencies().forEach(d->{if(d.dependerElmt()!=null&&d.dependeeElmt()!=null)dependencies.computeIfAbsent(d.dependerElmt(),x->new HashSet<>()).add(d.dependeeElmt());});
+        model.getDependencies().forEach(d->{if(d.dependerElmt()!=null&&d.dependeeElmt()!=null){
+            depChildren.computeIfAbsent(d.dependerElmt(),x->new ArrayList<>()).add(d.dependeeElmt());
+            dependencies.computeIfAbsent(d.dependerElmt(),x->new HashSet<>()).add(d.dependeeElmt());
+        }});
+        var taskInputs=context.get("inputs") instanceof Map<?,?> in&&in.get("tasks") instanceof Map<?,?> t?CanonicalJson.object(t):Map.<String,Object>of();
         for(var entry:occurrences.entrySet()) {
             String id=entry.getKey();var row=CanonicalJson.object(entry.getValue());String quality=Objects.toString(row.get("quality"));
             boolean admitted=!cut.lost()&&Set.of("KNOWN","KNOWN_DERIVED").contains(quality)&&Boolean.TRUE.equals(context.get("advance"));
-            var proof=ledger.leaf(Objects.toString(context.get("context")),history.keys().get(id),history.goals().get(id),history.tasks().get(id),admitted,cut.version(),cut.stateHash());
+            var goal=history.goals().get(id);var task=history.tasks().get(id);var key=history.keys().get(id);
+            var taskInput=taskInputs.get(id) instanceof Map<?,?> ti?CanonicalJson.object(ti):Map.<String,Object>of();
+            boolean leafAdmitted=admitted&&(task==null||!Boolean.FALSE.equals(taskInput.get("pre")));
+            if(admitted&&goal!=null&&!dependencies.containsKey(id)&&goal.status()==org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus.VIOLATED)
+                ledger.terminalFailure(Objects.toString(context.get("context")),key,"goal-condition-violated:"+cut.version(),true,cut.version(),cut.stateHash());
+            var proof=ledger.leaf(Objects.toString(context.get("context")),key,goal,task,leafAdmitted,cut.version(),cut.stateHash());
             proof.ifPresent(p->proofs.put(id,CanonicalJson.object(SemanticJson.tree(p))));
             // Current quality is authoritative for non-monotone leaves. A stored
             // proof can only qualify the same original fulfilled leaf episode.
             if(proof.isPresent())qualities.put(id,Set.of("KNOWN","KNOWN_DERIVED").contains(quality)?quality:"KNOWN_HISTORY");
-            else if(ledger.terminal(Objects.toString(context.get("context")),history.keys().get(id)).isPresent()) {
-                var failure=ledger.terminal(Objects.toString(context.get("context")),history.keys().get(id)).orElseThrow();
+            else if(ledger.terminal(Objects.toString(context.get("context")),key).isPresent()) {
+                var failure=ledger.terminal(Objects.toString(context.get("context")),key).orElseThrow();
                 proofs.put(id,CanonicalJson.object(SemanticJson.tree(failure)));qualities.put(id,"KNOWN_HISTORY");
             }
+            else if(task!=null&&task.status()==org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus.FULFILLED&&Set.of("KNOWN","KNOWN_DERIVED").contains(quality))
+                qualities.put(id,"UNAVAILABLE:PRECONDITION_FALSE");
             else if(history.goals().containsKey(id)||history.tasks().containsKey(id))qualities.put(id,quality);
         }
         // Reuse the original propagation over a proof-only marking. A missing
@@ -91,19 +111,78 @@ public final class SemanticResultAdapter {
         }
         certified=org.vnu.sme.goal.dsl.iscn.goalmodelinstance.parser.GoalModelInstanceTranslator.propagateDependencies(model,certified);
         certified=org.vnu.sme.goal.verify.conformance.semantics.IStarPropagation.closePending(model,certified);
+        var truths=new HashMap<String,Truth>();
+        for(String id:occurrences.keySet())evaluateTruth(id,history,qualities,proofs,andChildren,orChildren,depChildren,dependencies,truths,new HashSet<>());
         var updated=new TreeMap<String,Object>();
         for(var entry:occurrences.entrySet()) {
             String id=entry.getKey();var row=new TreeMap<>(CanonicalJson.object(entry.getValue()));
             String quality=executionQuality(id,qualities,dependencies,new HashSet<>());
             var sources=new TreeMap<String,Object>();collectProofs(id,proofs,dependencies,sources,new HashSet<>());
+            Truth t=truths.getOrDefault(id,Truth.UNKNOWN);
+            if(!qualities.containsKey(id)&&(t==Truth.TOP||t==Truth.BOTTOM)) {
+                var targetSources=new TreeMap<String,Object>();
+                collectTruthProofs(id,t,truths,proofs,andChildren,orChildren,depChildren,targetSources,new HashSet<>());
+                if(!targetSources.isEmpty())sources=targetSources;
+                if(!Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(quality))
+                    quality=sources.isEmpty()?"KNOWN_DERIVED":"KNOWN_DERIVED_HISTORY";
+            }
             if(!qualities.containsKey(id)&&"FULFILLED".equals(row.get("aggregateStatus"))
-                    &&certified.goalTaskStatus(id)==org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus.FULFILLED)
+                    &&certified.goalTaskStatus(id)==org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus.FULFILLED
+                    &&!Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(quality))
                 quality=sources.isEmpty()?"KNOWN_DERIVED":"KNOWN_DERIVED_HISTORY";
-            ledger.terminal(Objects.toString(context.get("context")),history.keys().get(id)).ifPresent(failure->row.put("executionStatus","FAILED"));
+            if(ledger.terminal(Objects.toString(context.get("context")),history.keys().get(id)).isPresent())
+                row.put("executionStatus","GOAL".equals(row.get("elementKind"))?"VIOLATED":"FAILED");
+            else if(!qualities.containsKey(id)&&t==Truth.BOTTOM)
+                row.put("executionStatus","GOAL".equals(row.get("elementKind"))?"VIOLATED":"FAILED");
+            else if(!qualities.containsKey(id)&&t==Truth.TOP&&!"FULFILLED".equals(row.get("aggregateStatus")))
+                row.put("executionStatus","FULFILLED");
             row.put("executionQuality",quality);
             row.put("executionEvidence",sources);updated.put(id,row);
         }
         var result=new TreeMap<>(context);result.put("occurrences",updated);result.put("executionQualification","ORIGINAL_PROPAGATION_ON_ADMITTED_LEAVES/1.0");return Collections.unmodifiableMap(result);
+    }
+    private static Truth evaluateTruth(String id,EngineCheckpoint history,Map<String,String> qualities,Map<String,Map<String,Object>> proofs,
+            Map<String,List<String>> andChildren,Map<String,List<String>> orChildren,Map<String,List<String>> depChildren,Map<String,Set<String>> dependencies,
+            Map<String,Truth> memo,Set<String> visiting) {
+        if(memo.containsKey(id))return memo.get(id);
+        if(!visiting.add(id))return Truth.UNKNOWN;
+        Truth result;
+        if(!dependencies.containsKey(id)) {
+            String q=qualities.get(id);
+            if("SOURCE_NOT_ASSIGNED".equals(q))result=Truth.NOT_ASSIGNED;
+            else if(!qualifiedLeaf(q))result=Truth.UNKNOWN;
+            else if(proofs.containsKey(id)&&"TASK_FAILED".equals(proofs.get(id).get("kind")))result=Truth.BOTTOM;
+            else if(history.tasks().containsKey(id)) {
+                var tm=history.tasks().get(id);
+                result=tm.status()==org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus.FULFILLED?Truth.TOP:Truth.UNKNOWN;
+            } else if(history.goals().containsKey(id)) {
+                var gm=history.goals().get(id);
+                result=gm.status()==org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus.FULFILLED?Truth.TOP
+                        :gm.status()==org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus.VIOLATED?Truth.BOTTOM:Truth.UNKNOWN;
+            } else result=Truth.UNKNOWN;
+        } else if(andChildren.containsKey(id)) {
+            var vals=andChildren.get(id).stream().map(c->evaluateTruth(c,history,qualities,proofs,andChildren,orChildren,depChildren,dependencies,memo,new HashSet<>(visiting))).toList();
+            var active=vals.stream().filter(v->v!=Truth.NOT_ASSIGNED).toList();
+            result=active.isEmpty()?Truth.NOT_ASSIGNED:active.contains(Truth.BOTTOM)?Truth.BOTTOM:active.stream().allMatch(v->v==Truth.TOP)?Truth.TOP:Truth.UNKNOWN;
+        } else if(orChildren.containsKey(id)) {
+            var vals=orChildren.get(id).stream().map(c->evaluateTruth(c,history,qualities,proofs,andChildren,orChildren,depChildren,dependencies,memo,new HashSet<>(visiting))).toList();
+            var active=vals.stream().filter(v->v!=Truth.NOT_ASSIGNED).toList();
+            result=active.isEmpty()?Truth.NOT_ASSIGNED:active.contains(Truth.TOP)?Truth.TOP:active.stream().allMatch(v->v==Truth.BOTTOM)?Truth.BOTTOM:Truth.UNKNOWN;
+        } else if(depChildren.containsKey(id)) {
+            var vals=depChildren.get(id).stream().map(c->evaluateTruth(c,history,qualities,proofs,andChildren,orChildren,depChildren,dependencies,memo,new HashSet<>(visiting))).toList();
+            var active=vals.stream().filter(v->v!=Truth.NOT_ASSIGNED).toList();
+            result=active.isEmpty()?Truth.NOT_ASSIGNED:active.contains(Truth.BOTTOM)?Truth.BOTTOM:active.stream().allMatch(v->v==Truth.TOP)?Truth.TOP:Truth.UNKNOWN;
+        } else result=Truth.UNKNOWN;
+        memo.put(id,result);return result;
+    }
+    private static void collectTruthProofs(String id,Truth target,Map<String,Truth> truths,Map<String,Map<String,Object>> proofs,
+            Map<String,List<String>> andChildren,Map<String,List<String>> orChildren,Map<String,List<String>> depChildren,
+            Map<String,Object> result,Set<String> visited) {
+        if(!visited.add(id)||truths.get(id)!=target)return;
+        if(proofs.containsKey(id)){result.put(id,proofs.get(id));return;}
+        for(String child:andChildren.getOrDefault(id,List.of()))if(truths.get(child)==target)collectTruthProofs(child,target,truths,proofs,andChildren,orChildren,depChildren,result,visited);
+        for(String child:orChildren.getOrDefault(id,List.of()))if(truths.get(child)==target)collectTruthProofs(child,target,truths,proofs,andChildren,orChildren,depChildren,result,visited);
+        for(String child:depChildren.getOrDefault(id,List.of()))if(truths.get(child)==target)collectTruthProofs(child,target,truths,proofs,andChildren,orChildren,depChildren,result,visited);
     }
     private static boolean qualifiedLeaf(String quality){return quality!=null&&Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY").contains(quality);}
     /** Missing current scope is not evidence that a past task did not complete.
@@ -122,8 +201,9 @@ public final class SemanticResultAdapter {
         if(!visited.add(id)||dependencies.getOrDefault(id,Set.of()).isEmpty())return "DERIVED_INPUT_UNAVAILABLE";
         var values=dependencies.get(id).stream().map(child->executionQuality(child,qualities,dependencies,new HashSet<>(visited))).toList();
         if(values.stream().allMatch("SOURCE_NOT_ASSIGNED"::equals))return "SOURCE_NOT_ASSIGNED";
-        if(!values.stream().allMatch(v->Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(v)))return "DERIVED_INPUT_UNAVAILABLE";
-        return values.stream().anyMatch(v->v.endsWith("HISTORY"))?"KNOWN_DERIVED_HISTORY":"KNOWN_DERIVED";
+        var active=values.stream().filter(v->!"SOURCE_NOT_ASSIGNED".equals(v)).toList();
+        if(!active.stream().allMatch(v->Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(v)))return "DERIVED_INPUT_UNAVAILABLE";
+        return active.stream().anyMatch(v->v.endsWith("HISTORY"))?"KNOWN_DERIVED_HISTORY":"KNOWN_DERIVED";
     }
     private static void collectProofs(String id,Map<String,Map<String,Object>> proofs,Map<String,Set<String>> dependencies,Map<String,Object> result,Set<String> visited) {
         if(!visited.add(id))return;

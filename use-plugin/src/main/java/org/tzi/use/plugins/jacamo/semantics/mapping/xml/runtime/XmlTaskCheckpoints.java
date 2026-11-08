@@ -105,6 +105,11 @@ public final class XmlTaskCheckpoints {
     }
     private String referenceHash(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingSpecification.Node definition,OccurrenceProjection.Scope scope,OccurrenceProjection.Member member,String task) {
         var refs=new TreeMap<String,Object>();for(String attribute:List.of("stepSchemeColumn","stepArtifactColumn"))if(!definition.optional(attribute).isBlank())refs.put(attribute,scope.bindings().getOrDefault(definition.attr(attribute),""));refs.put("self",member.selves().getOrDefault(task,""));refs.put("resources",scope.resources());
+        if(!definition.optional("stepInputMatches").isBlank()) {
+            var inputs=new TreeMap<String,Object>();
+            for(String pair:definition.attr("stepInputMatches").trim().split(" +")) {int sep=pair.indexOf(':');String col=pair.substring(sep+1);inputs.put(col,scope.bindings().getOrDefault(col,""));}
+            refs.put("stepInputMatches",inputs);
+        }
         if(!program.xmlPlan().goalViews().isEmpty())refs.put("goalViews",viewReferences(scope,member,task));
         return new String(CanonicalJson.encode(refs),java.nio.charset.StandardCharsets.UTF_8);
     }
@@ -125,11 +130,17 @@ public final class XmlTaskCheckpoints {
         if(first.references().equals(second.references()))return true;
         if(!bindings.permitsLateSelf(first.task(),entry.pre()))return false;
         var old=CanonicalJson.object(CanonicalJson.decode(first.references().getBytes(java.nio.charset.StandardCharsets.UTF_8)));var current=CanonicalJson.object(CanonicalJson.decode(second.references().getBytes(java.nio.charset.StandardCharsets.UTF_8)));
-        // Only a previously absent self may become observed. Source scheme/other pinned
-        // references must remain exact; existing resource identities cannot be replaced.
-        if(!"".equals(old.get("self"))||!(current.get("self") instanceof String self)||self.isBlank())return false;
-        for(var field:old.entrySet())if(!Set.of("self","resources","stepArtifactColumn").contains(field.getKey())&&!Objects.equals(field.getValue(),current.get(field.getKey())))return false;
-        Object oldArtifact=old.get("stepArtifactColumn");if(oldArtifact!=null&&!oldArtifact.equals("")&&!Objects.equals(oldArtifact,current.get("stepArtifactColumn")))return false;
+        // Only a previously absent self/scheme/artifact may become observed (or remain absent on FAILED).
+        // Source scheme/other pinned references must remain exact; existing resource identities cannot be replaced.
+        Object oldSelf=old.get("self"),nextSelf=current.get("self");
+        if(!Objects.equals(oldSelf,nextSelf)&&(!"".equals(oldSelf)||!(nextSelf instanceof String self)||self.isBlank()))return false;
+        if("".equals(nextSelf)&&!second.phase().equals("FAILED"))return false;
+        for(var field:old.entrySet())if(!Set.of("self","resources","stepArtifactColumn","stepSchemeColumn").contains(field.getKey())&&!Objects.equals(field.getValue(),current.get(field.getKey())))return false;
+        for(String lateCol:List.of("stepArtifactColumn","stepSchemeColumn")) {
+            Object oldVal=old.get(lateCol),nextVal=current.get(lateCol);
+            if(oldVal!=null&&!oldVal.equals("")&&!Objects.equals(oldVal,nextVal))return false;
+            if(oldVal!=null&&"".equals(nextVal)&&!second.phase().equals("FAILED"))return false;
+        }
         var oldResources=CanonicalJson.object(old.get("resources"));var nextResources=CanonicalJson.object(current.get("resources"));return oldResources.entrySet().stream().allMatch(e->Objects.equals(nextResources.get(e.getKey()),e.getValue()));
     }
     private boolean currentRole(Marker marker,List<OccurrenceProjection.Scope> scopes){return scopes.stream().anyMatch(s->s.complete()&&s.id().equals(marker.scope())&&s.members().stream().anyMatch(m->m.player().equals(marker.player())&&m.role().equals(marker.role())&&m.interval().equals(marker.interval())&&sameViewReferences(marker,s,m)));}

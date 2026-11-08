@@ -25,18 +25,29 @@ final class VerificationStatusBadge {
         this.token = token;
         issues |= checks.values().stream().anyMatch(c -> c.applicability().equals("APPLICABLE") && !c.truth().equals("PASS"));
         var inventory = ExecutionScopeViews.object(cut.visualEvidence().get("requirementInventory"));
-        var targets = inventory.get("selectedIntentionalElements") instanceof List<?> ids ? ids : List.of();
+        var scopedTargets = ExecutionScopeViews.object(inventory.get("scopedTargets"));
         var contexts = ExecutionScopeViews.contexts(cut).stream().filter(ExecutionScopeViews::boundContext).toList();
         terminal = !contexts.isEmpty();
         // Reuse the presenter's qualified native occurrence results, never raw markings
         // or a display row aggregated across agents/executions.
         for (var context : contexts) {
+            var targets = org.tzi.use.plugins.jacamo.semantics.runtime.RequirementInventory.targetsForContext(inventory, context);
             var rows = cut.evaluations().stream().filter(r -> r.kind().equals("GOAL_TASK") && r.required()
                     && r.context().equals(context.get("context")))
                     .filter(r -> !(r.status().equals("NOT_ASSIGNED") && r.quality().equals("SOURCE_NOT_ASSIGNED"))).toList();
-            terminal &= !rows.isEmpty() && targets.stream().allMatch(target -> rows.stream().anyMatch(r -> r.element().equals(target)))
+            boolean contextTerminal = !rows.isEmpty() && targets.stream().allMatch(target -> rows.stream().anyMatch(r -> r.element().equals(target)))
                     && rows.stream().allMatch(r -> Set.of("KNOWN", "KNOWN_DERIVED", "KNOWN_HISTORY", "KNOWN_DERIVED_HISTORY").contains(r.quality())
                     && Set.of("FULFILLED", "FAILED", "VIOLATED").contains(r.status()));
+            boolean contextFulfilled = contextTerminal && rows.stream().allMatch(r -> r.status().equals("FULFILLED"));
+            var bindings = ExecutionScopeViews.object(ExecutionScopeViews.object(context.get("scopeView")).get("bindings"));
+            String scheme = java.util.Objects.toString(bindings.get("scheme"), "");
+            String def = java.util.Objects.toString(context.get("scopeDefinition"), "");
+            if (contextFulfilled && !scheme.isBlank() && scopedTargets.size() > 1) {
+                boolean downstreamPresent = contexts.stream().anyMatch(other -> !java.util.Objects.toString(other.get("scopeDefinition"), "").equals(def)
+                        && scheme.equals(ExecutionScopeViews.object(ExecutionScopeViews.object(other.get("scopeView")).get("bindings")).get("scheme")));
+                contextTerminal &= downstreamPresent;
+            }
+            terminal &= contextTerminal;
             issues |= rows.stream().anyMatch(r -> Set.of("FAILED", "VIOLATED").contains(r.status()));
         }
     }

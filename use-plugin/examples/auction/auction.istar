@@ -5,7 +5,7 @@
 // physical player and scheme. Native refinement checks the real Task evidence.
 // These view correspondences are not additional social Dependencies.
 // Actor Auction is a context viewpoint, not a running agent.
-// The five Tasks and dependency endpoints follow the authoritative Core diagram.
+// The seven Tasks and dependency endpoints follow the authoritative Core diagram.
 // P_bid_t2 requires source success; the .fail branch is not an achievement.
 // D_bid means at least one assigned participant successfully performs its bid.
 // Agent/program source, mission commitments, action receipts and self identity
@@ -22,6 +22,13 @@ istar AuctionGoals {
     role auction_capabilities {
         auction_capabilities participates-in Auctioneer
         auction_capabilities participates-in Participant
+        goal do_auction : Achieve
+        task createScheme > do_auction
+            pre {[ step.enabled ]}
+            post {[ step.succeeded ]}
+        task commitMission > do_auction
+            pre {[ step.enabled ]}
+            post {[ step.succeeded ]}
         goal C_start : Achieve
         task A_start_t1 > C_start
             pre {[ step.enabled ]}
@@ -40,6 +47,7 @@ istar AuctionGoals {
         task P_bid_t2 > C_bid
             pre {[ step.enabled and self.running ]}
             post {[ step.succeeded ]}
+        resource SchemeBoard > needed-by commitMission > needed-by A_start_t1
         resource AuctionArtifact > needed-by A_start_t2 > needed-by A_decide_t2 > needed-by P_bid_t2
     }
     role Auctioneer {

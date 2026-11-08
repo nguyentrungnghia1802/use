@@ -73,7 +73,12 @@ public final class ExecutionScopeViews {
    // This is a display label only; exact context and native IDs remain authoritative.
    String id=Objects.toString(attributes.get("id"),"");names.add(type+(id.isBlank()?"":" · id="+id));
   }
-  if(names.isEmpty()&&boundContext(context))return "Execution "+ordinal+" — "+Objects.toString(object(context.get("scopeView")).get("definition"),"context");
+  if(names.isEmpty()&&boundContext(context)){
+   var scopeView=object(context.get("scopeView"));
+   var bindings=object(scopeView.get("bindings"));
+   String keyId=Objects.toString(bindings.getOrDefault("auctionId",""),"");
+   return "Execution "+ordinal+" — "+Objects.toString(scopeView.get("definition"),"context")+(keyId.isBlank()?"":" · id="+keyId);
+  }
   return "Execution "+ordinal+(names.isEmpty()?" · entity binding unavailable":" — "+String.join(", ",names));
  }
  /** Short actor caption avoids expanding the original circular actor over its goals.
@@ -123,17 +128,27 @@ public final class ExecutionScopeViews {
     !condition&&!execution&&(!kind.equals("INVARIANT")||((List<?>)inventory.getOrDefault("requiredInvariants",List.of())).contains(name)||!((List<?>)inventory.getOrDefault("supportingInvariants",List.of())).contains(name)),kind,"","",id+" / "+Objects.toString(check.get("contextObject"),""),Objects.toString(check.get("invocation"),"")));
   }
   else rows.add(new Evaluation("Execution OCL","UNAVAILABLE","UNKNOWN","EXECUTION_OCL_RESULT_UNAVAILABLE","No scoped native checks at this exact cut","",true,"RUNTIME_BINDING"));
-  for(Object target:(List<?>)inventory.getOrDefault("requiredInvariants",List.of()))
+  var scopeView=object(context.get("scopeView"));
+  var ownedTypes=object(scopeView.get("owners")).values().stream().map(ExecutionScopeViews::object).map(o->Objects.toString(o.get("type"),"")).collect(java.util.stream.Collectors.toSet());
+  boolean multiScopeComplete=Boolean.TRUE.equals(scopeView.get("multiScope"))&&Boolean.TRUE.equals(scopeView.get("complete"));
+  for(Object target:(List<?>)inventory.getOrDefault("requiredInvariants",List.of())){
+   if(multiScopeComplete&&target.toString().contains("::")&&!ownedTypes.contains(target.toString().split("::",2)[0]))continue;
    if(rows.stream().noneMatch(r->r.kind().equals("INVARIANT")&&r.element().equals(target)))
     rows.add(new Evaluation(target.toString(),"UNAVAILABLE","UNKNOWN","REQUIRED_SCOPED_CONTRACT_RESULT_MISSING","No native aggregate result for this execution","",true,"INVARIANT","","",id,""));
-  for(Object target:(List<?>)inventory.getOrDefault("selectedIntentionalElements",List.of()))
-   if(rows.stream().noneMatch(r->r.kind().equals("GOAL_TASK")&&r.element().equals(target)))
+  }
+  var contextTargets=org.tzi.use.plugins.jacamo.semantics.runtime.RequirementInventory.targetsForContext(inventory,context);
+  for(Object target:contextTargets)
+   if(rows.stream().noneMatch(r->r.kind().equals("GOAL_TASK")&&r.element().equals(target)&&!r.status().equals("NOT_ASSIGNED")))
     rows.add(new Evaluation(target.toString(),"UNAVAILABLE","UNKNOWN","EXECUTION_RESULT_UNAVAILABLE",
       "No admitted result for this exact execution at this cut","",true,"GOAL_TASK","", "",id,""));
   // Admission is global even when the user inspects one execution. Keep its
   // exact inventory visible and explicitly labelled whole-MAS evidence.
   rows.addAll(0,cut.evaluations().stream().filter(row->row.kind().equals("CHECKPOINT_CHECK")).toList());
   var evidence=new TreeMap<String,Object>(cut.visualEvidence());evidence.put("selectedExecution",id);
+  if(!inventory.isEmpty()&&inventory.containsKey("scopeSelectedIntentionalElements")){
+   var scopedInventory=new TreeMap<String,Object>(inventory);scopedInventory.put("selectedIntentionalElements",contextTargets);
+   evidence.put("requirementInventory",Map.copyOf(scopedInventory));
+  }
   var projection=object(evidence.get("presentationState"));var selected=new TreeMap<String,Object>();
   var entityKeys=object(object(context.get("scopeView")).get("entities")).keySet();
   var objects=object(projection.get("objects"));var objectQuality=object(projection.get("objectQuality"));
@@ -152,7 +167,6 @@ public final class ExecutionScopeViews {
   evidence.put("presentationState",scopedProjection);
   // Missing bindings/values are diagnostic gaps, not Entity changes. Never turn
   // alternating qualified/unavailable source cuts into hundreds of milestones.
-  var scopeView=object(context.get("scopeView"));
   boolean domainBound=!scopeView.isEmpty()&&!Boolean.FALSE.equals(scopeView.get("domainBound"));
   // The text and diagram describe the same scoped graph, including declared
   // observer progress. Hidden observer changes must not look like duplicate states.
@@ -171,7 +185,7 @@ public final class ExecutionScopeViews {
     requirements,text.toString(),!domainBound&&cut.executionMilestones(),cut.selectedRequirements(),selected.isEmpty()&&context.isEmpty(),evidence);
  }
  public static String goalVerdict(Cut cut){
-  var rows=cut.evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")&&r.required()).toList();
+  var rows=cut.evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")&&r.required()&&!r.status().equals("NOT_ASSIGNED")).toList();
   if(rows.isEmpty())return "INCOMPLETE";
   if(rows.stream().anyMatch(r->r.status().equals("VIOLATED")&&known(r)))return "VIOLATION";
   if(!cut.freshness().equals("CURRENT_OBSERVED")||rows.stream().anyMatch(r->!known(r)||!Set.of("FULFILLED","PENDING","FAILED").contains(r.status())))return "INCOMPLETE";

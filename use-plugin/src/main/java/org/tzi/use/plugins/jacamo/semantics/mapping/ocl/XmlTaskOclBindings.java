@@ -29,7 +29,7 @@ public final class XmlTaskOclBindings implements AutoCloseable {
         for(Node node:spec.root().child("bindings").children("elementRuntime"))if(program.goalModel().findElement(node.attr("target")).orElse(null) instanceof org.vnu.sme.goal.dsl.istar.mm.Task) {
             String task=node.attr("target");
             if(node.optional("stepScope").isBlank()) {
-                if(!node.children("actionReceipt").isEmpty()||!node.children("acceptedFailure").isEmpty()||List.of("scopePolicy","entryPolicy","failurePolicy","stepSchemeColumn","stepArtifactColumn").stream().anyMatch(k->!node.optional(k).isBlank()))throw node.location().error("XML_TASK_STEP_SCOPE_REQUIRED");
+                if(!node.children("actionReceipt").isEmpty()||!node.children("acceptedFailure").isEmpty()||List.of("scopePolicy","entryPolicy","failurePolicy","stepSchemeColumn","stepArtifactColumn","stepInputMatches").stream().anyMatch(k->!node.optional(k).isBlank()))throw node.location().error("XML_TASK_STEP_SCOPE_REQUIRED");
                 continue; // Unconfigured Tasks remain unavailable; no actor/operation fallback.
             }
             var scope=spec.requireId(node.attr("stepScope"));
@@ -38,7 +38,11 @@ public final class XmlTaskOclBindings implements AutoCloseable {
                     ||!Set.of("SKIP_WORLD_POST","EVALUATE_PURE_CALLBACK_POST").contains(node.optional("failurePolicy")))throw node.location().error("UNSUPPORTED:XML_TASK_SCOPE_OR_ENTRY_POLICY");
             var fields=RuntimeTables.outputColumns(spec.requireId(scope.attr("tableRef")));
             for(String key:List.of("stepSchemeColumn","stepArtifactColumn"))if(!node.optional(key).isBlank()&&!fields.contains(node.attr(key)))throw node.location().error("XML_TASK_REFERENCE_COLUMN_UNRESOLVED");
-            boolean references=!node.optional("stepSchemeColumn").isBlank()||!node.optional("stepArtifactColumn").isBlank();
+            for(String pair:words(node.optional("stepInputMatches"))) {
+                int sep=pair.indexOf(':');
+                if(sep<=0||sep==pair.length()-1||pair.indexOf(':',sep+1)>=0||!fields.contains(pair.substring(sep+1)))throw node.location().error("XML_TASK_REFERENCE_COLUMN_UNRESOLVED");
+            }
+            boolean references=!node.optional("stepSchemeColumn").isBlank()||!node.optional("stepArtifactColumn").isBlank()||!node.optional("stepInputMatches").isBlank();
             if(references!=node.attr("scopePolicy").equals("EXACT_REFERENCES"))throw node.location().error("XML_TASK_REFERENCE_POLICY_MISMATCH");
             var pre=contracts.stream().filter(c->c.elementId().equals(task)&&c.specification().kind()==OclContractSpec.Kind.TASK_PRE).findFirst().orElseThrow();
             var post=contracts.stream().filter(c->c.elementId().equals(task)&&c.specification().kind()==OclContractSpec.Kind.TASK_POST).findFirst().orElseThrow();
@@ -74,7 +78,7 @@ public final class XmlTaskOclBindings implements AutoCloseable {
     public int expressionCount(){return slots.size()*2;}
     @Override public void close(){closed=true;slots.clear();}
     public boolean permitsLateSelf(String task,NativeInvocationEvaluation.Condition entry) {
-        var slot=slots.get(task);return slot!=null&&slot.definition().attr("entryPolicy").equals("ALLOW_UNBOUND_SELF_FOR_PURE_CALLBACK")&&entry.unavailable().isBlank()&&entry.expression()==slot.pre().expression()&&entry.variables().get("self").isUndefined()&&pureCallback(slot.pre(),slot.definition());
+        var slot=slots.get(task);return slot!=null&&slot.definition().attr("entryPolicy").equals("ALLOW_UNBOUND_SELF_FOR_PURE_CALLBACK")&&entry.unavailable().isBlank()&&entry.expression()==slot.pre().expression()&&(entry.variables().get("self").isUndefined()||!slot.definition().optional("stepSchemeColumn").isBlank())&&pureCallback(slot.pre(),slot.definition());
     }
     public boolean references(String task,OccurrenceProjection.Scope scope,JasonStepCutDecoder.Step step,NativeRuntimeMutationEngine engine,boolean pre){var slot=slots.get(task);return slot!=null&&scope.definition().equals(slot.definition().attr("stepScope"))&&references(slot.definition(),scope,step,engine,pre);}
     public NativeInvocationEvaluation.Condition prepare(String task,boolean pre,NativeRuntimeMutationEngine engine,OccurrenceProjection.Scope scope,OccurrenceProjection.Member member,
@@ -105,6 +109,8 @@ public final class XmlTaskOclBindings implements AutoCloseable {
             }catch(RuntimeException invalid){if(reason.isBlank())reason="ERROR:STEP_EPOCH_OR_CURRENT_BINDING_REJECTED:"+invalid.getMessage();}
             if(reason.isBlank()&&(pre&&!step.phase().equals("ENABLED")||!pre&&step.phase().equals("ENABLED")))reason="EXACT_STEP_PHASE_UNAVAILABLE";
             boolean pure=pureCallback(compiled,node);
+            if(reason.isBlank()&&!pre&&step.phase().equals("FAILED")&&(!node.attr("failurePolicy").equals("EVALUATE_PURE_CALLBACK_POST")||!pure)
+                    &&(step.quality()==Completeness.COMPLETE||step.quality()==Completeness.PARTIAL&&callbackAuthority(step,false)))reason="SOURCE_FAILURE_WORLD_POST_UNAVAILABLE";
             if(reason.isBlank()&&step.quality()!=Completeness.COMPLETE&&!(pure&&step.quality()==Completeness.PARTIAL&&callbackAuthority(step,pre)))reason="STEP_SOURCE_"+step.quality();
             if(reason.isBlank()&&self==null&&!(pre&&node.attr("entryPolicy").equals("ALLOW_UNBOUND_SELF_FOR_PURE_CALLBACK")&&pure))reason="EXACT_NATIVE_TASK_SELF_UNAVAILABLE";
             if(reason.isBlank()&&!pre&&step.phase().equals("FAILED")&&(!node.attr("failurePolicy").equals("EVALUATE_PURE_CALLBACK_POST")||!pure))reason="SOURCE_FAILURE_WORLD_POST_UNAVAILABLE";
@@ -184,13 +190,25 @@ public final class XmlTaskOclBindings implements AutoCloseable {
     }
     private boolean references(Node node,OccurrenceProjection.Scope scope,JasonStepCutDecoder.Step step,NativeRuntimeMutationEngine engine,boolean pre) {
         if(node.attr("scopePolicy").equals("UNIQUE_CURRENT_PLAYER_SCOPE"))return step.scheme().isBlank()&&step.artifact().isBlank();
+        for(String pair:words(node.optional("stepInputMatches"))) {
+            int sep=pair.indexOf(':');String input=pair.substring(0,sep),column=pair.substring(sep+1);
+            if(!Objects.equals(scope.bindings().get(column),stepInputValue(step,input)))return false;
+        }
         if(node.optional("stepSchemeColumn").isBlank()&&!step.scheme().isBlank()||node.optional("stepArtifactColumn").isBlank()&&!step.artifact().isBlank())return false;
-        if(!node.optional("stepSchemeColumn").isBlank()&&!Objects.equals(scope.bindings().get(node.attr("stepSchemeColumn")),step.scheme()))return false;
+        if(!node.optional("stepSchemeColumn").isBlank()&&!Objects.equals(scope.bindings().get(node.attr("stepSchemeColumn")),step.scheme())) {
+            if(!((pre||step.phase().equals("FAILED"))&&node.attr("entryPolicy").equals("ALLOW_UNBOUND_SELF_FOR_PURE_CALLBACK")&&step.scheme().isBlank()&&pureCallback(slots.get(node.attr("target")).pre(),node)))return false;
+        }
         if(!node.optional("stepArtifactColumn").isBlank()) {Object raw=scope.bindings().get(node.attr("stepArtifactColumn"));var expected=raw instanceof String identity?engine.objectForSemanticId(identity):null;var actual=engine.objectForSemanticId(step.artifact());
-            if(expected==null||actual!=expected)return pre&&node.attr("entryPolicy").equals("ALLOW_UNBOUND_SELF_FOR_PURE_CALLBACK")&&step.artifact().isBlank()&&pureCallback(slots.get(node.attr("target")).pre(),node);
+            if(expected==null||actual!=expected)return (pre||step.phase().equals("FAILED"))&&node.attr("entryPolicy").equals("ALLOW_UNBOUND_SELF_FOR_PURE_CALLBACK")&&step.artifact().isBlank()&&pureCallback(slots.get(node.attr("target")).pre(),node);
         }
         return true;
     }
+    private static Object stepInputValue(JasonStepCutDecoder.Step step,String name) {
+        var inputs=CanonicalJson.object(step.bindings().getOrDefault("inputs",Map.of()));
+        Object proof=inputs.get(name);
+        return proof instanceof Map<?,?>?CanonicalJson.object(proof).get("value"):null;
+    }
+    private static List<String> words(String value){return value==null||value.isBlank()?List.of():List.of(value.trim().split(" +"));}
     private static Value scalar(Type type,Object raw,NativeRuntimeMutationEngine engine) {
         if(raw==null)return UndefinedValue.instance;if(type.isTypeOfString()&&raw instanceof String text)return new StringValue(text);if(type.isTypeOfBoolean()&&raw instanceof Boolean bool)return BooleanValue.get(bool);
         if(type.isTypeOfInteger()&&raw instanceof Number number)try{return IntegerValue.valueOf(new java.math.BigDecimal(number.toString()).intValueExact());}catch(ArithmeticException|NumberFormatException invalid){return UndefinedValue.instance;}

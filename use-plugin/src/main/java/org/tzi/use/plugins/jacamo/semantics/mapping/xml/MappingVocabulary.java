@@ -111,11 +111,11 @@ final class MappingVocabulary {
         add(m,"bindings/static","id kind target sourceKind feature value reason","selectRef nativeSymbol");
         add(m,"static/metadata","key value","");
         add(m,"bindings/actorRuntime","actor bindingRef activationPolicy episodePolicy","roleBindingRef contextBindingRef");
-        add(m,"bindings/elementRuntime","target actor self derived selfKind reason","contract stepScope scopePolicy entryPolicy failurePolicy stepSchemeColumn stepArtifactColumn");
+        add(m,"bindings/elementRuntime","target actor self derived selfKind reason","contract stepScope scopePolicy entryPolicy failurePolicy stepSchemeColumn stepArtifactColumn stepInputMatches");
         add(m,"elementRuntime/variable","name origin","type viewRef");
         add(m,"elementRuntime/actionReceipt","operationRef","");
         add(m,"elementRuntime/acceptedFailure","term bodyType line sourceFailure","");
-        add(m,"bindings/requirement","target","");
+        add(m,"bindings/requirement","target","scopeRef");
         add(m,"bindings/oclClause","name context","");
         add(m,"bindings/operation","id owner signature clauses","task");
         add(m,"bindings/dependencyPopulation","target quantifier","");
@@ -164,6 +164,7 @@ final class MappingVocabulary {
         add(m,"table/testContains","path valuePath type as","");
         add(m,"runtime/datasets","","");
         add(m,"datasets/facts","id authority kind","population");
+        add(m,"datasets/initialGoals","id","");
         add(m,"datasets/removals","id authority kind","");
         add(m,"datasets/fieldCuts","id requestRef","");
         add(m,"datasets/clock","id requestRef","");

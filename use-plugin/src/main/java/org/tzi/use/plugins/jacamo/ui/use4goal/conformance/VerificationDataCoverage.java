@@ -15,11 +15,11 @@ public final class VerificationDataCoverage {
         // The existing admission engine already distinguishes applicable checks
         // from future Goal/Task conditions. Do not invent another applicability rule.
         var required=cut.evaluations().stream().filter(r->(r.required()||r.kind().equals("CHECKPOINT_CHECK"))
-                &&(admission.isEmpty()||!r.kind().equals("GOAL_TASK"))).toList();
+                &&!r.status().equals("NOT_ASSIGNED")&&(admission.isEmpty()||!r.kind().equals("GOAL_TASK"))).toList();
         if(required.isEmpty()&&admission.isEmpty())return new Assessment("UNAVAILABLE",List.of("No admitted requirement evidence"));
         var missing=new TreeSet<String>();
         if(!cut.freshness().equals("CURRENT_OBSERVED"))missing.add("Accepted evidence is not current: "+cut.freshness());
-        admission.forEach((id,value)->{var check=ExecutionScopeViews.object(value);if(!check.getOrDefault("applicability","").equals("FUTURE")
+        admission.forEach((id,value)->{var check=ExecutionScopeViews.object(value);if(!Set.of("FUTURE","NOT_APPLICABLE").contains(check.getOrDefault("applicability",""))
                 &&(!check.getOrDefault("applicability","").equals("APPLICABLE")||!Set.of("PASS","FAIL").contains(check.get("truth"))))missing.add(id+" / "+check);});
         for(var row:required) {
             boolean known=row.kind().equals("GOAL_TASK")?KNOWN_GOAL.contains(row.quality())&&Set.of("FULFILLED","PENDING","FAILED","VIOLATED").contains(row.status()):KNOWN_TRUTH.contains(row.status());

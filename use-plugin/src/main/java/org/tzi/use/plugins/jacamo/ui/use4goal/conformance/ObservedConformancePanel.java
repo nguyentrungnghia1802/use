@@ -1007,7 +1007,9 @@ public final class ObservedConformancePanel extends JPanel {
                 if(!stateSig.equals(lastOccurrenceState.get(occKey))){
                     lastOccurrenceState.put(occKey,stateSig);
                     String entryKey="OCC\u0000"+occKey+"\u0000"+cut.id()+"\u0000"+entries.size();
-                    entries.add(new OccurrenceEntry(entryKey,"Occurrence",eval.occurrence(),episode,"",cut.id(),cpLabel,PresentationResults.agentResult(eval),eval.originalStatus(),eval.status(),eval.quality(),role,eval.evidence(),eval.certifiedHistory()));
+                    String occPhase=executionPhase(eval,occMap);
+                    String occType=occPhase.isEmpty()?"Occurrence":"Occurrence ("+occPhase+")";
+                    entries.add(new OccurrenceEntry(entryKey,occType,eval.occurrence(),episode,"",cut.id(),cpLabel,PresentationResults.agentResult(eval),eval.originalStatus(),eval.status(),eval.quality(),role,eval.evidence(),eval.certifiedHistory()));
                 }
                 if(occMap.get("executionEvidence") instanceof java.util.Map<?,?> execEv){
                     for(var certEntry:execEv.entrySet()){
@@ -1023,10 +1025,12 @@ public final class ObservedConformancePanel extends JPanel {
                         if(invId.isBlank()&&policy.isBlank())continue;
                         String certSig="CERT\u0000"+eval.occurrence()+"\u0000"+invId+"\u0000"+kind+"\u0000"+stateHash;
                         if(seenInvocations.add(certSig)){
-                            String certRes="TASK_FAILED".equals(kind)?"Failed":"TASK_COMPLETED".equals(kind)?"Complete":PresentationResults.agentResult(eval);
-                            String certEv="policy="+policy+"; kind="+kind+"; invocation="+invId+"; stateVersion="+stateVer+"; stateHash="+stateHash+(failReason.isBlank()?"":"; failureReason="+failReason);
+                            String certRes="TASK_FAILED".equals(kind)?"Incomplete":"TASK_COMPLETED".equals(kind)?"Complete":PresentationResults.agentResult(eval);
+                            String certPhase="TASK_FAILED".equals(kind)?"Failed":"TASK_COMPLETED".equals(kind)?"Succeeded":"";
+                            String certType="Invocation ("+kind+(certPhase.isEmpty()?"":" · "+certPhase)+")";
+                            String certEv="policy="+policy+"; kind="+kind+(certPhase.isEmpty()?"":"; phase="+certPhase)+"; invocation="+invId+"; stateVersion="+stateVer+"; stateHash="+stateHash+(failReason.isBlank()?"":"; failureReason="+failReason);
                             String cpWithVer=stateVer.isBlank()?cpLabel:cpLabel+" (v"+stateVer+")";
-                            entries.add(new OccurrenceEntry(certSig,"Invocation ("+kind+")",eval.occurrence(),demandEp,invId,cut.id(),cpWithVer,certRes,kind,eval.status(),eval.quality(),role,certEv,eval.certifiedHistory()));
+                            entries.add(new OccurrenceEntry(certSig,certType,eval.occurrence(),demandEp,invId,cut.id(),cpWithVer,certRes,kind,eval.status(),eval.quality(),role,certEv,eval.certifiedHistory()));
                         }
                     }
                 }
@@ -1048,10 +1052,12 @@ public final class ObservedConformancePanel extends JPanel {
                 String sig="CONSTR\u0000"+kind+"\u0000"+occId+"\u0000"+invId+"\u0000"+verdict+"\u0000"+stateVer;
                 if(seenInvocations.add(sig)){
                     seenInvocations.add("EVAL_DEDUP\u0000"+kind+"\u0000"+invId);
-                    String resLabel="EXECUTION_OUTCOME".equals(kind)?("FAIL".equals(verdict)?"Failed":"Complete"):PresentationResults.truth(verdict);
-                    String evText="expression="+expr+"; backendValue="+backendVal+"; diagnostic="+diag+"; witness="+witness;
+                    String resLabel="EXECUTION_OUTCOME".equals(kind)?(java.util.Set.of("FAIL","FAILED","INCONCLUSIVE","EXECUTION_FAILED").contains(verdict)?"Incomplete":"Complete"):PresentationResults.truth(verdict);
+                    String wPhase=formatPhase(java.util.Objects.toString(witness.getOrDefault("phase",""),""),kind,verdict,diag);
+                    String recType="Invocation ("+kind+(wPhase.isEmpty()?"":" · "+wPhase)+")";
+                    String evText="expression="+expr+"; backendValue="+backendVal+"; diagnostic="+diag+(wPhase.isEmpty()?"":"; phase="+wPhase)+"; witness="+witness;
                     String cpWithVer=stateVer.isBlank()?cpLabel:cpLabel+" (v"+stateVer+")";
-                    entries.add(new OccurrenceEntry(sig,"Invocation ("+kind+")",occId,ep,invId,cut.id(),cpWithVer,resLabel,backendVal,verdict,diag,role,evText,""));
+                    entries.add(new OccurrenceEntry(sig,recType,occId,ep,invId,cut.id(),cpWithVer,resLabel,backendVal,verdict,diag,role,evText,""));
                 }
             }
             for(var eval:cut.evaluations()){
@@ -1062,12 +1068,37 @@ public final class ObservedConformancePanel extends JPanel {
                 String occId=!occMaps.isEmpty()?occMaps.keySet().iterator().next():(currentEvaluations.isEmpty()?"":currentEvaluations.getFirst().occurrence());
                 String sig="EVAL\u0000"+eval.kind()+"\u0000"+occId+"\u0000"+invId+"\u0000"+eval.status();
                 if(seenInvocations.add(sig)){
-                    String resLabel="EXECUTION_OUTCOME".equals(eval.kind())&&java.util.Set.of("EXECUTION_FAILED","FAIL","FAILED").contains(eval.status())?"Failed":PresentationResults.truth(eval.status());
-                    entries.add(new OccurrenceEntry(sig,"Invocation ("+eval.kind()+")",occId,"",invId,cut.id(),cpLabel,resLabel,eval.raw(),eval.status(),eval.quality(),"",eval.evidence(),eval.certifiedHistory()));
+                    String resLabel="EXECUTION_OUTCOME".equals(eval.kind())&&java.util.Set.of("EXECUTION_FAILED","FAIL","FAILED","INCONCLUSIVE").contains(eval.status())?"Incomplete":PresentationResults.truth(eval.status());
+                    String ePhase="EXECUTION_OUTCOME".equals(eval.kind())&&java.util.Set.of("EXECUTION_FAILED","FAIL","FAILED","INCONCLUSIVE").contains(eval.status())?"Failed":"";
+                    String recType="Invocation ("+eval.kind()+(ePhase.isEmpty()?"":" · "+ePhase)+")";
+                    entries.add(new OccurrenceEntry(sig,recType,occId,"",invId,cut.id(),cpLabel,resLabel,eval.raw(),eval.status(),eval.quality(),"",eval.evidence(),eval.certifiedHistory()));
                 }
             }
         }
         return List.copyOf(entries);
+    }
+
+    private static String executionPhase(Evaluation eval,java.util.Map<String,Object> occMap){
+        if(eval==null)return "";
+        String q=eval.quality()==null?"":eval.quality();
+        if("FAILED".equals(eval.status())||q.startsWith("TASK_EXECUTION_FAILED:"))return "Failed";
+        if(q.contains("CANCELLED"))return "Cancelled";
+        if(q.contains("TASK_STEP_WAITING"))return "Waiting";
+        if(q.contains("TASK_POST_PENDING_EXECUTION")||q.contains("ORIGINAL_ENGINE_DEFERRED"))return "Executing";
+        if("TASK".equals(occMap.get("elementKind"))&&"FULFILLED".equals(eval.status()))return "Succeeded";
+        return "";
+    }
+
+    private static String formatPhase(String rawPhase,String kind,String verdict,String diagnostic){
+        if("EXECUTION_OUTCOME".equals(kind)&&java.util.Set.of("FAIL","FAILED","INCONCLUSIVE","EXECUTION_FAILED").contains(verdict))return "Failed";
+        return switch(rawPhase==null?"":rawPhase.trim()){
+            case "ENABLED","WAITING"->"Waiting";
+            case "EXECUTING"->"Executing";
+            case "SUCCEEDED"->"Succeeded";
+            case "FAILED"->"Failed";
+            case "CANCELLED"->"Cancelled";
+            default->diagnostic!=null&&diagnostic.contains("CANCELLED")?"Cancelled":"";
+        };
     }
 
     private List<Cut> historyPrefixFor(Cut currentCut){
@@ -1175,7 +1206,7 @@ public final class ObservedConformancePanel extends JPanel {
         if(!cut.selectedRequirements()&&liveRows.stream().anyMatch(r->r.instances().isEmpty()))return "INCOMPLETE";
         Object inventory=cut.visualEvidence().get("requirementInventory");
         if(inventory instanceof java.util.Map<?,?> values&&values.get("selectedIntentionalElements") instanceof List<?> targets)
-            for(Object target:targets)if(cut.evaluations().stream().noneMatch(r->r.kind().equals("GOAL_TASK")&&r.element().equals(target)))return "INCOMPLETE";
+            for(Object target:targets)if(cut.evaluations().stream().noneMatch(r->r.kind().equals("GOAL_TASK")&&r.element().equals(target)&&!r.status().equals("NOT_ASSIGNED")))return "INCOMPLETE";
         if(cut.evaluations().stream().filter(Evaluation::required).anyMatch(r->r.kind().equals("GOAL_TASK")&&r.status().equals("UNKNOWN")))return "INCOMPLETE";
         if(!cut.selectedRequirements()&&!java.util.Set.of("COMPLETE","COMPLETE_OBSERVED").contains(cut.coverage())||!cut.freshness().equals("CURRENT_OBSERVED")
                 ||cut.evaluations().stream().filter(Evaluation::required).anyMatch(r->java.util.Set.of("UNKNOWN","UNAVAILABLE","UNDEFINED","SKIPPED","UNSUPPORTED","INCONCLUSIVE","ERROR").contains(r.status())))return "INCOMPLETE";

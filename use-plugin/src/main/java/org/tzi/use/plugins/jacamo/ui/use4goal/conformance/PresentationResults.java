@@ -14,7 +14,7 @@ public final class PresentationResults {
         if (failedHistory) return "Incomplete";
         return switch (status) {
             case "FULFILLED" -> "Complete";
-            case "PENDING", "FAILED", "VIOLATED" -> "Incomplete";
+            case "FAILED", "VIOLATED" -> "Incomplete";
             default -> "Unknown";
         };
     }
@@ -23,9 +23,7 @@ public final class PresentationResults {
         if (status == null || quality == null || !QUALIFIED_QUALITIES.contains(quality)) return "Unknown";
         return switch (status) {
             case "FULFILLED" -> "Complete";
-            case "PENDING" -> "Incomplete";
-            case "FAILED" -> "Failed";
-            case "VIOLATED" -> "Violated";
+            case "FAILED", "VIOLATED" -> "Incomplete";
             default -> "Unknown";
         };
     }
@@ -37,10 +35,9 @@ public final class PresentationResults {
         if (instances.size() == 1) return agentResult(instances.getFirst());
         var assigned = instances.stream().filter(r -> !("NOT_ASSIGNED".equals(r.status()) && "SOURCE_NOT_ASSIGNED".equals(r.quality()))).toList();
         if (assigned.isEmpty()) return "Not assigned";
-        if (assigned.stream().anyMatch(r -> "VIOLATED".equals(r.status()) && QUALIFIED_QUALITIES.contains(r.quality()))) return "Violated";
-        if (assigned.stream().anyMatch(r -> "FAILED".equals(r.status()) && QUALIFIED_QUALITIES.contains(r.quality()))) return "Failed";
-        if (assigned.stream().anyMatch(r -> !QUALIFIED_QUALITIES.contains(r.quality()) || !java.util.Set.of("FULFILLED", "PENDING").contains(r.status()))) return "Unknown";
-        return assigned.stream().allMatch(r -> "FULFILLED".equals(r.status())) ? "Complete" : "Incomplete";
+        if (assigned.stream().anyMatch(r -> java.util.Set.of("VIOLATED", "FAILED").contains(r.status()) && QUALIFIED_QUALITIES.contains(r.quality()))) return "Incomplete";
+        if (assigned.stream().anyMatch(r -> !QUALIFIED_QUALITIES.contains(r.quality()) || !"FULFILLED".equals(r.status()))) return "Unknown";
+        return "Complete";
     }
     public static String subjectLabel(String playerIdentity) {
         if (playerIdentity == null || playerIdentity.isBlank() || "UNAVAILABLE".equalsIgnoreCase(playerIdentity)) return "Unavailable";

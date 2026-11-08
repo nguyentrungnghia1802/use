@@ -111,6 +111,7 @@ class ExecutionEvidenceTest {
             assertEquals("FAILED",row(held,task).get("executionStatus"));assertEquals("KNOWN_HISTORY",row(held,task).get("executionQuality"));
             assertEquals("PENDING",row(held,task).get("aggregateStatus"),"Original TaskMarking has no FAILED status");
             assertEquals("KNOWN_DERIVED_HISTORY",row(held,ids.get("Done")).get("executionQuality"));
+            assertEquals("VIOLATED",row(held,ids.get("Done")).get("executionStatus"),"AND parent of a certified terminal task failure is falsified");
             assertTrue(row(held,task).get("executionEvidence").toString().contains("source-invocation"));
             assertEquals(unchanged.tasks(),session.checkpoint().tasks());
             assertEquals("FAILED",row(SemanticResultAdapter.unavailableExecution(org.jacamo.bridge.contract.CanonicalJson.object(held),session,cut(2,true),ledger,List.of("missing")),task).get("executionStatus"));
@@ -118,6 +119,41 @@ class ExecutionEvidenceTest {
             assertTrue(reopened.terminal("other-context",key).isEmpty());
             assertTrue(reopened.terminal("context",new org.tzi.use.semantic.engine.runtime.EngineOccurrenceKey(key.sourceElementId(),key.bindingStack(),"new-episode")).isEmpty());
             ledger.restore(image);assertTrue(ledger.snapshot().isEmpty(),"Rollback restores terminal outcomes as well as success");reopened.retain(Set.of());assertTrue(reopened.snapshot().isEmpty());
+        }
+    }
+    @Test void threeValuedAndOrAndNonLatchingTaskPreconditionFollowPaperSemantics() {
+        var compiled=org.vnu.sme.goal.dsl.istar.parser.IStarCompiler.compile("istar PaperTruth { role R { goal AndRoot : Achieve goal OrChoice : Achieve > AndRoot task StepOne > AndRoot pre {[ true ]} post {[ true ]} task OptA > or OrChoice pre {[ true ]} post {[ true ]} task OptB > or OrChoice pre {[ true ]} post {[ true ]} } }");
+        assertTrue(compiled.ok(),compiled.errors().toString());
+        var cast=List.of(new org.vnu.sme.goal.dsl.iscn.mm.ScenarioInstance("alice","R"));
+        try(var session=new org.tzi.use.semantic.engine.runtime.Use4GoalRuntimeSessionAdapter(compiled.model(),cast,(a,x,b,y)->true,"cast")) {
+            var ids=new HashMap<String,String>();session.topology().occurrences().forEach((id,b)->ids.put(b.sourceElementId(),id));
+            String stepOne=ids.get("StepOne"),optA=ids.get("OptA"),optB=ids.get("OptB"),orChoice=ids.get("OrChoice"),andRoot=ids.get("AndRoot");
+            // 1. StepOne evaluated with (true, true, false) -> PENDING; then (true, false, true) must NOT certify completion
+            var context=new JaCaMoOccurrenceBindingAdapter.ContextCast("context","cast",cast,Map.of(),Map.of(),List.of());
+            var ledger=new ExecutionEvidence();
+            var s0=session.step(new org.tzi.use.semantic.engine.runtime.EngineInputs(Map.of(),Map.of(stepOne,new org.tzi.use.semantic.engine.runtime.EngineInputs.TaskInput("ep",true,true,false)),Map.of()));
+            assertEquals(GoalTaskStatus.PENDING,session.checkpoint().tasks().get(stepOne).status());
+            var inFalsePre=new org.tzi.use.semantic.engine.runtime.EngineInputs(Map.of(),Map.of(stepOne,new org.tzi.use.semantic.engine.runtime.EngineInputs.TaskInput("ep",true,false,true)),Map.of());
+            var sFalsePre=session.step(inFalsePre);
+            var rawFalsePre=SemanticResultAdapter.context(context,session,sFalsePre,s0.history(),inFalsePre,Map.of(stepOne,"KNOWN",optA,"UNAVAILABLE",optB,"UNAVAILABLE"),true);
+            var exFalsePre=SemanticResultAdapter.execution(rawFalsePre,session,cut(0,false),ledger);
+            assertEquals("UNAVAILABLE:PRECONDITION_FALSE",row(exFalsePre,stepOne).get("executionQuality"),"pre=false must evaluate to Unknown, never certifying prior preSeen=true into Complete");
+            assertEquals("Unknown",org.tzi.use.plugins.jacamo.ui.use4goal.conformance.PresentationResults.agentResult(Objects.toString(row(exFalsePre,stepOne).get("aggregateStatus"),""),Objects.toString(row(exFalsePre,stepOne).get("executionQuality"),"")));
+            // 2. OptA fails terminally while OptB is unknown -> OrChoice stays UNKNOWN, not VIOLATED
+            var in1=new org.tzi.use.semantic.engine.runtime.EngineInputs(Map.of(),Map.of(optA,new org.tzi.use.semantic.engine.runtime.EngineInputs.TaskInput("ep",true,true,false)),Map.of());
+            var before=session.checkpoint();var s1=session.step(in1);
+            ledger.terminalFailure("context",session.checkpoint().keys().get(optA),"inv-optA",true,1,"hash1");
+            var raw1=SemanticResultAdapter.context(context,session,s1,before,in1,Map.of(optA,"KNOWN",optB,"UNAVAILABLE",stepOne,"UNAVAILABLE"),true);
+            var ex1=SemanticResultAdapter.execution(raw1,session,cut(1,false),ledger);
+            assertNull(row(ex1,orChoice).get("executionStatus"),"One failed OR branch with an unknown sibling must stay Unknown");
+            // 3. When OptB also fails terminally -> all OR branches are BOTTOM -> OrChoice and AndRoot become VIOLATED
+            var in2=new org.tzi.use.semantic.engine.runtime.EngineInputs(Map.of(),Map.of(optB,new org.tzi.use.semantic.engine.runtime.EngineInputs.TaskInput("ep",true,true,false)),Map.of());
+            before=session.checkpoint();var s2=session.step(in2);
+            ledger.terminalFailure("context",session.checkpoint().keys().get(optB),"inv-optB",true,2,"hash2");
+            var raw2=SemanticResultAdapter.context(context,session,s2,before,in2,Map.of(optA,"CURRENT_STEP_MARKER_MISSING",optB,"KNOWN",stepOne,"UNAVAILABLE"),true);
+            var ex2=SemanticResultAdapter.execution(raw2,session,cut(2,false),ledger);
+            assertEquals("VIOLATED",row(ex2,orChoice).get("executionStatus"),"OR with all branches falsified is VIOLATED");
+            assertEquals("VIOLATED",row(ex2,andRoot).get("executionStatus"),"AND with one falsified child is VIOLATED even when StepOne is unavailable");
         }
     }
     private static RuntimeEngineSessionOwner.Cut cut(int version,boolean lost){return new RuntimeEngineSessionOwner.Cut("owner",new RuntimeEngineSessionOwner.Identity("run",1,"revision","program","profile"),1,version,"boundary"+version,"hash"+version,null,List.of(),true,lost,List.of(),null,0,Map.of(),List.of());}

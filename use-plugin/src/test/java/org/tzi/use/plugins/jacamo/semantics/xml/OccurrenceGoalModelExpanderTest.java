@@ -134,5 +134,103 @@ class OccurrenceGoalModelExpanderTest {
             assertTrue(result.originalApiCalls().contains("GoalModelInstanceTranslator.propagateDependencies"));
         }
     }
+    @Test void scopedExpansionIsolatesInitialGoalSetupConcurrentRequestsFailureBeforeCreationAndPartialSetup() {
+        var profile=EngineSemanticsProfile.ROLE_SPECIALIZATION_V1;
+        var model=org.vnu.sme.goal.dsl.istar.parser.IStarCompiler.compile("""
+          istar AuctionGoals {
+            agent Auction {
+              goal O_root : Achieve
+              goal O_start : Achieve > O_root
+              goal O_decide : Achieve > O_root
+            }
+            role auction_capabilities {
+              auction_capabilities participates-in Auctioneer
+              goal do_auction : Achieve
+              task createScheme > do_auction pre {[ true ]} post {[ true ]}
+              task commitMission > do_auction pre {[ true ]} post {[ true ]}
+              resource SchemeBoard > needed-by commitMission > needed-by A_start_t1
+              goal C_start : Achieve
+              task A_start_t1 > C_start pre {[ true ]} post {[ true ]}
+              task A_start_t2 > C_start pre {[ true ]} post {[ true ]}
+              goal C_decide : Achieve
+              task A_decide_t2 > C_decide pre {[ true ]} post {[ true ]}
+              resource AuctionArtifact > needed-by A_start_t2 > needed-by A_decide_t2
+            }
+            role Auctioneer {
+              goal A_start : Achieve
+              goal A_decide : Achieve
+            }
+            depend Auction.O_start -> goal D_start -> Auctioneer.A_start
+            depend Auction.O_decide -> goal D_decide -> Auctioneer.A_decide
+          }
+          """,profile.validationPolicy()).model();
+        var views=Map.of(
+            "A_start",new org.tzi.use.plugins.jacamo.semantics.runtime.GoalViewRealizations.View("A_start","C_start","start(Id)","auctioneer","doAuction","Same-player view"),
+            "A_decide",new org.tzi.use.plugins.jacamo.semantics.runtime.GoalViewRealizations.View("A_decide","C_decide","decide","auctioneer","doAuction","Same-player view"));
+        var expander=new OccurrenceGoalModelExpander(model,profile,Map.of(),views,Set.of("auction_capabilities"));
+        var setupMembers=List.of(
+            new OccurrenceGoalModelExpander.Player("auction_capabilities","cap_bob","inst_bob","bob","","interval_bob"),
+            new OccurrenceGoalModelExpander.Player("auction_capabilities","cap_alice","inst_alice","alice","","interval_alice"));
+        var setupA1=expander.expand(setupMembers,"Setup_a1",Set.of("createScheme","commitMission"));
+        var setupA2=expander.expand(setupMembers,"Setup_a2",Set.of("createScheme","commitMission"));
+        assertTrue(setupA1.trace().values().stream().map(OccurrenceGoalModelExpander.Trace::source).collect(java.util.stream.Collectors.toSet()).containsAll(Set.of("do_auction","createScheme","commitMission","SchemeBoard")));
+        assertTrue(setupA1.trace().values().stream().noneMatch(t->Set.of("O_root","C_start","A_start_t1","AuctionArtifact").contains(t.source())));
+        // 1. Failure before creation on setupA1 (bob fails createScheme, alice is unassigned)
+        try(var engineA1=new Use4GoalRuntimeSessionAdapter(setupA1.model(),setupA1.cast(),(a,x,b,y)->true,"setup-a1",profile,EngineTopologyPolicy.SINGLE_OWNER_CONTEXT_V1);
+            var engineA2=new Use4GoalRuntimeSessionAdapter(setupA2.model(),setupA2.cast(),(a,x,b,y)->true,"setup-a2",profile,EngineTopologyPolicy.SINGLE_OWNER_CONTEXT_V1)) {
+            var tasksA1=new TreeMap<String,EngineInputs.TaskInput>();
+            for(var occ:engineA1.topology().occurrences().values()) {
+                var trace=setupA1.trace().get(occ.sourceElementId());
+                if(trace.source().equals("createScheme"))tasksA1.put(occ.occurrenceId(),new EngineInputs.TaskInput("ep-a1-"+trace.player(),trace.player().equals("bob"),trace.player().equals("bob")?true:null,trace.player().equals("bob")?false:null));
+                if(trace.source().equals("commitMission"))tasksA1.put(occ.occurrenceId(),new EngineInputs.TaskInput("ep-a1-cm-"+trace.player(),trace.player().equals("bob"),null,null));
+            }
+            var resA1=engineA1.step(new EngineInputs(Map.of(),tasksA1,Map.of(),Map.of()));
+            for(var occ:engineA1.topology().occurrences().values()) {
+                var trace=setupA1.trace().get(occ.sourceElementId());
+                if(trace.player().equals("alice"))assertEquals(GoalTaskStatus.UNKNOWN,resA1.aggregate().goalTaskStatus(occ.occurrenceId()),"Unassigned player stays UNKNOWN");
+                if(trace.player().equals("bob")&&trace.source().equals("createScheme")) {
+                    assertTrue(resA1.history().tasks().get(occ.occurrenceId()).preSeen());
+                    assertFalse(resA1.history().tasks().get(occ.occurrenceId()).postSeen());
+                    assertNotEquals(GoalTaskStatus.FULFILLED,resA1.aggregate().goalTaskStatus(occ.occurrenceId()));
+                }
+                if(trace.player().equals("bob")&&trace.source().equals("commitMission")) {
+                    assertEquals(GoalTaskStatus.UNKNOWN,resA1.history().tasks().get(occ.occurrenceId()).status());
+                    assertEquals(GoalTaskStatus.UNKNOWN,resA1.aggregate().goalTaskStatus(occ.occurrenceId()));
+                }
+                if(trace.player().equals("bob")&&trace.source().equals("do_auction"))assertNotEquals(GoalTaskStatus.FULFILLED,resA1.aggregate().goalTaskStatus(occ.occurrenceId()));
+            }
+            // 2. Concurrent request a2 on same agent bob: partial setup (createScheme succeeds, SchemeBoard bound, commitMission pending) then complete
+            var tasksA2Step1=new TreeMap<String,EngineInputs.TaskInput>();var resMapA2=new HashMap<EngineInputs.ResourceKey,EngineInputs.ResourceInput>();
+            for(var occ:engineA2.topology().occurrences().values()) {
+                var trace=setupA2.trace().get(occ.sourceElementId());
+                if(trace.source().equals("createScheme"))tasksA2Step1.put(occ.occurrenceId(),new EngineInputs.TaskInput("ep-a2-"+trace.player(),trace.player().equals("bob"),trace.player().equals("bob")?true:null,trace.player().equals("bob")?true:null));
+                if(trace.source().equals("commitMission")) {
+                    tasksA2Step1.put(occ.occurrenceId(),new EngineInputs.TaskInput("ep-a2-cm-"+trace.player(),trace.player().equals("bob"),null,null));
+                    setupA2.model().getActors().stream().flatMap(a->a.neededBys().stream()).filter(n->n.task().equals(occ.sourceElementId())).forEach(n->resMapA2.put(new EngineInputs.ResourceKey(occ.occurrenceId(),n.resource()),new EngineInputs.ResourceInput("ep-a2-cm-"+trace.player(),true,"moise://aorg")));
+                }
+            }
+            var partialA2=engineA2.step(new EngineInputs(Map.of(),tasksA2Step1,Map.of(),resMapA2));
+            for(var occ:engineA2.topology().occurrences().values()) {
+                var trace=setupA2.trace().get(occ.sourceElementId());
+                if(trace.player().equals("bob")&&trace.source().equals("createScheme"))assertEquals(GoalTaskStatus.FULFILLED,partialA2.aggregate().goalTaskStatus(occ.occurrenceId()));
+                if(trace.player().equals("bob")&&trace.source().equals("commitMission")) {
+                    assertEquals(GoalTaskStatus.UNKNOWN,partialA2.history().tasks().get(occ.occurrenceId()).status());
+                    assertEquals(GoalTaskStatus.UNKNOWN,partialA2.aggregate().goalTaskStatus(occ.occurrenceId()));
+                }
+                if(trace.player().equals("bob")&&trace.source().equals("do_auction"))assertEquals(GoalTaskStatus.UNKNOWN,partialA2.aggregate().goalTaskStatus(occ.occurrenceId()));
+            }
+            // Now commitMission succeeds in a2
+            var tasksA2Step2=new TreeMap<String,EngineInputs.TaskInput>(tasksA2Step1);
+            for(var occ:engineA2.topology().occurrences().values()) {
+                var trace=setupA2.trace().get(occ.sourceElementId());
+                if(trace.player().equals("bob")&&trace.source().equals("commitMission"))tasksA2Step2.put(occ.occurrenceId(),new EngineInputs.TaskInput("ep-a2-cm-bob",true,true,true));
+            }
+            var fullA2=engineA2.step(new EngineInputs(Map.of(),tasksA2Step2,Map.of(),resMapA2));
+            for(var occ:engineA2.topology().occurrences().values()) {
+                var trace=setupA2.trace().get(occ.sourceElementId());
+                if(trace.player().equals("bob")&&Set.of("createScheme","commitMission","do_auction").contains(trace.source()))assertEquals(GoalTaskStatus.FULFILLED,fullA2.aggregate().goalTaskStatus(occ.occurrenceId()));
+            }
+        }
+    }
 
 }

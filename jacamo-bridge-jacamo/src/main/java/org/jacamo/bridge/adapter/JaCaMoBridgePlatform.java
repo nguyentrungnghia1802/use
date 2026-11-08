@@ -140,6 +140,12 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
             prepareOfficialProject(jcm);
             modelSnapshot = new OfficialProjectAdapter().adapt(project, jcm);
             BridgeRuntimeRegistry.configureDeclarations(modelSnapshot.semanticContract());
+            var runner = jason.infra.local.BaseLocalMAS.getRunner();
+            if (runner != null) {
+                for (var local : runner.getAgs().values())
+                    for (var arch = local.getFirstAgArch(); arch != null; arch = arch.getNextAgArch())
+                        if (arch instanceof BridgeAgArch bridge) bridge.publishState(false);
+            }
             long generation = generations.incrementAndGet();
             String projectKey = modelSnapshot.sources().getFirst().id().scope();
             System.setProperty("jacamo.bridge.session", sessionId);
@@ -250,6 +256,7 @@ public final class JaCaMoBridgePlatform implements Platform, AutoCloseable {
                 BridgeAgArch selected=null;for(var arch=local.getFirstAgArch();arch!=null;arch=arch.getNextAgArch())if(arch instanceof BridgeAgArch bridge){if(selected!=null)throw new IllegalStateException("OBSERVATION_ARCHITECTURE_AMBIGUOUS");selected=bridge;}
                 if(selected==null)throw new IllegalStateException("OBSERVATION_ARCHITECTURE_UNAVAILABLE");
                 selected.observationFields(plan.sourceFields().getOrDefault("jason",List.of()));
+                selected.publishState(false);
                 selected.installCapabilities(owned,programs.getFirst());stepArchitectures.add(selected);
             }
             cartagoSource.capabilities(owned);cartagoSource.observationsReady();observationSession=owned;owned.pulse(nplSource.hasPendingTimedObligations());

@@ -11,7 +11,7 @@
     <file id="src-build" path="build.gradle" sha256="0c81b7f1b57c8f9b427280eb8967e820edaffe329540e4988ddd85e402175b40" kind="RESOURCE" />
   </sources>
   <ocl sha256="1acc17db74a662ffcfc370b70ee233cd45a6c4e339c35c50487b1abf8ffbe5fe" />
-  <models mode="AUTHORED" cslSha256="395a5621b1e59a84c6fbc29d8705f8ce0d13110a07c73a8134736160abb7f0c7" istarSha256="48b267d65595a39851571e55784ceea146d18a10980e339881e37646277c0721" />
+  <models mode="AUTHORED" cslSha256="395a5621b1e59a84c6fbc29d8705f8ce0d13110a07c73a8134736160abb7f0c7" istarSha256="a440bba33767ff45e497ba4e2e1189c8fa2a2adafe8cbd3c4234da33635ce28f" />
   <assertions>
     <require selectorRef="sel-org" field="instance" equals="aorg" />
     <require selectorRef="sel-org" field="spec" equals="auction-os.xml" />
@@ -95,6 +95,7 @@
   <runtime>
     <datasets>
       <facts id="source-agents" authority="jason" kind="AGENT" />
+      <initialGoals id="source-initial-goals" />
       <clock id="source-clock-cut" requestRef="source-clock" />
       <facts id="source-workspaces" authority="cartago" kind="WORKSPACE" />
       <facts id="source-artifacts" authority="cartago" kind="ARTIFACT" />
@@ -126,6 +127,14 @@
         </whereAny>
         <column name="player" path="identity" required="true" />
         <column name="name" path="values.name" required="true" />
+        <identity mode="PHYSICAL" path="identity" />
+      </table>
+      <table id="capability-roster" dataset="source-agents">
+        <whereAny path="localId" type="String">
+          <value equals="bob" /><value equals="alice" /><value equals="maria" /><value equals="giacomo" /><value equals="francois" />
+        </whereAny>
+        <column name="player" path="identity" required="true" />
+        <column name="run" path="run" required="true" />
         <identity mode="PHYSICAL" path="identity" />
       </table>
       <table id="observed-workspaces" dataset="source-workspaces">
@@ -358,6 +367,48 @@
         <column name="decideStates" path="decideStates" required="true" />
         <identity mode="PHYSICAL" path="identity" />
       </table>
+      <table id="created-setup-schemes" dataset="source-step-schemes">
+        <where path="task" type="String" equals="createScheme" />
+        <where path="phase" type="String" equals="SUCCEEDED" />
+        <whereFieldsEqual leftPath="agent" rightPath="schemeCreatorRuntimeId" type="String" />
+        <join tableRef="qualified-organizations" leftPath="schemeWorkspaceIdentity" rightPath="uuid" as="context" cardinality="ONE" required="true" knowledge="QUALIFIED_PHYSICAL_REFERENCE" />
+        <column name="scheme" path="identity" required="true" />
+        <column name="agent" path="agent" required="true" />
+        <column name="auctionId" path="bindings.inputs.Id.value" required="true" />
+        <column name="service" path="bindings.inputs.P.value" required="true" />
+        <column name="organization" path="context.uuid" required="true" />
+        <identity mode="PHYSICAL" path="identity" />
+      </table>
+      <table id="setup-scopes" dataset="source-initial-goals">
+        <where path="values.functor" type="String" equals="do_auction" />
+        <whereSize path="values.terms" equals="2" />
+        <termString path="values.terms.0" rawPath="values.terms.0.raw" as="auctionId" mode="JACA_3_1_STRING_OR_ATOM" />
+        <termString path="values.terms.1" rawPath="values.terms.1.raw" as="service" mode="JACA_3_1_STRING_OR_ATOM" />
+        <join tableRef="capability-agents" leftPath="player" rightPath="player" as="owner" cardinality="ONE" required="true" />
+        <join tableRef="created-setup-schemes" leftPath="auctionId" rightPath="auctionId" as="created" cardinality="ONE" required="false" knowledge="QUALIFIED_PHYSICAL_REFERENCE" onMissing="unavailable-value" />
+        <column name="requestKey" path="identity" required="true" />
+        <column name="player" path="player" required="true" />
+        <column name="auctionId" path="auctionId" required="true" />
+        <column name="service" path="service" required="true" />
+        <column name="scheme" path="created.scheme" required="false" />
+        <column name="schemeOrg" path="created.organization" required="false" />
+        <identity mode="PHYSICAL" path="identity" />
+      </table>
+      <table id="setup-agents" dataset="source-initial-goals">
+        <where path="values.functor" type="String" equals="do_auction" />
+        <whereSize path="values.terms" equals="2" />
+        <termString path="values.terms.0" rawPath="values.terms.0.raw" as="auctionId" mode="JACA_3_1_STRING_OR_ATOM" />
+        <termString path="values.terms.1" rawPath="values.terms.1.raw" as="service" mode="JACA_3_1_STRING_OR_ATOM" />
+        <join tableRef="capability-agents" leftPath="player" rightPath="player" as="owner" cardinality="ONE" required="true" />
+        <join tableRef="capability-roster" leftPath="run" rightPath="run" as="member" cardinality="MANY" required="true" />
+        <testContains as="assigned" path="owners" valuePath="member.player" type="String" />
+        <column name="requestOwner" path="player" required="true" />
+        <column name="requestKey" path="identity" required="true" />
+        <column name="player" path="member.player" required="true" />
+        <column name="auctionId" path="auctionId" required="true" />
+        <column name="assigned" path="assigned" required="true" />
+        <column name="required" path="assigned" required="true" />
+      </table>
       <table id="execution-scopes" dataset="source-scheme-history">
         <where path="responsibilityComplete" type="Boolean" equals="true" />
         <expand path="responsibleGroups" as="group" valueType="String" />
@@ -370,6 +421,7 @@
         <choose as="members" conditionPath="firstBid.found" truePath="firstBid.value.commitmentBindings" falsePath="commitmentBindings" />
         <column name="scheme" path="identity" required="true" />
         <column name="group" path="group.value" required="true" />
+        <column name="organization" path="context.organization" required="true" />
         <column name="domain" path="domainBinding.domain" required="false" />
         <column name="castComplete" path="members.complete" required="true" />
         <identity mode="PHYSICAL" path="identity" />
@@ -620,6 +672,12 @@
       <activate id="operational-auctioneer-population" target="auctionGroup::AuctioneerPopulation" tableRef="population-ready-groups" contextColumn="group" policy="LATCH_ONCE_QUALIFIED/1.0" />
     </invariantActivations>
     <occurrences>
+      <scope id="initial-auction-setup" tableRef="setup-scopes" anchorColumn="player" contextColumn="player" keyFields="player requestKey">
+        <actor actor="auction_capabilities" tableRef="setup-agents" scopeColumn="requestKey" scopeKey="requestKey" playerColumn="player" kind="PHYSICAL_PLAYER_VIEW" cardinality="MANY_NONEMPTY" />
+        <self target="createScheme" origin="PLAYER" />
+        <self target="commitMission" origin="PLAYER" />
+        <resource target="SchemeBoard" column="schemeOrg" type="AuctionOrg" />
+      </scope>
       <scope id="auction-execution" tableRef="execution-scopes" anchorColumn="group" contextColumn="group" keyFields="group scheme">
         <observer projectRef="project-monitor" subjectColumn="scheme" />
         <actor actor="Auction" tableRef="execution-scopes" scopeColumn="scheme" scopeKey="scheme" playerColumn="group" kind="CONTEXT_VIEWPOINT" cardinality="ONE" completeColumn="castComplete" />
@@ -631,10 +689,13 @@
         <self target="A_decide_t2" origin="COLUMN" column="domain" optional="true" />
         <self target="P_bid_t1" origin="COLUMN" column="domain" optional="true" />
         <self target="P_bid_t2" origin="COLUMN" column="domain" optional="true" />
+        <resource target="SchemeBoard" column="organization" type="AuctionOrg" />
         <resource target="AuctionArtifact" column="domain" type="Auction" />
       </scope>
     </occurrences>
     <taskDemands>
+      <demand id="require-createScheme" target="createScheme" scopeRef="initial-auction-setup" tableRef="setup-agents" anchorColumn="requestOwner" playerColumn="player" requiredColumn="required" scopeColumn="requestKey" scopeKey="requestKey" episodeFields="requestKey auctionId" assignmentColumn="assigned" />
+      <demand id="require-commitMission" target="commitMission" scopeRef="initial-auction-setup" tableRef="setup-agents" anchorColumn="requestOwner" playerColumn="player" requiredColumn="required" scopeColumn="requestKey" scopeKey="requestKey" episodeFields="requestKey auctionId" assignmentColumn="assigned" />
       <demand id="require-A_start_t1" target="A_start_t1" scopeRef="auction-execution" tableRef="demand-start" anchorColumn="group" playerColumn="player" requiredColumn="required" scopeColumn="scheme" scopeKey="scheme" episodeFields="scheme goal" completeColumn="complete" assignmentColumn="assigned" />
       <demand id="require-A_start_t2" target="A_start_t2" scopeRef="auction-execution" tableRef="demand-start" anchorColumn="group" playerColumn="player" requiredColumn="required" scopeColumn="scheme" scopeKey="scheme" episodeFields="scheme goal" completeColumn="complete" assignmentColumn="assigned" />
       <demand id="require-A_decide_t2" target="A_decide_t2" scopeRef="auction-execution" tableRef="demand-decide" anchorColumn="group" playerColumn="player" requiredColumn="required" scopeColumn="scheme" scopeKey="scheme" episodeFields="scheme goal" completeColumn="complete" assignmentColumn="assigned" />
@@ -734,6 +795,13 @@
     <actorRuntime actor="Auctioneer" bindingRef="bind-actor-Auctioneer" contextBindingRef="bind-group" activationPolicy="OBSERVED_SCHEME_COMMITMENT" episodePolicy="RUN_SCHEME_PLAYER_INVOCATION" roleBindingRef="bind-role-auctioneer" />
     <static id="bind-actor-Participant" kind="ACTOR" target="Participant" sourceKind="MOISE_ROLE" feature="roleId" value="participant" reason="Reviewed intentional abstraction; organization actor is only a context viewpoint" />
     <actorRuntime actor="Participant" bindingRef="bind-actor-Participant" contextBindingRef="bind-group" activationPolicy="OBSERVED_SCHEME_COMMITMENT" episodePolicy="RUN_SCHEME_PLAYER_INVOCATION" roleBindingRef="bind-role-participant" />
+    <elementRuntime target="do_auction" actor="auction_capabilities" self="auction_capabilities" derived="true" selfKind="ORG_CONTEXT" reason="Original AND refinement over initial setup Tasks" />
+    <elementRuntime target="createScheme" actor="auction_capabilities" self="auction_capabilities" derived="false" selfKind="ORG_CONTEXT" reason="Exact declared Jason setup step" stepScope="initial-auction-setup" scopePolicy="EXACT_REFERENCES" stepInputMatches="Id:auctionId P:service" stepSchemeColumn="scheme" entryPolicy="ALLOW_UNBOUND_SELF_FOR_PURE_CALLBACK" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
+      <variable name="step" viewRef="view-step" origin="STEP_TUPLE" />
+    </elementRuntime>
+    <elementRuntime target="commitMission" actor="auction_capabilities" self="auction_capabilities" derived="false" selfKind="ORG_CONTEXT" reason="Exact declared Jason setup step" stepScope="initial-auction-setup" scopePolicy="EXACT_REFERENCES" stepInputMatches="Id:auctionId P:service" stepSchemeColumn="scheme" entryPolicy="EXACT_SELF" failurePolicy="EVALUATE_PURE_CALLBACK_POST">
+      <variable name="step" viewRef="view-step" origin="STEP_TUPLE" />
+    </elementRuntime>
     <elementRuntime target="C_start" actor="auction_capabilities" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original AND refinement over exact player task evidence" />
     <elementRuntime target="C_decide" actor="auction_capabilities" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original AND refinement over exact player task evidence" />
     <elementRuntime target="C_bid" actor="auction_capabilities" self="Auction" derived="true" selfKind="ARTIFACT" reason="Original AND refinement over exact player task evidence" />
@@ -776,7 +844,8 @@
     <goalRealization target="A_start" source="C_start" sourceGoal="start" sourceRef="src-os" scheme="doAuction" policy="SAME_SCOPE_PLAYER_REFINEMENT_VIEW/1.0" reason="Draw.io A_start and rq_O_hfanHRNPlTsZUYV-21 share owner Auctioneer and sourceGoal start; preserve both views without adding a Dependency" />
     <goalRealization target="A_decide" source="C_decide" sourceGoal="decide" sourceRef="src-os" scheme="doAuction" policy="SAME_SCOPE_PLAYER_REFINEMENT_VIEW/1.0" reason="Draw.io A_decide and rq_O_hfanHRNPlTsZUYV-24 share owner Auctioneer and sourceGoal decide; preserve both views without adding a Dependency" />
     <goalRealization target="P_bid" source="C_bid" sourceGoal="bid" sourceRef="src-os" scheme="doAuction" policy="SAME_SCOPE_PLAYER_REFINEMENT_VIEW/1.0" reason="Draw.io P_bid and rq_O_hfanHRNPlTsZUYV-31 share owner Participant and sourceGoal bid; preserve both views without adding a Dependency" />
-    <requirement target="O_root" />
+    <requirement target="O_root" scopeRef="auction-execution" />
+    <requirement target="do_auction" scopeRef="initial-auction-setup" />
     <static id="bind-capability-context" kind="ORG_CONTEXT" target="auction_capabilities" sourceKind="JACAMO_PROJECT" feature="name" value="auction" reason="Each XML-selected physical Jason agent is represented as a singleton OrgCtx, not a MOISE role">
       <metadata key="contextAbstraction" value="SINGLE_AGENT_CONTEXT/1.0" />
       <metadata key="enactsRoles" value="auctioneer participant" />
@@ -798,6 +867,16 @@
     <capability id="source-clock" provider="npl.source-clock.v1" required="true" hash="956818edfe9aeff7c4fde35bf1dd276cd71e1da62daf77a2a15ab08f87903332" />
     <capability id="norm-lifecycle" provider="npl.lifecycle.v1" required="true" hash="956818edfe9aeff7c4fde35bf1dd276cd71e1da62daf77a2a15ab08f87903332" />
     <capability id="execution-steps" provider="jason.plan-boundaries.v1" required="true" sourceRef="src-asl">
+      <plan trigger="do_auction(Id,P)">
+        <step task="createScheme" first="0" after="3" variables="Id P SchName OrgWks SchArtId" artifactVariable="" schemeVariable="SchArtId" allowMissingArtifactAtEntry="true">
+          <input name="Id" variable="Id" type="java.lang.String" />
+          <input name="P" variable="P" type="java.lang.String" />
+        </step>
+        <step task="commitMission" first="3" after="10" variables="Id P SchName OrgWks SchArtId Me" artifactVariable="" schemeVariable="SchArtId" allowMissingArtifactAtEntry="false">
+          <input name="Id" variable="Id" type="java.lang.String" />
+          <input name="P" variable="P" type="java.lang.String" />
+        </step>
+      </plan>
       <plan trigger="start[scheme(Sch)]">
         <step task="A_start_t1" first="0" after="5" variables="Id Sch S ArtId" artifactVariable="ArtId" artifactClass="auction_env.AuctionArtifact" schemeVariable="Sch" allowMissingArtifactAtEntry="true" />
         <step task="A_start_t2" first="5" after="6" variables="Id Sch S ArtId" artifactVariable="ArtId" artifactClass="auction_env.AuctionArtifact" schemeVariable="Sch" allowMissingArtifactAtEntry="false">

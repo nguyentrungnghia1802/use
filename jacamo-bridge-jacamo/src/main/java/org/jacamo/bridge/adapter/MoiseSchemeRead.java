@@ -13,6 +13,7 @@ final class MoiseSchemeRead {
     private final java.nio.file.Path projectRoot;
     private final String projectKey;
     private final Object expectedScheme;
+    private final Set<moise.os.OS> verifiedOs=Collections.synchronizedSet(Collections.newSetFromMap(new IdentityHashMap<>()));
     record Raw(MoiseGoalObservation.Cut cut,List<Map<String,Object>> done,List<Map<String,String>> commitments,Map<String,Object> commitmentBindings,boolean held) { }
     @FunctionalInterface interface Reader<T>{T read(Raw raw)throws Exception;}
     MoiseSchemeRead(CartagoEnvironment environment,ModelSnapshot source,String organization,String scheme) {
@@ -35,8 +36,12 @@ final class MoiseSchemeRead {
         return CartagoArtifactReadScope.read(environment,identity,SchemeBoard.class,(board,descriptor,held)->{
             if(!board.getSpec().getId().equals(definition.schemeId()))throw new IllegalArgumentException("SCHEME_DEFINITION_UNSUPPORTED");
             if(projectRoot!=null) {
-                var actual=new OfficialMoiseAdapter().capture(board.getSpec().getFS().getOS(),projectRoot,projectKey).organization();
-                if(!expectedScheme.equals(schemeShape(org.jacamo.bridge.contract.semantic.SemanticContractCodec.organizationToTree(actual),definition.schemeId())))throw new IllegalArgumentException("SCHEME_LIVE_DEFINITION_DIFFERS_FROM_SOURCE");
+                var liveOs=board.getSpec().getFS().getOS();
+                if(liveOs==null||!verifiedOs.contains(liveOs)) {
+                    var actual=new OfficialMoiseAdapter().capture(liveOs,projectRoot,projectKey).organization();
+                    if(!expectedScheme.equals(schemeShape(org.jacamo.bridge.contract.semantic.SemanticContractCodec.organizationToTree(actual),definition.schemeId())))throw new IllegalArgumentException("SCHEME_LIVE_DEFINITION_DIFFERS_FROM_SOURCE");
+                    if(liveOs!=null)verifiedOs.add(liveOs);
+                }
             }
             var properties=descriptor.getAdapter().readProperties();
             var info=new ArtifactInfo(null,identity,List.of(),properties,List.of(),null);var cut=MoiseGoalObservation.decode(info,identity.getName());

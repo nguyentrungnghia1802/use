@@ -46,8 +46,12 @@ public final class OccurrenceGoalModelExpander {
     }
     private void assertUnchanged(){if(!canonicalHash.equals(OwnedGoalModel.fingerprint(source)))throw new IllegalStateException("OCCURRENCE_SOURCE_MODEL_MUTATED");}
     public Expansion expand(List<Player> members,String executionName) {
+        return expand(members,executionName,null);
+    }
+    public Expansion expand(List<Player> members,String executionName,Set<String> scopeLeaves) {
         assertUnchanged();if(members.isEmpty()||members.size()>4096||executionName==null||!executionName.matches("[A-Za-z_][A-Za-z0-9_]*"))throw new IllegalArgumentException("OCCURRENCE_CAST_OR_MODEL_NAME_INVALID");
         if(members.stream().map(Player::actorType).distinct().count()!=members.size()||members.stream().map(Player::instance).distinct().count()!=members.size())throw new IllegalArgumentException("OCCURRENCE_ACTOR_OR_INSTANCE_AMBIGUOUS");
+        Set<String> included=scopeLeaves==null?null:includedElements(scopeLeaves);
         for(var member:members) {
             var actor=source.findActor(member.sourceActor()).orElseThrow(()->new IllegalArgumentException("OCCURRENCE_SOURCE_ACTOR_UNRESOLVED"));
             if(profile.roleSpecialization()&&RoleSpecialization.definitionOnly(source,actor))throw new IllegalArgumentException("MODEL_ONLY_ROLE_MUST_NOT_HAVE_RUNTIME_CAST");
@@ -55,22 +59,29 @@ public final class OccurrenceGoalModelExpander {
         var actors=new LinkedHashMap<String,Actor>();var traces=new TreeMap<String,Trace>();var cast=new ArrayList<ScenarioInstance>();
         var rows=members.stream().sorted(Comparator.comparing(Player::actorType)).toList();
         var bySource=new TreeMap<String,List<Player>>();rows.forEach(p->bySource.computeIfAbsent(p.sourceActor(),k->new ArrayList<>()).add(p));
-        for(var original:source.getActors())if(bySource.getOrDefault(original.name(),List.of()).isEmpty()
-                &&!(profile.roleSpecialization()&&RoleSpecialization.definitionOnly(source,original)))throw new IllegalArgumentException("OCCURRENCE_EXPANSION_MISSING_ACTOR:"+original.name());
-        var targets=source.getDependencies().stream().filter(d->bySource.get(d.dependee()).size()>1&&policies.get(d.dependum().id())!=Quantifier.SAME_PLAYER).toList();
+        for(var original:source.getActors()) {
+            boolean activeActor=included==null||original.elements().stream().anyMatch(e->included.contains(e.id()));
+            if(activeActor&&bySource.getOrDefault(original.name(),List.of()).isEmpty()
+                    &&!(profile.roleSpecialization()&&RoleSpecialization.definitionOnly(source,original)))throw new IllegalArgumentException("OCCURRENCE_EXPANSION_MISSING_ACTOR:"+original.name());
+        }
+        var activeDependencies=source.getDependencies().stream().filter(d->included==null||included.contains(d.dependum().id())).toList();
+        var targets=activeDependencies.stream().filter(d->bySource.get(d.dependee()).size()>1&&policies.get(d.dependum().id())!=Quantifier.SAME_PLAYER).toList();
         for(var dependency:targets) {
             if(!policies.containsKey(dependency.dependum().id()))throw new IllegalArgumentException("OCCURRENCE_EXPLICIT_QUANTIFIER_REQUIRED:"+dependency.dependum().id());
             if(!(source.findElement(dependency.dependerElmt()).orElse(null) instanceof Goal)||!(dependency.dependum() instanceof Goal))throw new IllegalArgumentException("OCCURRENCE_POPULATION_GOAL_DEPENDENCY_REQUIRED");
         }
         for(var player:rows) {
             var original=source.findActor(player.sourceActor()).orElseThrow();var elements=new ArrayList<IntentionalElement>();var refinements=new ArrayList<Refinement>();
-            for(var element:original.elements()) {String id=id(player,element.id());elements.add(copy(element,id));traces.put(id,new Trace(id,element.id(),player.sourceActor(),player.player(),player.role(),"SOURCE_ELEMENT"));}
-            for(var refinement:original.refinements()) {
-                if(refinement instanceof AndRefinement and)refinements.add(new AndRefinement(id(player,and.parent()),and.children().stream().map(c->id(player,c)).toList()));
-                else if(refinement instanceof OrRefinement or)refinements.add(new OrRefinement(id(player,or.parent()),id(player,or.child())));
-                else throw new IllegalArgumentException("OCCURRENCE_EXPANSION_REFINEMENT_UNSUPPORTED");
+            for(var element:original.elements())if(included==null||included.contains(element.id())) {String id=id(player,element.id());elements.add(copy(element,id));traces.put(id,new Trace(id,element.id(),player.sourceActor(),player.player(),player.role(),"SOURCE_ELEMENT"));}
+            for(var refinement:original.refinements())if(included==null||included.contains(refinement.parent())) {
+                if(refinement instanceof AndRefinement and) {
+                    var children=and.children().stream().filter(c->included==null||included.contains(c)).map(c->id(player,c)).toList();
+                    if(!children.isEmpty())refinements.add(new AndRefinement(id(player,and.parent()),children));
+                }else if(refinement instanceof OrRefinement or) {
+                    if(included==null||included.contains(or.child()))refinements.add(new OrRefinement(id(player,or.parent()),id(player,or.child())));
+                }else throw new IllegalArgumentException("OCCURRENCE_EXPANSION_REFINEMENT_UNSUPPORTED");
             }
-            for(var view:views.values())if(source.ownerOf(view.target()).orElseThrow().equals(original.name())) {
+            for(var view:views.values())if((included==null||included.contains(view.target()))&&source.ownerOf(view.target()).orElseThrow().equals(original.name())) {
                 var providers=rows.stream().filter(p->p.sourceActor().equals(source.ownerOf(view.source()).orElseThrow())&&p.player().equals(player.player())).toList();
                 if(providers.size()!=1)throw new IllegalArgumentException("GOAL_VIEW_SAME_SCOPE_PLAYER_NOT_UNIQUE:"+view.target());
                 expandView(view,player,providers.getFirst(),elements,refinements,traces);
@@ -84,11 +95,11 @@ public final class OccurrenceGoalModelExpander {
                 if(policies.get(dependency.dependum().id())==Quantifier.ALL)refinements.add(new AndRefinement(id(player,dependency.dependerElmt()),children));
                 else children.forEach(child->refinements.add(new OrRefinement(id(player,dependency.dependerElmt()),child)));
             }
-            var resources=new ArrayList<>(original.neededBys().stream().map(n->new NeededBy(id(player,n.resource()),id(player,n.task()))).toList());
-            for(var view:views.values())if(source.ownerOf(view.target()).orElseThrow().equals(original.name())) {
+            var resources=new ArrayList<>(original.neededBys().stream().filter(n->included==null||included.contains(n.task())&&included.contains(n.resource())).map(n->new NeededBy(id(player,n.resource()),id(player,n.task()))).toList());
+            for(var view:views.values())if((included==null||included.contains(view.target()))&&source.ownerOf(view.target()).orElseThrow().equals(original.name())) {
                 var provider=source.findActor(source.ownerOf(view.source()).orElseThrow()).orElseThrow();
-                var included=descendants(provider,view.source());
-                for(var needed:provider.neededBys())if(included.contains(needed.task())) {
+                var viewIncluded=descendants(provider,view.source());
+                for(var needed:provider.neededBys())if(viewIncluded.contains(needed.task())) {
                     String resource=viewId(player,view,needed.resource());
                     if(elements.stream().noneMatch(e->e.id().equals(resource))) {
                         elements.add(copy(source.findElement(needed.resource()).orElseThrow(),resource));
@@ -108,6 +119,7 @@ public final class OccurrenceGoalModelExpander {
                     continue;
                 }
                 var target=bySource.getOrDefault(relation.target(),List.of());
+                if(included!=null&&target.isEmpty()&&source.findActor(relation.target()).map(a->a.elements().stream().noneMatch(e->included.contains(e.id()))).orElse(false))continue;
                 if(relation.kind()==AssocKind.PARTICIPATES_IN) {
                     var targetActor=source.findActor(relation.target()).orElseThrow();
                     if((original instanceof Agent||physicalViews.contains(original.name()))&&targetActor instanceof Role) {
@@ -131,7 +143,7 @@ public final class OccurrenceGoalModelExpander {
             actors.put(player.actorType(),actor);cast.add(new ScenarioInstance(player.instance(),player.actorType()));
         }
         var expanded=new GoalModel(executionName);actors.values().forEach(expanded::addActor);
-        for(var dependency:source.getDependencies()) {
+        for(var dependency:activeDependencies) {
             var dependers=bySource.get(dependency.depender());
             boolean same=policies.get(dependency.dependum().id())==Quantifier.SAME_PLAYER;
             if(!same&&dependers.size()!=1)throw new IllegalArgumentException("OCCURRENCE_EXPANSION_DEPENDER_AMBIGUOUS");
@@ -151,6 +163,22 @@ public final class OccurrenceGoalModelExpander {
         var owned=new OwnedGoalModel(expanded,profile);assertUnchanged();
         String hash=SemanticJson.hash(List.of(VERSION,canonicalHash,policies,SemanticJson.tree(views),physicalViews.stream().sorted().toList(),owned.hash(),SemanticJson.tree(cast),SemanticJson.tree(traces)));
         return new Expansion(owned,cast,traces,hash);
+    }
+    private Set<String> includedElements(Set<String> scopeLeaves) {
+        var included=new LinkedHashSet<>(scopeLeaves);boolean changed=true;
+        while(changed) {
+            changed=false;
+            for(var actor:source.getActors()) {
+                for(var refinement:actor.refinements())if(GoalViewRealizations.children(refinement).stream().anyMatch(included::contains)&&included.add(refinement.parent()))changed=true;
+                for(var needed:actor.neededBys())if(included.contains(needed.task())&&included.add(needed.resource()))changed=true;
+            }
+            for(var view:views.values())if(included.contains(view.source())&&included.add(view.target()))changed=true;
+            for(var dependency:source.getDependencies())if(included.contains(dependency.dependeeElmt())) {
+                if(included.add(dependency.dependerElmt()))changed=true;
+                if(included.add(dependency.dependum().id()))changed=true;
+            }
+        }
+        return Collections.unmodifiableSet(included);
     }
     private Set<String> descendants(Actor actor,String root) {
         var found=new LinkedHashSet<String>();var work=new ArrayDeque<String>();work.add(root);

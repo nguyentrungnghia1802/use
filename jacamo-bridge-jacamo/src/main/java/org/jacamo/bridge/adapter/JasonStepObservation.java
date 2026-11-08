@@ -200,7 +200,7 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
         bindings.put("schemeArtifact",scheme==null?Map.of():CartagoArgumentObservation.value(scheme,environment));
         bindings.put("artifact",artifact==null?Map.of():CartagoArgumentObservation.value(artifact,environment));
         boolean beforeCreation=capture.allowMissingArtifactAtEntry()&&step.phase.equals("ENABLED");
-        String unavailable=!capture.schemeVariable().isEmpty()&&schemeId.isBlank()?"EXACT_SCHEME_PERCEPT_REFERENCE_UNAVAILABLE":!capture.artifactVariable().isEmpty()&&artifactId.isBlank()&&!beforeCreation?"EXACT_ARTIFACT_REFERENCE_UNAVAILABLE":"";
+        String unavailable=!capture.schemeVariable().isEmpty()&&schemeId.isBlank()&&!beforeCreation?"EXACT_SCHEME_PERCEPT_REFERENCE_UNAVAILABLE":!capture.artifactVariable().isEmpty()&&artifactId.isBlank()&&!beforeCreation?"EXACT_ARTIFACT_REFERENCE_UNAVAILABLE":"";
         sink.accept(new VerificationObservation(VerificationObservation.Kind.JASON_STEP,step.token,unavailable.isBlank()?Completeness.COMPLETE:Completeness.PARTIAL,unavailable,
                 VerificationObservation.SourceTime.unavailable("STEP_CALLBACK_NOT_A_QUALIFIED_NPL_CLOCK"),Map.of("agentIdentity",agent.canonical(),"goalInvocation",step.episode.token,"stepInvocation",step.token,
                 "sourceStepId",step.site.task(),"phase",step.phase,"artifactIdentity",artifactId,"schemeIdentity",schemeId,"operationInvocation",step.operation,"bindings",bindings)));
@@ -213,6 +213,7 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
     }
     private ArtifactId scheme(Term term) {
         if(term==null||!term.isGround())return null;var arch=jaca.CAgentArch.getCartagoAgArch(ts);if(arch==null)return null;
+        if(arch.getJavaLib().termToObject(term) instanceof ArtifactId id&&"ora4mas.nopl.SchemeBoard".equals(id.getArtifactType()))return id;
         var candidates=new LinkedHashMap<String,ArtifactId>();
         for(var belief:ts.getAg().getBB())if(!belief.isRule()&&belief.getFunctor().equals("goalArgument")&&belief.getArity()==4&&belief.getTerm(0).equals(term)) {
             var annotation=belief.getAnnot("artifact_id");

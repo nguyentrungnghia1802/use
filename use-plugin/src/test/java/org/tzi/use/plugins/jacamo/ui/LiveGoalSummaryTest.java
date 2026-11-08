@@ -138,7 +138,7 @@ class LiveGoalSummaryTest {
    assertTrue(selectedLabel.getText().contains("Selected Task: Observer::Work"));
    assertEquals(4,instances.getRowCount());
    assertEquals("alice",instances.getValueAt(0,0));assertEquals("Complete",instances.getValueAt(0,2));
-   assertEquals("bob",instances.getValueAt(1,0));assertEquals("Failed",instances.getValueAt(1,2));
+   assertEquals("bob",instances.getValueAt(1,0));assertEquals("Incomplete",instances.getValueAt(1,2));
    assertEquals("carol",instances.getValueAt(2,0));assertEquals("Not assigned",instances.getValueAt(2,2));
    assertEquals("dave",instances.getValueAt(3,0));assertEquals("Unknown",instances.getValueAt(3,2),"NOT_ASSIGNED without SOURCE_NOT_ASSIGNED evidence must stay Unknown");
   });

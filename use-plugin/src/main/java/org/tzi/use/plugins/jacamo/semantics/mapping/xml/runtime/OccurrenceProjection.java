@@ -42,63 +42,79 @@ public final class OccurrenceProjection {
         }
         var compiled=new ArrayList<Definition>();var sections=specification.root().child("runtime").children("occurrences");
         if(sections.size()>1)throw specification.root().location().error("OCCURRENCE_SECTION_DUPLICATE");
-        if(!sections.isEmpty())for(Node scope:sections.getFirst().children("scope")) {
-            var columns=columns(specification,scope.attr("tableRef"));var keys=words(scope.attr("keyFields"));
-            if(keys.isEmpty()||keys.size()>16||new HashSet<>(keys).size()!=keys.size()||!columns.containsAll(keys)||!keys.contains(scope.attr("anchorColumn"))||!columns.contains(scope.attr("contextColumn")))throw scope.location().error("OCCURRENCE_SCOPE_KEY_INVALID");
-            var selected=new HashSet<String>();var actors=new ArrayList<ActorRule>();
-            for(Node actor:scope.children("actor")) {
-                Node binding=actorBindings.get(actor.attr("actor"));var fields=columns(specification,actor.attr("tableRef"));
-                if(binding==null||!selected.add(actor.attr("actor"))||!fields.containsAll(List.of(actor.attr("scopeColumn"),actor.attr("playerColumn")))||!keys.contains(actor.attr("scopeKey"))
-                        ||!Set.of("ONE","MANY_NONEMPTY").contains(actor.attr("cardinality"))||!actor.optional("completeColumn").isEmpty()&&!columns.contains(actor.attr("completeColumn")))throw actor.location().error("OCCURRENCE_ACTOR_PLAN_INVALID");
-                MClass role=null;
-                switch(actor.attr("kind")) {
-                    case "ROLE_OCCURRENCE" -> {
-                        if(binding.optional("roleBindingRef").isEmpty())throw actor.location().error("OCCURRENCE_ROLE_BINDING_REQUIRED");
-                        if(actor.optional("roleLookup").isEmpty()) {
-                            if(!fields.contains(actor.optional("roleColumn")))throw actor.location().error("OCCURRENCE_ROLE_BINDING_REQUIRED");
-                        }else if(!actor.attr("roleLookup").equals("EXACT_NATIVE_ENACTMENT")||!actor.optional("roleColumn").isEmpty())throw actor.location().error("UNSUPPORTED:OCCURRENCE_ROLE_LOOKUP_POLICY");
-                        Node roleBinding=specification.requireId(binding.attr("roleBindingRef"));
-                        role=model.getClass(roleBinding.attr("target"));
-                        if(!roleBinding.name().equals("static")||!roleBinding.attr("kind").equals("ROLE")||role==null||!role.isSubClassifierOf(model.getClass("RoleOccurrence")))throw actor.location().error("OCCURRENCE_EXACT_ROLE_TYPE_REQUIRED");
+        var leaves=elements.values().stream().filter(e->e.attr("derived").equals("false")).map(e->e.attr("target")).collect(java.util.stream.Collectors.toSet());
+        var allSelectedActors=new HashSet<String>();var allAssignedLeaves=new HashSet<String>();
+        if(!sections.isEmpty()) {
+            for(Node scope:sections.getFirst().children("scope")) {
+                var columns=columns(specification,scope.attr("tableRef"));var keys=words(scope.attr("keyFields"));
+                if(keys.isEmpty()||keys.size()>16||new HashSet<>(keys).size()!=keys.size()||!columns.containsAll(keys)||!keys.contains(scope.attr("anchorColumn"))||!columns.contains(scope.attr("contextColumn")))throw scope.location().error("OCCURRENCE_SCOPE_KEY_INVALID");
+                var selected=new HashSet<String>();var actors=new ArrayList<ActorRule>();
+                for(Node actor:scope.children("actor")) {
+                    Node binding=actorBindings.get(actor.attr("actor"));var fields=columns(specification,actor.attr("tableRef"));
+                    if(binding==null||!selected.add(actor.attr("actor"))||!fields.containsAll(List.of(actor.attr("scopeColumn"),actor.attr("playerColumn")))||!keys.contains(actor.attr("scopeKey"))
+                            ||!Set.of("ONE","MANY_NONEMPTY").contains(actor.attr("cardinality"))||!actor.optional("completeColumn").isEmpty()&&!columns.contains(actor.attr("completeColumn")))throw actor.location().error("OCCURRENCE_ACTOR_PLAN_INVALID");
+                    MClass role=null;
+                    switch(actor.attr("kind")) {
+                        case "ROLE_OCCURRENCE" -> {
+                            if(binding.optional("roleBindingRef").isEmpty())throw actor.location().error("OCCURRENCE_ROLE_BINDING_REQUIRED");
+                            if(actor.optional("roleLookup").isEmpty()) {
+                                if(!fields.contains(actor.optional("roleColumn")))throw actor.location().error("OCCURRENCE_ROLE_BINDING_REQUIRED");
+                            }else if(!actor.attr("roleLookup").equals("EXACT_NATIVE_ENACTMENT")||!actor.optional("roleColumn").isEmpty())throw actor.location().error("UNSUPPORTED:OCCURRENCE_ROLE_LOOKUP_POLICY");
+                            Node roleBinding=specification.requireId(binding.attr("roleBindingRef"));
+                            role=model.getClass(roleBinding.attr("target"));
+                            if(!roleBinding.name().equals("static")||!roleBinding.attr("kind").equals("ROLE")||role==null||!role.isSubClassifierOf(model.getClass("RoleOccurrence")))throw actor.location().error("OCCURRENCE_EXACT_ROLE_TYPE_REQUIRED");
+                        }
+                        case "CONTEXT_VIEWPOINT" -> {if(!actor.optional("roleColumn").isEmpty()||!actor.optional("roleLookup").isEmpty()||!actor.attr("cardinality").equals("ONE"))throw actor.location().error("OCCURRENCE_CONTEXT_VIEWPOINT_INVALID");}
+                        case "RUNTIME_AGENT" -> {
+                            if(goals==null||!(goals.findActor(actor.attr("actor")).orElseThrow() instanceof org.vnu.sme.goal.dsl.istar.mm.Agent)||!binding.optional("roleBindingRef").isBlank()||!actor.optional("roleColumn").isBlank()||!actor.optional("roleLookup").isBlank())throw actor.location().error("OCCURRENCE_RUNTIME_AGENT_REQUIRED");
+                        }
+                        case "PHYSICAL_PLAYER_VIEW" -> {
+                            if(goals==null||goals.findActor(actor.attr("actor")).isEmpty()||!binding.optional("roleBindingRef").isBlank()||!actor.optional("roleColumn").isBlank()||!actor.optional("roleLookup").isBlank())throw actor.location().error("OCCURRENCE_PHYSICAL_PLAYER_VIEW_INVALID");
+                        }
+                        default -> throw actor.location().error("UNSUPPORTED:OCCURRENCE_ACTOR_KIND");
                     }
-                    case "CONTEXT_VIEWPOINT" -> {if(!actor.optional("roleColumn").isEmpty()||!actor.optional("roleLookup").isEmpty()||!actor.attr("cardinality").equals("ONE"))throw actor.location().error("OCCURRENCE_CONTEXT_VIEWPOINT_INVALID");}
-                    case "RUNTIME_AGENT" -> {
-                        if(goals==null||!(goals.findActor(actor.attr("actor")).orElseThrow() instanceof org.vnu.sme.goal.dsl.istar.mm.Agent)||!binding.optional("roleBindingRef").isBlank()||!actor.optional("roleColumn").isBlank()||!actor.optional("roleLookup").isBlank())throw actor.location().error("OCCURRENCE_RUNTIME_AGENT_REQUIRED");
-                    }
-                    case "PHYSICAL_PLAYER_VIEW" -> {
-                        if(goals==null||goals.findActor(actor.attr("actor")).isEmpty()||!binding.optional("roleBindingRef").isBlank()||!actor.optional("roleColumn").isBlank()||!actor.optional("roleLookup").isBlank())throw actor.location().error("OCCURRENCE_PHYSICAL_PLAYER_VIEW_INVALID");
-                    }
-                    default -> throw actor.location().error("UNSUPPORTED:OCCURRENCE_ACTOR_KIND");
+                    actors.add(new ActorRule(actor,role));
                 }
-                actors.add(new ActorRule(actor,role));
+                if(selected.isEmpty())throw scope.location().error("OCCURRENCE_COMPLETE_ACTOR_PLAN_REQUIRED");
+                allSelectedActors.addAll(selected);
+                var assigned=new HashSet<String>();
+                for(Node self:scope.children("self")) {
+                    Node element=elements.get(self.attr("target"));
+                    if(element==null||!leaves.contains(self.attr("target"))||!selected.contains(element.attr("actor"))||!assigned.add(self.attr("target"))||model.getClass(element.attr("self"))==null)throw self.location().error("OCCURRENCE_SELF_TARGET_INVALID");
+                    if(self.attr("origin").equals("COLUMN")){if(!columns.contains(self.optional("column")))throw self.location().error("OCCURRENCE_SELF_COLUMN_REQUIRED");}
+                    else if(!Set.of("ROLE","PLAYER","CONTEXT").contains(self.attr("origin"))||!self.optional("column").isEmpty())throw self.location().error("UNSUPPORTED:OCCURRENCE_SELF_ORIGIN");
+                }
+                if(assigned.isEmpty())throw scope.location().error("OCCURRENCE_LEAF_SELF_COVERAGE");
+                allAssignedLeaves.addAll(assigned);
+                var resources=new HashSet<String>();
+                if(goals==null&&!specification.root().children("models").isEmpty())throw scope.location().error("AUTHORED_CANONICAL_GOAL_MODEL_REQUIRED");
+                var originalResources=goals==null
+                    ?specification.root().child("istar").children("actor").stream().flatMap(a->a.children("resource").stream()).map(r->r.attr("name")).collect(java.util.stream.Collectors.toSet())
+                    :goals.getActors().stream().flatMap(a->a.elements().stream()).filter(org.vnu.sme.goal.dsl.istar.mm.Resource.class::isInstance).map(e->e.id()).collect(java.util.stream.Collectors.toSet());
+                for(Node resource:scope.children("resource")) {
+                    MClass type=model.getClass(resource.attr("type"));
+                    if(!resources.add(resource.attr("target"))||!originalResources.contains(resource.attr("target"))||!columns.contains(resource.attr("column"))||type==null||!(type.isSubClassifierOf(model.getClass("DomainEntity"))||type.isSubClassifierOf(model.getClass("OrgContext"))))throw resource.location().error("UNSUPPORTED:OCCURRENCE_NATIVE_RESOURCE_BINDING");
+                }
+                for(Node observer:scope.children("observer")){
+                    Node project=specification.requireId(observer.attr("projectRef"));
+                    if(!project.name().equals("project")||!columns.contains(observer.attr("subjectColumn")))throw observer.location().error("EXECUTION_OBSERVER_BINDING_INVALID");
+                    Node view=specification.requireId(project.attr("viewRef"));
+                    if(!view.attr("category").equals("CLASS")||model.getClass(view.attr("name"))==null)throw observer.location().error("EXECUTION_OBSERVER_CLASS_REQUIRED");
+                }
+                compiled.add(new Definition(scope,List.copyOf(actors),scope.children("self"),scope.children("resource")));
             }
-            if(!selected.equals(actorBindings.keySet()))throw scope.location().error("OCCURRENCE_COMPLETE_ACTOR_PLAN_REQUIRED");
-            var leaves=elements.values().stream().filter(e->e.attr("derived").equals("false")).map(e->e.attr("target")).collect(java.util.stream.Collectors.toSet());var assigned=new HashSet<String>();
-            for(Node self:scope.children("self")) {
-                Node element=elements.get(self.attr("target"));
-                if(element==null||!leaves.contains(self.attr("target"))||!assigned.add(self.attr("target"))||model.getClass(element.attr("self"))==null)throw self.location().error("OCCURRENCE_SELF_TARGET_INVALID");
-                if(self.attr("origin").equals("COLUMN")){if(!columns.contains(self.optional("column")))throw self.location().error("OCCURRENCE_SELF_COLUMN_REQUIRED");}
-                else if(!Set.of("ROLE","PLAYER","CONTEXT").contains(self.attr("origin"))||!self.optional("column").isEmpty())throw self.location().error("UNSUPPORTED:OCCURRENCE_SELF_ORIGIN");
+            if(!compiled.isEmpty()) {
+                Node lastScope=compiled.getLast().node();
+                if(!allSelectedActors.equals(actorBindings.keySet()))throw lastScope.location().error("OCCURRENCE_COMPLETE_ACTOR_PLAN_REQUIRED");
+                if(!allAssignedLeaves.equals(leaves))throw lastScope.location().error("OCCURRENCE_LEAF_SELF_COVERAGE");
             }
-            if(!assigned.equals(leaves))throw scope.location().error("OCCURRENCE_LEAF_SELF_COVERAGE");
-            var resources=new HashSet<String>();
-            if(goals==null&&!specification.root().children("models").isEmpty())throw scope.location().error("AUTHORED_CANONICAL_GOAL_MODEL_REQUIRED");
-            var originalResources=goals==null
-                ?specification.root().child("istar").children("actor").stream().flatMap(a->a.children("resource").stream()).map(r->r.attr("name")).collect(java.util.stream.Collectors.toSet())
-                :goals.getActors().stream().flatMap(a->a.elements().stream()).filter(org.vnu.sme.goal.dsl.istar.mm.Resource.class::isInstance).map(e->e.id()).collect(java.util.stream.Collectors.toSet());
-            for(Node resource:scope.children("resource")) {
-                MClass type=model.getClass(resource.attr("type"));
-                if(!resources.add(resource.attr("target"))||!originalResources.contains(resource.attr("target"))||!columns.contains(resource.attr("column"))||type==null||!(type.isSubClassifierOf(model.getClass("DomainEntity"))||type.isSubClassifierOf(model.getClass("OrgContext"))))throw resource.location().error("UNSUPPORTED:OCCURRENCE_NATIVE_RESOURCE_BINDING");
-            }
-            for(Node observer:scope.children("observer")){
-                Node project=specification.requireId(observer.attr("projectRef"));
-                if(!project.name().equals("project")||!columns.contains(observer.attr("subjectColumn")))throw observer.location().error("EXECUTION_OBSERVER_BINDING_INVALID");
-                Node view=specification.requireId(project.attr("viewRef"));
-                if(!view.attr("category").equals("CLASS")||model.getClass(view.attr("name"))==null)throw observer.location().error("EXECUTION_OBSERVER_CLASS_REQUIRED");
-            }
-            compiled.add(new Definition(scope,List.copyOf(actors),scope.children("self"),scope.children("resource")));
         }
         if(compiled.size()>64)throw specification.root().location().error("OCCURRENCE_DEFINITION_CAPACITY");definitions=List.copyOf(compiled);
+    }
+    public Set<String> scopeLeaves(String definitionId) {
+        if(definitions.size()<=1)return null;
+        return definitions.stream().filter(d->d.node().attr("id").equals(definitionId)).findFirst()
+            .map(d->d.selves().stream().map(s->s.attr("target")).collect(java.util.stream.Collectors.toUnmodifiableSet())).orElse(null);
     }
     public static String epoch(String run,long generation,String revision) {
         if(run==null||run.isBlank()||generation<0||revision==null||revision.isBlank())throw new IllegalArgumentException("OCCURRENCE_EPOCH_REQUIRED");
@@ -124,6 +140,7 @@ public final class OccurrenceProjection {
             for(var row:source.rows()) {
                 if(++work>1_000_000)throw node.location().error("OCCURRENCE_WORK_CAPACITY");
                 String alias=text(row.values().get(node.attr("anchorColumn")));MObject anchor=port.find(alias);
+                if(anchor!=null&&anchor.cls().isSubClassifierOf(model.getClass("AtomicAgent")))anchor=agentContext(port,anchor,epoch,cut);
                 if(anchor==null){outcomes.add(new M0RuleExecutor.Outcome(node.attr("id"),"INCOMPLETE","",null,"OCCURRENCE_ANCHOR_UNAVAILABLE"));continue;}
                 var issues=new ArrayList<String>();var members=new ArrayList<Member>();var key=new TreeMap<String,String>();
                 for(String field:words(node.attr("keyFields"))){String value=text(row.values().get(field));if(value.isBlank())issues.add("SCOPE_KEY_UNAVAILABLE:"+field);key.put(field,value);}
@@ -131,6 +148,7 @@ public final class OccurrenceProjection {
                 if(!seen.add(id))throw node.location().error("OCCURRENCE_SCOPE_IDENTITY_AMBIGUOUS");
                 if(row.quality()!=Completeness.COMPLETE||!current(port,anchor,epoch,cut))issues.add("CURRENT_SCOPE_ANCHOR_UNAVAILABLE");
                 MObject context=port.find(text(row.values().get(node.attr("contextColumn"))));
+                if(context!=null&&context.cls().isSubClassifierOf(model.getClass("AtomicAgent")))context=agentContext(port,context,epoch,cut);
                 if(context==null||!context.cls().isSubClassifierOf(model.getClass("OrgContext"))||!current(port,context,epoch,cut))issues.add("EXACT_SCOPE_CONTEXT_UNAVAILABLE");
                 for(ActorRule actor:definition.actors()) {
                     Node rule=actor.node();var candidates=table(tables,rule.attr("tableRef"));String selected=key.get(rule.attr("scopeKey"));int count=0;
@@ -161,8 +179,8 @@ public final class OccurrenceProjection {
                         }
                         var selves=new TreeMap<String,String>();
                         for(Node self:definition.selves())if(elements.get(self.attr("target")).attr("actor").equals(rule.attr("actor"))) {
-                            MObject value=switch(self.attr("origin")){case "ROLE"->role;case "PLAYER"->player;case "CONTEXT"->context;case "COLUMN"->port.find(text(row.values().get(self.attr("column"))));default->throw self.location().error("UNSUPPORTED:SELF_ORIGIN");};
                             MClass expected=model.getClass(elements.get(self.attr("target")).attr("self"));
+                            MObject value=switch(self.attr("origin")){case "ROLE"->role;case "PLAYER"->expected!=null&&expected.isSubClassifierOf(model.getClass("OrgContext"))&&!player.cls().isSubClassifierOf(expected)?agentContext(port,player,epoch,cut):player;case "CONTEXT"->context;case "COLUMN"->port.find(text(row.values().get(self.attr("column"))));default->throw self.location().error("UNSUPPORTED:SELF_ORIGIN");};
                             if(value==null||!value.cls().isSubClassifierOf(expected)||!current(port,value,epoch,cut)) {
                                 if(!self.optional("optional").equals("true"))issues.add("EXACT_NATIVE_SELF_UNAVAILABLE:"+self.attr("target"));
                             }else selves.put(self.attr("target"),primary(port,value));

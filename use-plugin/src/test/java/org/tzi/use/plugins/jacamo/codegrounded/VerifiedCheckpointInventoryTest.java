@@ -104,4 +104,49 @@ class VerifiedCheckpointInventoryTest {
         assertEquals("FAIL",VerifiedCheckpointInventory.evaluatePrefix(current,List.of(new RuntimeHistoryPage.Entry(4,"OPERATION_PRE","interval",operation.result(),true)),4,5).get(VerifiedCheckpointProtocol.REQUIRED_CHECK).truth());
         assertEquals("PASS",VerifiedCheckpointInventory.evaluatePrefix(current,List.of(new RuntimeHistoryPage.Entry(5,"CHECKPOINT_AUDIT","interval",operation.result(),true)),5,6).get(VerifiedCheckpointProtocol.REQUIRED_CHECK).truth(),"Audit repeats evidence without re-admitting that invocation");
     }
+    @Test void supportingTaskFailureUnderSelectedRootStaysSupportingWhileSelectedRootViolationFailsInventory() {
+        var inventory=Map.<String,Object>of(
+                "version","NATIVE_CONTRACT_INVENTORY/1.0",
+                "requiredInvariants",List.of("NATIVE:Domain::Required"),
+                "selectedIntentionalElements",List.of("O_root","do_auction"),
+                "scopeSelectedIntentionalElements",Map.of("initial-auction-setup",List.of("do_auction"),"auction-execution",List.of("O_root")));
+        var supportingPost=new SemanticConstraintResult("TASK:P_bid_t2:post:1","TASK_POST","AuctionArtifact","a1","source","self.running",SemanticVerdict.SKIPPED,"","SOURCE_FAILURE_WORLD_POST_UNAVAILABLE",1,"inv-1",Map.of("targetTaskId","P_bid_t2"));
+        var occurrences=Map.<String,Object>of(
+                "O_root",Map.of("sourceElement","O_root","aggregateStatus","FULFILLED","quality","KNOWN_DERIVED"),
+                "P_bid_t2_alice",Map.of("sourceElement","P_bid_t2","aggregateStatus","PENDING","executionStatus","FAILED","executionQuality","KNOWN_HISTORY"),
+                "C_bid_alice",Map.of("sourceElement","C_bid","aggregateStatus","PENDING","executionStatus","VIOLATED","executionQuality","KNOWN_DERIVED_HISTORY"),
+                "P_bid_alice",Map.of("sourceElement","P_bid","aggregateStatus","PENDING","executionStatus","VIOLATED","executionQuality","KNOWN_DERIVED_HISTORY"));
+        var setupOccurrences=Map.<String,Object>of(
+                "do_auction",Map.of("sourceElement","do_auction","aggregateStatus","FULFILLED","quality","KNOWN_DERIVED"));
+        var observation=Map.<String,Object>of(
+                "requirementInventory",inventory,
+                "originalEngine",Map.of("evaluated","PINNED_NATIVE_CUT","historyQuality","OBSERVED_PREFIX","contexts",List.of(
+                        Map.of("context","ctx-setup","scopeDefinition","initial-auction-setup","scopeView",Map.of("definition","initial-auction-setup","bindings",Map.of("setup","setup-1")),"occurrences",setupOccurrences),
+                        Map.of("context","ctx-auction","scopeDefinition","auction-execution","scopeView",Map.of("definition","auction-execution","bindings",Map.of("scheme","sch-1")),"occurrences",occurrences))));
+        var localFailureCut=cut(List.of(invariant(VerificationOutcome.PASS)),List.of(supportingPost),observation);
+        var evaluated=VerifiedCheckpointInventory.evaluate(localFailureCut);
+        assertEquals("PASS",evaluated.get(VerifiedCheckpointProtocol.REQUIRED_CHECK).truth(),"Local supporting task failure under ANY must not fail whole-MAS inventory when selected roots pass");
+        assertEquals("NOT_APPLICABLE",evaluated.get("semantic:TASK:P_bid_t2:post:1:inv-1").applicability());
+        assertEquals("NOT_APPLICABLE",evaluated.get("original:ctx-auction:P_bid_t2_alice").applicability());
+        assertEquals("NOT_APPLICABLE",evaluated.get("original:ctx-auction:C_bid_alice").applicability());
+        var settled=VerifiedCheckpointInventory.settled(localFailureCut,evaluated,List.of(
+                VerifiedCheckpointProtocol.SETTLED_CHECK_PREFIX+"source:setup-1",
+                VerifiedCheckpointProtocol.SETTLED_CHECK_PREFIX+"source:sch-1"));
+        assertEquals("PASS",settled.get(VerifiedCheckpointProtocol.SETTLED_CHECK_PREFIX+"source:setup-1").truth());
+        assertEquals("PASS",settled.get(VerifiedCheckpointProtocol.SETTLED_CHECK_PREFIX+"source:sch-1").truth());
+        assertEquals("PASS",settled.get(VerifiedCheckpointProtocol.REQUIRED_CHECK).truth());
+
+        var violatedRootOccurrences=new TreeMap<String,Object>(occurrences);
+        violatedRootOccurrences.put("O_root",Map.of("sourceElement","O_root","aggregateStatus","PENDING","executionStatus","VIOLATED","executionQuality","KNOWN_DERIVED_HISTORY","executionEvidence",Map.of("P_bid_t2",Map.of("kind","TASK_FAILED","policy","CERTIFIED_TERMINAL_EXECUTION/1.0","invocation","inv-1"))));
+        var rootViolatedObservation=Map.<String,Object>of(
+                "requirementInventory",inventory,
+                "originalEngine",Map.of("evaluated","PINNED_NATIVE_CUT","historyQuality","OBSERVED_PREFIX","contexts",List.of(
+                        Map.of("context","ctx-auction","scopeDefinition","auction-execution","scopeView",Map.of("definition","auction-execution","bindings",Map.of("scheme","sch-1")),"occurrences",violatedRootOccurrences))));
+        var rootViolatedCut=cut(List.of(invariant(VerificationOutcome.PASS)),List.of(supportingPost),rootViolatedObservation);
+        var rootEvaluated=VerifiedCheckpointInventory.evaluate(rootViolatedCut);
+        assertEquals("APPLICABLE",rootEvaluated.get("original:ctx-auction:O_root").applicability());
+        assertEquals("FAIL",rootEvaluated.get(VerifiedCheckpointProtocol.REQUIRED_CHECK).truth());
+        var rootSettled=VerifiedCheckpointInventory.settled(rootViolatedCut,rootEvaluated,List.of(VerifiedCheckpointProtocol.SETTLED_CHECK_PREFIX+"source:sch-1"));
+        assertEquals("FAIL",rootSettled.get(VerifiedCheckpointProtocol.SETTLED_CHECK_PREFIX+"source:sch-1").truth());
+    }
 }

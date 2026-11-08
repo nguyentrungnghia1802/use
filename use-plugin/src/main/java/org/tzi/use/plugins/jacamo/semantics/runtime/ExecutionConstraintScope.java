@@ -33,6 +33,8 @@ public final class ExecutionConstraintScope {
   }}
   var issues=new ArrayList<String>();
   var specification=program.xmlPlan().inputs().specification();
+  var allScopes=specification.root().child("runtime").children("occurrences").stream().flatMap(o->o.children("scope").stream()).toList();
+  boolean multiScope=allScopes.size()>1;
   var declaration=specification.requireId(scope.definition());
   var table=specification.requireId(declaration.attr("tableRef"));var columns=RuntimeTables.outputColumns(table);
   var anchor=engine.objectForSemanticId(scope.anchor());String epoch=anchor==null?"":engine.metadata(anchor,"xml:occurrence:epoch");
@@ -42,7 +44,7 @@ public final class ExecutionConstraintScope {
   // Project/workspace viewpoints have no domain resource slot. Their population
   // is the exact set of mapped objects whose admitted table joins reach this
   // physical context identity, not every object in the MSystem.
-  if(!domainBound&&anchor!=null){
+  if(!domainBound&&!multiScope&&anchor!=null){
    var identities=new HashSet<String>();
    for(String contextId:new TreeSet<>(List.of(scope.anchor(),scope.context()))){
     var owner=engine.objectForSemanticId(contextId);if(owner==null)continue;
@@ -69,15 +71,19 @@ public final class ExecutionConstraintScope {
     entities.put(object.cls().name()+":"+object.name(),Map.of("identity",engine.metadata(object,"semanticId"),"attributes",attributes));
    }
   }
-  return Map.of("domainBound",domainBound,"version","BOUND_EXECUTION_VIEW/2.0","entities",entities,"owners",owners,"participation",participants,"bindings",scope.bindings(),"definition",scope.definition(),"complete",scope.complete()&&issues.isEmpty(),"unavailable",issues);
+  var result=new TreeMap<String,Object>(Map.of("domainBound",domainBound,"version","BOUND_EXECUTION_VIEW/2.0","entities",entities,"owners",owners,"participation",participants,"bindings",scope.bindings(),"definition",scope.definition(),"complete",scope.complete()&&issues.isEmpty(),"unavailable",issues));
+  if(multiScope)result.put("multiScope",Boolean.TRUE);
+  return Map.copyOf(result);
  }
  public static List<SemanticInvariantEvaluator.Prepared> prepare(ExternalOclConstraintService.PreparedEvaluation nativeChecks,Map<String,Object> view){
   var owners=CanonicalJson.object(view.get("owners"));var result=new ArrayList<SemanticInvariantEvaluator.Prepared>();
+  var ownedTypes=owners.values().stream().map(CanonicalJson::object).map(o->Objects.toString(o.get("type"),"")).collect(java.util.stream.Collectors.toSet());
   for(var invariant:nativeChecks.invariants()){
    var original=invariant.scoped();
    if(original==null){result.add(new SemanticInvariantEvaluator.Prepared(invariant.id(),invariant.context(),invariant.body()==null?"":invariant.body().toString(),"self",invariant.body(),List.of(),false,false,false,"UNSUPPORTED:EXECUTION_NATIVE_COVERAGE_BINDING_REQUIRED",Map.of()));continue;}
    boolean qualified=Boolean.TRUE.equals(view.get("complete"));
    var bodies=original.bodies().stream().filter(b->owners.containsKey(b.object())).toList();
+   if(Boolean.TRUE.equals(view.get("multiScope"))&&qualified&&bodies.isEmpty()&&!ownedTypes.contains(original.context()))continue;
    boolean provedGloballyEmpty=original.complete()&&original.bodies().isEmpty();
    String missing=!original.unavailable().isBlank()?original.unavailable():bodies.isEmpty()&&!provedGloballyEmpty?"EXECUTION_CONSTRAINT_OWNER_UNAVAILABLE":"";
    var witness=new TreeMap<String,String>(original.witness());witness.put("scopePolicy","EXACT_BOUND_OWNER_POPULATION/1.0");

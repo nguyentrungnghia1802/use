@@ -76,9 +76,13 @@ public final class BridgeAgArch extends AgArch {
         for(AgArch arch=getFirstAgArch();arch!=null;arch=arch.getNextAgArch())
             if(arch instanceof jason.infra.local.LocalAgArch local) BridgeRuntimeRegistry.registerArchitecture(getAgName(),local);
         emit(RuntimeEventKind.CREATED, RuntimeFactKind.AGENT, Map.of(), Map.of("agent", getAgName()), "");
+        if(BridgeRuntimeRegistry.projectDeclarations().isPresent())publishState(true);
     }
     @Override public void reasoningCycleFinished() {
         super.reasoningCycleFinished();
+        publishState(true);
+    }
+    void publishState(boolean emitEvent) {
         if(observer==null || getTS()==null) return;
         var declaration=BridgeRuntimeRegistry.agentDeclarationId(getAgName());
         if(declaration.isEmpty()) return;
@@ -119,7 +123,8 @@ public final class BridgeAgArch extends AgArch {
             }
             if(BridgeRuntimeRegistry.structuredJasonObservation()&&selected.isEmpty()||selected.contains("mentalObservation"))
                 values.put("mentalObservation",JasonCycleObservation.mental(getTS().getAg(),runtimeIdentity.canonical(),getCycleNumber()));
-            if(selected.contains("storedBeliefObservation"))values.put("storedBeliefObservation",JasonCycleObservation.storedLiterals(getTS().getAg(),runtimeIdentity.canonical(),getCycleNumber()));
+            if(BridgeRuntimeRegistry.structuredJasonObservation()&&selected.isEmpty()||selected.contains("storedBeliefObservation"))
+                values.put("storedBeliefObservation",JasonCycleObservation.storedLiterals(getTS().getAg(),runtimeIdentity.canonical(),getCycleNumber()));
             if(BridgeRuntimeRegistry.structuredJasonObservation()&&selected.isEmpty()||selected.contains("executionObservation"))
                 values.put("executionObservation",JasonCycleObservation.execution(getTS(),runtimeIdentity.canonical(),getCycleNumber(),this::occurrenceToken));
             if(!selected.isEmpty())values.keySet().retainAll(selected);
@@ -133,7 +138,8 @@ public final class BridgeAgArch extends AgArch {
                 // unlike an idle-cycle heartbeat, and needs its own watermark.
                 if(changed || BridgeRuntimeRegistry.jasonState(getAgName()).isEmpty()) {
                     BridgeRuntimeRegistry.publishJasonState(getAgName(),values);
-                    emit(RuntimeEventKind.CHANGED,RuntimeFactKind.AGENT,previousState,values,""); previousState=Map.copyOf(values);
+                    if(emitEvent)emit(RuntimeEventKind.CHANGED,RuntimeFactKind.AGENT,previousState,values,"");
+                    previousState=Map.copyOf(values);
                 }
             }
         } catch(RuntimeException incompleteCut) {
@@ -141,7 +147,7 @@ public final class BridgeAgArch extends AgArch {
             synchronized(BridgeRuntimeRegistry.JASON_PUBLICATION_LOCK) {
                 BridgeRuntimeRegistry.invalidateJasonState(getAgName(),diagnostic);
                 previousState=Map.of();
-                emit(RuntimeEventKind.CHANGED,RuntimeFactKind.AGENT,Map.of(),Map.of(
+                if(emitEvent)emit(RuntimeEventKind.CHANGED,RuntimeFactKind.AGENT,Map.of(),Map.of(
                     "normalizedEventKind","JASON_CYCLE_OBSERVATION_INCOMPLETE","diagnostic",diagnostic),"");
             }
         }

@@ -83,9 +83,13 @@ class CurrentAuctionBundleTest {
   assertTrue(program.cslModel().generalizations().isEmpty(),"User selected Agent/OrgCtx, not inherited capability Role");
   var capability=program.goalModel().findActor("auction_capabilities").orElseThrow();
   assertInstanceOf(org.vnu.sme.goal.dsl.istar.mm.Role.class,capability,"The supplied Draw.io node explicitly declares elementType=role");
-  assertEquals(5,capability.elements().stream().filter(e->e instanceof org.vnu.sme.goal.dsl.istar.mm.Task).count());
-  assertEquals(1,capability.elements().stream().filter(e->e instanceof org.vnu.sme.goal.dsl.istar.mm.Resource).count());
-  assertEquals(3,capability.neededBys().size());
+  assertEquals(7,capability.elements().stream().filter(e->e instanceof org.vnu.sme.goal.dsl.istar.mm.Task).count());
+  assertEquals(2,capability.elements().stream().filter(e->e instanceof org.vnu.sme.goal.dsl.istar.mm.Resource).count());
+  assertEquals(5,capability.neededBys().size());
+  assertTrue(program.goalModel().findElement("do_auction").isPresent());
+  assertTrue(program.goalModel().findElement("createScheme").isPresent());
+  assertTrue(program.goalModel().findElement("commitMission").isPresent());
+  assertTrue(program.goalModel().findElement("SchemeBoard").isPresent());
   assertEquals(Set.of("D_start","D_bid","D_decide"),program.goalModel().getDependencies().stream().map(d->d.dependum().id()).collect(java.util.stream.Collectors.toSet()));
   assertEquals(2,capability.associations().size());
   assertEquals(Set.of("A_start","A_decide","P_bid"),program.xmlPlan().goalViews().keySet());

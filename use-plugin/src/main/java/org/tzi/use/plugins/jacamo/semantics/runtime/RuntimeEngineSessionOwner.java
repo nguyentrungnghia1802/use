@@ -59,6 +59,8 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
     private final DependencyGoalEvaluation goalEvaluation=new DependencyGoalEvaluation();
     private final XmlTaskOclBindings xmlTaskOcl;
     private final XmlTaskCheckpoints xmlSteps;
+    private final OccurrenceGoalModelExpander xmlExpander;
+    private final Map<List<Object>,OccurrenceGoalModelExpander.Expansion> xmlExpansionCache=new ConcurrentHashMap<>();
     private final Map<String,NativeOclBackend.Compiled> conditions=new ConcurrentSkipListMap<>();
     private final JaCaMoOccurrenceBindingAdapter bindings=new JaCaMoOccurrenceBindingAdapter();
     private final ConstraintCoverageResolver coverage=new ConstraintCoverageResolver();
@@ -95,6 +97,7 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
         try {
             xmlTaskOcl=program.xmlPlan()==null?null:new XmlTaskOclBindings(program,engine.system().model(),ocl);
             xmlSteps=xmlTaskOcl==null?null:new XmlTaskCheckpoints(program,engine,xmlTaskOcl);
+            xmlExpander=program.xmlPlan()==null?null:new OccurrenceGoalModelExpander(program.goalModel(),program.profile().engine(),program.xmlPlan().dependencyPopulations(),program.xmlPlan().goalViews(),program.xmlPlan().physicalActorViews());
             if(program.xmlPlan()!=null) {
                 for(var bound:new org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlIntentionalOclBindings().compile(program,engine.system().model()).contracts())
                     if(bound.specification().kind()==OclContractSpec.Kind.GOAL)conditions.put(bound.elementId(),ocl.compile(bound.specification()));
@@ -172,11 +175,21 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
         return new Cut(owner,identity,ticket.get(),version,boundary,stateHash,UseStateReadView.pin(null,nativeEngine.system().state()),casts,advance,lost,invocation,nativeChecks,Math.max(1024,estimatedBytes),sources,work);
     }
     private void prepareXml(List<PreparedCast> result,Map<String,Completeness> sources,boolean lost,ExternalOclConstraintService.PreparedEvaluation nativeChecks) {
-        var expander=new OccurrenceGoalModelExpander(program.goalModel(),program.profile().engine(),program.xmlPlan().dependencyPopulations(),program.xmlPlan().goalViews(),program.xmlPlan().physicalActorViews());
+        var expander=xmlExpander;
         var demands=nativeEngine.xmlTaskDemands(identity.run(),identity.generation(),identity.revision());
         for(var scope:nativeEngine.xmlOccurrences(identity.run(),identity.generation(),identity.revision())) {
             var members=scope.members().stream().map(m->new OccurrenceGoalModelExpander.Player(m.actor(),m.actorType(),m.instance(),m.player(),m.role(),m.interval())).toList();
-            var expansion=scope.complete()?expander.expand(members,program.goalModel().getName()+"_Execution_"+SemanticJson.hash(scope.id()).substring(0,24)):null;
+            var scopeLeaves=scopeLeaves(scope.definition());
+            String executionName=program.goalModel().getName()+"_Execution_"+SemanticJson.hash(scope.id()).substring(0,24);
+            OccurrenceGoalModelExpander.Expansion expansion=null;
+            if(scope.complete()) {
+                var key=List.<Object>of(members,executionName,scopeLeaves==null?Set.of():scopeLeaves);
+                expansion=xmlExpansionCache.get(key);
+                if(expansion==null) {
+                    expansion=expander.expand(members,executionName,scopeLeaves);
+                    if(xmlExpansionCache.size()<128)xmlExpansionCache.putIfAbsent(key,expansion);
+                }
+            }
             var actors=new TreeMap<String,JaCaMoOccurrenceBindingAdapter.ActorBinding>();var selves=new TreeMap<String,String>();var reads=new TreeMap<String,GoalRead>();var taskReads=new TreeMap<String,XmlTaskRead>();
             for(var member:scope.members())actors.put(member.actorType(),new JaCaMoOccurrenceBindingAdapter.ActorBinding(member.actorType(),member.instance(),member.role(),member.player()));
             if(expansion!=null)for(var trace:expansion.trace().values())if(Set.of("SOURCE_ELEMENT","REALIZATION_ELEMENT").contains(trace.kind())) {
@@ -188,11 +201,12 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
                     var historical=marker==null?xmlSteps.historicalMarker(scope.id(),member.player(),member.role(),member.interval(),trace.source()):marker;
                     String demandIdentity=demand!=null&&demand.quality()==Completeness.COMPLETE?demand.episode():historical==null?"UNAVAILABLE":historical.demand();
                     if(historical!=null&&!historical.demand().equals(demandIdentity))historical=null;
+                    var taskResources=scopeLeaves==null?scope.resources():taskNeededResources(trace.source(),scope.resources());
                     // Missing current evidence defers the original recurrence; it does
                     // not start a new historical episode. This identity is never fed
                     // into xmlTaskInput as a certificate. Known activation, role,
                     // player, self/resource or invocation changes still fence history.
-                    String episode=SemanticJson.hash(List.of(SemanticJson.tree(identity),scope.id(),member.instance(),member.interval(),trace.source(),selfId,scope.resources(),demandIdentity,historical==null?"NO_ADMITTED_STEP":historical.goal(),historical==null?"":historical.invocation()));
+                    String episode=SemanticJson.hash(List.of(SemanticJson.tree(identity),scope.id(),member.instance(),member.interval(),trace.source(),selfId,taskResources,demandIdentity,historical==null?"NO_ADMITTED_STEP":historical.goal(),historical==null?"":historical.invocation()));
                     taskReads.put(trace.expanded(),new XmlTaskRead(demand,marker,episode));continue;
                 }
                 var expression=conditions.get(trace.source());if(expression==null)continue;
@@ -211,6 +225,17 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
             var view=ExecutionConstraintScope.capture(program,nativeEngine,scope);
             result.add(new PreparedCast(cast,reads,scope.complete(),scope,expansion,taskReads,view,ExecutionConstraintScope.prepare(nativeChecks,view)));
         }
+    }
+    private Set<String> scopeLeaves(String definitionId) {
+        var scopes=program.xmlPlan().inputs().specification().root().child("runtime").children("occurrences").stream().flatMap(o->o.children("scope").stream()).toList();
+        if(scopes.size()<=1)return null;
+        return scopes.stream().filter(s->s.attr("id").equals(definitionId)).findFirst()
+            .map(s->s.children("self").stream().map(n->n.attr("target")).collect(java.util.stream.Collectors.toUnmodifiableSet())).orElse(null);
+    }
+    private Map<String,String> taskNeededResources(String sourceTask,Map<String,String> resources) {
+        var result=new TreeMap<String,String>();
+        for(var actor:program.goalModel().getActors())for(var needed:actor.neededBys())if(needed.task().equals(sourceTask)&&resources.containsKey(needed.resource()))result.put(needed.resource(),resources.get(needed.resource()));
+        return Map.copyOf(result);
     }
     public CompletableFuture<Evaluation> submit(Cut cut) {
         requireOpen();var future=new CompletableFuture<Evaluation>();
@@ -281,8 +306,8 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
                             Boolean required=!exact||taskRead==null||taskRead.demand()==null||taskRead.demand().quality()!=Completeness.COMPLETE?null:taskRead.demand().required();
                             tasks.put(id,new EngineInputs.TaskInput(episode,required,tuple[0],tuple[1]));statusQuality.put(id,gaps.contains(key)?"HISTORY_GAP":Boolean.FALSE.equals(required)?"false".equals(taskRead.demand().witness().get("assigned"))?"SOURCE_NOT_ASSIGNED":"INACTIVE_SOURCE_DEMAND":tuple[0]!=null&&tuple[1]!=null&&exact?"KNOWN":xmlTaskOcl.slots().containsKey(template.elementId())?"XML_TASK_TUPLE_UNAVAILABLE:"+xmlTaskUnavailable(taskRead,exact,cut.lost()):"UNSUPPORTED:XML_TASK_OBSERVATION_BINDING_REQUIRED");
                             if(certifyExecution&&cut.advance()&&exact&&taskRead!=null&&taskRead.marker()!=null
-                                    &&"FAILED".equals(taskRead.marker().phase())&&Boolean.TRUE.equals(required)
-                                    &&tuple[0]!=null&&Boolean.FALSE.equals(tuple[1]))
+                                    &&Boolean.TRUE.equals(required)
+                                    &&Boolean.TRUE.equals(tuple[0])&&Boolean.FALSE.equals(tuple[1]))
                                 executionEvidence.terminalFailure(cast.contextId(),key,taskRead.marker().invocation(),true,cut.version(),cut.stateHash());
                             if(exact)prepared.xmlExpansion().model().getActors().stream().flatMap(a->a.neededBys().stream()).filter(n->n.task().equals(occurrence.sourceElementId())).forEach(n->{var resource=prepared.xmlExpansion().trace().get(n.resource());String witness=resource==null?null:prepared.xmlScope().resources().get(resource.source());if(witness!=null)resources.put(new EngineInputs.ResourceKey(id,n.resource()),new EngineInputs.ResourceInput(episode,true,witness));});
                             continue;
@@ -380,7 +405,13 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
         if(read==null||read.demand()==null||read.marker()==null||read.marker().certificate().isBlank()||!exact||lost||discontinuous||!Boolean.TRUE.equals(read.demand().required())||read.demand().quality()!=Completeness.COMPLETE)return new Boolean[]{null,null};
         var rows=taskRows.getOrDefault(read.marker().invocation(),List.of()).stream().filter(r->read.marker().certificate().equals(r.witness().get("checkpointBinding"))&&read.demand().episode().equals(r.witness().get("demandEpisode"))&&read.marker().scope().equals(r.witness().get("scope"))&&read.marker().player().equals(r.witness().get("player"))&&read.marker().interval().equals(r.witness().get("roleInterval"))&&read.marker().task().equals(r.witness().get("targetTaskId"))).toList();
         var pre=rows.stream().filter(r->r.kind().equals("TASK_PRE")).toList();var post=rows.stream().filter(r->r.kind().equals("TASK_POST")).toList();
-        return pre.size()==1&&post.size()==1?new Boolean[]{known(pre.getFirst().verdict().name()),known(post.getFirst().verdict().name())}:new Boolean[]{null,null};
+        if(pre.size()!=1||post.size()!=1)return new Boolean[]{null,null};
+        Boolean preVal=known(pre.getFirst().verdict().name());
+        var postRow=post.getFirst();
+        Boolean postVal=known(postRow.verdict().name());
+        if(postVal==null&&Boolean.TRUE.equals(preVal)&&"FAILED".equals(read.marker().phase())&&"SOURCE_FAILURE_WORLD_POST_UNAVAILABLE".equals(postRow.diagnostic()))postVal=Boolean.FALSE;
+        if(Boolean.FALSE.equals(preVal)&&Boolean.TRUE.equals(postVal))postVal=Boolean.FALSE;
+        return new Boolean[]{preVal,postVal};
     }
     private String xmlTaskUnavailable(XmlTaskRead read,boolean exact,boolean lost) {
         if(lost)return "COVERAGE_LOST";if(discontinuous)return "HISTORY_DISCONTINUOUS";if(!exact)return "EXACT_CUT_UNAVAILABLE";

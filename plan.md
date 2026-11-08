@@ -1,332 +1,309 @@
-**Checkpoint reply/startup repair 2026-11-06:** live capability lock coupling and
-receipt retries depending on a later cut are repaired with failing-before/passing-
-after regressions. Checked history seeks, immutable snapshot cost reuse and
-source-only verified presentation address history/EDT/startup churn. 80 focused
-tests, live House Building/Hello World, a bounded Auction transport/UI regression,
-and installed House Building passed. Original native verdicts and unknown evidence
-remain unchanged. See the [repair report](use-plugin/verification/checkpoint-transport-ui-20261106/REPORT.md).
+# Goal/Task semantics and Auction setup verification
 
-**Earlier authored-case audit 2026-11-06:** Hello World completed, and House
-Building completed in three diagnostic reruns after an initial control-channel
-error. Required checkpoint data coverage and offscreen execution-scoped results
-passed. The intermittent system fault remains unlocalized; no blanket stability
-sign-off is claimed. No production semantics changed. See the
-[audit report](use-plugin/verification/additional-cases-20261106/REPORT.md).
+Date: 2026-11-07. Status: implementation handoff; all acceptance gates are open.
+Workspace: `D:\_CODE_BANK\Project_\08_Thesis`.
 
-**Population coverage 2026-11-06:** versioned current agent inventory, exact native
-mapping reconciliation and visible scoped data coverage are implemented. Authored
-constraints and raw source/history quality remain unchanged. Focused tests, live
-Auction, offscreen presentation and installed runtime identities are documented in
-[population coverage report](use-plugin/verification/population-coverage-20261106/REPORT.md)
-and [evidence gates](use-plugin/verification/population-coverage-20261106/PLAN.md).
+## 1. Objective and authorized scope
 
-**Source Task/Draw.io closeout 2026-11-05:** same-agent barrier and synchronous
-controller corrections, authoritative Auction model synchronization, 113 focused
-tests including live Auction, repeated review/replay, and current installed runtime
-identity proof are complete. See
-[source checkpoint report](use-plugin/verification/source-checkpoints-20261105/REPORT.md)
-and [executed gates](use-plugin/verification/source-checkpoints-20261105/PLAN.md).
-No fresh Computer Use/manual desktop acceptance is claimed for this closeout.
+Implement correct Unknown / Complete / Incomplete semantics for Goals and Tasks
+throughout USE–JaCaMo. Integrate the initial agent goal do_auction and synchronize
+all affected files in `use/use-plugin/examples/auction`. Update generic system
+components as necessary. Deliver a working installation, not only a UI relabeling
+or another design-only export.
 
-# JaCaMoâ€“USE: verified checkpoints
+Read AGENTS.md, this plan and use/plan.md. This plan replaces the previous root
+plan.md by explicit user request. Other plans and reports are historical context,
+not proof that the new gates are complete. Work on main in the sibling use/jacamo
+repos. Preserve unrelated changes, runtime logs, replays and user originals.
+No destructive reset/clean, branch deletion or unsolicited refactoring.
 
-**Closeout 2026-11-02:** generic support across authored cases; implemented
-[`generic-checkpoints-20261102/PLAN.md`](use-plugin/verification/generic-checkpoints-20261102/PLAN.md).
-This extends live scope to Hello World/House Building and fixes common admission,
-context ownership, UI/state grouping and validation paths. Existing semantic
-assertions and fail-closed guarantees remain mandatory. All extension gates now
-have evidence; current acceptance and limits are in
-[`generic-checkpoints-20261102/REPORT.md`](use-plugin/verification/generic-checkpoints-20261102/REPORT.md).
+Product text, code comments and new project documentation must be English.
+Explain results in Vietnamese. Ask before using Computer Use.
 
-2026-10-31 Â· Repositories `use/` and `../jacamo/` Â· Branch `main`.
-Apply `../AGENTS.md`. This supersedes the old performance/case-study plan,
-preserved with its evidence in pre-feature commit `fded6f66`.
+## 2. Sources and precedence
 
-## Required behavior
+Read the actual sources before editing:
 
-Use **Verified checkpoints** as the single main owned-runtime workflow. At a configured source
-checkpoint, JaCaMo closes subsequent execution admission, settles admitted work
-and publishes a supported frozen cut. USE verifies exactly that cut. Qualified
-PASS continues automatically. Failure, unavailable required evidence, ERROR,
-timeout or disconnect retain the hold. **Acknowledge & Continue** records review
-and releases that checkpoint; it never changes its failure to PASS. Preserve the
-existing passive mode, state navigation, execution isolation and failure history.
+- `use/use-plugin/Core/On Checking the Conformance between iStar and BPMN_261012_173041_1.pdf`:
+  page 3, Definition 1/Table I/temporal Goal semantics; page 4, scenario completion
+  and conformance/risk. Inspect Table I visually.
+- `use/use-plugin/Core/auction/auction_csl.drawio` and the applicable iStar diagram.
+- User-supplied original:
+  `C:\Users\NTNghia\OneDrive\Desktop\Thesis\CSL\Core\auction\auction_istar_final_fixed.drawio`.
+- Reviewed Desktop exports: `auction_istar_with_do_auction.drawio`,
+  `auction_with_do_auction.istar`, `auction_do_auction_notes.md`.
+  These are design exports, not runtime integration. Their DO_create_scheme /
+  DO_configure_scheme IDs must be reconciled with the final short names below.
+- External executable source:
+  `D:\_CODE_BANK\Project_\vnu-sme-lab\jacamo\examples\auction\auction.jcm`,
+  `src/agt/auction_capabilities.asl`, `src/org/auction-os.xml`, and
+  `src/env/auction_env/AuctionArtifact.java`.
+- Current example files, mapping, native engines and relevant bridge code.
 
-## Initial source audit (before this feature)
+Draw.io is authoritative for the authored graph and source-faithful modeling.
+This request explicitly requires correct result semantics. Reconcile paper,
+diagram and implementation in a written decision matrix; do not treat an old
+implementation behavior as a theoretical definition. Preserve unrelated diagram
+structure. Do not invent dependencies, assertions or expected results for tests.
 
-| Current implementation | Consequence |
-|---|---|
-| JaCaMo `infra/JaCaMoLauncher.startAgs/finish`, `infra/JaCaMoAgArch`, `platform/Cartago`, `platform/Moise` | Agents, artifact operations and organization activity have separate lifecycles. No global verification barrier exists here. |
-| USE `BridgeControlledLauncher`, `BridgeLocalExecutionControl`, `ReasoningCycleGate` | Plugin-side controller already admits exact agent incarnations and collects cycle ACKs. Reuse this work; its ACKs do not freeze CArtAgO/Moise. |
-| `RuntimeControlContract` | Guarantee is explicitly `JASON_REASONING_CYCLE_BOUNDARY`, with in-flight artifact/organization activity excluded. Preserve that meaning. |
-| `JaCaMoBridgePlatform`, `BridgeCheckpointSource` | Emit callback-batch boundaries (up to 32 events/50 ms) and observations; currently do not stop execution. |
-| `RuntimeControlService` | Existing consumer-initiated pause/resync confirmation is different from a producer-first frozen checkpoint. |
-| `BusinessTimeline` | Milestones compact observed history for display; their numbers are not source stop tokens. |
-| `jacamo-bridge-jacamo/pom.xml` | Loads Maven `org.jacamo:jacamo:1.3.1`; editing the sibling source does not automatically replace that JAR. |
-| External Auction `auction-os.xml`, `auction_capabilities.asl` | `bid` has a 10-second deadline and plans use `.wait`; verification latency can alter behavior if source time continues. |
+## 3. Semantic contract
 
-The inspected public CArtAgO 3.1 Workspace/Environment APIs provide operation and
-rule-engine hooks; no whole-platform pause/resume primitive was found in those
-inspected APIs. Jason pause alone cannot establish the requested strict guarantee.
+Keep distinct: native intentional value, applicability/activation, evidence
+quality, execution phase, and checkpoint/global conformance verdict.
 
-## Boundary, scope and time
+### 3.1 Tasks
 
-**Authorized scope extension (2026-10-31):** the user approved continuing with
-minimal source patches in CArtAgO, NPL/Jason and Moise integration. Source overlays,
-original binary/source hashes, patch provenance and reproducible builds belong in
-`../jacamo/checkpoint-dependencies/`; downloaded upstream checkouts live in
-`../checkpoint-deps/`. Keep official Maven coordinates unchanged and publish only
-distinct checkpoint versions locally. This authorization supersedes the earlier
-two-repository restriction for these hooks; it does not waive S01.
+For applicable, evaluable leaf Task conditions, page 3 specifies:
 
-The extended S01 boundary is one owned local MAS. Kernel operation steps, external
-artifact sessions, normative transitions and local Jason cycles participate in a
-shared admission ledger. A step already running settles or yields at a declared
-await boundary before READY. Queued work is distinct from admitted executing work;
-drained requested and actual cut identities remain separate. Source timers use one
-logical clock, frozen only once the admitted work/notification ledger is empty.
-Admission waits precede platform locks; await resumption releases artifact locks
-before reacquiring admission. Stop cancels the run, never approves its token.
-Unmanaged mutation threads, unsupported schedulers/distributed execution and
-uncovered clock producers must fail strict preflight. Positive runtime evidence
-is still required before this boundary can be advertised as supported.
+| PRE | POST | Paper value | Visible Result |
+| --- | --- | --- | --- |
+| false | any | ? / undetermined | Unknown |
+| true | true | top / satisfied | Complete |
+| true | false | bottom / violated | Incomplete |
 
-1. Declare checkpoint selection in a versioned policy using admitted mapping/source
-   identities: Task pre/post, qualified operation completion or business-field
-   transition. Link source checkpoint IDs to display milestones. Do not turn every
-   callback, trace command or poll into a business milestone.
-2. Start with one global barrier per MAS. Executions can share the same physical
-   agents; per-Auction views do not imply independent executable schedulers. Retain
-   exact execution scope in every request, decision and failure.
-3. Close admission before the next transition. Track/drain already admitted work;
-   require all relevant agent-incarnation and mutation-lane ACKs. Keep publisher,
-   control, snapshot and disk queue workers running. Never wait while holding an
-   artifact, source-listener, scheduler or Swing lock.
-4. READY requires a coherent cut and source watermark vector. Record requested
-   boundary and actual frozen boundary separately: draining may advance the state.
-   Never label a later quiescent cut as a freeze of an earlier requested state.
-5. Autonomous/internal artifact operations, external events and Moise/NPL timers
-   must participate or make strict mode unsupported for that scope. Detect drift,
-   invalidate the token and retain the hold rather than approve stale evidence.
-6. Strict mode needs source-owned logical time, including actual deadline/timer
-   schedulers. Freezing a displayed clock is insufficient. Continuing wall time
-   may be a separately declared weaker mode; do not silently use it for strict
-   Auction acceptance. Do not patch case deadlines to make a test pass.
+Unobserved, undefined or unavailable evidence is not known false. A POST not yet
+applicable because the invocation has not reached its exit is not a captured false
+POST. Specify exactly when PRE and POST are evaluated and which source cuts they
+use. Do not evaluate future POST prematurely and repair the resulting failure by
+relabeling it Unknown. A genuinely false applicable POST must remain false.
 
-**Feasibility gate S01:** prove the actual admission/time hooks first. If a required
-hook belongs to external CArtAgO/Moise/NPL and cannot be covered from these two
-repositories, identify that missing hook and the scope extension needed. Do not
-ship Jason-only pause under the label of exact whole-platform freeze.
+The paper gives Tasks no temporal interpretation. Current TaskMarking remembers
+preSeen/postSeen and emits PENDING; the UI maps PENDING to Incomplete. Audit that
+latching. Distinguish current marking from retained execution certificates:
+immutable history must not impersonate current truth or a different invocation.
 
-## Protocol and release policy
+### 3.2 Goals
 
-Negotiate a separate versioned capability; keep existing Pause/Resume semantics.
+Derive Goal values from their conditions, refinement/dependency results and Goal
+type, not from whether an arbitrary plan returned. Document initial values,
+activation episodes and all transitions for Achieve, Maintain, Sustain and None.
+The paper says Achieve retains satisfaction, Maintain retains violation, Sustain
+records loss after satisfaction, and None follows the current propagated value.
+Retention must be scoped to the correct run/execution/player/activation episode.
 
-- Request: session/run, generation, model revision, unique checkpoint token and
-  sequence, kind, source event/occurrence, execution scope, boundary-policy hash,
-  producer snapshot hash, watermark vector, barrier cohort and clock proof, and
-  admitted model/input hashes.
-- Decision: exact owner/token/source snapshot plus accepted USE cut/state hash,
-  verification-result hash, applicable-check inventory, command ID, diagnostic and
-  `APPROVE`, `HOLD_FAILURE`, `HOLD_UNVERIFIED` or `ACKNOWLEDGE_AND_CONTINUE`.
-  Producer snapshot hashes and USE state hashes describe different representations;
-  link both explicitly rather than equating them.
-- One active global token, one effective release. Authenticate commands; duplicates
-  return the prior outcome, stale/out-of-order/foreign replies cannot advance another
-  cut. Generic Resume must not bypass a verification hold.
-- Evaluate required checks applicable at this boundary. Future root goals being
-  PENDING are legitimate progress; a failed required Task postcondition is not.
-  Missing/UNKNOWN/SKIPPED required applicable checks or incomplete barrier proof
-  retain the hold. Reuse authored semantics, including accepted bid-decline behavior.
-- Timeout, disconnect, UI close and monitor restart never auto-release. Reconnect
-  authenticates/reconciles the held token. A drifted or replaced cut needs a new
-  valid barrier; an acknowledgement for an old token cannot authorize it.
-- Persist request, frozen cut, verdict, failure, manual acknowledgement and release
-  receipt. Acknowledgement is an override, not PASS or a domain repair. Keep the
-  original Failure Point. Replay validates history without controlling a live MAS.
+A not-yet-activated element without an evaluable result is Unknown. Do not assert
+that every future Goal is Incomplete, or that every not-yet-executed Goal must be
+Unknown: its known condition or child results may determine it. Keep additional
+runtime observation/activation rules explicit rather than attributing them to
+the paper without evidence.
 
-State flow: `RUNNING â†’ QUIESCING â†’ VERIFYING â†’ RUNNING` on qualified exact-cut
-approval; failure goes to `HELD_FAILURE`; error/unknown/disconnect goes to
-`HELD_UNVERIFIED`. Held states continue only after explicit exact-token review and
-a producer release receipt. Stop remains available and terminates the owned runtime.
+Use three-valued propagation. AND requires all children satisfied; a known false
+child can falsify it. OR needs one satisfied child; all false is false; mixed
+unresolved cases stay unknown. Follow model quantifiers and temporal rules.
 
-## Responsibilities and UI
+### 3.3 Lifecycle versus Result
 
-**JaCaMo:** execution-neutral checkpoint coordinator/SPI, admission/barrier
-participants, source clock integration, lifecycle and held-token ledger. No USE,
-Swing or case-study dependency in that coordinator.
+Goal/Task Result values must be exactly Unknown, Complete, Incomplete. Show
+Waiting, Executing, Succeeded, Failed or Cancelled separately in details/tooltips
+when evidenced; these are execution phases, not extra Result values. Keep Not
+assigned as assignment information. No assignment is not a failed execution.
+Preserve raw markings, diagnostics and evidence in audit.
 
-**USE:** versioned wire contract and official bridge adapter, exact-cut verification
-worker, existing native MSystem/Goal/Task/OCL engines, durable history/replay and
-review controls. Keep network/waits/preparation off EDT and retain one native writer.
+Incomplete is not automatically a whole-MAS violation. Progress, local failure
+and an applicable mandatory contract violation have different consequences.
+Unknown future progress can be normal. Unknown evidence for an applicable
+mandatory check retains the hold. Never map all PENDING blindly to either
+Incomplete or Unknown without the applicability/evaluation context.
 
-UI: Prepare + Import and Start use verification automatically; show `Running`, `Waiting for verification`,
-`Held â€” violation`, `Held â€” verification unavailable`, `Continuing`. Show execution,
-milestone and reason; put protocol details in Advanced/Audit. Bind **Acknowledge &
-Continue** to the active held token, disable while pending, and change status only
-from the producer receipt. Historical navigation must not redirect that command.
-Retain saved/processed/pending counters and original verdicts. Render the exact
-evaluated source cut before sending APPROVE. Disk audit catch-up must not animate
-old states over the active source checkpoint.
+## 4. Required checks, local failures and global verdict
 
-### UI follow-up after user feedback (2026-10-31)
+Audit/correct the division between:
+1. CSL/OCL invariants and independently mandatory operation/authorization contracts;
+2. per-occurrence Goal/Task values and local execution failures;
+3. selected root requirements and scoped conformance at applicable boundaries.
 
-The earlier S01â€“S08 evidence proved the opt-in protocol, not that the main UI
-selected it by default or rendered each result before release. The user observed
-the passive path catching up after the MAS finished and requested one main path.
+Current VerifiedCheckpointInventory promotes relevant TASK_POST failures and
+terminal failures from all occurrences into a whole-MAS failed check. Current
+summary/history can pin All to VIOLATION. Fix inappropriate promotion of supporting
+branch failures rather than merely hiding their rows.
 
-- [x] U01 â€” Remove passive/verified selector from the main authored workflow;
-  owned Prepare + Import always enables verification. Keep Jason cycle controls
-  in Advanced with their original limited guarantee.
-- [x] U02 â€” Require exact-cut UI presentation before approval; presentation error
-  holds and retains native truth. Source-token UI cuts bypass audit-prefix loading.
-- [x] U03 â€” Focused protocol/UI/history tests and real desktop external Auction;
-  prove displayed-before-release ordering, review via the actual button and UI heartbeat.
-- [x] U04 â€” Rebuild `target/new`, verify installed bytes/code sources, freeze new
-  evidence. Preserve the previous package and all prior logs/replay; no commit/push.
+Preserve Auction D_bid's ANY semantics and O_root per execution. A participant's
+.fail stays an unsuccessful local Task and never becomes an actual successful bid.
+It does not alone prove O_bid/O_root failed when another assigned participant
+satisfies the declared dependency. An independent applicable mandatory operation
+contract can still fail and must retain that effect. All authored OCL invariants
+remain required. A condition determining its own Task's truth is not automatically
+an additional universal safety requirement. Classify and trace these roles.
 
-Current follow-up evidence: [UI-FOLLOWUP.md](use-plugin/verification/verified-checkpoints/UI-FOLLOWUP.md).
-23 focused tests pass, including the real desktop Auction. The run displayed 5
-cuts before decisions, with 3 automatic and 2 reviewed release receipts. Actual
-desktop controls/tabs were exercised through Computer Use; this is not human
-acceptance sign-off. Swing heartbeat p95 66 ms, max 177 ms. Native truth and the
-full audit are retained. The default journal quota is 512 MiB; explicit quotas
-and quota-loss holds remain enforced. Packaging identity and source/artifact/evidence
-freeze passed: `UI-final-final-package-receipt.json` and
-`UI-source-artifact-evidence-freeze.json`. Run `use-assembly/target/new/bin/start_use.bat`.
+For All, genuine selected-requirement/mandatory-contract violations in an execution
+remain globally visible. Supporting failures and future Goals must not be promoted
+to those violations. Keep history without poisoning the global verdict with a
+mislabeled progress/supporting event. Completed-scenario conformance/risk is
+different from current progress and from proof over every possible MAS schedule.
 
-## Implementation and acceptance
+Do not force a desired verdict, suppress a false predicate or weaken case assertions
+to obtain green tests. Manual Continue preserves the original failure/result/state
+and records review, not PASS. Document any unresolved semantic ambiguity honestly.
 
-### Stability follow-up (2026-11-01)
+## 5. Auction do_auction model and runtime integration
 
-The user's normal full runs exposed gaps beyond the earlier bounded desktop
-handshake test. Treat the previous U/S receipts as historical bounded evidence.
+Keep the reviewed auction_capabilities capability Role viewpoint. Keep Goal name
+`do_auction`. Use two short Task names close to ASL:
 
-- [x] C01 â€” Select admitted semantic Task terminal/source-domain boundaries;
-  observation-only artifact construction must not create an initialization hold.
-  Required unknown/error still holds at an applicable selected boundary.
-- [x] C02 â€” Stable execution identities and separate presentation timelines/cursors;
-  switching execution or CSL/iStar tabs cannot regroup/renumber the same history.
-  A cut missing another execution cannot erase its retained qualified state.
-- [x] C03 â€” Repeated exact-token desktop acknowledgement; ensure pending state
-  clears and the next failed checkpoint's button is enabled independently.
-- [x] C04 â€” Read an evicted invocation prefix from checked persisted evidence;
-  present final settled native Task/Goal results after the last source release.
-  Trace Execution 2's INCOMPLETE to its actual missing/stale evidence, never force PASS.
-- [x] C05 â€” Focused regressions and unchanged full Auction completion for both
-  executions, tab/scope navigation and two distinct failing desktop reviews;
-  build/identify final `target/new`, retain existing user's run/evidence, no commit/push.
+| Task | ASL top-level body segment | Source meaning |
+| --- | --- | --- |
+| createScheme | [0,3), original lines 4-6 | concat name; resolve joined workspace; createScheme |
+| commitMission | [3,10), original lines 7-13 | set Id/Service; my_name/setOwner; focus; addScheme; commitMission |
 
-Initial diagnosis: changing execution rebuilt checkpoint history through compact
-BusinessTimeline; programmatic diagram scope synchronization could invoke the
-selection listener again; late unrelated/unbound cuts replaced selected state;
-final engine completions were not presented after source checkpoint mode took
-over. Current user logs and read-only thread dumps are retained under
-`use-plugin/verification/checkpoint-stability`. Their earlier complete native
-recording contains two FULFILLED roots even though the UI showed INCOMPLETE.
-Another real initialization hold was caused by using observation requirements
-(`makeArtifact`) as milestones and by treating RAM-tail eviction as evidence loss.
+Both Tasks AND-refine do_auction. commitMission names its entire declared segment's
+final milestone, not only one operation. Keep full source descriptions. Recheck
+ordinals against the current parsed AST; they are not universal constants and
+must never be case constants in generic production code.
 
-Final stability evidence: [REPORT.md](use-plugin/verification/checkpoint-stability/REPORT.md).
-`focused-live-2.log` passes the full unchanged Auction: two native FULFILLED roots,
-both UI executions COMPLETE_OBSERVED, 8 automatic releases and two distinct
-failed tokens reviewed with the same real desktop button. Ten cuts were displayed
-before their decisions. Separate source/Entity histories and tab navigation pass;
-the focused regression retains 13 states and its selected cursor on scope changes.
-Swing heartbeat p95 120 ms, max 746 ms for this full run. `final-package.log` passes
-35 focused tests and builds the current `target/new`; actual loaded code sources,
-installed byte parity and `final-freeze.json` pass. The previous user's complete
-installation/work/history is retained at `target/new-before-stability-20261101`.
-Overall source coverage retains its bounded INCOMPLETE label where appropriate;
-native requirements/results are not rewritten. No full clean verify or commit/push.
+do_auction means successful session setup, NOT completion of start/bid/decide.
+It does not adopt auctioneer automatically. Keep it distinct from C_start and
+per-scheme organisational O_root.
 
-### Milestone isolation follow-up (2026-11-01)
+Retain the SchemeBoard Resource with meaningful needed-by links to configuration
+and start preparation. SchemeBoard is the coordination artifact. AuctionArtifact
+is the separate passive domain artifact created later by start. Do not turn
+SchemeBoard into an Auction CSL Entity. AND is not an ordering edge; needed-by is
+not proof of creation/completion. Add no social dependency solely for sequencing.
 
-- [x] M01 â€” Check the reported disk journal and freeze exact native cuts; distinguish
-  unchanged diagnostics from actual scoped Entity/Task changes. The 1,891-entry
-  chain and native result hashes are verified; no cross-execution Entity copying
-  is found. See `use-plugin/verification/milestone-isolation/REPORT.md`.
-- [x] M02 â€” Reproduce before fix and group only presentation-equivalent scoped
-  cuts; retain the full audit and exact latest representative. Final 42 focused
-  tests pass, including the authentic 8-cut / 5-milestone recording, proof ordering,
-  retained Task failure and scope/audit navigation.
-- [x] M03 â€” Run unchanged external Auction with verified barriers, receipt ordering
-  and independent execution/tab/audit navigation. An observation-mode harness
-  baseline is retained separately and does not satisfy this gate. The explicit
-  verified run `live-1793520132787` proves eight DISPLAYED-before-APPROVE releases,
-  both native roots/UI executions complete, and stable tab/audit navigation.
-- [x] M04 â€” Preserve the previous installed user run, package `target/new`, and
-  check installed byte parity and actual loaded JaCaMo identity. The previous tree
-  is `target/new-before-milestone-isolation-20261101`; the journal hash is unchanged.
-  `milestone-final-package-receipt.json` proves the current plugin/bridge/GUI bytes,
-  loaded patched JaCaMo SHA-256 `f5a31568fbc2487322d985e00ab6cecac987f2edc296bf14cd155c56c217275e`
-  and installed-loader smoke. No commit/push or full clean verify.
+### 5.1 Initial demand and scopes
 
-- [x] S00 â€” Push pre-feature checkpoint; inspect both source paths; create workspace
-  AGENTS and this plan. USE `fded6f66` pushed; JaCaMo remote already current.
-- [x] S01 â€” Prove admission/quiescence/time hooks and supported scopes; negative
-  tests reject unsupported autonomous/timed components before strict-mode start.
-  Extended source-hook evidence: `S01-extended-runtime/positive-proof.txt`,
-  `S01-final-probes.log`, `S01-extended-admission-tests.log` and
-  `S01-extended-profile-tests.log`. Scope is the owned local source-admitted MAS;
-  raw threads/clocks, unsupported timer actions/platforms and remote execution
-  are rejected. This checks S01 only, not the end-to-end feature or live Auction.
-- [x] S02 â€” Implement JaCaMo coordinator/SPI, participants, clocks and latched hold;
-  add authenticated versioned protocol, exact tokens and idempotent release.
-- [x] S03 â€” Connect USE ingestion/verification decisions to exact cuts; preserve
-  native truth, identity, prefix ordering, durable queues and history/replay.
-- [x] S04 â€” Add mode/status/review UI; preserve per-execution failures and navigation.
-- [x] S05 â€” Test blocked next transition, in-flight drain, shared-agent executions,
-  clock behavior, required unknown/error, stale/duplicate replies, timeout,
-  disconnect/reconnect, UI/monitor close, Stop, new epochs and listener cleanup.
-- [x] S06 â€” Build the modified JaCaMo artifact and wire it into the USE producer
-  classpath/package deliberately. Verify actual code-source paths and SHA-256;
-  do not silently replace official version bytes or load an old cached JAR.
-- [x] S07 â€” Unchanged external Auction live acceptance: repeated hold/verify/release,
-  genuine failing required check held until review, retained failure, both executions,
-  correct timeout semantics, no next admitted domain transition while held, replay.
-- [x] S08 â€” Deliver one runnable `use-assembly/target/new`, final source/JAR/evidence
-  freeze and an honest support report. Separate live MAS/offscreen Swing from fresh
-  manual desktop acceptance. No full clean verify or unrelated live case studies.
+Read initial goal declarations and actual activation/invocation evidence
+generically. Only players with do_auction demand execute setup, not every player
+sharing the ASL library. No production constants for Bob, counts, auction IDs,
+case names or winners.
 
-DoD: S01â€“S08 proven by executable evidence; actual source hold and verified cut
-agree; no unacknowledged release/lost admitted event, forced verdict or case-specific
-production logic; original failures remain; final package loads the intended JaCaMo
-implementation. Existing passive queue/replay evidence does not prove this feature.
+Register expected initial requests before schemes/domain artifacts exist. Use
+stable run/player/goal-invocation identity, then correlate returned scheme and
+later domain identity. Separate concurrent requests of the same agent and their
+evidence. Do not fabricate an Auction self at setup entry. Extend generic scope,
+binding and resource handling for pre-scheme/pre-domain phases where necessary.
 
-**Current status (2026-10-31): S01â€“S08 proven for the supported owned local source-admitted profile.**
-Source patches, identity checks and executable admission/time/lifecycle probes are
-in `../jacamo/checkpoint-dependencies/`. The initial blocked S01 findings below
-remain the baseline for the original unmodified dependencies, not the current
-patched source-hook capability. Gate-by-gate evidence, scope and limitations are in
-[`FINAL-SUPPORT.md`](use-plugin/verification/verified-checkpoints/FINAL-SUPPORT.md).
-The successful live run has 3 automatic release receipts, 11 reviewed release
-receipts and 6 genuine native failed cuts; original Auction sources are unchanged.
-Actual installed JaCaMo `1.3.1-checkpoint-SNAPSHOT` has SHA-256
-`f5a31568fbc2487322d985e00ab6cecac987f2edc296bf14cd155c56c217275e`.
-Run `use-assembly/target/new/bin/start_use.bat`. Live MAS, offscreen UI and installed
-loader checks passed; fresh manual desktop acceptance has not been performed.
-Disconnect replay retains its real coverage gap. No commit/push or full clean verify.
+Cover failure before creation and partial setup failure. Missing execution must
+not erase an expected initial request and yield false Completed. Known pending
+demand is not evidence loss. Reconcile expected requests, created schemes and
+completed executions from source evidence, not fixed counts.
 
-**Initial S01 baseline (before authorized dependency patches):**
-Executed probes prove Jason cycle ACKs while CArtAgO in-flight work, GroupBoard
-mutation, internal `await_time`/new external actions and actual NPL deadline expiry
-can still change domain state. Strict startup now rejects before platform
-initialization; the old Jason Pause/Resume guarantee is unchanged. At that stage
-S01 remained unchecked because whole-platform admission/quiescence/logical time
-was unproven; S02â€“S05/S07 had not been implemented over the failed mandatory gate.
+Keep O_root requirements scoped to organisational executions and setup requirements
+to the relevant initial invocation. Do not blindly append a global requirement
+ID and demand it in every unrelated context. Handle linking/grouping without
+mixing histories or changing stable execution identities.
 
-Evidence and the required dependency-scope extension are in
-[`S01-boundary.md`](use-plugin/verification/verified-checkpoints/S01-boundary.md).
-17 distinct focused tests passed (2 JaCaMo startup, 6 real component runtime,
-2 bridge feasibility/provenance, 5 cycle ledger, 2 existing control contract).
-This includes negative feasibility evidence, not strict-mode acceptance.
+### 5.2 Contracts and authority
 
-Historical S06/S08 partial packaging evidence: JaCaMo was built/published under the
-distinct `1.3.1-checkpoint-s01-SNAPSHOT` coordinates; the runnable S01/passive
-installation was then `use-assembly/target/new`. Packaged code-source/SHA-256, installed
-plugin loader and strict startup rejection pass. Neither S06 nor S08 is marked
-complete by that historical evidence alone. That stage had no live Auction
-verified-checkpoint acceptance. The old runnable tree is now preserved at
-`use-assembly/target/new-before-verified-20261031-193121`; the current `target/new`
-is the final supported checkpoint build identified above.
+Callback step.enabled/step.succeeded alone do not establish every semantic setup
+fact. Capture exact scheme type/identity, matching Id/Service, owner, responsible
+group and caller commitment through qualified source evidence. Missing required
+bindings remain Unknown. Do not invent observer fields or write OCL over absent
+schema properties. Add generic evidence support when genuinely required.
+
+Read `use/use-plugin/verification/auction-setup-semantics-20261107/REPORT.md`.
+The native experiment showed another agent can focus/start the domain artifact,
+while Moise rejects organisational start achievement without commitment. Existing
+Idle/Opened contracts check effects, not caller authority. Distinguish physical
+success from mission/demand compliance; do not impose creator==starter universally.
+Add no unsolicited security enforcement or modifications to the source business
+behavior. Use actual performer/scheme/mission evidence for declared requirements.
+
+Preserve <=300 participant and exactly one auctioneer per GROUP, not per auction
+ID. Preserve the user's temporary disabling of WithinDeadline. Do not silently
+re-enable/remove it or disable any other check.
+
+## 6. Checkpoints and UI
+
+Keep the existing source-driven Task-exit/failure and relevant operation/lifecycle
+policy. Do not stop at every plan entry or every ASL deed. Record lifecycle events
+without additional holds when that suffices. Setup boundaries use generic policy.
+
+Preserve supported whole-MAS admission/draining, in-flight work, asynchronous
+producers, same-agent concurrent intentions and logical clocks/deadlines. Jason
+Pause alone is insufficient. No waits for USE/network under artifact, listener,
+scheduler or Swing locks. Keep exact-cut authenticated/idempotent release and
+fail-closed timeout, disconnect and evidence-loss handling.
+
+States are coherent source snapshots, not numbers invented by Swing or every CSL
+attribute update. Keep same-CSL cuts with real intentional progress; group only
+diagnostic-only duplicates in presentation and preserve raw audit.
+
+Preserve the Goals/Tasks split, per-agent/occurrence details, All view, colored
+True/False and top-right status with contextual Continue. Correct the completion
+badge consistently: no Completed from Unknown/PENDING, missing initial requests,
+partial populations or stale runs. Completion is scoped progress, not MAS exit.
+Avoid additional EDT disk-history reads, state jumps or selection loss.
+
+## 7. Inspect/update these areas as needed
+
+- Native GoalMarking, TaskMarking, GoalTaskStatus, propagation and adapters in
+  use/use-jacamo-semantic-engine. Preserve unrelated original/BPMN APIs. If a
+  versioned JaCaMo profile is needed, admit/document it explicitly and ensure the
+  main owned workflow actually uses the corrected behavior.
+- RuntimeEngineSessionOwner, result adapters, invocation/certificate lifecycle,
+  GenericBindingPlan, XML demand/scope/resource handling and initial-goal intake.
+- VerifiedCheckpointInventory/Service, scoped requirements, replay/journal schema
+  compatibility. Identify legacy semantics; do not silently reinterpret old replay.
+- PresentationResults, LiveGoalSummary, ObservedConformancePresenter/Panel,
+  ExecutionScopeViews, VerificationStatusBadge, details and diagnostics.
+- Generic Jason observation/instrumentation and sibling JaCaMo boundary code only
+  where the new evidence needs it. Preserve existing suspension guarantees.
+- All affected files in use/use-plugin/examples/auction: .istar, .csl, mapping XML,
+  .ocl, .mrv, README, manifests/provenance/checksums and relevant copies. Preserve
+  executable case behavior; no editing the .fail branch or winner logic for tests.
+- Relevant Core/Draw.io/export and workflow provenance if affected. Preserve user
+  originals; use separate Desktop exports where a diagram update is necessary.
+
+## 8. Implementation/evidence gates
+
+All boxes start open. Tick only after current executable evidence exists.
+
+- [x] M01: Paper/model/runtime decision matrix, initial/activation rules, PRE/POST
+  applicability and requirement/supporting classification. Record current bugs
+  and concrete intended before/after results.
+- [x] M02: Correct generic evaluation/propagation and UI vocabulary together.
+  Focused truth tables, temporal episodes, Unknown/undefined, AND/OR, lifecycle and
+  retained-certificate regressions; no assertion changes that merely bless a bug.
+- [x] M03: Correct inventory/global verdict. Prove local supporting versus mandatory
+  failure, scoped roots, All aggregation, genuine historical violations and
+  repeated exact-token review retaining original evidence.
+- [x] M04: Integrate do_auction demand/scopes/source boundaries/resources/setup
+  evidence. Prove concurrent initial requests on one agent, unassigned players,
+  failure before creation, partial setup and exact later scheme correlation.
+- [x] M05: Synchronize the affected Auction bundle and diagrams/provenance. Check
+  parser/model/contracts/bindings/schema/hash consistency. Do not invent children
+  for validator compliance; use the documented admitted profile for the existing
+  single-Task C_decide realization.
+- [x] M06: UI/replay/history acceptance with relevant tests and offscreen Swing.
+  No state churn, duplicate semantic rows, lost selections or cross-player/scope
+  evidence. Distinguish offscreen from manual desktop acceptance.
+- [x] M07: Live external unchanged Auction using native engines and exact-cut
+  presentation. Preserve natural failures; no random seeding, patched winners,
+  injected verdicts or relaxed assertions. Use isolated negative fixtures for
+  reproducible branches and label their scope. Do not expect every participant
+  Task to Complete when the requirement is ANY. Cover startup/setup, independent
+  executions, final requirements, genuine holds and review preservation.
+- [x] M08: Final coherent build into use/use-assembly/target/new. Recheck installed
+  Prepare + Import and a bounded relevant installed Auction run. Verify actual
+  loaded consumer/producer JAR paths, hashes, classpaths, contract/engine class
+  parity and provenance.
+- [x] M09: Review the diff, preserve unrelated work, write English evidence/report
+  and honest limits, commit/push changes on existing main remotes, and deliver
+  current launcher and concise Vietnamese results. No branch deletion or empty
+  commits for unchanged repos.
+
+Use only relevant tests and the external Auction live case here; no full clean
+verify or unrelated live studies. Generic non-Auction fixtures should demonstrate
+case independence. Ask before any Computer Use needed for deeper acceptance.
+
+## 9. Build and delivery safeguards
+
+Read use/use-plugin/tools/RUNNABLE-PACKAGE.md and use the validated updater
+use/use-plugin/tools/update-runnable-plugin.py. Build with -pl use-plugin -am.
+A plugin-only package previously shaded a stale Maven-cache contract, causing
+NoClassDefFoundError for JasonAgentInventory. Check missing/mismatched dependency
+classes before updating the runnable package. Preserve work/replays and backups.
+
+Do not restore user-deleted legacy Core inputs merely for an old assembly
+descriptor. Report incremental installation limitations accurately. If Windows
+locks JARs, finish build/checks first, then ask the user to close USE or authorize
+normal closure. Do not kill an unrelated user process.
+
+Deliver:
+`D:\_CODE_BANK\Project_\08_Thesis\use\use-assembly\target\new\bin\start_use.bat`.
+
+This root handoff is outside the sibling source repos. Keep it at the requested
+path. Place an implementation evidence/plan copy inside the changed repo when
+needed for versioned delivery; do not overwrite historical reports or claim their
+old test receipts prove these new gates.

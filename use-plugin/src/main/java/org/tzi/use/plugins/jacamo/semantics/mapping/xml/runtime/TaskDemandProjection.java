@@ -69,7 +69,9 @@ public final class TaskDemandProjection {
                             if(!(expected instanceof String key)||key.isBlank()||!(actual instanceof String value)||value.isBlank()){reason="TASK_DEMAND_SCOPE_KEY_UNAVAILABLE";continue;}
                             if(!expected.equals(actual))continue;
                         }
-                        if(port.find(rawAnchor)==anchor&&player!=null&&port.find(rawPlayer)==player)candidates.add(row);
+                        MObject rowAnchor=port.find(rawAnchor);
+                        if(rowAnchor!=null&&rowAnchor!=anchor&&rawAnchor.equals(port.metadata(anchor,"xml:m0:representedPlayer")))rowAnchor=anchor;
+                        if(rowAnchor==anchor&&player!=null&&port.find(rawPlayer)==player)candidates.add(row);
                     }
                     if(candidates.size()>1)throw node.location().error("TASK_DEMAND_AMBIGUOUS_SOURCE_TUPLE");
                     var witness=new TreeMap<String,String>();witness.put("programHash",program);witness.put("scope",scope.id());witness.put("targetTaskId",node.attr("target"));witness.put("player",member.player());witness.put("roleInterval",member.interval());witness.put("demandRule",node.attr("id"));witness.put("demandAuthority","EXPLICIT_QUALIFIED_SOURCE_ROW_NOT_ROLE_MEMBERSHIP");

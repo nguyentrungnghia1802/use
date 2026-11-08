@@ -58,11 +58,13 @@ public final class RuntimeFactSources {
     private final Map<String,OperationHistoryCutDecoder> operationDecoders;
     private final Map<String,JasonStepCutDecoder> stepDecoders;
     private final MoiseFactQualification moise;
+    private final ModelSnapshot sourceModel;
     private final List<org.jacamo.bridge.contract.semantic.JcmSemanticContract.GroupDeploymentSemantic> groupDeclarations;
     public RuntimeFactSources(MappingSpecification specification) {
         this(specification,null,List.of());
     }
     public RuntimeFactSources(MappingSpecification specification,ModelSnapshot source,List<ObservationCapabilityRequest> requests) {
+        sourceModel=source;
         moise=source==null?null:new MoiseFactQualification(source);
         groupDeclarations=source==null?List.of():List.copyOf(source.semanticContract().groupDeployments());
         var steps=new LinkedHashMap<String,JasonStepCutDecoder>();var operations=new LinkedHashMap<String,OperationHistoryCutDecoder>();var norms=new LinkedHashMap<String,NplLifecycleCut>();var requestIndex=new LinkedHashMap<String,ObservationCapabilityRequest>();
@@ -75,6 +77,10 @@ public final class RuntimeFactSources {
             if(result.size()>=64)throw node.location().error("RUNTIME_DATASET_LIMIT");
             if(node.name().equals("beliefViews")) {
                 JasonBeliefViews.validate(node);result.add(new Definition(node,"jason",RuntimeFactKind.AGENT,Set.of()));continue;
+            }
+            if(node.name().equals("initialGoals")) {
+                if(source==null)throw node.location().error("RUNTIME_INITIAL_GOALS_SOURCE_REQUIRED");
+                result.add(new Definition(node,"jason",RuntimeFactKind.AGENT,Set.of()));continue;
             }
             if(Set.of("jasonSteps","artifactReferences","schemeReferences").contains(node.name())) {
                 var request=requirements.get(node.attr("requestRef"));
@@ -171,7 +177,7 @@ public final class RuntimeFactSources {
     private Map<String,RuntimeTables.Dataset> capture(RuntimeSnapshot cut,String run,long generation,RuntimeEvent event,CaptureContext context) {
         if(run==null||run.isBlank()||generation<0)throw new IllegalArgumentException("RUNTIME_DATASET_EPOCH_REQUIRED");
         SnapshotAdmission.require(cut,Map.of());
-        if(definitions.stream().anyMatch(d->d.node().name().equals("facts")&&d.authority().equals("jason")&&d.kind()==RuntimeFactKind.AGENT)
+        if(definitions.stream().anyMatch(d->(d.node().name().equals("facts")||d.node().name().equals("initialGoals"))&&d.authority().equals("jason")&&d.kind()==RuntimeFactKind.AGENT)
                 &&JasonAgentInventory.supplied(cut)&&!JasonAgentInventory.complete(cut,run))throw new IllegalArgumentException("JASON_AGENT_INVENTORY_MISMATCH");
         if(cut.facts().size()>16384)throw new IllegalArgumentException("RUNTIME_FACT_CAPACITY");
         var identities=new HashSet<String>();for(var fact:cut.facts())if(!identities.add(fact.id().canonical()))throw new IllegalArgumentException("RUNTIME_FACT_IDENTITY_COLLISION");
@@ -179,6 +185,7 @@ public final class RuntimeFactSources {
         var result=new LinkedHashMap<String,RuntimeTables.Dataset>();
         for(Definition definition:definitions) {
             if(definition.node().name().equals("beliefViews")) {result.put(definition.node().attr("id"),JasonBeliefViews.capture(definition.node(),cut,run,generation,proof));continue;}
+            if(definition.node().name().equals("initialGoals")) {result.put(definition.node().attr("id"),initialGoals(definition,cut,run,generation,proof));continue;}
             if(Set.of("artifactReferences","schemeReferences").contains(definition.node().name())) {result.put(definition.node().attr("id"),artifactReferences(definition,cut,run,generation,proof,context));continue;}
             if(definition.node().name().equals("jasonSteps")) {result.put(definition.node().attr("id"),steps(definition,cut,run,generation,proof,context));continue;}
             if(definition.node().name().equals("operationReferences")) {result.put(definition.node().attr("id"),operationReferences(definition,cut,run,generation,proof));continue;}
@@ -215,15 +222,180 @@ public final class RuntimeFactSources {
         }
         return Collections.unmodifiableMap(result);
     }
+    private RuntimeTables.Dataset initialGoals(Definition definition,RuntimeSnapshot cut,String run,long generation,String proof) {
+        if(sourceModel==null)throw new IllegalStateException("RUNTIME_INITIAL_GOALS_SOURCE_REQUIRED");
+        var rows=new ArrayList<RuntimeTables.Row>();
+        Completeness population=cut.sourceCompleteness().getOrDefault("jason",Completeness.UNAVAILABLE);
+        if(!cut.startWatermarks().containsKey("jason")||!Objects.equals(cut.startWatermarks().get("jason"),cut.endWatermarks().get("jason")))population=merge(population,Completeness.PARTIAL);
+        var declarations=new LinkedHashMap<String,String>();
+        for(var decl:sourceModel.semanticContract().agentDeclarations())declarations.put(decl.metadata().semanticId(),decl.name());
+        var programs=new LinkedHashMap<String,org.jacamo.bridge.contract.semantic.JasonSemanticContract.AgentProgramSemantic>();
+        for(var prog:sourceModel.semanticContract().jasonPrograms())programs.put(prog.declarationId(),prog);
+        for(RuntimeFact fact:cut.facts())if(fact.kind()==RuntimeFactKind.AGENT&&fact.id().authority().equals("jason")) {
+            if(!cut.sourceCompleteness().containsKey("jason")||!cut.endWatermarks().containsKey("jason"))throw new IllegalArgumentException("RUNTIME_FACT_SOURCE_UNAVAILABLE:jason");
+            Completeness quality=fact.completeness();
+            if(fact.projectionStatus()!=ProjectionStatus.MATERIALIZED_FAITHFULLY)quality=Completeness.UNAVAILABLE;
+            if(population==Completeness.UNAVAILABLE)quality=Completeness.UNAVAILABLE;
+            else if(population==Completeness.PARTIAL)quality=merge(quality,Completeness.PARTIAL);
+            String declId=Objects.toString(fact.values().get("agentDeclarationSemanticId"),"");
+            String declName=declarations.get(declId);
+            var program=declName==null?null:programs.get(declName);
+            if(program==null){population=merge(population,Completeness.UNAVAILABLE);continue;}
+            for(var goal:program.goals()) {
+                String rowId=goal.metadata().semanticId()+"@"+fact.id().canonical();
+                var parsed=canonicalGroundLiteral(goal.literal());
+                var envelope=new LinkedHashMap<String,Object>();
+                envelope.put("identity",rowId);envelope.put("goalSemanticId",goal.metadata().semanticId());
+                envelope.put("player",fact.id().canonical());envelope.put("owners",List.of(fact.id().canonical()));
+                envelope.put("agentName",Objects.toString(fact.values().get("name"),""));envelope.put("declaration",program.declarationId());
+                envelope.put("scope",fact.id().scope());envelope.put("ordinal",goal.ordinal());envelope.put("goalKind",goal.goalKind());
+                envelope.put("literal",goal.literal());envelope.put("values",parsed);
+                envelope.put("run",run);envelope.put("generation",generation);envelope.put("revision",cut.modelRevision());
+                var proofs=new LinkedHashMap<String,String>();proofs.put("source-cut",proof);proofs.put("physical-identity",fact.id().canonical());proofs.put("initial-goal",goal.metadata().semanticId());
+                if(population==Completeness.COMPLETE&&JasonAgentInventory.complete(cut,run))proofs.put("jason-agent-inventory",proof);
+                rows.add(new RuntimeTables.Row(rowId,envelope,quality,proofs,Set.of(rowId,goal.metadata().semanticId())));
+                population=merge(population,quality);
+            }
+        }
+        return new RuntimeTables.Dataset(rows,population);
+    }
+    private static Map<String,Object> canonicalGroundLiteral(String syntax) {
+        String trimmed=syntax==null?"":syntax.trim();
+        var term=parseGroundTerm(trimmed,0);
+        if(term.get("key") instanceof Map<?,?> key&&"LITERAL".equals(key.get("kind"))) {
+            var top=new LinkedHashMap<String,Object>();
+            top.put("raw",trimmed);top.put("namespace",key.get("namespace"));top.put("functor",key.get("functor"));
+            top.put("negative",key.get("negative"));top.put("ground",term.get("ground"));top.put("supported",term.get("supported"));
+            var rawTerms=term.get("nestedTerms") instanceof List<?> list?list:List.of();
+            top.put("arity",rawTerms.size());top.put("terms",rawTerms);
+            return Collections.unmodifiableMap(top);
+        }
+        return Map.of("raw",trimmed,"namespace","default","functor",trimmed,"negative",false,"ground",false,"supported",false,"arity",0,"terms",List.of());
+    }
+    private static Map<String,Object> parseGroundTerm(String raw,int depth) {
+        String s=raw==null?"":raw.trim();
+        if(s.isEmpty()||depth>=32)return Map.of("raw",s,"text",s,"ground",false,"supported",false,"key",Map.of("unsupported",s));
+        if(s.length()>=2&&s.startsWith("\"")&&s.endsWith("\"")) {
+            var unescaped=new StringBuilder();
+            for(int i=1;i<s.length()-1;i++) {
+                char c=s.charAt(i);
+                if(c=='\\'&&i+1<s.length()-1){char next=s.charAt(++i);unescaped.append(switch(next){case 'n'->'\n';case 'r'->'\r';case 't'->'\t';default->next;});}
+                else unescaped.append(c);
+            }
+            return Map.of("raw",s,"text",s,"ground",true,"supported",true,"key",Map.of("kind","STRING","value",unescaped.toString()));
+        }
+        try {
+            var num=new java.math.BigDecimal(s).stripTrailingZeros();
+            return Map.of("raw",s,"text",s,"ground",true,"supported",true,"key",Map.of("kind","NUMBER","value",num));
+        }catch(NumberFormatException notNumber){ }
+        if(s.startsWith("[")&&s.endsWith("]")) {
+            String inner=s.substring(1,s.length()-1).trim();
+            var parts=inner.isEmpty()?List.<String>of():splitTopLevelArgs(inner);
+            var items=new ArrayList<Map<String,Object>>();
+            for(String part:parts)items.add(parseGroundTerm(part,depth+1));
+            boolean ground=items.stream().allMatch(i->Boolean.TRUE.equals(i.get("ground")));
+            boolean supported=items.stream().allMatch(i->Boolean.TRUE.equals(i.get("supported")));
+            var keys=items.stream().map(i->{var m=new LinkedHashMap<>(i);m.remove("nestedTerms");return m.get("key");}).toList();
+            return Map.of("raw",s,"text",s,"ground",ground,"supported",supported,"key",Map.of("kind","LIST","items",keys,"tail",""));
+        }
+        if(Character.isUpperCase(s.charAt(0))||s.startsWith("_")) {
+            return Map.of("raw",s,"text",s,"ground",false,"supported",false,"key",Map.of("unsupported",s));
+        }
+        String work=stripTrailingAnnotations(s);
+        String namespace="default";
+        int nsIdx=indexOfTopLevelNs(work);
+        if(nsIdx>0){namespace=work.substring(0,nsIdx).trim();work=work.substring(nsIdx+2).trim();}
+        boolean negative=false;
+        if(work.startsWith("~")){negative=true;work=work.substring(1).trim();}
+        int openParen=indexOfTopLevelOpenParen(work);
+        String functor;List<String> argStrings;
+        if(openParen>0&&work.endsWith(")")) {
+            functor=work.substring(0,openParen).trim();
+            String inside=work.substring(openParen+1,work.length()-1).trim();
+            argStrings=inside.isEmpty()?List.of():splitTopLevelArgs(inside);
+        }else {
+            functor=work;argStrings=List.of();
+        }
+        var nested=new ArrayList<Map<String,Object>>();
+        for(String arg:argStrings) {
+            var parsedArg=new LinkedHashMap<>(parseGroundTerm(arg,depth+1));
+            parsedArg.remove("nestedTerms");
+            nested.add(Collections.unmodifiableMap(parsedArg));
+        }
+        boolean ground=!functor.isEmpty()&&nested.stream().allMatch(i->Boolean.TRUE.equals(i.get("ground")));
+        boolean supported=ground&&nested.stream().allMatch(i->Boolean.TRUE.equals(i.get("supported")));
+        var termKeys=nested.stream().map(i->i.get("key")).toList();
+        var key=Map.of("kind","LITERAL","namespace",namespace,"functor",functor,"negative",negative,"terms",termKeys);
+        return Map.of("raw",s,"text",s,"ground",ground,"supported",supported,"key",key,"nestedTerms",List.copyOf(nested));
+    }
+    private static String stripTrailingAnnotations(String s) {
+        if(!s.endsWith("]"))return s;
+        int depthParen=0,depthBracket=0;boolean inQuotes=false;
+        for(int i=0;i<s.length();i++) {
+            char c=s.charAt(i);
+            if(c=='"'&&(i==0||s.charAt(i-1)!='\\'))inQuotes=!inQuotes;
+            else if(!inQuotes) {
+                if(c=='(')depthParen++;else if(c==')')depthParen--;
+                else if(c=='['){if(depthParen==0&&depthBracket==0)return s.substring(0,i).trim();depthBracket++;}
+                else if(c==']')depthBracket--;
+            }
+        }
+        return s;
+    }
+    private static int indexOfTopLevelNs(String s) {
+        boolean inQuotes=false;int depth=0;
+        for(int i=0;i<s.length()-1;i++) {
+            char c=s.charAt(i);
+            if(c=='"'&&(i==0||s.charAt(i-1)!='\\'))inQuotes=!inQuotes;
+            else if(!inQuotes) {
+                if(c=='('||c=='[')depth++;else if(c==')'||c==']')depth--;
+                else if(depth==0&&c==':'&&s.charAt(i+1)==':')return i;
+            }
+        }
+        return -1;
+    }
+    private static int indexOfTopLevelOpenParen(String s) {
+        boolean inQuotes=false;int depthBracket=0;
+        for(int i=0;i<s.length();i++) {
+            char c=s.charAt(i);
+            if(c=='"'&&(i==0||s.charAt(i-1)!='\\'))inQuotes=!inQuotes;
+            else if(!inQuotes) {
+                if(c=='[')depthBracket++;else if(c==']')depthBracket--;
+                else if(depthBracket==0&&c=='(')return i;
+            }
+        }
+        return -1;
+    }
+    private static List<String> splitTopLevelArgs(String s) {
+        var result=new ArrayList<String>();int start=0,depth=0;boolean inQuotes=false;
+        for(int i=0;i<s.length();i++) {
+            char c=s.charAt(i);
+            if(c=='"'&&(i==0||s.charAt(i-1)!='\\'))inQuotes=!inQuotes;
+            else if(!inQuotes) {
+                if(c=='('||c=='[')depth++;
+                else if(c==')'||c==']')depth--;
+                else if(depth==0&&c==','){result.add(s.substring(start,i).trim());start=i+1;}
+            }
+        }
+        result.add(s.substring(start).trim());
+        return List.copyOf(result);
+    }
     private RuntimeTables.Dataset artifactReferences(Definition definition,RuntimeSnapshot cut,String run,long generation,String proof,CaptureContext context) {
         var frames=steps(definition,cut,run,generation,proof,context);var rows=new ArrayList<RuntimeTables.Row>();
+        boolean schemeOnly=definition.node().name().equals("schemeReferences");
         for(var frame:frames.rows())if(frame.quality()==Completeness.COMPLETE)try {
             var bindings=CanonicalJson.object(frame.values().get("bindings"));
-            var actual=CartagoPhysicalReference.require(bindings.get("artifact"),cut);
-            var values=new LinkedHashMap<>(frame.values());values.put("stepInvocation",frame.identity());values.put("identity",actual.artifact().id().canonical());
-            values.put("domainIdentity",actual.artifact().id().canonical());
-            values.put("artifactSemanticId",actual.artifact().values().get("semanticId"));values.put("artifactName",actual.artifact().values().get("name"));
-            values.put("javaClass",actual.artifact().values().get("artifactTypeJavaClassName"));values.put("workspaceIdentity",actual.workspace().id().canonical());
+            Object rawArtifact=bindings.get("artifact");
+            boolean hasArtifact=rawArtifact instanceof Map<?,?> map&&!map.isEmpty();
+            var actual=hasArtifact||!schemeOnly?CartagoPhysicalReference.require(rawArtifact,cut):null;
+            var values=new LinkedHashMap<>(frame.values());values.put("stepInvocation",frame.identity());
+            if(actual!=null) {
+                values.put("identity",actual.artifact().id().canonical());
+                values.put("domainIdentity",actual.artifact().id().canonical());
+                values.put("artifactSemanticId",actual.artifact().values().get("semanticId"));values.put("artifactName",actual.artifact().values().get("name"));
+                values.put("javaClass",actual.artifact().values().get("artifactTypeJavaClassName"));values.put("workspaceIdentity",actual.workspace().id().canonical());
+            }
+            CartagoPhysicalReference referencedScheme=null;
             if(frame.values().get("scheme") instanceof String scheme&&!scheme.isBlank()) {
                 var referenced=CartagoPhysicalReference.require(bindings.get("schemeArtifact"),cut);
                 var boards=cut.facts().stream().filter(f->f.kind()==RuntimeFactKind.SCHEME_BOARD&&f.id().canonical().equals(scheme)&&f.completeness()==Completeness.COMPLETE&&f.projectionStatus()==ProjectionStatus.MATERIALIZED_FAITHFULLY).toList();
@@ -232,15 +404,29 @@ public final class RuntimeFactSources {
                 if(!"1.0.0".equals(board.values().get("schemeArgumentObservationVersion")))continue;
                 if(cut.sourceCompleteness().getOrDefault(family,Completeness.UNAVAILABLE)==Completeness.UNAVAILABLE||!cut.startWatermarks().containsKey(family)||!Objects.equals(cut.startWatermarks().get(family),cut.endWatermarks().get(family)))continue;
                 context.qualify(board);
+                referencedScheme=referenced;
                 values.put("schemeArtifactIdentity",referenced.artifact().id().canonical());values.put("schemeWorkspaceIdentity",referenced.workspace().id().canonical());
+                values.put("schemeArtifactName",referenced.artifact().values().get("name"));
+                values.put("schemeSpecSemanticId",board.values().get("schemeSpecSemanticId"));
+                String creator=currentJasonPlayer(referenced.artifact().values().get("creatorAgentSemanticId"),cut);
+                if(creator!=null)values.put("schemeCreatorRuntimeId",creator);
                 values.put("schemeArguments",board.values().get("schemeArguments"));values.put("schemeArgumentTerms",board.values().get("schemeArgumentTerms"));
+                publicSchemeBindings(values,board,referenced.artifact(),cut,run,context);
             }
-            var proofs=new LinkedHashMap<>(frame.proofs());proofs.put("physical-identity",actual.artifact().id().canonical());
-            proofs.put("typed-reference",SemanticJson.hash(Map.of("frame",frame.values(),"artifact",actual.artifact().id().canonical(),"workspace",actual.workspace().id().canonical())));
-            if(definition.node().name().equals("schemeReferences")) {
+            var refTarget=actual!=null?actual:referencedScheme;
+            if(refTarget==null)continue;
+            var proofs=new LinkedHashMap<>(frame.proofs());proofs.put("physical-identity",refTarget.artifact().id().canonical());
+            proofs.put("typed-reference",SemanticJson.hash(Map.of("frame",frame.values(),"artifact",refTarget.artifact().id().canonical(),"workspace",refTarget.workspace().id().canonical())));
+            if(schemeOnly) {
                 if(!(values.get("scheme") instanceof String scheme)||scheme.isBlank()||!values.containsKey("schemeArtifactIdentity"))continue;
                 values.put("identity",scheme);proofs.put("physical-identity",scheme);
-                rows.add(new RuntimeTables.Row(scheme,values,Completeness.COMPLETE,proofs,Set.of(scheme)));
+                var schemeAliases=new LinkedHashSet<String>();schemeAliases.add(scheme);
+                if(values.get("schemeArtifactIdentity") instanceof String artId&&!artId.isBlank())schemeAliases.add(artId);
+                if(bindings.get("inputs") instanceof Map<?,?> inputs)for(Object v:inputs.values()) {
+                    if(v instanceof String s&&!s.isBlank())schemeAliases.add(s);
+                    else if(v instanceof Map<?,?> m&&m.get("value") instanceof String s&&!s.isBlank())schemeAliases.add(s);
+                }
+                rows.add(new RuntimeTables.Row(scheme,values,Completeness.COMPLETE,proofs,Set.copyOf(schemeAliases)));
             }else rows.add(new RuntimeTables.Row(actual.artifact().id().canonical(),values,Completeness.COMPLETE,proofs,actual.aliases()));
         }catch(IllegalArgumentException|ContractException unavailable){/* A past/missing handle never supplies a current physical world object. */}
         return new RuntimeTables.Dataset(rows,Completeness.PARTIAL);
@@ -362,7 +548,7 @@ public final class RuntimeFactSources {
     private static String currentJasonPlayer(Object physical,RuntimeSnapshot cut) {
         if(!(physical instanceof String id)||cut.sourceCompleteness().getOrDefault("jason",Completeness.UNAVAILABLE)==Completeness.UNAVAILABLE
                 ||!cut.startWatermarks().containsKey("jason")||!Objects.equals(cut.startWatermarks().get("jason"),cut.endWatermarks().get("jason")))return null;
-        var memberships=cut.facts().stream().filter(f->faithfulCartago(f)&&f.kind()==RuntimeFactKind.AGENT&&f.id().authority().equals("cartago")&&f.id().dimension().equals("environment")&&f.id().kind().equals("agent")&&f.id().canonical().equals(id)).toList();
+        var memberships=cut.facts().stream().filter(f->faithfulCartago(f)&&f.kind()==RuntimeFactKind.AGENT&&f.id().authority().equals("cartago")&&f.id().dimension().equals("environment")&&f.id().kind().equals("agent")&&(f.id().canonical().equals(id)||id.equals(f.values().get("semanticId")))).toList();
         if(memberships.size()!=1||!(memberships.getFirst().values().get("agentRuntimeSemanticId") instanceof String runtime))return null;
         var players=cut.facts().stream().filter(f->f.kind()==RuntimeFactKind.AGENT&&f.id().authority().equals("jason")&&f.id().dimension().equals("agent")&&f.id().kind().equals("runtime-agent")
             &&Objects.equals(f.values().get("name"),memberships.getFirst().values().get("name"))).toList();
@@ -415,6 +601,14 @@ public final class RuntimeFactSources {
     }
     /** Public normalized MOISE relations, independent of a case's domain Artifact or step completion. */
     private void publicSchemeBindings(Map<String,Object> data,RuntimeFact board,RuntimeFact artifact,RuntimeSnapshot cut,String run,CaptureContext context) {
+        data.putIfAbsent("schemeArtifactIdentity",artifact.id().canonical());
+        data.putIfAbsent("schemeWorkspaceIdentity",artifact.id().scope());
+        data.putIfAbsent("schemeArtifactName",artifact.values().get("name"));
+        data.putIfAbsent("schemeSpecSemanticId",board.values().get("schemeSpecSemanticId"));
+        data.putIfAbsent("schemeCreatorRuntimeId",artifact.values().get("creatorRuntimeId"));
+        data.putIfAbsent("schemeOwner",board.values().get("owner"));
+        data.putIfAbsent("schemeArguments",board.values().getOrDefault("goalArguments",Map.of()));
+        data.putIfAbsent("schemeArgumentTerms",board.values().getOrDefault("goalArgumentTerms",Map.of()));
         var observation=org.tzi.use.plugins.jacamo.semantics.observer.FunctionalObservation.decode(board.id(),board.values());
         data.put("publicGoals",observation.goals().stream().map(goal->{
             var definition=observation.definition().goals().stream().filter(g->g.metadata().semanticId().equals(goal.definition())).findFirst().orElseThrow();

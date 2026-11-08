@@ -36,7 +36,7 @@ public class VerifiedCheckpointsAuctionIT {
         var hashes=sourceHashes(original.getParent());Path models=Path.of("examples/auction").toRealPath();
         var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",models.resolve("auction-mapping.xml"),models.resolve("auction.ocl"),models.resolve("auction.csl"),models.resolve("auction.istar"),false);
         var session=new Session();var facade=new DefaultJaCaMoFacade(checkout,session);facade.verifiedCheckpointMode(true);facade.nextJournalBudgetBytes(536870912);
-        var observed=new LinkedHashMap<String,Object>();int reviews=0,failures=0,automatic=0;String previousToken="";boolean lastHeld=false,reconnected=false;
+        var observed=new LinkedHashMap<String,Object>();int reviews=0,failures=0,automatic=0;String previousToken="";boolean lastHeld=false,reconnected=false,sawStartT2=false;
         var recordings=new ArrayList<Path>();
         try {
             facade.prepareOwnedProducer(original,selection,checkout.resolve("jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt"));
@@ -47,12 +47,13 @@ public class VerifiedCheckpointsAuctionIT {
                 if(!view.token().isBlank()&&!view.token().equals(previousToken)) {
                     if(!previousToken.isBlank()&&!lastHeld)automatic++;
                     previousToken=view.token();lastHeld=false;lastActivity=System.nanoTime();
+                    if(view.checkpoint().endsWith(":A_start_t2"))sawStartT2=true;
                     System.out.println("SOURCE_CHECKPOINT token="+view.token()+" checkpoint="+view.checkpoint()+" state="+view.state()+" reason="+view.reason());
                 }
-                if(automatic>=1&&!Files.exists(evidence.resolve("request-evidence-input")))Files.writeString(evidence.resolve("request-evidence-input"),"Actual AuctionArtifact.stop() twice as an existing source performer; no model, native state or result mutation");
+                if(sawStartT2&&automatic>=1&&!Files.exists(evidence.resolve("request-evidence-input")))Files.writeString(evidence.resolve("request-evidence-input"),"Actual AuctionArtifact.stop() twice as an existing source performer; no model, native state or result mutation");
                 if(view.reviewable()) {
-                    if(view.checkpoint().endsWith(":A_start_t1"))Files.write(evidence.resolve("initial-held.json"),CanonicalJson.encode(Map.of("state",view.state(),"reason",view.reason(),"request",view.request(),"native",facade.verificationSnapshot().toMap())));
-                    assertFalse(view.checkpoint().endsWith(":A_start_t1"),"Both concurrent creation Tasks must drain and verify without an initialization hold");
+                    if(view.checkpoint().endsWith(":createScheme")||view.checkpoint().endsWith(":commitMission")||view.checkpoint().endsWith(":A_start_t1"))Files.write(evidence.resolve("initial-held.json"),CanonicalJson.encode(Map.of("state",view.state(),"reason",view.reason(),"request",view.request(),"native",facade.verificationSnapshot().toMap())));
+                    assertFalse(view.checkpoint().endsWith(":createScheme")||view.checkpoint().endsWith(":commitMission")||view.checkpoint().endsWith(":A_start_t1"),"Setup and creation Tasks must drain and verify without an initialization hold");
                     System.out.println("NATIVE_HELD token="+view.token()+" result="+view.resultHash()+" state="+view.state()+" reason="+view.reason());
                     var originalCut=facade.verificationSnapshot();var originalTruth=originalCut.result()==null?"":originalCut.result().resultHash();
                     Files.write(evidence.resolve("native-"+view.token()+".json"),CanonicalJson.encode(originalCut.toMap()));
@@ -92,13 +93,14 @@ public class VerifiedCheckpointsAuctionIT {
                     Files.write(evidence.resolve("unavailable.json"),CanonicalJson.encode(Map.of("reason",view.reason(),"request",view.request(),"snapshot",facade.verificationSnapshot().toMap())));
                     if(System.nanoTime()-lastActivity>TimeUnit.SECONDS.toNanos(12))throw new AssertionError("Native cut unavailable: "+view.reason());
                 }
-                if(System.nanoTime()-lastActivity>TimeUnit.SECONDS.toNanos(15)&&observed.size()+automatic>4)break;
+                if((System.nanoTime()-lastActivity>TimeUnit.SECONDS.toNanos(15)||reviews>=6&&reconnected&&failures>0)&&observed.size()+automatic>4)break;
                 Thread.sleep(100);
             }
             Path replay=evidence.resolve("replay");facade.exportRuntimeReplay(replay);recordings.add(replay);
             var approvals=new HashSet<String>();var acknowledgements=new HashSet<String>();
             for(Path recording:recordings)try(var lines=Files.lines(recording.resolve("runtime.jsonl"))) {
                 for(String line:(Iterable<String>)lines::iterator) {
+                    if(!line.contains("\"CHECKPOINT_AUDIT\""))continue;
                     var entry=CanonicalJson.object(CanonicalJson.decode(line.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
                     if(!"CHECKPOINT_AUDIT".equals(entry.get("kind")))continue;
                     var audit=CanonicalJson.object(CanonicalJson.object(entry.get("payload")).get("checkpointAudit"));

@@ -23,6 +23,7 @@ public final class AuctionEvidenceInputAgent {
                 while(!Files.isRegularFile(root.resolve("request-evidence-input"))&&System.nanoTime()<end)Thread.sleep(50);
                 if(!Files.isRegularFile(root.resolve("request-evidence-input")))return;
                 var environment=CartagoEnvironment.getInstance();var workspace=environment.resolveWSP("/main/aorg").getWorkspace();
+                while(workspace.getArtifactDescriptor("a1")==null&&System.nanoTime()<end)Thread.sleep(50);
                 long id=900000;
                 // A second real stop violates the unchanged RunningForStop PRE.
                 // The operation itself reports failure; the native engine owns

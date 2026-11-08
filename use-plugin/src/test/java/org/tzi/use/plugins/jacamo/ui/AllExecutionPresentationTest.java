@@ -46,7 +46,13 @@ class AllExecutionPresentationTest {
     }
     @Test void displayVocabularyPreservesUnavailableTruthAndUnassignedGoals(){
         assertEquals("Unknown",PresentationResults.goal("NOT_ASSIGNED",false));
+        assertEquals("Unknown",PresentationResults.goal("PENDING",false));
+        assertEquals("Incomplete",PresentationResults.goal("VIOLATED",false));
+        assertEquals("Incomplete",PresentationResults.goal("FAILED",false));
         assertEquals("Incomplete",PresentationResults.goal("FULFILLED",true));
+        assertEquals("Unknown",PresentationResults.agentResult("PENDING","KNOWN"));
+        assertEquals("Incomplete",PresentationResults.agentResult("FAILED","KNOWN_HISTORY"));
+        assertEquals("Incomplete",PresentationResults.agentResult("VIOLATED","KNOWN_DERIVED"));
         assertEquals("Unknown",PresentationResults.truth("SKIPPED"));
         assertEquals("Error",PresentationResults.truth("ERROR"));
         assertEquals("False",PresentationResults.truth("CONDITION_FALSE"));

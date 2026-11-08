@@ -35,8 +35,12 @@ actual observed source values supply runtime state.
 The iStar capability node is a Role, as declared in Draw.io. Its physical-player
 occurrence view represents the shared program available before mission assignment;
 it is neither an additional running agent nor a fabricated MOISE role enactment.
-Five Tasks share one Resource; the three original external Dependencies and two
+Seven Tasks (`createScheme` and `commitMission` under initial setup Goal `do_auction`,
+plus `A_start_t1`, `A_start_t2`, `A_decide_t2`, `P_bid_t1`, `P_bid_t2`) use two
+Resources (`SchemeBoard` and `AuctionArtifact`); the three original external Dependencies and two
 participates-in links are retained. There are no extra capability Dependencies.
+Explicit `scopeRef` bindings scope `do_auction` to `initial-auction-setup` and `O_root`
+to `auction-execution`.
 Explicit SAME_SCOPE_PLAYER_REFINEMENT_VIEW/1.0 XML declarations connect repeated
 Goal views with equal structured owner/sourceGoal metadata. Native evaluation
 uses the same player's captured source Task evidence in the same execution scope

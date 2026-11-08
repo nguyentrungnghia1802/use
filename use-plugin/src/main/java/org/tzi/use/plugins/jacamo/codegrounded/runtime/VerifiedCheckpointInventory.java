@@ -27,11 +27,18 @@ public final class VerifiedCheckpointInventory {
                 var bindings=CanonicalJson.object(view.getOrDefault("bindings",Map.of()));
                 if(bindings.values().stream().noneMatch(value->value instanceof String id&&scope.equals("source:"+id)))continue;
                 found=true;var occurrences=CanonicalJson.object(context.getOrDefault("occurrences",Map.of()));
-                for(Object target:targets) {
-                    var roots=occurrences.values().stream().map(CanonicalJson::object).filter(o->target.equals(o.get("sourceElement"))).toList();
+                var contextTargets=org.tzi.use.plugins.jacamo.semantics.runtime.RequirementInventory.targetsForContext(inventory,context);
+                if(contextTargets.isEmpty())unknown=true;
+                for(Object target:contextTargets) {
+                    var roots=occurrences.values().stream().map(CanonicalJson::object)
+                            .filter(o->target.equals(o.get("sourceElement"))
+                                    &&!"SOURCE_NOT_ASSIGNED".equals(o.get("quality"))
+                                    &&!"SOURCE_NOT_ASSIGNED".equals(o.get("executionQuality")))
+                            .toList();
                     if(roots.isEmpty())unknown=true;
                     for(var root:roots) {
                         String status=Objects.toString(root.get("aggregateStatus"),""),quality=Objects.toString(root.get("quality"),"");
+                        String executionStatus=Objects.toString(root.getOrDefault("executionStatus",""));
                         boolean nativeCut="PINNED_NATIVE_CUT".equals(core.get("evaluated"));
                         boolean prefix="OBSERVED_PREFIX".equals(core.get("historyQuality"));
                         boolean known=nativeCut&&prefix&&Set.of("KNOWN","KNOWN_DERIVED").contains(quality);
@@ -40,8 +47,9 @@ public final class VerifiedCheckpointInventory {
                         known|=nativeCut&&prefix&&Set.of("KNOWN","KNOWN_DERIVED").contains(executionQuality)
                                 &&"ORIGINAL_PROPAGATION_ON_ADMITTED_LEAVES/1.0".equals(context.get("executionQualification"));
                         known|=nativeCut&&!evidence.isEmpty()&&Set.of("KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(executionQuality);
-                        failed|=known&&Set.of("VIOLATED","FAILED").contains(status);
-                        unknown|=!known||!Set.of("FULFILLED","VIOLATED","FAILED").contains(status);
+                        String effective=known&&Set.of("FULFILLED","VIOLATED","FAILED").contains(executionStatus)?executionStatus:status;
+                        failed|=known&&Set.of("VIOLATED","FAILED").contains(effective);
+                        unknown|=!known||!Set.of("FULFILLED","VIOLATED","FAILED").contains(effective);
                     }
                 }
             }
@@ -83,8 +91,9 @@ public final class VerifiedCheckpointInventory {
                     ||constraint.kind().equals("INVOCATION")&&!constraint.contextObject().isBlank();
             if(!relevant)continue;
             String truth=switch(constraint.verdict()){case PASS->"PASS";case FAIL->"FAIL";case ERROR->"ERROR";default->"UNKNOWN";};
-            rows.put("semantic:"+constraint.id()+":"+constraint.invocation(),new Check(truth,"APPLICABLE",constraint.diagnostic()));
-            failed|=truth.equals("FAIL");unknown|=!Set.of("PASS","FAIL").contains(truth);
+            String applicability=supportingTaskCheck(inventory,constraint)?"NOT_APPLICABLE":"APPLICABLE";
+            rows.put("semantic:"+constraint.id()+":"+constraint.invocation(),new Check(truth,applicability,constraint.diagnostic()));
+            if(applicability.equals("APPLICABLE")){failed|=truth.equals("FAIL");unknown|=!Set.of("PASS","FAIL").contains(truth);}
         }
         if(!"OBSERVED_PREFIX".equals(semantic.coverage().get("history")))unknown=true;
         // Preserve the original engine's terminal failures. PENDING remains
@@ -93,10 +102,17 @@ public final class VerifiedCheckpointInventory {
         if(original instanceof Map<?,?> core&&core.get("contexts") instanceof List<?> contexts)for(Object rawContext:contexts) {
             var context=CanonicalJson.object(rawContext);Object rawOccurrences=context.get("occurrences");
             if(!(rawOccurrences instanceof Map<?,?>))continue;
+            var contextTargets=org.tzi.use.plugins.jacamo.semantics.runtime.RequirementInventory.targetsForContext(inventory,context);
             for(var entry:CanonicalJson.object(rawOccurrences).entrySet()) {
-                var occurrence=CanonicalJson.object(entry.getValue());String status=Objects.toString(occurrence.get("aggregateStatus"),"");
-                if(Set.of("VIOLATED","FAILED").contains(status)) {
-                    rows.put("original:"+Objects.toString(context.get("context"))+":"+entry.getKey(),new Check("FAIL","APPLICABLE","ORIGINAL_ENGINE_TERMINAL_"+status));failed=true;
+                var occurrence=CanonicalJson.object(entry.getValue());
+                String status=Objects.toString(occurrence.get("aggregateStatus"),"");
+                String executionStatus=Objects.toString(occurrence.getOrDefault("executionStatus",""));
+                String effective=Set.of("VIOLATED","FAILED").contains(executionStatus)?executionStatus:status;
+                if(Set.of("VIOLATED","FAILED").contains(effective)) {
+                    String sourceElement=Objects.toString(occurrence.getOrDefault("sourceElement",entry.getKey()),"");
+                    String applicability=contextTargets.isEmpty()||contextTargets.contains(sourceElement)?"APPLICABLE":"NOT_APPLICABLE";
+                    rows.put("original:"+Objects.toString(context.get("context"))+":"+entry.getKey(),new Check("FAIL",applicability,"ORIGINAL_ENGINE_TERMINAL_"+effective));
+                    if(applicability.equals("APPLICABLE"))failed=true;
                 }
             }
         }
@@ -115,6 +131,7 @@ public final class VerifiedCheckpointInventory {
     private static void addPrefixChecks(VerificationSnapshot cut,RuntimeHistoryPage.Entry entry,Map<String,Check> rows){
         if(entry.kind().equals("CHECKPOINT_AUDIT")||entry.result().freshness().equals("TRACE_ONLY")||entry.result().semantic()==null
                 ||!entry.result().sessionId().equals(cut.result().sessionId())||entry.result().generation()!=cut.result().generation()||!entry.result().modelRevision().equals(cut.result().modelRevision()))return;
+        var inventory=CanonicalJson.object(entry.result().semantic().observation().getOrDefault("requirementInventory",Map.of()));
         for(var check:entry.result().semantic().constraints()) {
             // A transient cast-readiness diagnostic has no captured invocation
             // PRE/POST state. Its applicability is checked at the frozen cut.
@@ -123,8 +140,21 @@ public final class VerifiedCheckpointInventory {
                     &&!(check.kind().equals("RUNTIME_BINDING")&&!check.invocation().isBlank())
                     &&!(check.kind().equals("INVOCATION")&&!check.contextObject().isBlank()))continue;
             String truth=switch(check.verdict()){case PASS->"PASS";case FAIL->"FAIL";case ERROR->"ERROR";default->"UNKNOWN";};
-            rows.put("prefix:"+entry.ordinal()+":"+check.id()+":"+check.invocation(),new Check(truth,"APPLICABLE",check.diagnostic()));
+            String applicability=supportingTaskCheck(inventory,check)?"NOT_APPLICABLE":"APPLICABLE";
+            rows.put("prefix:"+entry.ordinal()+":"+check.id()+":"+check.invocation(),new Check(truth,applicability,check.diagnostic()));
         }
+    }
+    private static boolean supportingTaskCheck(Map<String,Object> inventory,org.tzi.use.plugins.jacamo.semantics.evidence.SemanticConstraintResult check) {
+        if(!Set.of("TASK_PRE","TASK_POST","TASK_INVOCATION").contains(check.kind())||check.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.ERROR)return false;
+        var targets=inventory.get("selectedIntentionalElements") instanceof List<?> list?list:List.of();
+        if(targets.isEmpty())return false;
+        String targetTask=Objects.toString(check.witness().getOrDefault("targetTaskId",""),"");
+        if(targetTask.isBlank()&&check.id().startsWith("TASK:")) {
+            String rest=check.id().substring("TASK:".length());
+            int colon=rest.indexOf(':');
+            if(colon>0)targetTask=rest.substring(0,colon);
+        }
+        return !targetTask.isBlank()&&!targets.contains(targetTask);
     }
     public static Map<String,Check> evaluatePrefix(VerificationSnapshot cut,RuntimeEventJournal journal,long from,long end){
         var tail=journal.retainedEntries();

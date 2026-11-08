@@ -24,7 +24,7 @@ public class CheckpointMilestoneAuctionIT {
     static void run(Path evidence) throws Exception {
         Path checkout=Path.of("..").toRealPath(),project=checkout.getParent().resolve("jacamo/examples/auction/auction.jcm"),models=checkout.resolve("use-plugin/examples/auction");
         org.tzi.use.config.Options.processArgs(new String[]{"-H="+checkout.resolve("use-assembly/target/new"),"-nogui","-nr"});
-        var original=VerifiedCheckpointsAuctionIT.sourceHashes(project.getParent());var session=new Session();var facade=new DefaultJaCaMoFacade(checkout,session);facade.verifiedCheckpointMode(true);
+        var original=VerifiedCheckpointsAuctionIT.sourceHashes(project.getParent());var session=new Session();var facade=new DefaultJaCaMoFacade(checkout,session);facade.verifiedCheckpointMode(true);facade.nextJournalBudgetBytes(536870912L);
         var frame=new java.util.concurrent.atomic.AtomicReference<JFrame>();var panel=new java.util.concurrent.atomic.AtomicReference<JaCaMoWorkbenchPanel>();
         try {
             facade.prepareOwnedProducer(project,new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",models.resolve("auction-mapping.xml"),models.resolve("auction.ocl"),models.resolve("auction.csl"),models.resolve("auction.istar"),false),null,false);
@@ -42,7 +42,7 @@ public class CheckpointMilestoneAuctionIT {
             while(!complete&&System.nanoTime()<end){Thread.sleep(250);var ok=new java.util.concurrent.atomic.AtomicBoolean(true);
                 SwingUtilities.invokeAndWait(()->{
                     var tabs=CheckpointStabilityAuctionIT.tabs(panel.get());var results=CheckpointStabilityAuctionIT.find(tabs,"use4goal-live-results",ObservedConformancePanel.class);
-                    var selector=CheckpointStabilityAuctionIT.find(tabs,"execution-scope-selector",JComboBox.class);if(selector.getItemCount()!=2){ok.set(false);return;}
+                    var selector=CheckpointStabilityAuctionIT.find(tabs,"execution-scope-selector",JComboBox.class);if(selector.getItemCount()!=5){ok.set(false);return;}
                     for(int i=0;i<selector.getItemCount();i++){
                         selector.setSelectedIndex(i);var states=CheckpointStabilityAuctionIT.find(tabs,"observed-state-selector",JComboBox.class);
                         String scope=results.executionScope();var cut=results.selectedCut();if(cut==null||!ExecutionScopeViews.goalVerdict(cut).equals("COMPLETE_OBSERVED")){ok.set(false);continue;}
@@ -58,6 +58,7 @@ public class CheckpointMilestoneAuctionIT {
             facade.exportRuntimeReplay(evidence.resolve("replay"));assertEquals(original,VerifiedCheckpointsAuctionIT.sourceHashes(project.getParent()));
             int releases=0;var displayed=new HashMap<String,String>();
             try(var lines=Files.lines(evidence.resolve("replay/runtime.jsonl"))){for(String line:(Iterable<String>)lines::iterator){
+                if(!line.contains("\"CHECKPOINT_AUDIT\""))continue;
                 var row=CanonicalJson.object(CanonicalJson.decode(line.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
                 if(!row.get("kind").equals("CHECKPOINT_AUDIT"))continue;
                 var audit=CanonicalJson.object(CanonicalJson.object(row.get("payload")).get("checkpointAudit"));

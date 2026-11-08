@@ -150,26 +150,34 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
                 boolean topologyReady=topologyCompleteness==Completeness.COMPLETE;
                 var facts=readSnapshot(observationKinds.contains(RuntimeFactKind.OPERATION));
                 var capturedCompleteness=completeness();
+                if(!topologyReady||capturedCompleteness!=Completeness.COMPLETE) {
+                    rejected.add("attempt="+(attempt+1)+",sequence="+before+"->"+sequence.get()+",topologyChanged=false,completeness="+capturedCompleteness+",topologyCompleteness="+topologyCompleteness);
+                    try{Thread.sleep(Math.min(10L,2L*(attempt+1)));}catch(InterruptedException interrupted){Thread.currentThread().interrupt();break;}
+                    continue;
+                }
                 // Public board evidence must describe the same stable CArtAgO interval,
                 // not the poll which preceded this controller read. Never hold the logger
                 // monitor across another framework/controller call.
                 refreshOtherSources.call();String afterTopology=readTopologyFingerprint();
+                boolean retry=false;
                 synchronized(this) {
                     if(sequence.get()!=before||!topology.equals(afterTopology)||!topologyReady||topologyCompleteness!=Completeness.COMPLETE||capturedCompleteness!=Completeness.COMPLETE) {
                         rejected.add("attempt="+(attempt+1)+",sequence="+before+"->"+sequence.get()+",topologyChanged="+!topology.equals(afterTopology)+",completeness="+capturedCompleteness+",topologyCompleteness="+topologyCompleteness);
-                        continue;
+                        retry=true;
+                    } else {
+                        var neutral=capabilities;
+                        if(neutral==null||observer==null)throw new IllegalStateException("CARTAGO_OBSERVATION_OWNER_UNAVAILABLE");
+                        long next=before+1;
+                        var committed=neutral.commitStableCapture(facts.stream().filter(f->observationKinds.contains(f.kind())||f.kind()==RuntimeFactKind.OPERATION).toList(),before,next);var ended=Instant.now();var mark=new SourceWatermark(sourceId(),next);
+                        var metadata=new LinkedHashMap<String,Object>(Map.of("cutPolicy","LOCAL_SOURCE_STABLE_INTERVAL","topologyStart",topology,"topologyEnd",afterTopology,"globalAtomicity","UNSUPPORTED","capturedFactKinds",observationKinds.stream().map(Enum::name).sorted().toList(),"supplementalFactKinds",observationKinds.contains(RuntimeFactKind.OPERATION)?List.of():List.of("OPERATION")));
+                        var scope=observationScope;if(scope!=null){metadata.put("captureScope",scope.evidence());metadata.put("captureScopeHash",scope.hash());}
+                        var cut=new org.jacamo.bridge.contract.RuntimeSnapshot("cartago-cut:"+sessionId+":"+next,System.getProperty("jacamo.bridge.modelRevision"),started,ended,Map.of(sourceId(),mark),Map.of(sourceId(),mark),attempt+1,committed,Map.of(sourceId(),Completeness.COMPLETE),AdapterEvidence.digest(org.jacamo.bridge.contract.CanonicalJson.encode(committed.stream().map(f->List.of(f.id().canonical(),f.values())).toList())),metadata);
+                        var values=org.jacamo.bridge.contract.CartagoSourceCut.payload(cut);
+                        emit(RuntimeEventKind.CHANGED,new BridgeEntityId("cartago","environment","source-cut",environment.getId().toString(),"capture",sessionId),RuntimeFactKind.RUNTIME_EVENT,values);
+                        callback.run();return;
                     }
-                    var neutral=capabilities;
-                    if(neutral==null||observer==null)throw new IllegalStateException("CARTAGO_OBSERVATION_OWNER_UNAVAILABLE");
-                    long next=before+1;
-                    var committed=neutral.commitStableCapture(facts.stream().filter(f->observationKinds.contains(f.kind())||f.kind()==RuntimeFactKind.OPERATION).toList(),before,next);var ended=Instant.now();var mark=new SourceWatermark(sourceId(),next);
-                    var metadata=new LinkedHashMap<String,Object>(Map.of("cutPolicy","LOCAL_SOURCE_STABLE_INTERVAL","topologyStart",topology,"topologyEnd",afterTopology,"globalAtomicity","UNSUPPORTED","capturedFactKinds",observationKinds.stream().map(Enum::name).sorted().toList(),"supplementalFactKinds",observationKinds.contains(RuntimeFactKind.OPERATION)?List.of():List.of("OPERATION")));
-                    var scope=observationScope;if(scope!=null){metadata.put("captureScope",scope.evidence());metadata.put("captureScopeHash",scope.hash());}
-                    var cut=new org.jacamo.bridge.contract.RuntimeSnapshot("cartago-cut:"+sessionId+":"+next,System.getProperty("jacamo.bridge.modelRevision"),started,ended,Map.of(sourceId(),mark),Map.of(sourceId(),mark),attempt+1,committed,Map.of(sourceId(),Completeness.COMPLETE),AdapterEvidence.digest(org.jacamo.bridge.contract.CanonicalJson.encode(committed.stream().map(f->List.of(f.id().canonical(),f.values())).toList())),metadata);
-                    var values=org.jacamo.bridge.contract.CartagoSourceCut.payload(cut);
-                    emit(RuntimeEventKind.CHANGED,new BridgeEntityId("cartago","environment","source-cut",environment.getId().toString(),"capture",sessionId),RuntimeFactKind.RUNTIME_EVENT,values);
-                    callback.run();return;
                 }
+                if(retry)try{Thread.sleep(Math.min(10L,2L*(attempt+1)));}catch(InterruptedException interrupted){Thread.currentThread().interrupt();break;}
             }
             throw new UnstableCutException(rejected);
         }
@@ -258,11 +266,14 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
                 values.put("artifactTypeClassLoaderIdentity", type.classLoaderIdentity());
                 values.put("workspaceSemanticId", artifact.workspaceSemanticId());
                 values.put("creatorAgentSemanticId", artifact.creatorAgentSemanticId());
+                var entityId=artifactId(workspaceFullName,artifact.name(),artifact.uuid());
+                boolean pendingBirth=isCreationPending(entityId);
+                if(pendingBirth)complete=false;
                 var exactInfo=environment.getController(workspaceFullName).getArtifactInfo(artifact.name());
-                values.put("artifactProviderObservation",awaitingObservationPlan?Map.of("version","1.0.0","status","UNAVAILABLE","diagnostic","AWAITING_PLAN"):exactInfo!=null&&artifact.uuid().equals(exactInfo.getId().getId().toString())
+                values.put("artifactProviderObservation",awaitingObservationPlan?Map.of("version","1.0.0","status","UNAVAILABLE","diagnostic","AWAITING_PLAN"):pendingBirth?Map.of("version","1.0.0","status","UNAVAILABLE","diagnostic","ARTIFACT_CREATION_PENDING"):exactInfo!=null&&artifact.uuid().equals(exactInfo.getId().getId().toString())
                         ?CartagoArtifactProviderObservation.capture(environment,exactInfo.getId())
                         :Map.of("version","1.0.0","status","UNAVAILABLE","diagnostic","ARTIFACT_REPLACED"));
-                if(exactInfo!=null&&artifact.uuid().equals(exactInfo.getId().getId().toString()))captureCapabilities(values,exactInfo.getId(),"SNAPSHOT",0,null,null);
+                if(!pendingBirth&&exactInfo!=null&&artifact.uuid().equals(exactInfo.getId().getId().toString()))captureCapabilities(values,exactInfo.getId(),"SNAPSHOT",0,null,null);
                 var declarations=BridgeRuntimeRegistry.projectDeclarations();
                 if(declarations.isPresent()) for(var declaration:declarations.get().artifactDeclarations()) {
                         // OfficialCartagoAdapter has already revalidated this UUID
@@ -347,6 +358,9 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         var scope=observationScope;if(scope!=null){metadata.put("captureScope",scope.evidence());metadata.put("captureScopeHash",scope.hash());metadata.put("inventoryAcquisition","OFFICIAL_CONTROLLER_ENUMERATION_THEN_SELECTED_ARTIFACT_INFO_AND_VALUES");}
         if(awaitingObservationPlan)metadata.put("observationPolicy","AWAITING_PLAN_METADATA_ONLY_NOT_COMPLETE_POPULATION");
         return Map.copyOf(metadata);
+    }
+    private synchronized boolean isCreationPending(BridgeEntityId id) {
+        return pendingCreations.contains(id)||!knownArtifacts.contains(id);
     }
     @Override public synchronized Completeness completeness() {
         if(closed)return Completeness.UNAVAILABLE;
@@ -542,6 +556,7 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
                 // opCompleted is delivered before the creating agent's success
                 // feedback. Subscribe before it can join/create domain artifacts.
                 owner.registerLogger(this);pendingLoggerOwners.put(path,owner);
+                for(ArtifactId existing:environment.getController(path).getCurrentArtifacts())synchronized(this){if(!pendingCreations.contains(artifactId(existing)))knownArtifacts.add(artifactId(existing));}
             }
         }catch(Exception unavailable){gap("CARTAGO_DYNAMIC_WORKSPACE_LOGGER_UNAVAILABLE:"+unavailable.getClass().getSimpleName());}
     }
@@ -559,6 +574,7 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
                     if(closed)return;
                     if(loggerOwners.get(name)==owner||pendingLoggerOwners.get(name)==owner)continue;
                     owner.registerLogger(this);pendingLoggerOwners.put(name,owner);
+                    for(ArtifactId existing:environment.getController(name).getCurrentArtifacts())synchronized(this){if(!pendingCreations.contains(artifactId(existing)))knownArtifacts.add(artifactId(existing));}
                 }
             }
         }catch(Exception unavailable){gap("CARTAGO_DYNAMIC_WORKSPACE_LOGGER_UNAVAILABLE:"+unavailable.getClass().getSimpleName());}

@@ -17,7 +17,7 @@ public final class RuntimeObservationCut {
         // A replacement cut carries population/provenance proof even if all values
         // equal the prior partial cut. It must reach mapping and verification.
         if(CartagoSourceCut.KIND.equals(event.after().get("normalizedEventKind"))
-                ||event.completeness()!=Completeness.COMPLETE&&admittedCoverage!=Completeness.PARTIAL||VerificationObservation.present(event)
+                ||event.factKind()!=RuntimeFactKind.ACTION_EXECUTION&&event.completeness()!=Completeness.COMPLETE&&admittedCoverage!=Completeness.PARTIAL||VerificationObservation.present(event)
                 ||Set.of(RuntimeEventKind.REMOVED,RuntimeEventKind.DISPOSED).contains(event.kind())||!before.equals(after))return true;
         // Advancing CArtAgO once past a current receipt changes its qualification even
         // without a fact delta. Subsequent raw callbacks cannot invalidate that old receipt again.
@@ -100,7 +100,7 @@ public final class RuntimeObservationCut {
             Map<String,Completeness> coverage,RuntimeEvent event,Set<RuntimeFactKind> cartagoKinds) {
         var marks=new TreeMap<String,SourceWatermark>();accepted.forEach((s,n)->marks.put(s,new SourceWatermark(s,n)));marks.put(event.sourceId(),event.watermark());
         var quality=new TreeMap<String,Completeness>();marks.keySet().forEach(s->quality.put(s,coverage.getOrDefault(s,Completeness.UNAVAILABLE)));
-        if(event.completeness()!=Completeness.COMPLETE)quality.put(event.sourceId(),Completeness.PARTIAL);
+        if(event.factKind()!=RuntimeFactKind.ACTION_EXECUTION&&event.completeness()!=Completeness.COMPLETE)quality.put(event.sourceId(),Completeness.PARTIAL);
         var ordered=facts.values().stream().filter(f->!f.id().authority().equals("cartago")||cartagoKinds.contains(f.kind())).sorted(Comparator.comparing(f->f.id().canonical())).toList();
         String hash=SemanticJson.hash(ordered.stream().map(f->List.of(f.id().canonical(),f.values(),f.completeness().name(),f.projectionStatus().name())).toList());
         return new RuntimeSnapshot("accepted-prefix:"+event.eventId(),event.modelRevision(),event.observedAt(),event.observedAt(),marks,marks,1,ordered,quality,hash,

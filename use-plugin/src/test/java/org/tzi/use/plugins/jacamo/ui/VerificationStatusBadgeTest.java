@@ -65,6 +65,22 @@ class VerificationStatusBadgeTest {
         var badge=new VerificationStatusBadge();badge.displayed("run","cut",all,checks("PASS"));
         assertEquals("Completed",badge.status(view("RUNNING",false,false),"RUNNING","LIVE").text());
     }
+    @Test void scopedRootRequirementsCompleteWhenEachScopeFulfillsItsOwnSelectedTarget(){
+        var rows=List.of(
+                new Evaluation("do_auction","","FULFILLED","KNOWN","","",true,"GOAL_TASK","","bob","ctx-setup","occ-setup"),
+                new Evaluation("O_root","","FULFILLED","KNOWN","","",true,"GOAL_TASK","","scheme","ctx-auction","occ-auction"));
+        var contexts=List.of(
+                Map.<String,Object>of("context","ctx-setup","scopeDefinition","initial-auction-setup","scopeView",Map.of("version","BOUND_EXECUTION_VIEW/2.0","complete",true,"domainBound",false,"definition","initial-auction-setup","owners",Map.of("bob",Map.of()),"bindings",Map.of("id","a1"))),
+                Map.<String,Object>of("context","ctx-auction","scopeDefinition","auction-execution","scopeView",Map.of("definition","auction-execution","entities",Map.of("Auction:a1",Map.of("identity","source:a1")))));
+        var inventory=Map.<String,Object>of(
+                "selectedIntentionalElements",List.of("O_root","do_auction"),
+                "scopeSelectedIntentionalElements",Map.of("initial-auction-setup",List.of("do_auction"),"auction-execution",List.of("O_root")));
+        var cut=new Cut("cut","","",rows,"COMPLETE_OBSERVED","CURRENT_OBSERVED",false,"","","",true,true,false,
+                Map.of("requirementInventory",inventory,"originalEngine",Map.of("contexts",contexts)));
+        var badge=new VerificationStatusBadge();
+        badge.displayed("run","cut",cut,checks("PASS"));
+        assertEquals("Completed",badge.status(view("RUNNING",false,false),"RUNNING","LIVE").text());
+    }
     @Test void badgeAndContinueAreAdjacentAtTheRightOfTheHeader()throws Exception {
         SwingUtilities.invokeAndWait(()->{
             var label=new JLabel("Running");var button=new JButton("Continue");

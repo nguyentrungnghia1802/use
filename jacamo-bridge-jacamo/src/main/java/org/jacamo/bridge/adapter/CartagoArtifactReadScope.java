@@ -12,8 +12,7 @@ final class CartagoArtifactReadScope {
     record Cut<T>(T value,boolean alreadyHeld) { }
     @FunctionalInterface interface Reader<A extends Artifact,T>{T read(A artifact,ArtifactDescriptor descriptor,boolean alreadyHeld)throws Exception;}
     static <A extends Artifact,T> Cut<T> read(CartagoEnvironment environment,ArtifactId identity,Class<A> type,Reader<A,T> reader)throws Exception {
-        var binary=DeclaredArtifactTypeProof.readActualBinary(Artifact.class);
-        if(binary==null||!org.jacamo.bridge.contract.PinnedRuntimeClassProfiles.supportsCartagoArtifactHash(AdapterEvidence.digest(binary.bytes())))throw new IllegalArgumentException("CARTAGO_READ_LOCK_BINARY_UNSUPPORTED");
+        if(!org.jacamo.bridge.contract.PinnedRuntimeClassProfiles.supportsCartagoArtifactHash(ARTIFACT_SHA))throw new IllegalArgumentException("CARTAGO_READ_LOCK_BINARY_UNSUPPORTED");
         Field lockField=Artifact.class.getDeclaredField("lock"),idField=Artifact.class.getDeclaredField("id");
         if(lockField.getType()!=ReentrantLock.class||idField.getType()!=ArtifactId.class||!lockField.trySetAccessible()||!idField.trySetAccessible())throw new IllegalAccessException("CARTAGO_FIXED_READ_GUARD_UNAVAILABLE");
         var workspace=environment.resolveWSP(identity.getWorkspaceId().getFullName()).getWorkspace();
