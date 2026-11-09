@@ -43,9 +43,9 @@ class ScopedFailureNavigationTest {
             assertEquals(5,points.getItemCount());button.doClick();assertEquals("scope-cut-1",panel.selectedCut().id());
             filter.setSelectedItem("OCL / constraints");assertEquals(4,points.getItemCount());
             points.setSelectedIndex(1);assertEquals("scope-cut-1",panel.selectedCut().id());
-            var detail=DetachedAuthoredWorkflowTest.find(panel,"live-evidence-details",JTextArea.class);
-            assertTrue(detail.getText().contains("second object"));assertTrue(detail.getText().contains("sensor-2"));
-            assertFalse(detail.getText().contains("foreign raw body"));
+            assertNull(DetachedAuthoredWorkflowTest.find(panel,"live-evidence-details",JTextArea.class));
+            assertTrue(panel.selectedAuditText().contains("second object"));assertTrue(panel.selectedAuditText().contains("sensor-2"));
+            assertFalse(panel.selectedAuditText().contains("foreign raw body"));
             assertEquals(1,DetachedAuthoredWorkflowTest.find(panel,"live-ocl-checks",JTable.class).getRowCount(),"Body witnesses must not become duplicate required OCL table rows");
             assertTrue(points.getItemAt(0).toString().startsWith("State "));
             DetachedAuthoredWorkflowTest.find(panel,"observed-audit-toggle",JToggleButton.class).doClick();
@@ -54,7 +54,7 @@ class ScopedFailureNavigationTest {
             LiveGoalSummaryTest.renderPanel(panel,"scoped-failure-points.png");
             panel.selectExecution("two");assertEquals(0,points.getItemCount());assertFalse(button.isEnabled());
             filter.setSelectedItem("Goal / Task");assertEquals(1,points.getItemCount());button.doClick();
-            assertTrue(detail.getText().contains("task proof two"));assertFalse(detail.getText().contains("task proof one"));
+            assertTrue(panel.selectedAuditText().contains("task proof two"));assertFalse(panel.selectedAuditText().contains("task proof one"));
             filter.setSelectedItem("All failures");assertEquals(1,points.getItemCount());
             panel.selectExecution("one");assertEquals(5,points.getItemCount());
         });
@@ -73,7 +73,7 @@ class ScopedFailureNavigationTest {
             assertNotEquals("VIOLATION",DetachedAuthoredWorkflowTest.find(panel,"observed-verdict",JLabel.class).getText());
             filter.setSelectedItem("Unmet conditions");assertEquals(2,points.getItemCount());assertTrue(button.isEnabled());
             button.doClick();assertEquals("scope-cut-0",panel.selectedCut().id());
-            assertTrue(DetachedAuthoredWorkflowTest.find(panel,"live-evidence-details",JTextArea.class).getText().contains("CONDITION_FALSE"));
+            assertTrue(panel.selectedAuditText().contains("CONDITION_FALSE"));
             points.setSelectedIndex(1);assertEquals("scope-cut-2",panel.selectedCut().id());
             LiveGoalSummaryTest.renderPanel(panel,"unmet-condition-points.png");
             panel.selectExecution("two");assertEquals(0,points.getItemCount());assertFalse(button.isEnabled());

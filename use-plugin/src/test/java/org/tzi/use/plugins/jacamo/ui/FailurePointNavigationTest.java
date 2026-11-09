@@ -36,14 +36,14 @@ class FailurePointNavigationTest {
             assertEquals("cut-1",panel.selectedCut().id());assertEquals("Boundary 2 / 6",position.getText());
             audit.doClick();assertEquals("cut-1",panel.selectedCut().id());assertTrue(points.getItemAt(0).toString().startsWith("State 1"));
             assertTrue(position.getText().startsWith("State 1 / 2"));
-            assertTrue(DetachedAuthoredWorkflowTest.find(panel,"live-evidence-details",JTextArea.class).getText().contains("episode-1"));
+            assertTrue(panel.selectedAuditText().contains("episode-1"));
             points.setSelectedIndex(1);assertEquals("cut-3",panel.selectedCut().id());
             assertEquals("exact native state 3",panel.selectedCut().state());
             assertEquals("VIOLATION",DetachedAuthoredWorkflowTest.find(panel,"observed-verdict",JLabel.class).getText(),"An explicit native FAIL cannot be hidden by a stale summary flag");
             assertEquals(0,DetachedAuthoredWorkflowTest.find(panel,"live-ocl-checks",JTable.class).getSelectedRow());
-            String failureEvidence=DetachedAuthoredWorkflowTest.find(panel,"live-evidence-details",JTextArea.class).getText();
+            String failureEvidence=panel.selectedAuditText();
             panel.setCuts(cuts);assertEquals("cut-3",panel.selectedCut().id());
-            assertEquals(failureEvidence,DetachedAuthoredWorkflowTest.find(panel,"live-evidence-details",JTextArea.class).getText(),"Background refresh must preserve the selected failure evidence");
+            assertEquals(failureEvidence,panel.selectedAuditText(),"Background refresh must preserve the selected failure evidence");
             LiveGoalSummaryTest.renderPanel(panel,"failure-navigation.png");
             filter.setSelectedItem("Goal / Task");assertEquals(2,points.getItemCount());
             points.setSelectedIndex(1);assertEquals("cut-5",panel.selectedCut().id());
@@ -61,7 +61,7 @@ class FailurePointNavigationTest {
             var two=new Evaluation("rule","false","FAIL","KNOWN","object two","",true,"INVARIANT_BODY","","","two","");
             panel.setCuts(List.of(cut(0,List.of(one,two))));
             var points=DetachedAuthoredWorkflowTest.find(panel,"observed-failure-points",JComboBox.class);assertEquals(2,points.getItemCount());
-            points.setSelectedIndex(1);assertTrue(DetachedAuthoredWorkflowTest.find(panel,"live-evidence-details",JTextArea.class).getText().contains("object two"));
+            points.setSelectedIndex(1);assertTrue(panel.selectedAuditText().contains("object two"));
         });
     }
     @Test void pendingAndSkippedDoNotRecoverFailureAndBodyAggregateAreOneCounterexample()throws Exception {

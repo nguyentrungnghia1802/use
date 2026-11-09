@@ -62,7 +62,10 @@ public final class ObservedConformancePanel extends JPanel {
     private final JTable liveCheckTable=named(new JTable(liveChecks),"live-ocl-checks");
     private final JTable liveGoalTable=named(new JTable(liveGoals),"live-goal-status");
     private final JTable liveTaskTable=named(new JTable(liveTasks),"live-task-status");
-    private final JTextArea liveDetails=named(new JTextArea(),"live-evidence-details");
+    private String selectedAuditText="";
+    /** Read-only diagnostic text; no evidence editor or panel is part of the results interface. */
+    public String selectedAuditText(){return selectedAuditText;}
+    private void setAuditText(String text){selectedAuditText=text;}
     private final JTextArea counterexampleTraceArea = new JTextArea();
     private final JTextArea stateSnapshotText = new JTextArea();
     private final JComboBox<String> stateSelectorCombo = named(new JComboBox<>(),"observed-state-selector");
@@ -367,7 +370,7 @@ public final class ObservedConformancePanel extends JPanel {
         int target=-1;for(int i=0;i<currentCounterexampleStates.size();i++)if(currentCounterexampleStates.get(i).id().equals(point.cut().id())){target=i;break;}
         if(target<0){intervalIds=java.util.Set.of(point.cut().id());setCuts(allCuts);target=0;}
         updateSelectedCounterexampleState(target);
-        var row=point.evaluation();if(row==null){liveDetails.setText(point.cut().trace());liveDetailTabs.setSelectedIndex(1);return;}
+        var row=point.evaluation();if(row==null){setAuditText(point.cut().trace());liveDetailTabs.setSelectedIndex(1);return;}
         if(row.kind().equals("GOAL_TASK")){
             selectElementById(row.element());
             String groupKey=agentGroupKey(row.context(),row.player(),row.occurrence());
@@ -385,7 +388,7 @@ public final class ObservedConformancePanel extends JPanel {
             if(row.element().equals(shown.element())&&(row.kind().equals("INVARIANT_BODY")||row.evidence().equals(shown.evidence()))){liveCheckTable.setRowSelectionInterval(i,i);liveCheckTable.scrollRectToVisible(liveCheckTable.getCellRect(i,0,true));break;}
         }
         // Row selection may render the aggregate. Restore the exact selected object witness afterwards.
-        liveDetails.setText(row.element()+"\n"+row.status()+" | "+row.quality()+"\n"+row.evidence()+"\n"+row.certifiedHistory());liveDetails.setCaretPosition(0);liveDetailTabs.setSelectedIndex(1);
+        setAuditText(row.element()+"\n"+row.status()+" | "+row.quality()+"\n"+row.evidence()+"\n"+row.certifiedHistory());liveDetailTabs.setSelectedIndex(1);
     }
 
     private void inspectInterval() {
@@ -483,7 +486,6 @@ public final class ObservedConformancePanel extends JPanel {
         int[] occurrenceWidths={150,160,160,130,100};for(int i=0;i<occurrenceWidths.length;i++)liveOccurrenceTable.getColumnModel().getColumn(i).setPreferredWidth(occurrenceWidths[i]);
         goals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tasks.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        liveDetails.setEditable(false);liveDetails.setLineWrap(true);liveDetails.setWrapStyleWord(true);
         goals.getSelectionModel().addListSelectionListener(e->{
             if(e.getValueIsAdjusting()||updatingElementSelection)return;
             int row=goals.getSelectedRow();
@@ -514,7 +516,7 @@ public final class ObservedConformancePanel extends JPanel {
                 showSelectedElementInstances();
             }
         });
-        checks.getSelectionModel().addListSelectionListener(e->{if(!e.getValueIsAdjusting()){int row=checks.getSelectedRow();if(row>=0&&row<displayedChecks.size()){var value=displayedChecks.get(row);liveDetails.setText(value.element()+"\n"+value.status()+" | "+value.quality()+"\n"+value.evidence());liveDetails.setCaretPosition(0);liveDetailTabs.setSelectedIndex(1);}}});
+        checks.getSelectionModel().addListSelectionListener(e->{if(!e.getValueIsAdjusting()){int row=checks.getSelectedRow();if(row>=0&&row<displayedChecks.size()){var value=displayedChecks.get(row);setAuditText(value.element()+"\n"+value.status()+" | "+value.quality()+"\n"+value.evidence());liveDetailTabs.setSelectedIndex(1);}}});
         checks.getColumnModel().getColumn(0).setPreferredWidth(240);
         checks.getColumnModel().getColumn(1).setPreferredWidth(500);
         checks.getColumnModel().getColumn(2).setMaxWidth(100);
@@ -542,7 +544,7 @@ public final class ObservedConformancePanel extends JPanel {
         goals.setToolTipText("Goals defined in the iStar model with owner actor. Complete requires qualified fulfilled evidence; missing evidence stays Unknown.");
         tasks.setToolTipText("Tasks defined in the iStar model with owner actor. Complete requires qualified fulfilled evidence; missing evidence stays Unknown.");
         liveInstanceTable.setToolTipText("Individual agent/player outcomes for the selected Goal or Task, execution and state. Original source evidence remains in Audit details.");
-        liveOccurrenceTable.setToolTipText("Occurrences and runtime invocations for the selected agent instance up to the current State. Short IDs are shown here; full IDs and evidence appear below.");
+        liveOccurrenceTable.setToolTipText("History up to the selected State: Occurrence is an element status; Invocation is an identified runtime call; Execution evidence is a retained certificate. Earlier Unknown results remain historical.");
 
         setupNavigation(executionSelector, stateSelectorCombo, statePrevButton, stateNextButton, jumpCheckpointButton, milestonesButton, stateStepInfoLabel, failureFilter, failurePoints);
         setupNavigation(cslExecutionSelector, cslStateSelectorCombo, cslStatePrevButton, cslStateNextButton, cslJumpCheckpointButton, cslMilestonesButton, cslStateStepInfoLabel, cslFailureFilter, cslFailurePoints);
@@ -594,14 +596,9 @@ public final class ObservedConformancePanel extends JPanel {
         selectedElementLabel.setBorder(new EmptyBorder(2, 4, 2, 4));
         var instancesSection = section("Agent instances", new JScrollPane(liveInstanceTable));
         var occurrencesSection = section("Occurrences & invocations", new JScrollPane(liveOccurrenceTable));
-        var evidenceSection = section("Evidence details", new JScrollPane(liveDetails));
         instancesSection.setMinimumSize(new Dimension(180, 90));
         occurrencesSection.setMinimumSize(new Dimension(180, 75));
-        evidenceSection.setMinimumSize(new Dimension(180, 75));
-        var rightDetailSplit = named(new JSplitPane(JSplitPane.VERTICAL_SPLIT, occurrencesSection, evidenceSection), "occurrence-evidence-split");
-        rightDetailSplit.setResizeWeight(0.45);
-        rightDetailSplit.setOneTouchExpandable(true);
-        var agentDetailSplit = named(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, instancesSection, rightDetailSplit), "agent-detail-split");
+        var agentDetailSplit = named(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, instancesSection, occurrencesSection), "agent-detail-split");
         agentDetailSplit.setResizeWeight(0.42);
         agentDetailSplit.setOneTouchExpandable(true);
         var agentDetailPanel = new JPanel(new BorderLayout(4, 4));
@@ -788,7 +785,7 @@ public final class ObservedConformancePanel extends JPanel {
             displayedInstances=List.of();displayedAgentRows=List.of();displayedOccurrences=List.of();
             updatingAgentSelection=true;try{liveInstances.setRowCount(0);}finally{updatingAgentSelection=false;}
             updatingOccurrenceSelection=true;try{liveOccurrences.setRowCount(0);}finally{updatingOccurrenceSelection=false;}
-            liveDetails.setText("");stateSnapshotText.setText("");
+            setAuditText("");stateSnapshotText.setText("");
             statePrevButton.setEnabled(false);stateNextButton.setEnabled(false);jumpCheckpointButton.setEnabled(false);
             cslStatePrevButton.setEnabled(false);cslStateNextButton.setEnabled(false);cslJumpCheckpointButton.setEnabled(false);
             return;
@@ -812,8 +809,8 @@ public final class ObservedConformancePanel extends JPanel {
         showSelectedElementInstances();
         if(failureFocus!=null&&failureFocus.cut().id().equals(cut.id())&&failureFocus.evaluation()!=null&&!failureFocus.evaluation().kind().equals("GOAL_TASK")){
             var row=failureFocus.evaluation();
-            liveDetails.setText(row.element()+"\n"+row.status()+" | "+row.quality()+"\n"+row.evidence()+"\n"+row.certifiedHistory());
-            liveDetails.setCaretPosition(0);
+            setAuditText(row.element()+"\n"+row.status()+" | "+row.quality()+"\n"+row.evidence()+"\n"+row.certifiedHistory());
+
         }
     }
 
@@ -869,7 +866,7 @@ public final class ObservedConformancePanel extends JPanel {
             updatingOccurrenceSelection=true;try{liveOccurrences.setRowCount(0);}finally{updatingOccurrenceSelection=false;}
             displayedInstances=List.of();displayedAgentRows=List.of();displayedOccurrences=List.of();
             selectedElementLabel.setText("No Goal or Task selected — select a Goal or Task above to inspect agent instances");
-            if(cut==null||(failureFocus==null&&liveCheckTable.getSelectedRow()<0))liveDetails.setText("");
+            if(cut==null||(failureFocus==null&&liveCheckTable.getSelectedRow()<0))setAuditText("");
             return;
         }
         String summaryStatus=row.resultText();
@@ -917,8 +914,8 @@ public final class ObservedConformancePanel extends JPanel {
         }else{
             updatingOccurrenceSelection=true;try{liveOccurrences.setRowCount(0);}finally{updatingOccurrenceSelection=false;}
             displayedOccurrences=List.of();
-            liveDetails.setText(row.detail());
-            liveDetails.setCaretPosition(0);
+            setAuditText(row.detail());
+
         }
     }
 
@@ -929,7 +926,7 @@ public final class ObservedConformancePanel extends JPanel {
         if(row==null||idx<0||idx>=displayedAgentRows.size()){
             updatingOccurrenceSelection=true;try{liveOccurrences.setRowCount(0);}finally{updatingOccurrenceSelection=false;}
             displayedOccurrences=List.of();
-            if(row!=null){liveDetails.setText(row.detail());liveDetails.setCaretPosition(0);}
+            if(row!=null){setAuditText(row.detail());}
             return;
         }
         var group=displayedAgentRows.get(idx);
@@ -977,8 +974,8 @@ public final class ObservedConformancePanel extends JPanel {
             sb.append("\n[").append(index++).append("] ");
             appendOccurrenceDetail(sb,entry);
         }
-        liveDetails.setText(sb.toString());
-        liveDetails.setCaretPosition(0);
+        setAuditText(sb.toString());
+
     }
 
     private static void appendOccurrenceDetail(StringBuilder sb,OccurrenceEntry entry){
@@ -1034,9 +1031,10 @@ public final class ObservedConformancePanel extends JPanel {
                         if(invId.isBlank()&&policy.isBlank())continue;
                         String certSig="CERT\u0000"+eval.occurrence()+"\u0000"+invId+"\u0000"+kind+"\u0000"+stateHash;
                         if(seenInvocations.add(certSig)){
-                            String certRes="TASK_FAILED".equals(kind)?"Incomplete":"TASK_COMPLETED".equals(kind)?"Complete":PresentationResults.agentResult(eval);
-                            String certPhase="TASK_FAILED".equals(kind)?"Failed":"TASK_COMPLETED".equals(kind)?"Succeeded":"";
-                            String certType="Invocation ("+kind+(certPhase.isEmpty()?"":" · "+certPhase)+")";
+                            boolean certifiedSuccess=policy.equals("CERTIFIED_EXECUTION/1.0")&&java.util.Set.of("TASK","ACHIEVE","TASK_COMPLETED").contains(kind);
+                            String certRes="TASK_FAILED".equals(kind)?"Incomplete":certifiedSuccess?"Complete":PresentationResults.agentResult(eval);
+                            String certPhase="TASK_FAILED".equals(kind)?"Failed":certifiedSuccess?"Succeeded":"";
+                            String certType=(invId.isBlank()?"Execution evidence (":"Invocation (")+kind+(certPhase.isEmpty()?"":" · "+certPhase)+")";
                             String certEv="policy="+policy+"; kind="+kind+(certPhase.isEmpty()?"":"; phase="+certPhase)+"; invocation="+invId+"; stateVersion="+stateVer+"; stateHash="+stateHash+(failReason.isBlank()?"":"; failureReason="+failReason);
                             String cpWithVer=stateVer.isBlank()?cpLabel:cpLabel+" (v"+stateVer+")";
                             entries.add(new OccurrenceEntry(certSig,certType,eval.occurrence(),demandEp,invId,cut.id(),cpWithVer,certRes,kind,eval.status(),eval.quality(),role,certEv,eval.certifiedHistory()));

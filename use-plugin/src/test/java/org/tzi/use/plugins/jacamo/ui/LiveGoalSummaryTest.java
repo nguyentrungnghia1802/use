@@ -4,6 +4,27 @@ import org.tzi.use.plugins.jacamo.ui.use4goal.conformance.*;
 import org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.*;
 import static org.junit.jupiter.api.Assertions.*;
 class LiveGoalSummaryTest {
+ @Test void evidencePanelIsRemovedAndSuccessfulTaskCertificateDoesNotBecomeAnUnknownInvocation()throws Exception {
+  var model=org.vnu.sme.goal.dsl.istar.parser.IStarCompiler.compile("istar Work { role Worker { goal Parent : Achieve task One > Parent pre {[ true ]} post {[ true ]} task Two > Parent pre {[ true ]} post {[ true ]} } }").model();
+  var certificate=Map.<String,Object>of("policy","CERTIFIED_EXECUTION/1.0","kind","TASK","stateVersion",6,"stateHash","hash6");
+  var occurrence=Map.<String,Object>of("sourceElement","Parent","elementKind","GOAL","player","worker","executionEvidence",Map.of("One",certificate));
+  var context=Map.<String,Object>of("context","scope","occurrences",Map.of("parent-occ",occurrence));
+  var evaluation=new Evaluation("Parent","PENDING","UNKNOWN","UNAVAILABLE","Goal still waiting for another Task","",false,"GOAL_TASK","PENDING","worker","scope","parent-occ");
+  var cut=new Cut("state6","trace","native",List.of(evaluation),"INCOMPLETE","CURRENT_OBSERVED",false,"business","requirements","state",true,true,false,
+    Map.of("originalEngine",Map.of("evaluated","PINNED_NATIVE_CUT","contexts",List.of(context))));
+  SwingUtilities.invokeAndWait(()->{
+   var panel=ObservedConformancePanel.liveResults(model);panel.setCuts(List.of(cut));
+   assertNull(DetachedAuthoredWorkflowTest.find(panel.istarVerificationPanel(),"live-evidence-details",JTextArea.class));
+   assertNull(DetachedAuthoredWorkflowTest.find(panel.istarVerificationPanel(),"occurrence-evidence-split",JSplitPane.class));
+   var goals=DetachedAuthoredWorkflowTest.find(panel,"live-goal-status",JTable.class);assertEquals("Unknown",goals.getValueAt(0,1));goals.setRowSelectionInterval(0,0);
+   var agents=DetachedAuthoredWorkflowTest.find(panel,"live-goal-instances",JTable.class);agents.setRowSelectionInterval(0,0);
+   var history=DetachedAuthoredWorkflowTest.find(panel,"live-agent-occurrences",JTable.class);assertEquals(2,history.getRowCount());
+   assertEquals("Occurrence",history.getValueAt(0,0));assertEquals("Unknown",history.getValueAt(0,4));
+   assertTrue(history.getValueAt(1,0).toString().startsWith("Execution evidence (TASK"));assertEquals("—",history.getValueAt(1,2));assertEquals("Complete",history.getValueAt(1,4));
+   assertEquals("Unknown",goals.getValueAt(0,1),"A child Task certificate never completes the parent Goal");
+   assertEquals(List.of(evaluation),cut.evaluations());assertTrue(panel.selectedAuditText().contains("CERTIFIED_EXECUTION/1.0"));
+  });
+ }
  @Test void selectedRequirementAndSupportingSkillRemainSeparateWithoutHidingUnknownInstances()throws Exception {
   var root=new Evaluation("Done","FULFILLED","FULFILLED","KNOWN","root proof","",true,"GOAL_TASK","FULFILLED","organization","cut-a","root");
   var completed=new Evaluation("Work","FULFILLED","FULFILLED","KNOWN_HISTORY","verified task certificate","certificate",false,"GOAL_TASK","FULFILLED","beid:v1:jason/agent/runtime-agent/example/worker/one","cut-a","work-one");
@@ -26,9 +47,9 @@ class LiveGoalSummaryTest {
    assertEquals(2,instances.getRowCount());
    assertEquals("worker",instances.getValueAt(0,0));assertEquals("cut-a",instances.getValueAt(0,1));assertEquals("Complete",instances.getValueAt(0,2));
    assertEquals("observer",instances.getValueAt(1,0));assertEquals("cut-a",instances.getValueAt(1,1));assertEquals("Unknown",instances.getValueAt(1,2));
-   instances.setRowSelectionInterval(1,1);assertTrue(DetachedAuthoredWorkflowTest.find(panel,"live-evidence-details",JTextArea.class).getText().contains("work-two"));
+   instances.setRowSelectionInterval(1,1);assertTrue(panel.selectedAuditText().contains("work-two"));
    renderPanel(panel,"requirement-scope.png");
-   panel.setCuts(List.of());assertEquals(0,instances.getRowCount());assertTrue(DetachedAuthoredWorkflowTest.find(panel,"live-evidence-details",JTextArea.class).getText().isEmpty());
+   panel.setCuts(List.of());assertEquals(0,instances.getRowCount());assertTrue(panel.selectedAuditText().isEmpty());
   });
  }
  @Test void actualRecordedAgentResultKeepsTwoCertifiedResponsibilitiesAndEightUnknownSkills()throws Exception {
@@ -84,7 +105,7 @@ class LiveGoalSummaryTest {
    assertEquals(1,goals.getRowCount());assertEquals(1,tasks.getRowCount());
    var failure=new Evaluation("Invariant","false","FAIL","KNOWN","object=source; expression=false; witness=actual","",true,"INVARIANT");
    panel.setCuts(List.of(new Cut("run:1","trace","accepted state",List.of(instance("Done","FULFILLED","alice"),failure),"INCOMPLETE","CURRENT_OBSERVED",true)));
-   assertEquals(1,goals.getRowCount());assertEquals(1,tasks.getRowCount());assertEquals("Complete",goals.getValueAt(0,1));var checks=DetachedAuthoredWorkflowTest.find(panel,"live-ocl-checks",JTable.class);assertEquals(1,checks.getRowCount());assertEquals("False",checks.getValueAt(0,2));checks.setRowSelectionInterval(0,0);assertTrue(DetachedAuthoredWorkflowTest.find(panel,"live-evidence-details",JTextArea.class).getText().contains("witness=actual"));
+   assertEquals(1,goals.getRowCount());assertEquals(1,tasks.getRowCount());assertEquals("Complete",goals.getValueAt(0,1));var checks=DetachedAuthoredWorkflowTest.find(panel,"live-ocl-checks",JTable.class);assertEquals(1,checks.getRowCount());assertEquals("False",checks.getValueAt(0,2));checks.setRowSelectionInterval(0,0);assertTrue(panel.selectedAuditText().contains("witness=actual"));
    panel.setCuts(List.of(new Cut("run:2","trace","state2",List.of(),"INCOMPLETE","CURRENT_OBSERVED",false)));assertEquals(1,goals.getRowCount());assertEquals(1,tasks.getRowCount());assertEquals("Unknown",goals.getValueAt(0,1));
   });
  }
@@ -168,7 +189,7 @@ class LiveGoalSummaryTest {
    var tasks=DetachedAuthoredWorkflowTest.find(panel,"live-task-status",JTable.class);
    var instances=DetachedAuthoredWorkflowTest.find(panel,"live-goal-instances",JTable.class);
    var occurrences=DetachedAuthoredWorkflowTest.find(panel,"live-agent-occurrences",JTable.class);
-   var details=DetachedAuthoredWorkflowTest.find(panel,"live-evidence-details",JTextArea.class);
+   assertNull(DetachedAuthoredWorkflowTest.find(panel,"live-evidence-details",JTextArea.class));
 
    tasks.setRowSelectionInterval(0,0);
    assertEquals(1,instances.getRowCount(),"Multiple occurrences/invocations of the same agent in the same execution are grouped under one agent row");
@@ -182,15 +203,15 @@ class LiveGoalSummaryTest {
    assertNotEquals(occurrences.getValueAt(1,1),occurrences.getValueAt(1,2),"Occurrence and Invocation are never conflated");
    assertNotEquals(occurrences.getValueAt(1,2),occurrences.getValueAt(1,3),"Invocation and Checkpoint are never conflated");
 
-   String fullText=details.getText();
+   String fullText=panel.selectedAuditText();
    assertTrue(fullText.contains(fullPlayer),"Detail view shows full player BridgeEntityId");
    assertTrue(fullText.contains(fullOcc1)&&fullText.contains(fullOcc2),"Detail view shows both full occurrence IDs");
    assertTrue(fullText.contains(fullInv1)&&fullText.contains(fullInv2),"Detail view shows both full invocation IDs");
    assertTrue(fullText.contains("boundary-cut-0001-long-identifier-alpha")&&fullText.contains("boundary-cut-0002-long-identifier-beta"),"Detail view shows full checkpoint boundary IDs");
 
    occurrences.setRowSelectionInterval(1,1);
-   assertTrue(details.getText().contains("--- Selected Record ---"));
-   assertTrue(details.getText().contains("bid_rejected"));
+   assertTrue(panel.selectedAuditText().contains("--- Selected Record ---"));
+   assertTrue(panel.selectedAuditText().contains("bid_rejected"));
 
    // Updating cuts preserves selected Task, selected Agent, and selected Occurrence/Invocation without changing verdict
    panel.setCuts(List.of(cut1,cut2));
