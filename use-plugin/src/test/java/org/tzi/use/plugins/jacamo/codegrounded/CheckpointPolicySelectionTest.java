@@ -12,8 +12,9 @@ class CheckpointPolicySelectionTest {
    new ObservationCapabilityRequest("steps","jason.plan-boundaries.v1",true,Map.of("plans",List.of(Map.of("steps",List.of(Map.of("task","setup","artifactClass","domain.Service","allowMissingArtifactAtEntry",true),Map.of("task","CompleteTask","artifactClass","domain.Service","allowMissingArtifactAtEntry",false)))))));
   var rules=CheckpointPolicySelection.rules(requests,id->id.equals("CompleteTask"));
   assertEquals(3,rules.size());assertTrue(rules.stream().noneMatch(r->r.sourceIdentity().equals("observation:construction")));
+  assertEquals(List.of("task-pre:steps:setup","task-post:steps:CompleteTask","operation-post:domain"),rules.stream().map(VerifiedCheckpointProtocol.Rule::id).toList());
   assertEquals(List.of("TASK_PRE","TASK_POST","OPERATION_UNMAPPED_POST"),rules.stream().map(VerifiedCheckpointProtocol.Rule::selectorKind).toList());
-  assertEquals(Set.of("CompleteTask"),rules.get(0).operations());assertEquals(Set.of("CompleteTask"),rules.get(1).operations());
+  assertEquals(Set.of("setup"),rules.get(0).operations());assertEquals(Set.of("CompleteTask"),rules.get(1).operations());
   assertEquals("OPERATION_UNMAPPED_POST",CheckpointPolicySelection.rules(requests,id->false).getFirst().selectorKind());
  }
  @Test void everyNativeSegmentIsSelectedIncludingUnboundEntryAndSourceOnlyTasks(){

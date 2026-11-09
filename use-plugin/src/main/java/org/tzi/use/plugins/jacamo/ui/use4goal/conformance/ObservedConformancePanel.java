@@ -616,9 +616,11 @@ public final class ObservedConformancePanel extends JPanel {
         var verdictPanel = section("Verification result", conformanceResultLabel);
         verdictPanel.setPreferredSize(new Dimension(800, 65));
         istarDataCoverageLabel.setFont(new Font(Font.SANS_SERIF,Font.BOLD,14));
-        var istarFooter=new JPanel(new GridLayout(1,2,5,0));
-        istarFooter.add(verdictPanel);istarFooter.add(section("Data coverage",istarDataCoverageLabel));
-        istarVerificationPanel.add(istarFooter, BorderLayout.SOUTH);
+        istarVerificationPanel.add(verdictPanel, BorderLayout.SOUTH);
+        var hiddenIstar = new JPanel();
+        hiddenIstar.setVisible(false);
+        hiddenIstar.add(istarDataCoverageLabel);
+        istarVerificationPanel.add(hiddenIstar, BorderLayout.WEST);
 
         // Hidden panel for backward-compatibility with tests querying deleted/hidden components
         hiddenPanel = new JPanel();

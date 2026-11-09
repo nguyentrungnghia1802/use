@@ -39,7 +39,7 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
     private long nextGoal,nextStep;private boolean closed;private volatile String failure="";
     private long actionStarts,actionStartsMatched,actionEnds,actionEndsMatched;private String unmatchedAction="";
     private static final class Episode {
-        final IntendedMeans means;final String token;final Intention intention;Step active;
+        final IntendedMeans means;final String token;final Intention intention;Step active;String barrierToken;
         Episode(IntendedMeans means,String token,Intention intention){this.means=means;this.token=token;this.intention=intention;}
     }
     private static final class Step {
@@ -84,7 +84,10 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
     synchronized void resumeDeferredTasks() {
         if(closed||org.jacamo.checkpoint.runtime.ExecutionBarrier.admissionClosed())return;
         for(var episode:episodes.values())if(episode.active!=null&&episode.active.deferredAtEntry&&!episode.intention.isFinished()) {
-            org.jacamo.checkpoint.runtime.ExecutionBarrier.beginTask(episode.active.localOwner,episode.intention,episode.active.token);
+            if(episode.barrierToken==null) {
+                org.jacamo.checkpoint.runtime.ExecutionBarrier.beginTask(episode.active.localOwner,episode.intention,episode.active.token);
+                episode.barrierToken=episode.active.token;
+            }
             episode.active.barrierTask=true;episode.active.deferredAtEntry=false;
         }
     }
@@ -102,10 +105,13 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
             episode=new Episode(means,"jason-goal:"+run+":"+agent.incarnation()+":"+(++nextGoal),intention);episodes.put(trigger,episode);
         }
         if(episode.means!=means)throw new IllegalArgumentException("STEP_INTENDED_MEANS_MISMATCH");
+        String sourceHash=Objects.toString(prepared.manifest().get("sourceSha256"));
         if(phase.equals("ENABLED")) {
             if(episode.active!=null)throw new IllegalArgumentException("STEP_ENTRY_WITHOUT_PRIOR_TERMINAL");
             episode.active=new Step(site,"jason-step:"+run+":"+agent.incarnation()+":"+(++nextStep),episode);
-            boolean checkpointTask=BridgeRuntimeRegistry.checkpointTask(Objects.toString(prepared.manifest().get("sourceSha256")),site.task());
+            boolean preTask=BridgeRuntimeRegistry.checkpointPreTask(sourceHash,site.task());
+            boolean postTask=BridgeRuntimeRegistry.checkpointPostTask(sourceHash,site.task());
+            boolean checkpointTask=preTask||postTask;
             if(checkpointTask) {
                 Object local=BridgeRuntimeRegistry.agentArchitecture(ts.getAgArch().getAgName()).orElse(null);
                 if(local==null)for(var arch=ts.getAgArch();arch!=null;arch=arch.getNextAgArch())if(arch instanceof jason.infra.local.LocalAgArch){local=arch;break;}
@@ -114,13 +120,29 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
             }
             publish(episode.active,"");
             if(checkpointTask) {
-                if(org.jacamo.checkpoint.runtime.ExecutionBarrier.admissionClosed())episode.active.deferredAtEntry=true;
-                else{org.jacamo.checkpoint.runtime.ExecutionBarrier.beginTask(episode.active.localOwner,intention,episode.active.token);episode.active.barrierTask=true;}
+                if(org.jacamo.checkpoint.runtime.ExecutionBarrier.admissionClosed()) {
+                    if(preTask&&org.jacamo.checkpoint.runtime.ExecutionBarrier.intentionAllowed(intention)) {
+                        org.jacamo.checkpoint.runtime.ExecutionBarrier.beginTask(episode.active.localOwner,intention,episode.active.token);
+                        org.jacamo.checkpoint.runtime.ExecutionBarrier.endTask(episode.active.token);
+                    }
+                    if(preTask||episode.barrierToken==null)episode.active.deferredAtEntry=true;
+                    else episode.active.barrierTask=true;
+                } else {
+                    if(episode.barrierToken==null) {
+                        org.jacamo.checkpoint.runtime.ExecutionBarrier.beginTask(episode.active.localOwner,intention,episode.active.token);
+                        episode.barrierToken=episode.active.token;
+                    }
+                    episode.active.barrierTask=true;
+                }
             }
         }else {
             var active=episode.active;if(active==null||!active.site.equals(site))throw new IllegalArgumentException("STEP_TERMINAL_WITHOUT_MATCHING_ENTRY");
-            active.phase="SUCCEEDED";try{publish(active,"");}finally{finishTask(active);episode.active=null;}
+            boolean postTask=BridgeRuntimeRegistry.checkpointPostTask(sourceHash,site.task());
+            active.phase="SUCCEEDED";try{publish(active,"");}finally{if(postTask||!hasLaterCheckpointTaskInPlan(sourceHash,site))finishTask(active);episode.active=null;}
         }
+    }
+    private boolean hasLaterCheckpointTaskInPlan(String sourceHash,JasonPlanInstrumentation.Site site) {
+        return prepared.sites().stream().anyMatch(other->!other.equals(site)&&other.planId().equals(site.planId())&&other.first()>=site.after()&&BridgeRuntimeRegistry.checkpointTask(sourceHash,other.task()));
     }
     /** STARTED runs on the actual agent action path. Completion callbacks only
      * copy results for that very ActionExec; they never read live BB/unifiers. */
@@ -143,7 +165,13 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
         if(closed)return;var episode=episodes.get(trigger);if(episode==null||episode.active==null)return;
         var active=episode.active;active.phase="FAILED";try{publish(active,reason);}finally{finishTask(active);episode.active=null;}
     }
-    private static void finishTask(Step step){if(step.barrierTask)org.jacamo.checkpoint.runtime.ExecutionBarrier.endTask(step.token);}
+    private static void finishTask(Step step){
+        if(step.episode.barrierToken!=null){org.jacamo.checkpoint.runtime.ExecutionBarrier.endTask(step.episode.barrierToken);step.episode.barrierToken=null;step.barrierTask=false;}
+        else if(step.barrierTask){org.jacamo.checkpoint.runtime.ExecutionBarrier.endTask(step.token);step.barrierTask=false;}
+    }
+    private static void finishEpisodeBarrier(Episode episode){
+        if(episode.barrierToken!=null){org.jacamo.checkpoint.runtime.ExecutionBarrier.endTask(episode.barrierToken);episode.barrierToken=null;}
+    }
     @Override public synchronized void goalFinished(Trigger trigger,GoalStates state) {
         if(closed)return;
         // Jason also emits "dropped" while moving an atomic event into SE.
@@ -168,7 +196,7 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
     private void finishEpisode(Trigger trigger,GoalStates state) {
         try {
             if(state==GoalStates.failed)failed(trigger,"GOAL_LISTENER_FINISHED_FAILED");
-            var episode=episodes.remove(trigger);if(episode!=null){actions.values().removeIf(s->s.episode==episode);if(episode.active!=null&&(episode.active.barrierTask||episode.active.deferredAtEntry)){finishTask(episode.active);unavailable("TASK_TERMINAL_MARKER_UNAVAILABLE");}}
+            var episode=episodes.remove(trigger);if(episode!=null){actions.values().removeIf(s->s.episode==episode);if(episode.active!=null&&(episode.active.barrierTask||episode.active.deferredAtEntry||episode.barrierToken!=null)){finishTask(episode.active);unavailable("TASK_TERMINAL_MARKER_UNAVAILABLE");}else finishEpisodeBarrier(episode);}
         }catch(RuntimeException missing){unavailable("GOAL_TERMINAL_CAPTURE:"+missing.getClass().getSimpleName());}
         // Dropped/finished without an after marker is not source execution false.
     }

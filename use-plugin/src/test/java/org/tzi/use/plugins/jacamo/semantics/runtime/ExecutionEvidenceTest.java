@@ -156,6 +156,105 @@ class ExecutionEvidenceTest {
             assertEquals("VIOLATED",row(ex2,andRoot).get("executionStatus"),"AND with one falsified child is VIOLATED even when StepOne is unavailable");
         }
     }
+    @Test void goalTypeNoneActiveFalseTrueUnknownAndTrueToFalseTransitionsFollowDecisionMatrix() {
+        var compiled=org.vnu.sme.goal.dsl.istar.parser.IStarCompiler.compile("""
+                istar NoneMatrix {
+                    role R {
+                        goal Plain : None condition {[ true ]}
+                        task StepA > Plain pre {[ true ]} post {[ true ]}
+                        task StepB > Plain pre {[ true ]} post {[ true ]}
+                        goal Sub : None > Plain
+                        goal DepPlain : None
+                        goal Ach : Achieve condition {[ true ]}
+                    }
+                    role S {
+                        goal SubSupplied : None condition {[ true ]}
+                        goal Supplied : None condition {[ true ]}
+                    }
+                    depend R.Sub -> goal d1 -> S.SubSupplied
+                    depend R.DepPlain -> goal d2 -> S.Supplied
+                }
+                """);
+        assertTrue(compiled.ok(),compiled.errors().toString());
+        var cast=List.of(new org.vnu.sme.goal.dsl.iscn.mm.ScenarioInstance("alice","R"),new org.vnu.sme.goal.dsl.iscn.mm.ScenarioInstance("bob","S"));
+        try(var session=new org.tzi.use.semantic.engine.runtime.Use4GoalRuntimeSessionAdapter(compiled.model(),cast,(a,x,b,y)->true,"cast")) {
+            var ids=new HashMap<String,String>();session.topology().occurrences().forEach((id,b)->ids.put(b.sourceElementId(),id));
+            String plain=ids.get("Plain"),stepA=ids.get("StepA"),stepB=ids.get("StepB"),subSupplied=ids.get("SubSupplied"),depPlain=ids.get("DepPlain"),supplied=ids.get("Supplied"),ach=ids.get("Ach");
+            var context=new JaCaMoOccurrenceBindingAdapter.ContextCast("context","cast",cast,Map.of(),Map.of(),List.of());
+            var ledger=new ExecutionEvidence();
+            var tasksFulfilled=Map.of(
+                    stepA,new org.tzi.use.semantic.engine.runtime.EngineInputs.TaskInput("ep",true,true,true),
+                    stepB,new org.tzi.use.semantic.engine.runtime.EngineInputs.TaskInput("ep",true,true,true));
+            // 1. Active GoalType.NONE with unknown condition (even when refinement children & sub-dependency are FULFILLED) -> Unknown (UNKNOWN)
+            var inUnknown=new org.tzi.use.semantic.engine.runtime.EngineInputs(Map.of(
+                    plain,new org.tzi.use.semantic.engine.runtime.EngineInputs.GoalInput("ep",true,null),
+                    subSupplied,new org.tzi.use.semantic.engine.runtime.EngineInputs.GoalInput("ep",true,true),
+                    supplied,new org.tzi.use.semantic.engine.runtime.EngineInputs.GoalInput("ep",true,null),
+                    ach,new org.tzi.use.semantic.engine.runtime.EngineInputs.GoalInput("ep",true,null)),tasksFulfilled,Map.of());
+            var before=session.checkpoint();var sUnknown=session.step(inUnknown);
+            var rawUnknown=SemanticResultAdapter.context(context,session,sUnknown,before,inUnknown,Map.of(
+                    plain,"UNAVAILABLE:CONDITION_UNDEFINED",subSupplied,"KNOWN",supplied,"UNAVAILABLE:CONDITION_UNDEFINED",ach,"UNAVAILABLE:CONDITION_UNDEFINED",stepA,"KNOWN",stepB,"KNOWN"),true);
+            var exUnknown=SemanticResultAdapter.execution(rawUnknown,session,cut(1,false),ledger);
+            for(String target:List.of(plain,supplied,depPlain)) {
+                assertNull(row(exUnknown,target).get("executionStatus"),"Undetermined condition must not be VIOLATED for "+target);
+                assertEquals("UNKNOWN",org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews.qualifiedStatus(org.jacamo.bridge.contract.CanonicalJson.object(exUnknown),row(exUnknown,target)));
+                assertEquals("Unknown",org.tzi.use.plugins.jacamo.ui.use4goal.conformance.PresentationResults.agentResult("UNKNOWN",Objects.toString(row(exUnknown,target).get("executionQuality"),"")));
+            }
+            // 2. Active GoalType.NONE with condition=false (KNOWN) + refinement/dependency -> Incomplete (VIOLATED), while Achieve stays PENDING/Unknown
+            var inFalse=new org.tzi.use.semantic.engine.runtime.EngineInputs(Map.of(
+                    plain,new org.tzi.use.semantic.engine.runtime.EngineInputs.GoalInput("ep",true,false),
+                    subSupplied,new org.tzi.use.semantic.engine.runtime.EngineInputs.GoalInput("ep",true,true),
+                    supplied,new org.tzi.use.semantic.engine.runtime.EngineInputs.GoalInput("ep",true,false),
+                    ach,new org.tzi.use.semantic.engine.runtime.EngineInputs.GoalInput("ep",true,false)),tasksFulfilled,Map.of());
+            before=session.checkpoint();var sFalse=session.step(inFalse);
+            var rawFalse=SemanticResultAdapter.context(context,session,sFalse,before,inFalse,Map.of(
+                    plain,"KNOWN",subSupplied,"KNOWN",supplied,"KNOWN",ach,"KNOWN",stepA,"KNOWN",stepB,"KNOWN"),true);
+            var exFalse=SemanticResultAdapter.execution(rawFalse,session,cut(2,false),ledger);
+            for(String target:List.of(plain,supplied,depPlain)) {
+                assertEquals("VIOLATED",row(exFalse,target).get("executionStatus"),"Active GoalType.NONE with known false condition must be VIOLATED for "+target);
+                assertEquals("VIOLATED",org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews.qualifiedStatus(org.jacamo.bridge.contract.CanonicalJson.object(exFalse),row(exFalse,target)));
+                assertEquals("Incomplete",org.tzi.use.plugins.jacamo.ui.use4goal.conformance.PresentationResults.agentResult("VIOLATED",Objects.toString(row(exFalse,target).get("executionQuality"),"")));
+            }
+            assertNull(row(exFalse,ach).get("executionStatus"),"Achieve with condition=false must remain PENDING, not Incomplete");
+            assertEquals("PENDING",org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews.qualifiedStatus(org.jacamo.bridge.contract.CanonicalJson.object(exFalse),row(exFalse,ach)));
+            assertEquals("Unknown",org.tzi.use.plugins.jacamo.ui.use4goal.conformance.PresentationResults.agentResult("PENDING",Objects.toString(row(exFalse,ach).get("executionQuality"),"")));
+            // 3. Active GoalType.NONE with condition=true (KNOWN) -> Complete (FULFILLED)
+            var inTrue=new org.tzi.use.semantic.engine.runtime.EngineInputs(Map.of(
+                    plain,new org.tzi.use.semantic.engine.runtime.EngineInputs.GoalInput("ep",true,true),
+                    subSupplied,new org.tzi.use.semantic.engine.runtime.EngineInputs.GoalInput("ep",true,true),
+                    supplied,new org.tzi.use.semantic.engine.runtime.EngineInputs.GoalInput("ep",true,true),
+                    ach,new org.tzi.use.semantic.engine.runtime.EngineInputs.GoalInput("ep",true,true)),tasksFulfilled,Map.of());
+            before=session.checkpoint();var sTrue=session.step(inTrue);
+            var rawTrue=SemanticResultAdapter.context(context,session,sTrue,before,inTrue,Map.of(
+                    plain,"KNOWN",subSupplied,"KNOWN",supplied,"KNOWN",ach,"KNOWN",stepA,"KNOWN",stepB,"KNOWN"),true);
+            var exTrue=SemanticResultAdapter.execution(rawTrue,session,cut(3,false),ledger);
+            for(String target:List.of(plain,supplied,depPlain)) {
+                assertNull(row(exTrue,target).get("executionStatus"));
+                assertEquals("FULFILLED",org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews.qualifiedStatus(org.jacamo.bridge.contract.CanonicalJson.object(exTrue),row(exTrue,target)));
+                assertEquals("Complete",org.tzi.use.plugins.jacamo.ui.use4goal.conformance.PresentationResults.agentResult("FULFILLED",Objects.toString(row(exTrue,target).get("executionQuality"),"")));
+            }
+            // 4. Transition true -> false -> true while active: GoalType.NONE transitions Complete -> Incomplete -> Complete, while Achieve latches Complete
+            before=session.checkpoint();var sTrueToFalse=session.step(inFalse);
+            var rawTrueToFalse=SemanticResultAdapter.context(context,session,sTrueToFalse,before,inFalse,Map.of(
+                    plain,"KNOWN",subSupplied,"KNOWN",supplied,"KNOWN",ach,"KNOWN",stepA,"KNOWN",stepB,"KNOWN"),true);
+            var exTrueToFalse=SemanticResultAdapter.execution(rawTrueToFalse,session,cut(4,false),ledger);
+            for(String target:List.of(plain,supplied,depPlain)) {
+                assertEquals("VIOLATED",row(exTrueToFalse,target).get("executionStatus"));
+                assertEquals("VIOLATED",org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews.qualifiedStatus(org.jacamo.bridge.contract.CanonicalJson.object(exTrueToFalse),row(exTrueToFalse,target)));
+                assertEquals("Incomplete",org.tzi.use.plugins.jacamo.ui.use4goal.conformance.PresentationResults.agentResult("VIOLATED",Objects.toString(row(exTrueToFalse,target).get("executionQuality"),"")));
+            }
+            assertEquals("FULFILLED",org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews.qualifiedStatus(org.jacamo.bridge.contract.CanonicalJson.object(exTrueToFalse),row(exTrueToFalse,ach)),"Achieve latches FULFILLED after true -> false");
+            before=session.checkpoint();var sFalseToTrue=session.step(inTrue);
+            var rawFalseToTrue=SemanticResultAdapter.context(context,session,sFalseToTrue,before,inTrue,Map.of(
+                    plain,"KNOWN",subSupplied,"KNOWN",supplied,"KNOWN",ach,"KNOWN",stepA,"KNOWN",stepB,"KNOWN"),true);
+            var exFalseToTrue=SemanticResultAdapter.execution(rawFalseToTrue,session,cut(5,false),ledger);
+            for(String target:List.of(plain,supplied,depPlain)) {
+                assertNull(row(exFalseToTrue,target).get("executionStatus"));
+                assertEquals("FULFILLED",org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews.qualifiedStatus(org.jacamo.bridge.contract.CanonicalJson.object(exFalseToTrue),row(exFalseToTrue,target)));
+                assertEquals("Complete",org.tzi.use.plugins.jacamo.ui.use4goal.conformance.PresentationResults.agentResult("FULFILLED",Objects.toString(row(exFalseToTrue,target).get("executionQuality"),"")));
+            }
+        }
+    }
     private static RuntimeEngineSessionOwner.Cut cut(int version,boolean lost){return new RuntimeEngineSessionOwner.Cut("owner",new RuntimeEngineSessionOwner.Identity("run",1,"revision","program","profile"),1,version,"boundary"+version,"hash"+version,null,List.of(),true,lost,List.of(),null,0,Map.of(),List.of());}
     private static Map<String,Object> row(Object context,String id){var root=org.jacamo.bridge.contract.CanonicalJson.object(context);return org.jacamo.bridge.contract.CanonicalJson.object(org.jacamo.bridge.contract.CanonicalJson.object(root.get("occurrences")).get(id));}
 }

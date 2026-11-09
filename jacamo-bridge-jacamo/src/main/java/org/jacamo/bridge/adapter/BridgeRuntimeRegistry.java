@@ -12,9 +12,16 @@ import org.jacamo.bridge.contract.RuntimeEvent;
 /** Process-local hook used only by official JaCaMo extension instances. */
 public final class BridgeRuntimeRegistry {
     private static final AtomicReference<Consumer<RuntimeEvent>> ACTIVE = new AtomicReference<>();
-    private static volatile java.util.Set<String> checkpointTaskSources=java.util.Set.of();
-    static void checkpointTaskSources(java.util.Set<String> sources){checkpointTaskSources=java.util.Set.copyOf(sources);}
-    static boolean checkpointTask(String hash,String task){return checkpointTaskSources.contains(hash+"/"+task);}
+    private static volatile java.util.Set<String> checkpointPreTaskSources=java.util.Set.of();
+    private static volatile java.util.Set<String> checkpointPostTaskSources=java.util.Set.of();
+    static void checkpointTaskSources(java.util.Set<String> sources){checkpointTaskSources(sources,sources);}
+    static void checkpointTaskSources(java.util.Set<String> preSources,java.util.Set<String> postSources){
+        checkpointPreTaskSources=java.util.Set.copyOf(preSources);
+        checkpointPostTaskSources=java.util.Set.copyOf(postSources);
+    }
+    static boolean checkpointTask(String hash,String task){return checkpointPreTask(hash,task)||checkpointPostTask(hash,task);}
+    static boolean checkpointPreTask(String hash,String task){return checkpointPreTaskSources.contains(hash+"/"+task);}
+    static boolean checkpointPostTask(String hash,String task){return checkpointPostTaskSources.contains(hash+"/"+task);}
     private static final AtomicReference<Runnable> WORKSPACE_OBSERVER=new AtomicReference<>();
     static AutoCloseable attachWorkspaceObserver(Runnable observer) {
         Objects.requireNonNull(observer);

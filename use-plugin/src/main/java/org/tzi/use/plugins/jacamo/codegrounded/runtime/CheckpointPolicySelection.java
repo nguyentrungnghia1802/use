@@ -9,20 +9,28 @@ public final class CheckpointPolicySelection {
         for(var request:requests)if(request.provider().equals("jason.plan-boundaries.v1")){
             var selected=new LinkedHashMap<String,String>();
             var entryTasks=new LinkedHashSet<String>();
+            var postTasks=new LinkedHashSet<String>();
             for(Object raw:(List<?>)request.parameters().get("plans")){
-                boolean firstNative=true;
-                for(Object entry:(List<?>)CanonicalJson.object(raw).get("steps")){
-                    var step=CanonicalJson.object(entry);String task=(String)step.get("task");
+                var steps=((List<?>)CanonicalJson.object(raw).get("steps")).stream().map(CanonicalJson::object).toList();
+                if(steps.stream().noneMatch(s->nativeTask.test((String)s.get("task"))))continue;
+                var firstStep=steps.getFirst();
+                String entryTask=(String)firstStep.get("task");
+                String entryType=Objects.toString(firstStep.get("artifactClass"),"");
+                String priorEntry=selected.putIfAbsent(entryTask,entryType);
+                if(priorEntry!=null&&!priorEntry.equals(entryType))throw new IllegalArgumentException("CHECKPOINT_TASK_SCOPE_CONFLICT:"+entryTask);
+                entryTasks.add(entryTask);
+                for(var step:steps){
+                    String task=(String)step.get("task");
                     if(!nativeTask.test(task))continue;
                     String type=Objects.toString(step.get("artifactClass"),"");
                     String prior=selected.putIfAbsent(task,type);
                     if(prior!=null&&!prior.equals(type))throw new IllegalArgumentException("CHECKPOINT_TASK_SCOPE_CONFLICT:"+task);
-                    if(firstNative){entryTasks.add(task);firstNative=false;}
+                    postTasks.add(task);
                 }
             }
             selected.forEach((task,type)->{
                 if(entryTasks.contains(task))rules.add(new VerifiedCheckpointProtocol.Rule("task-pre:"+request.id()+":"+task,"observation:"+request.id(),type,Set.of(task),Set.of(VerifiedCheckpointProtocol.REQUIRED_CHECK),"TASK_PRE"));
-                rules.add(new VerifiedCheckpointProtocol.Rule("task-post:"+request.id()+":"+task,"observation:"+request.id(),type,Set.of(task),Set.of(VerifiedCheckpointProtocol.REQUIRED_CHECK),"TASK_POST"));
+                if(postTasks.contains(task))rules.add(new VerifiedCheckpointProtocol.Rule("task-post:"+request.id()+":"+task,"observation:"+request.id(),type,Set.of(task),Set.of(VerifiedCheckpointProtocol.REQUIRED_CHECK),"TASK_POST"));
             });
         }
         for(var request:requests)if(request.provider().equals("cartago.operation-history.v1")&&request.parameters().containsKey("sourceRef")&&request.parameters().get("operations") instanceof List<?> names&&!names.isEmpty()){

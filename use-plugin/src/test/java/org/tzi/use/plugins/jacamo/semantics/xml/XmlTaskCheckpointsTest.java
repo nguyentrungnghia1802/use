@@ -33,17 +33,20 @@ class XmlTaskCheckpointsTest {
         Fixture(boolean resources,boolean lateSelf)throws Exception {
             this(resources,lateSelf,java.util.function.UnaryOperator.identity());
         }
-        Fixture(boolean resources,boolean lateSelf,java.util.function.UnaryOperator<String> configure)throws Exception {this(resources,lateSelf,configure,false);}
-        Fixture(boolean resources,boolean lateSelf,java.util.function.UnaryOperator<String> configure,boolean fail)throws Exception {
+        Fixture(boolean resources,boolean lateSelf,java.util.function.UnaryOperator<String> configure)throws Exception {this(resources,lateSelf,configure,false,false);}
+        Fixture(boolean resources,boolean lateSelf,java.util.function.UnaryOperator<String> configure,boolean fail)throws Exception {this(resources,lateSelf,configure,fail,false);}
+        Fixture(boolean resources,boolean lateSelf,java.util.function.UnaryOperator<String> configure,boolean fail,boolean withPrefix)throws Exception {
             Files.createDirectories(temp.resolve("src/agt"));Files.createDirectories(temp.resolve("src/org"));
             Files.copy(GenericMappingEngineTest.JCM.getParent().resolve("src/org/monitor.xml"),temp.resolve("src/org/monitor.xml"));
-            Path behavior=Files.writeString(temp.resolve("src/agt/a.asl"),fail?"+!work <- .fail.\n":"+!work <- .print(\"source execution\").\n");
+            Path behavior=Files.writeString(temp.resolve("src/agt/a.asl"),fail?"+!work <- .fail.\n":withPrefix?"+!work <- .print(\"prefix\"); .print(\"source execution\").\n":"+!work <- .print(\"source execution\").\n");
             Path jcm=Files.writeString(temp.resolve("monitor.jcm"),Files.readString(GenericMappingEngineTest.JCM).replace("agent a : a.asl","agent a : a.asl\n    agent b : a.asl"));
             helper.temp=temp;helper.project=jcm;
+            String planSteps=withPrefix?"<step task=\"work_prefix\" first=\"0\" after=\"1\" variables=\"\"/><step task=\"Positive\" first=\"1\" after=\"2\" variables=\"\"/>":"<step task=\"Positive\" first=\"0\" after=\"1\" variables=\"\"/>";
             data=helper.fixture(s->{String xml=(resources?s.replace("engineProfile=\"USE4GOAL_OBSERVED_V1\"","engineProfile=\"DERIVED_AND_RESOURCE_V1\"").replace("</actor></istar>","<resource id=\"parcel-resource\" name=\"Parcel\"><neededBy task=\"Positive\"/></resource></actor></istar>")
                 .replace("<self target=\"Positive\" origin=\"COLUMN\" column=\"domain\"/>","<self target=\"Positive\" origin=\"COLUMN\" column=\"domain\"/><resource target=\"Parcel\" column=\"domain\" type=\"Counter\"/>"):s).replace("selfKind=\"ARTIFACT\"","selfKind=\"ARTIFACT\""+(lateSelf?XmlTaskOclBindingsTest.POLICY.replace("EXACT_SELF","ALLOW_UNBOUND_SELF_FOR_PURE_CALLBACK"):XmlTaskOclBindingsTest.POLICY))
                 .replace("</sources>","<file id=\"behavior\" kind=\"ASL\" path=\"src/agt/a.asl\" sha256=\""+uncheckedHash(behavior)+"\"/></sources>")
-                .replace("<requirements/>","<requirements><capability id=\"steps\" provider=\"jason.plan-boundaries.v1\" required=\"true\" sourceRef=\"behavior\"><plan trigger=\"work\"><step task=\"Positive\" first=\"0\" after=\"1\" variables=\"\"/></plan></capability></requirements>");
+                .replace("<requirements/>","<requirements><capability id=\"steps\" provider=\"jason.plan-boundaries.v1\" required=\"true\" sourceRef=\"behavior\"><plan trigger=\"work\">"+planSteps+"</plan></capability></requirements>");
+                if(withPrefix)xml=xml.replace("<omittedConcepts/>","<omittedConcepts><omit id=\"trace-prefix\" concept=\"SOURCE_EXECUTION_PREFIX\" sourceStep=\"work_prefix\" handledBy=\"TRACE_ONLY\" reason=\"Prefix\"/></omittedConcepts>");
                 if(lateSelf)xml=xml.replace("anchorColumn=\"domain\" contextColumn=\"group\" keyFields=\"group domain\"","anchorColumn=\"group\" contextColumn=\"group\" keyFields=\"group\"")
                     .replace("<self target=\"Positive\" origin=\"COLUMN\" column=\"domain\"/>","<self target=\"Positive\" origin=\"COLUMN\" column=\"domain\" optional=\"true\"/>")
                     .replace("anchorColumn=\"domain\" playerColumn=\"player\"","anchorColumn=\"group\" playerColumn=\"player\"")
@@ -72,7 +75,7 @@ class XmlTaskCheckpointsTest {
                     }finally{agent.stopAg();}
                 }
             }finally{environment.shutdown();}
-            assertEquals(8,frames.size());set(1);
+            assertEquals(withPrefix?16:8,frames.size());set(1);
         }
         void set(int value)throws Exception {var n=data.nativeFixture();var port=n.nativeFixture().port();port.value(n.domain(),"p",IntegerValue.valueOf(value));CanonicalObservationMappingBindings.recordPropertyWritten(port,n.domain(),n.domain().cls().attribute("p",true),port.currentValue(n.domain(),"p"));}
         RuntimeEvent event(int frame,long sequence){return frames.get(frame).event("run",1,source.modelRevision(),sequence,java.time.Instant.EPOCH,"","",true);}
@@ -283,6 +286,25 @@ class XmlTaskCheckpointsTest {
                 var negative=f.checkpoints.drain().stream().flatMap(w->NativeInvocationEvaluation.evaluate(w,4).stream()).filter(r->r.kind().equals("TASK_POST")).findFirst().orElseThrow();
                 assertEquals(mutation.equals("MISSING")?org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.SKIPPED:org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.FAIL,negative.verdict(),negative.toString());
             }
+        }
+    }
+    @Test void traceOnlyPlanPrefixSeparatesPlanEntryFromTaskEntryAndRejectsPartialPrefixEvidence()throws Exception {
+        try(var f=new Fixture(false,false,java.util.function.UnaryOperator.identity(),false,true)) {
+            var rules=org.tzi.use.plugins.jacamo.codegrounded.runtime.CheckpointPolicySelection.rules(f.data.nativeFixture().nativeFixture().engine().canonicalProgram().xmlPlan().requirements(),id->id.equals("Positive"));
+            assertEquals(List.of("task-pre:steps:work_prefix","task-post:steps:Positive"),rules.stream().map(VerifiedCheckpointProtocol.Rule::id).toList());
+            var original=f.frames.get(0);assertEquals("work_prefix",original.data().get("sourceStepId"));assertEquals("ENABLED",original.data().get("phase"));
+            f.observe(0,1);
+            var traceRows=f.checkpoints.drain().stream().flatMap(w->NativeInvocationEvaluation.evaluate(w,1).stream()).toList();
+            assertEquals(1,traceRows.size());assertEquals("SOURCE_TRACE",traceRows.getFirst().kind());
+            assertTrue(f.checkpoints.savepoint().active().isEmpty(),"Plan-entry TRACE_ONLY prefix must not evaluate or register Positive's TASK_PRE before task-entry");
+            var partialPrefix=new VerificationObservation(original.kind(),original.subject(),Completeness.PARTIAL,"EXACT_SCHEME_PERCEPT_REFERENCE_UNAVAILABLE",original.sourceTime(),original.data());
+            f.checkpoints.observe(partialPrefix.event("run",1,f.source.modelRevision(),2,java.time.Instant.EPOCH,"","",true),coverage,false);
+            var brokenRows=f.checkpoints.drain().stream().flatMap(w->NativeInvocationEvaluation.evaluate(w,2).stream()).toList();
+            assertEquals(1,brokenRows.size());assertEquals("TASK_INVOCATION",brokenRows.getFirst().kind());
+            assertEquals(org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.INCONCLUSIVE,brokenRows.getFirst().verdict());
+            f.observe(2,3);var taskEntry=f.checkpoints.drain();assertEquals(1,taskEntry.size());assertEquals("TASK_PRE",taskEntry.getFirst().conditions().getFirst().kind());
+            f.set(2);f.observe(3,4);var taskExit=f.checkpoints.drain().stream().flatMap(w->NativeInvocationEvaluation.evaluate(w,4).stream()).toList();
+            assertTrue(taskExit.stream().anyMatch(r->r.kind().equals("TASK_POST")&&r.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.PASS));
         }
     }
 

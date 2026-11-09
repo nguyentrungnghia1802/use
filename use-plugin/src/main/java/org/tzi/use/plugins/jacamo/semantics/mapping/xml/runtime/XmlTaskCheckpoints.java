@@ -52,6 +52,7 @@ public final class XmlTaskCheckpoints {
         var selected=decoders.stream().filter(d->d.accepts(observation)).toList();if(selected.isEmpty())return;if(selected.size()!=1)throw new IllegalArgumentException("XML_TASK_SOURCE_REQUEST_AMBIGUOUS");
         var step=selected.getFirst().decode(observation,event.sessionId(),event.generation(),event.modelRevision());
         if(program.xmlPlan().inputs().specification().root().child("omittedConcepts").children("omit").stream().anyMatch(n->n.optional("sourceStep").equals(step.task())&&n.optional("handledBy").equals("TRACE_ONLY"))) {
+            if(step.quality()!=Completeness.COMPLETE){unavailable(step,step.diagnostic());return;}
             append(new NativeInvocationEvaluation.Work(List.of(),List.of(),List.of(new SemanticConstraintResult("XML:TRACE:"+step.invocation(),"SOURCE_TRACE","","","","",SemanticVerdict.SKIPPED,"","DECLARED_SOURCE_OBSERVATION_ONLY",0,step.invocation(),Map.of("sourceStepId",step.task(),"sourcePhase",step.phase()))),0));return;
         }
         if(!bindings.slots().containsKey(step.task())){unavailable(step,"UNSUPPORTED:XML_TASK_OBSERVATION_BINDING_REQUIRED");return;}

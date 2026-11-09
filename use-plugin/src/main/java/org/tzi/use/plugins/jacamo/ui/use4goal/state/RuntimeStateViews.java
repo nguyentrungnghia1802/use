@@ -142,7 +142,9 @@ public final class RuntimeStateViews {
   String quality=Objects.toString(row.get("executionQuality"),"");boolean history=Set.of("KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(quality)&&!object(row.get("executionEvidence")).isEmpty();
   boolean current=Set.of("KNOWN","KNOWN_DERIVED").contains(quality)&&"ORIGINAL_PROPAGATION_ON_ADMITTED_LEAVES/1.0".equals(context.get("executionQualification"));
   if(!history&&!current)return "UNKNOWN";
-  if(history&&"FAILED".equals(row.get("executionStatus"))&&object(row.get("executionEvidence")).values().stream().map(RuntimeStateViews::object).anyMatch(p->"TASK_FAILED".equals(p.get("kind"))&&"CERTIFIED_TERMINAL_EXECUTION/1.0".equals(p.get("policy"))))return "FAILED";
+  String executionStatus=Objects.toString(row.get("executionStatus"),"");
+  if((history||current)&&Set.of("FAILED","VIOLATED").contains(executionStatus)&&(current||object(row.get("executionEvidence")).values().stream().map(RuntimeStateViews::object).anyMatch(p->Set.of("TASK_FAILED","GOAL_VIOLATED").contains(p.get("kind"))&&"CERTIFIED_TERMINAL_EXECUTION/1.0".equals(p.get("policy")))))return executionStatus;
+  if((history||current)&&"FULFILLED".equals(executionStatus))return "FULFILLED";
   return Objects.toString(row.get("aggregateStatus"),"UNKNOWN");
  }
  public static OccurrenceGoalModelExpander.Expansion expand(GoalModel goals,Map<String,Object> context,EngineSemanticsProfile profile,Map<String,OccurrenceGoalModelExpander.Quantifier> policies){

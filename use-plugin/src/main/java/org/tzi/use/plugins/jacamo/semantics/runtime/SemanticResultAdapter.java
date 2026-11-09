@@ -20,7 +20,7 @@ public final class SemanticResultAdapter {
         var history=step==null?previous:step.history();var raw=new TreeMap<String,Object>();
         var dependencies=new HashMap<String,Set<String>>();var model=session.topology().instance().model();
         model.getActors().forEach(actor->{
-            actor.refinements().forEach(refinement->{var children=refinement instanceof org.vnu.sme.goal.dsl.istar.mm.AndRefinement and?and.children():List.of(((org.vnu.sme.goal.dsl.istar.mm.OrRefinement)refinement).child());dependencies.computeIfAbsent(refinement.parent(),key->new HashSet<>()).addAll(children);});
+            actor.refinements().forEach(refinement->{if(hasDirectGoalCondition(model,refinement.parent()))return;var children=refinement instanceof org.vnu.sme.goal.dsl.istar.mm.AndRefinement and?and.children():List.of(((org.vnu.sme.goal.dsl.istar.mm.OrRefinement)refinement).child());dependencies.computeIfAbsent(refinement.parent(),key->new HashSet<>()).addAll(children);});
             actor.contributions().forEach(contribution->dependencies.computeIfAbsent(contribution.quality(),key->new HashSet<>()).add(contribution.element()));
         });
         model.getDependencies().forEach(dependency->{if(dependency.dependerElmt()!=null&&dependency.dependeeElmt()!=null)dependencies.computeIfAbsent(dependency.dependerElmt(),key->new HashSet<>()).add(dependency.dependeeElmt());});
@@ -63,6 +63,7 @@ public final class SemanticResultAdapter {
         var andChildren=new HashMap<String,List<String>>();var orChildren=new HashMap<String,List<String>>();var depChildren=new HashMap<String,List<String>>();
         var model=session.topology().instance().model();
         model.getActors().forEach(actor->actor.refinements().forEach(refinement->{
+            if(hasDirectGoalCondition(model,refinement.parent()))return;
             if(refinement instanceof org.vnu.sme.goal.dsl.istar.mm.AndRefinement and){
                 andChildren.computeIfAbsent(and.parent(),x->new ArrayList<>()).addAll(and.children());
                 dependencies.computeIfAbsent(and.parent(),x->new HashSet<>()).addAll(and.children());
@@ -123,6 +124,7 @@ public final class SemanticResultAdapter {
                 var targetSources=new TreeMap<String,Object>();
                 collectTruthProofs(id,t,truths,proofs,andChildren,orChildren,depChildren,targetSources,new HashSet<>());
                 if(!targetSources.isEmpty())sources=targetSources;
+                else if(t==Truth.BOTTOM)sources.clear();
                 if(!Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(quality))
                     quality=sources.isEmpty()?"KNOWN_DERIVED":"KNOWN_DERIVED_HISTORY";
             }
@@ -132,7 +134,7 @@ public final class SemanticResultAdapter {
                 quality=sources.isEmpty()?"KNOWN_DERIVED":"KNOWN_DERIVED_HISTORY";
             if(ledger.terminal(Objects.toString(context.get("context")),history.keys().get(id)).isPresent())
                 row.put("executionStatus","GOAL".equals(row.get("elementKind"))?"VIOLATED":"FAILED");
-            else if(!qualities.containsKey(id)&&t==Truth.BOTTOM)
+            else if(t==Truth.BOTTOM&&(!qualities.containsKey(id)||"GOAL".equals(row.get("elementKind"))))
                 row.put("executionStatus","GOAL".equals(row.get("elementKind"))?"VIOLATED":"FAILED");
             else if(!qualities.containsKey(id)&&t==Truth.TOP&&!"FULFILLED".equals(row.get("aggregateStatus")))
                 row.put("executionStatus","FULFILLED");
@@ -158,7 +160,8 @@ public final class SemanticResultAdapter {
             } else if(history.goals().containsKey(id)) {
                 var gm=history.goals().get(id);
                 result=gm.status()==org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus.FULFILLED?Truth.TOP
-                        :gm.status()==org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus.VIOLATED?Truth.BOTTOM:Truth.UNKNOWN;
+                        :gm.status()==org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus.VIOLATED
+                                ||gm.type()==org.vnu.sme.goal.dsl.istar.mm.GoalType.NONE&&gm.active()&&!gm.condition()?Truth.BOTTOM:Truth.UNKNOWN;
             } else result=Truth.UNKNOWN;
         } else if(andChildren.containsKey(id)) {
             var vals=andChildren.get(id).stream().map(c->evaluateTruth(c,history,qualities,proofs,andChildren,orChildren,depChildren,dependencies,memo,new HashSet<>(visiting))).toList();
@@ -185,12 +188,17 @@ public final class SemanticResultAdapter {
         for(String child:depChildren.getOrDefault(id,List.of()))if(truths.get(child)==target)collectTruthProofs(child,target,truths,proofs,andChildren,orChildren,depChildren,result,visited);
     }
     private static boolean qualifiedLeaf(String quality){return quality!=null&&Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY").contains(quality);}
+    private static boolean hasDirectGoalCondition(org.vnu.sme.goal.dsl.istar.mm.GoalModel model,String id) {
+        return model.findElement(id).filter(org.vnu.sme.goal.dsl.istar.mm.Goal.class::isInstance)
+                .map(org.vnu.sme.goal.dsl.istar.mm.Goal.class::cast)
+                .map(goal->!goal.conditions().isEmpty()).orElse(false);
+    }
     /** Missing current scope is not evidence that a past task did not complete.
      * Requalify ONLY stored monotone proofs; no old live predicate is admitted. */
     static Object unavailableExecution(Map<String,Object> previous,Use4GoalRuntimeSessionAdapter session,RuntimeEngineSessionOwner.Cut cut,ExecutionEvidence ledger,List<String> diagnostics) {
         var held=new TreeMap<>(previous);var occurrences=new TreeMap<String,Object>();
         CanonicalJson.object(previous.getOrDefault("occurrences",Map.of())).forEach((id,value)->{
-            var row=new TreeMap<>(CanonicalJson.object(value));row.put("quality","UNAVAILABLE:CURRENT_SCOPE");occurrences.put(id,row);
+            var row=new TreeMap<>(CanonicalJson.object(value));row.remove("executionStatus");row.put("quality","UNAVAILABLE:CURRENT_SCOPE");occurrences.put(id,row);
         });
         held.put("occurrences",occurrences);held.put("advance",false);held.put("originalApiCalls",List.of());
         held.put("quality","UNAVAILABLE");held.put("diagnostics",diagnostics);held.put("executionView","HISTORICAL_CERTIFICATES_ONLY_CURRENT_SCOPE_UNAVAILABLE");

@@ -21,6 +21,8 @@ class VerifiedCheckpointSharedIntentionsTest {
     @Test void parkedCycleGrantsCannotStarveAnotherAgentsCausalNotification()throws Exception {child("synchronous-many");}
     @Test void waitingTaskYieldsAndItsLogicalTimerStaysFrozen() throws Exception { child("wait"); }
     @Test void nestedTaskParksItsAdmittedParentAtTheChildBoundary() throws Exception { child("nested"); }
+    @Test void nestedChildTaskPreHoldsParentIntentionBeforeFirstChildDeed() throws Exception { child("nested-pre"); }
+    @Test void planEntryPrefixPreHoldsBeforeFirstPlanDeedAndContinuesIntoMappedTask() throws Exception { child("prefix-pre"); }
     @Test void atomicIntentionCannotBypassTheSelectedTaskBoundary() throws Exception { child("atomic"); }
     @Test void bootstrapWakeDoesNotInventWorkForAnAgentThreadThatHasNotStarted()throws Exception {child("bootstrap");}
     private void child(String mode) throws Exception {
@@ -40,25 +42,44 @@ class VerifiedCheckpointSharedIntentionsTest {
         String text=switch(mode){
             case "parallel","synchronous","synchronous-many"->"!one. !two.\n+!one <- +one_created; +one_ready; +one_after.\n+!two <- +two_created; +two_focused; +two_ready; +two_after.\n";
             case "wait"->"!two. !one.\n+!one <- +one_a; +one_b; +one_c; +one_ready; +one_after.\n+!two <- .wait(1000); +timer_done; +two_after.\n";
-            case "nested"->"!outer.\n+!outer <- !one; +outer_after.\n+!one <- +one_ready; +one_after.\n";
+            case "nested","nested-pre"->"!outer.\n+!outer <- !one; +outer_after.\n+!one <- +one_ready; +one_after.\n";
+            case "prefix-pre"->"!one.\n+!one <- +prefix_ready; +one_ready; +one_after.\n";
             case "atomic"->"!one.\n@serial[atomic] +!one <- +one_ready; +one_after.\n";
             default->throw new IllegalArgumentException(mode);
         };
         Path directory=Files.createTempDirectory("shared-intentions-"),file=Files.writeString(directory.resolve("worker.asl"),text);
         var source=new OfficialJasonAdapter().adapt(directory,file,"fixture","worker").program();
-        var selections=new ArrayList<JasonPlanInstrumentation.PlanSelection>();var captures=new ArrayList<JasonStepObservation.Capture>();var admitted=new HashSet<String>();
+        var selections=new ArrayList<JasonPlanInstrumentation.PlanSelection>();var captures=new ArrayList<JasonStepObservation.Capture>();
+        var preAdmitted=new HashSet<String>();var postAdmitted=new HashSet<String>();
         for(var plan:source.planLibrary().plans()) {
             String name=plan.trigger().literal().startsWith("outer")?"Outer":plan.trigger().literal().startsWith("two")?"Two":"One";
-            int size=plan.body().size(),end=name.equals("Outer")?size:size-1;
-            var boundaries=new ArrayList<JasonPlanInstrumentation.Boundary>();boundaries.add(new JasonPlanInstrumentation.Boundary("Prepare"+name,0,end));
-            if(end<size)boundaries.add(new JasonPlanInstrumentation.Boundary("After"+name,end,size));
+            int size=plan.body().size();
+            var boundaries=new ArrayList<JasonPlanInstrumentation.Boundary>();
+            if(mode.equals("prefix-pre")) {
+                boundaries.add(new JasonPlanInstrumentation.Boundary("PrefixOne",0,1));
+                boundaries.add(new JasonPlanInstrumentation.Boundary("PrepareOne",1,2));
+                boundaries.add(new JasonPlanInstrumentation.Boundary("AfterOne",2,size));
+            } else {
+                int end=name.equals("Outer")?size:size-1;
+                boundaries.add(new JasonPlanInstrumentation.Boundary("Prepare"+name,0,end));
+                if(end<size)boundaries.add(new JasonPlanInstrumentation.Boundary("After"+name,end,size));
+            }
             selections.add(new JasonPlanInstrumentation.PlanSelection(plan.metadata().semanticId(),boundaries));
-            for(var boundary:boundaries){captures.add(new JasonStepObservation.Capture(boundary.task(),List.of(),"","","",false,List.of()));admitted.add(source.sourceDigest()+"/"+boundary.task());}
+            for(var boundary:boundaries){
+                captures.add(new JasonStepObservation.Capture(boundary.task(),List.of(),"","","",false,List.of()));
+                String key=source.sourceDigest()+"/"+boundary.task();
+                if(mode.equals("prefix-pre")) {
+                    if(boundary.task().equals("PrefixOne"))preAdmitted.add(key);
+                    else postAdmitted.add(key);
+                } else {
+                    preAdmitted.add(key);postAdmitted.add(key);
+                }
+            }
         }
         var runner=new Runner();runner.current();RuntimeServicesFactory.set(new LocalRuntimeServices(runner));
         var env=new LocalEnvironment(new ClassParameters("jason.environment.Environment"),runner);var agent=new LocalAgArch();agent.setAgName("worker");agent.setMASRunner(runner);
         agent.createArchs(List.of(),"jason.asSemantics.Agent",new ClassParameters("jason.bb.DefaultBeliefBase"),file.toString(),new Settings());agent.setEnvInfraTier(env);agent.setCyclesAct(2);runner.addAg(agent);
-        var environment=cartago.CartagoEnvironment.getInstance();environment.init();ExecutionBarrier.enable("shared-intention-probe");BridgeRuntimeRegistry.checkpointTaskSources(admitted);
+        var environment=cartago.CartagoEnvironment.getInstance();environment.init();ExecutionBarrier.enable("shared-intention-probe");BridgeRuntimeRegistry.checkpointTaskSources(preAdmitted,postAdmitted);
         BridgeLocalExecutionControl control=null;var idleAgents=new ArrayList<LocalAgArch>();
         if(mode.startsWith("synchronous")) {
             BridgeRuntimeRegistry.registerAgent("worker",new BridgeEntityId("jason","agent","runtime-agent","fixture","worker","incarnation"));BridgeRuntimeRegistry.registerArchitecture("worker",agent);
@@ -78,19 +99,26 @@ class VerifiedCheckpointSharedIntentionsTest {
             delayed=Thread.ofPlatform().daemon().start(()->{try(var permit=ExecutionBarrier.enter("fixture-delayed-notification")){ready.countDown();if(!closed.await(5,TimeUnit.SECONDS))throw new AssertionError("No source boundary");Thread.sleep(250);idleAgents.getLast().wake();}catch(InterruptedException failure){Thread.currentThread().interrupt();}});
             assertTrue(ready.await(3,TimeUnit.SECONDS));
         }
+        String targetStep=mode.equals("prefix-pre")?"PrefixOne":"PrepareOne";
+        String targetPhase=Set.of("nested-pre","prefix-pre").contains(mode)?"ENABLED":"SUCCEEDED";
         try(var observer=new JasonStepObservation(agent.getTS(),new BridgeEntityId("jason","agent","runtime-agent","fixture","worker","incarnation"),"run",1,"revision",source,directory,
-                frame->{frames.add(frame);if("PrepareOne".equals(frame.data().get("sourceStepId"))&&"SUCCEEDED".equals(frame.data().get("phase"))){epoch.set(ExecutionBarrier.closeAdmission());closed.countDown();}},reason->{throw new AssertionError(reason);},
+                frame->{frames.add(frame);if(targetStep.equals(frame.data().get("sourceStepId"))&&targetPhase.equals(frame.data().get("phase"))){epoch.set(ExecutionBarrier.closeAdmission());closed.countDown();}},reason->{throw new AssertionError(reason);},
                 new JasonPlanInstrumentation.Specification(JasonPlanInstrumentation.RECIPE,source.sourceDigest(),selections),captures)) {
             for(var idle:idleAgents){idle.setThread(new Thread(idle,idle.getAgName()));idle.startThread();control.started(idle);}
             agent.setThread(new Thread(agent,"shared-intentions"));agent.startThread();if(control!=null)control.started(agent);assertTrue(closed.await(5,TimeUnit.SECONDS));
             var proof=ExecutionBarrier.awaitFrozen(epoch.get(),Duration.ofSeconds(5));assertTrue(proof.active().isEmpty());assertEquals(0,proof.pending());
             assertTrue(frames.stream().noneMatch(f->f.data().get("sourceStepId").toString().startsWith("After")),"No next Task may start while admission is held");
             if(Set.of("parallel","synchronous","synchronous-many").contains(mode))assertTrue(frames.stream().anyMatch(f->"PrepareTwo".equals(f.data().get("sourceStepId"))&&"SUCCEEDED".equals(f.data().get("phase"))),"The other admitted Task on the SAME agent must finish before READY");
-            if(mode.equals("nested"))assertTrue(ExecutionBarrier.taskContinuations().containsValue("DEFERRED_AT_SELECTED_TASK"),"The parent yields without completing past its selected child");
+            if(Set.of("nested","nested-pre").contains(mode))assertTrue(ExecutionBarrier.taskContinuations().containsValue("DEFERRED_AT_SELECTED_TASK"),"The parent yields without completing past its selected child");
+            if(mode.equals("nested-pre"))assertNull(agent.getTS().getAg().getBB().contains(jason.asSyntax.ASSyntax.createLiteral("one_ready")),"Child plan must not execute its first deed before its TASK_PRE checkpoint is released");
+            if(mode.equals("prefix-pre")) {
+                assertNull(agent.getTS().getAg().getBB().contains(jason.asSyntax.ASSyntax.createLiteral("prefix_ready")),"Plan prefix must not execute its first deed before plan-entry TASK_PRE is released");
+                assertTrue(frames.stream().noneMatch(f->"PrepareOne".equals(f.data().get("sourceStepId"))),"Mapped task after prefix must not enter while plan-entry TASK_PRE is held");
+            }
             long now=ExecutionBarrier.nowMillis();Thread.sleep(mode.equals("wait")?1200:100);assertEquals(now,ExecutionBarrier.nowMillis());
             if(mode.equals("wait")){assertTrue(ExecutionBarrier.taskContinuations().containsValue("PARKED_SOURCE_WAIT"));assertNull(agent.getTS().getAg().getBB().contains(jason.asSyntax.ASSyntax.createLiteral("timer_done")));}
             ExecutionBarrier.release(epoch.get());long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(5);
-            String last=mode.equals("nested")?"outer_after":Set.of("wait","parallel","synchronous","synchronous-many").contains(mode)?"two_after":"one_after";
+            String last=Set.of("nested","nested-pre").contains(mode)?"outer_after":Set.of("wait","parallel","synchronous","synchronous-many").contains(mode)?"two_after":"one_after";
             while(agent.getTS().getAg().getBB().contains(jason.asSyntax.ASSyntax.createLiteral(last))==null&&System.nanoTime()<end)Thread.sleep(5);
             assertNotNull(agent.getTS().getAg().getBB().contains(jason.asSyntax.ASSyntax.createLiteral(last)));assertEquals(text,Files.readString(file));
             System.out.println("SHARED_INTENTION_SOURCE_BOUNDARY_PASS mode="+mode+" proof="+proof);

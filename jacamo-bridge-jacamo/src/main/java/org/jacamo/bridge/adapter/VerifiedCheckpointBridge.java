@@ -76,12 +76,14 @@ final class VerifiedCheckpointBridge implements AutoCloseable {
             @Override public void append(Map<String,Object> event){history.append(CanonicalJson.encode(event,CanonicalJson.DEFAULT_MAX_BYTES));}
         },Duration.ofMillis(Long.getLong("jacamo.checkpoint.verificationTimeoutMillis",30000L)));
         jacamo.checkpoint.CheckpointBoot.registerCoordinator(coordinator);
-        var taskSources=new HashSet<String>();
+        var preTaskSources=new HashSet<String>();
+        var postTaskSources=new HashSet<String>();
         for(var rule:policy.rules())if(rule.selectorKind().equals("TASK_PRE")||rule.selectorKind().equals("TASK_POST")) {
             String hash=Objects.toString(selectedSources.get(rule.id()).parameters().get("sourceHash"),"");
-            rule.operations().forEach(task->taskSources.add(hash+"/"+task));
+            var target=rule.selectorKind().equals("TASK_PRE")?preTaskSources:postTaskSources;
+            rule.operations().forEach(task->target.add(hash+"/"+task));
         }
-        BridgeRuntimeRegistry.checkpointTaskSources(taskSources);
+        BridgeRuntimeRegistry.checkpointTaskSources(preTaskSources,postTaskSources);
     }
     void observe(RuntimeEvent event) {
         if(event.kind()==RuntimeEventKind.GAP) {
