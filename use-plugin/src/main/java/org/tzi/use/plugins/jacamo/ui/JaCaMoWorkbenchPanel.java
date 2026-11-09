@@ -405,14 +405,14 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
         detachSemanticViews();
         cslView=org.tzi.use.plugins.jacamo.ui.use4goal.csl.CslView.embedded(models.csl(),models.nativeModel());cslView.setName("canonical-csl-view");
         istarView=new org.tzi.use.plugins.jacamo.ui.use4goal.istar.IStarView();istarView.setModel(models.goals());istarView.setName("canonical-istar-view");
-        observedConformance=observedWorkflow?org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.liveResults(models.goals()):new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel();
+        var declarative=CanonicalJson.object(facade.semanticProgramEvidence().getOrDefault("declarativeProgram",Map.of()));
+        observedConformance=observedWorkflow?org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.liveResults(models.goals(),declarative):new org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel();
         if(observedWorkflow){
             var policies=new java.util.TreeMap<String,org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander.Quantifier>();
-            var declarative=CanonicalJson.object(facade.semanticProgramEvidence().getOrDefault("declarativeProgram",Map.of()));
             CanonicalJson.object(declarative.getOrDefault("dependencyPopulations",Map.of())).forEach((id,value)->policies.put(id,org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander.Quantifier.valueOf(value.toString())));
             runtimeStateViews=new org.tzi.use.plugins.jacamo.ui.use4goal.state.RuntimeStateViews(models.csl(),models.goals(),policies);
             runtimeStateViews.setActive(false,false);
-            istarInstances=new org.tzi.use.plugins.jacamo.ui.use4goal.state.IStarInstancesPanel(models.goals());
+            istarInstances=new org.tzi.use.plugins.jacamo.ui.use4goal.state.IStarInstancesPanel(models.goals(),declarative);
             observedConformance.onSelectedCut(runtimeStateViews::select);
             observedConformance.onExecutionSelected(runtimeStateViews::selectScope);
             runtimeStateViews.onScopeSelected(observedConformance::selectExecution);

@@ -25,7 +25,10 @@ public final class IStarInstancesPanel extends JPanel {
     private boolean loading,active;
 
     public IStarInstancesPanel(GoalModel model) {
-        super(new BorderLayout(6,6));this.model=Objects.requireNonNull(model);summary=new LiveGoalSummary(model);
+        this(model,Map.of());
+    }
+    public IStarInstancesPanel(GoalModel model,Map<String,Object> mapping) {
+        super(new BorderLayout(6,6));this.model=Objects.requireNonNull(model);summary=new LiveGoalSummary(model,mapping);
         setName("istar-instances-view");executions.setName("istar-instance-selector");status.setName("istar-instance-status");
         executions.setRenderer(new DefaultListCellRenderer(){@Override public Component getListCellRendererComponent(JList<?> list,Object value,int index,boolean selected,boolean focus){
             var label=(JLabel)super.getListCellRendererComponent(list,value,index,selected,focus);
@@ -33,7 +36,7 @@ public final class IStarInstancesPanel extends JPanel {
         }});
         var toolbar=new JPanel(new BorderLayout(6,3));toolbar.add(executions,BorderLayout.NORTH);toolbar.add(status,BorderLayout.SOUTH);
         add(toolbar,BorderLayout.NORTH);add(new JScrollPane(content),BorderLayout.CENTER);
-        var legend=new JLabel("C = Complete · I = Incomplete · ? = Unknown · A number counts assigned instances; hover for their results. History is available in Verification.");
+        var legend=new JLabel("C = Complete · I = Incomplete · ? = Unknown · Overview follows declared population policies. Individual results are available in Verification.");
         add(legend,BorderLayout.SOUTH);
         executions.addActionListener(e->{if(!loading&&active)render();});
     }
@@ -75,13 +78,11 @@ public final class IStarInstancesPanel extends JPanel {
             view.setVisibleElements(visible);
             var badges=new TreeMap<String,NodeBadge>();
             for(var row:summary.rows(evaluations)){
-                if(row.instances().isEmpty())continue;
+                if(row.displayInstances().isEmpty())continue;
                 String result=PresentationResults.goal(row.status(),false);
                 Color color=result.equals("Complete")?new Color(30,145,65):result.equals("Incomplete")?new Color(175,110,25):Color.GRAY;
-                var assigned=row.instances().stream().filter(r->!PresentationResults.agentResult(r).equals("Not assigned")).toList();
                 String glyph=result.equals("Complete")?"C":result.equals("Incomplete")?"I":"?";
-                if(assigned.size()>1){color=new Color(40,90,160);glyph=Integer.toString(assigned.size());}
-                badges.put(row.id(),new NodeBadge(color,glyph,row.instances().size()>1?"Instances: "+row.resultText():result+" · "+row.counts()));
+                badges.put(row.id(),new NodeBadge(color,glyph,result));
             }
             view.setNodeBadges(badges);
             var players=new TreeMap<String,Set<String>>();var labels=new TreeMap<String,String>();

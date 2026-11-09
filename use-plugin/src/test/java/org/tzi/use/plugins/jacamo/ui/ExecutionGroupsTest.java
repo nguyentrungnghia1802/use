@@ -48,10 +48,11 @@ class ExecutionGroupsTest {
         assertTrue(projected.evaluations().stream().noneMatch(r->r.element().equals("Finish")));assertEquals("VIOLATION",ExecutionScopeViews.goalVerdict(projected));
         assertEquals(1,ExecutionGroups.of(List.of(before)).ids().size());
     }
-    @Test void mixedPopulationUsesCountsAndIndividualFailureRemainsIncomplete()throws Exception {
+    @Test void overviewUsesOneResultAndIndividualFailureRemainsIncomplete()throws Exception {
         var model=org.vnu.sme.goal.dsl.istar.parser.IStarCompiler.compile("istar Delivery { role Worker { goal Work : Achieve condition {[ true ]} } }").model();
         var rows=List.of(goal("Work","run","FULFILLED",false,"a"),goal("Work","run","FULFILLED",false,"b"),goal("Work","run","FULFILLED",false,"c"),goal("Work","run","VIOLATED",false,"d"),goal("Work","run","NOT_ASSIGNED",false,"e"));
-        var summary=new LiveGoalSummary(model).rows(rows).getFirst();assertEquals("3 Complete · 1 Incomplete · 1 Not assigned",summary.resultText());
+        var summary=new LiveGoalSummary(model).rows(rows).getFirst();assertEquals("Incomplete",summary.resultText());
+        assertEquals(4,summary.displayInstances().size());assertEquals(5,summary.instances().size());
         assertEquals("Incomplete",PresentationResults.agentResult(rows.get(3)));
         SwingUtilities.invokeAndWait(()->{
             var panel=ObservedConformancePanel.liveResults(model);panel.setCuts(List.of(new Cut("cut","trace","state",rows,"COMPLETE","CURRENT_OBSERVED",false)));

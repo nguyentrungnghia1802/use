@@ -19,7 +19,7 @@ class LiveGoalSummaryTest {
    var goals=DetachedAuthoredWorkflowTest.find(panel,"live-goal-status",JTable.class);
    var tasks=DetachedAuthoredWorkflowTest.find(panel,"live-task-status",JTable.class);
    assertEquals(1,goals.getRowCount());assertEquals("Observer::Done",goals.getValueAt(0,0));assertEquals("Complete",goals.getValueAt(0,1));
-   assertEquals(1,tasks.getRowCount());assertEquals("Observer::Work",tasks.getValueAt(0,0));assertEquals("1 Complete · 1 Unknown",tasks.getValueAt(0,1));
+   assertEquals(1,tasks.getRowCount());assertEquals("Observer::Work",tasks.getValueAt(0,0));assertEquals("Unknown",tasks.getValueAt(0,1));
    tasks.setRowSelectionInterval(0,0);
    var instances=DetachedAuthoredWorkflowTest.find(panel,"live-goal-instances",JTable.class);
    assertEquals(List.of("Agent / Player","Execution","Result"),java.util.stream.IntStream.range(0,instances.getColumnCount()).mapToObj(instances::getColumnName).toList());
@@ -111,7 +111,7 @@ class LiveGoalSummaryTest {
    }finally{owner.dispose();}
   });
  }
- @Test void agentInstancesDistinguishNotAssignedMissingEvidenceFailedAndUnboundSubject()throws Exception {
+ @Test void agentInstancesHideConfirmedNonAssignmentAndKeepMissingEvidenceFailedAndUnboundSubject()throws Exception {
   SwingUtilities.invokeAndWait(()->{
    var panel=ObservedConformancePanel.liveResults(model());
    var schemeRoot=new Evaluation("Done","FULFILLED","FULFILLED","KNOWN","scheme proof","",true,"GOAL_TASK","FULFILLED","beid:v1:moise/scheme/runtime-scheme/auctionGroup/doAuction1/inc1","ctx-1","occ-root-1");
@@ -136,11 +136,11 @@ class LiveGoalSummaryTest {
    tasks.setRowSelectionInterval(0,0);
    assertEquals(-1,goals.getSelectedRow(),"Selecting a Task clears Goal selection");
    assertTrue(selectedLabel.getText().contains("Selected Task: Observer::Work"));
-   assertEquals(4,instances.getRowCount());
+   assertEquals(3,instances.getRowCount());
    assertEquals("alice",instances.getValueAt(0,0));assertEquals("Complete",instances.getValueAt(0,2));
    assertEquals("bob",instances.getValueAt(1,0));assertEquals("Incomplete",instances.getValueAt(1,2));
-   assertEquals("carol",instances.getValueAt(2,0));assertEquals("Not assigned",instances.getValueAt(2,2));
-   assertEquals("dave",instances.getValueAt(3,0));assertEquals("Unknown",instances.getValueAt(3,2),"NOT_ASSIGNED without SOURCE_NOT_ASSIGNED evidence must stay Unknown");
+   assertEquals("dave",instances.getValueAt(2,0));assertEquals("Unknown",instances.getValueAt(2,2),"NOT_ASSIGNED without SOURCE_NOT_ASSIGNED evidence must stay Unknown");
+   assertEquals(6,cut.evaluations().size(),"Hiding bookkeeping never deletes native evaluation evidence");
   });
  }
  @Test void multipleOccurrencesAndInvocationsRetainHistoryAndShowShortAndFullIds()throws Exception {

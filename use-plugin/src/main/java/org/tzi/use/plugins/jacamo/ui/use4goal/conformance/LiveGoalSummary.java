@@ -12,20 +12,16 @@ public final class LiveGoalSummary {
   public boolean isGoal(){return label!=null&&label.startsWith("Goal: ");}
   public boolean isTask(){return label!=null&&label.startsWith("Task: ");}
   public String ownerLabel(){if(label==null)return id;if(label.startsWith("Goal: "))return label.substring("Goal: ".length());if(label.startsWith("Task: "))return label.substring("Task: ".length());return label;}
-  /** Counts describe a population; they never invent an ALL/ANY Goal above its members. */
-  public String resultText(){
-   if(instances.size()<=1)return PresentationResults.goal(status,false);
-   var counts=new LinkedHashMap<String,Long>();
-   for(String value:List.of("Complete","Incomplete","Unknown","Not assigned")){
-    long n=instances.stream().filter(i->PresentationResults.agentResult(i).equals(value)).count();if(n>0)counts.put(value,n);
-   }
-   return counts.entrySet().stream().map(e->e.getValue()+" "+e.getKey()).collect(java.util.stream.Collectors.joining(" · "));
-  }
+  public String resultText(){return PresentationResults.goal(status,false);}
+  public List<Evaluation> displayInstances(){return instances.stream().filter(i->!PopulationOverview.notAssigned(i)).toList();}
  }
  public List<Row> goalRows(List<Evaluation> evaluations){return rows(evaluations).stream().filter(Row::isGoal).toList();}
  public List<Row> taskRows(List<Evaluation> evaluations){return rows(evaluations).stream().filter(Row::isTask).toList();}
  private final Map<String,String> declarations=new LinkedHashMap<>();
- public LiveGoalSummary(GoalModel model){
+ private final PopulationOverview overview;
+ public LiveGoalSummary(GoalModel model){this(model,Map.of());}
+ public LiveGoalSummary(GoalModel model,Map<String,Object> mapping){
+  overview=new PopulationOverview(model,mapping);
   for(var actor:model.getActors())for(var e:actor.elements())if(e instanceof Goal||e instanceof Task)declarations.put(e.id(),(e instanceof Goal?"Goal: ":"Task: ")+actor.name()+"::"+e.id());
   // The original marking indexes actor elements, not social dependum declarations.
   // Dependencies stay visible in the model/evidence; do not invent extra occurrences.
@@ -36,16 +32,16 @@ public final class LiveGoalSummary {
   var rows=new ArrayList<Row>();
   for(var definition:declarations.entrySet()){
    var instances=grouped.getOrDefault(definition.getKey(),List.of());
-   var assigned=instances.stream().filter(r->!r.status().equals("NOT_ASSIGNED")||!r.quality().equals("SOURCE_NOT_ASSIGNED")).toList();
-   String status=instances.isEmpty()?"UNKNOWN":assigned.isEmpty()?"NOT_ASSIGNED":assigned.stream().anyMatch(r->r.status().equals("VIOLATED")&&Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(r.quality()))?"VIOLATED":assigned.stream().anyMatch(r->r.status().equals("FAILED")&&Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(r.quality()))?"FAILED":assigned.stream().anyMatch(r->!Set.of("KNOWN","KNOWN_DERIVED","KNOWN_HISTORY","KNOWN_DERIVED_HISTORY").contains(r.quality())||!Set.of("FULFILLED","PENDING").contains(r.status()))?"UNKNOWN":assigned.stream().allMatch(r->r.status().equals("FULFILLED"))?"FULFILLED":"PENDING";
+   var assigned=instances.stream().filter(r->!PopulationOverview.notAssigned(r)).toList();
+   String status=overview.status(definition.getKey(),instances);
    var originalStatuses=instances.stream().map(Evaluation::originalStatus).filter(x->!x.isBlank()).distinct().toList();
    String original=originalStatuses.isEmpty()?"UNKNOWN":originalStatuses.size()==1?originalStatuses.getFirst():"MIXED";
    String resultRole=instances.isEmpty()?"No admitted evidence":instances.stream().anyMatch(Evaluation::required)?"Selected requirement":"Supporting";
-   var counts=new TreeMap<String,Long>();instances.forEach(i->counts.merge(i.status(),1L,Long::sum));
+   var counts=new TreeMap<String,Long>();assigned.forEach(i->counts.merge(i.status(),1L,Long::sum));
    String countText=counts.isEmpty()?"0 observed":counts.entrySet().stream().map(e->e.getValue()+" "+e.getKey()).collect(java.util.stream.Collectors.joining(", "));
-   var detail=new StringBuilder(definition.getValue()+"\nResult role: "+resultRole+"\nInstance evidence: "+countText+"\nOriginal history is the engine aggregate. Certified execution may report FAILED separately from raw TaskMarking PENDING; evidence is scoped to the exact episode.\nExecution summary covers observed instances only, not an unobserved population. UNKNOWN may mean missing demand or missing execution evidence; it is not automatically NOT_APPLICABLE. This definition need not be assigned to every player. The selected requirement is evaluated through its declared refinement/dependency rules, not this definition-wide summary.\nInstances: "+instances.size()+"\n");
+   var detail=new StringBuilder(definition.getValue()+"\nResult role: "+resultRole+"\nOverview population policy: "+overview.description(definition.getKey())+" within each execution; ALL across executions.\nOriginal native markings and execution evidence are unchanged. Individual results are shown below.\nInstances: "+assigned.size()+"\n");
    if(instances.isEmpty())detail.append("No admitted occurrence at this cut. Missing evidence is UNKNOWN.\n");
-   for(var instance:instances)detail.append("\n").append(instance.status()).append(" | ").append(instance.quality()).append(" | original aggregate=").append(instance.originalStatus()).append(" | leaf raw=").append(instance.raw()).append("\n").append(instance.evidence()).append("\nLast certified history: ").append(instance.certifiedHistory()).append("\n");
+   for(var instance:assigned)detail.append("\n").append(instance.status()).append(" | ").append(instance.quality()).append(" | original aggregate=").append(instance.originalStatus()).append(" | leaf raw=").append(instance.raw()).append("\n").append(instance.evidence()).append("\nLast certified history: ").append(instance.certifiedHistory()).append("\n");
    rows.add(new Row(definition.getKey(),definition.getValue(),status,original,detail.toString(),resultRole,countText,instances));
   }
   return List.copyOf(rows);

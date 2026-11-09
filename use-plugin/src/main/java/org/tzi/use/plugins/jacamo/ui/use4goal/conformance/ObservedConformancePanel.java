@@ -149,6 +149,7 @@ public final class ObservedConformancePanel extends JPanel {
 
     public ObservedConformancePanel() {this(false);}
     public static ObservedConformancePanel liveResults(org.vnu.sme.goal.dsl.istar.mm.GoalModel model){var panel=new ObservedConformancePanel(true);panel.liveSummary=new LiveGoalSummary(model);panel.renderLive(null);return panel;}
+    public static ObservedConformancePanel liveResults(org.vnu.sme.goal.dsl.istar.mm.GoalModel model,java.util.Map<String,Object> mapping){var panel=new ObservedConformancePanel(true);panel.liveSummary=new LiveGoalSummary(model,mapping);panel.renderLive(null);return panel;}
     private ObservedConformancePanel(boolean liveOnly) {
         super(new BorderLayout());
         this.liveOnly=liveOnly;
@@ -471,12 +472,12 @@ public final class ObservedConformancePanel extends JPanel {
 
     private JPanel buildLiveResults(){
         var goals=liveGoalTable;var tasks=liveTaskTable;var checks=liveCheckTable;
-        int[] widths={340,300};
+        int[] widths={440,120};
         for(int i=0;i<widths.length;i++){
             goals.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
             tasks.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
         }
-        goals.setToolTipText("One instance shows its Result. Multiple instances show counts; inspect each agent below. Model quantifiers determine the selected requirement.");
+        goals.setToolTipText("Overview uses declared population policies within each execution. Inspect individual agent results below; native verification and history are unchanged.");
         tasks.setToolTipText(goals.getToolTipText());
         int[] instanceWidths={180,260,120};for(int i=0;i<instanceWidths.length;i++)liveInstanceTable.getColumnModel().getColumn(i).setPreferredWidth(instanceWidths[i]);
         int[] occurrenceWidths={150,160,160,130,100};for(int i=0;i<occurrenceWidths.length;i++)liveOccurrenceTable.getColumnModel().getColumn(i).setPreferredWidth(occurrenceWidths[i]);
@@ -540,7 +541,7 @@ public final class ObservedConformancePanel extends JPanel {
         liveDetailTabs.addTab("Instances",new JPanel());liveDetailTabs.addTab("Evidence",new JPanel());
         goals.setToolTipText("Goals defined in the iStar model with owner actor. Complete requires qualified fulfilled evidence; missing evidence stays Unknown.");
         tasks.setToolTipText("Tasks defined in the iStar model with owner actor. Complete requires qualified fulfilled evidence; missing evidence stays Unknown.");
-        liveInstanceTable.setToolTipText("Agent / player instances for the selected Goal or Task in the current Execution and State. Unassigned instances are shown as Not assigned when confirmed by source evidence.");
+        liveInstanceTable.setToolTipText("Individual agent/player outcomes for the selected Goal or Task, execution and state. Original source evidence remains in Audit details.");
         liveOccurrenceTable.setToolTipText("Occurrences and runtime invocations for the selected agent instance up to the current State. Short IDs are shown here; full IDs and evidence appear below.");
 
         setupNavigation(executionSelector, stateSelectorCombo, statePrevButton, stateNextButton, jumpCheckpointButton, milestonesButton, stateStepInfoLabel, failureFilter, failurePoints);
@@ -761,7 +762,7 @@ public final class ObservedConformancePanel extends JPanel {
         String priorAgent=selectedAgentKey;
         String priorOccurrence=selectedOccurrenceKey;
         liveRows=liveSummary.rows(cut==null?List.of():cut.evaluations()).stream()
-                .filter(r->cut==null||ExecutionScopeViews.contexts(cut).isEmpty()||!r.instances().isEmpty()).toList();
+                .filter(r->cut==null||r.instances().isEmpty()&&ExecutionScopeViews.contexts(cut).isEmpty()||!r.displayInstances().isEmpty()).toList();
         goalRows=liveRows.stream().filter(LiveGoalSummary.Row::isGoal).toList();
         taskRows=liveRows.stream().filter(LiveGoalSummary.Row::isTask).toList();
         // Model order is stable; admitted phase membership controls which definitions are shown.
@@ -873,7 +874,7 @@ public final class ObservedConformancePanel extends JPanel {
         }
         String summaryStatus=row.resultText();
         selectedElementLabel.setText("Selected "+(row.isGoal()?"Goal: ":"Task: ")+scopedLabel(row.ownerLabel(),cut)+" ("+summaryStatus+")");
-        displayedInstances=row.instances();
+        displayedInstances=row.displayInstances();
         var contexts=new java.util.TreeSet<String>();
         displayedInstances.stream().map(Evaluation::context).filter(c->!c.isBlank()).forEach(contexts::add);
         var contextLabels=new java.util.LinkedHashMap<String,String>();
@@ -1004,6 +1005,7 @@ public final class ObservedConformancePanel extends JPanel {
             var occMaps=structuredOccurrencesFor(cut,contextId,elementId,playerId);
             for(var eval:cut.evaluations()){
                 if(!"GOAL_TASK".equals(eval.kind())||!eval.element().equals(elementId))continue;
+                if(PopulationOverview.notAssigned(eval))continue;
                 if(!java.util.Objects.equals(eval.context(),contextId)||!java.util.Objects.equals(eval.player(),playerId))continue;
                 if(playerId.isBlank()&&!currentOccIds.contains(eval.occurrence()))continue;
                 var occMap=occMaps.getOrDefault(eval.occurrence(),java.util.Map.of());
