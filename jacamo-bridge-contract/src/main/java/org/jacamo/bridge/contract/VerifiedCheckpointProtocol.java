@@ -49,7 +49,7 @@ public final class VerifiedCheckpointProtocol {
         public Rule(String id,String sourceIdentity,String artifactClass,Set<String> operations,Set<String> requiredChecks){this(id,sourceIdentity,artifactClass,operations,requiredChecks,"OPERATION_POST");}
         public Rule {
             required(id);required(sourceIdentity);Objects.requireNonNull(artifactClass);operations=Set.copyOf(operations);requiredChecks=Set.copyOf(requiredChecks);
-            if(!Set.of("OPERATION_POST","OPERATION_FAILURE","OPERATION_UNMAPPED_POST","TASK_POST","SCHEME_POST","NORM_TERMINAL").contains(selectorKind))throw bad("POLICY_SELECTOR");
+            if(!Set.of("OPERATION_POST","OPERATION_FAILURE","OPERATION_UNMAPPED_POST","TASK_PRE","TASK_POST","SCHEME_POST","NORM_TERMINAL").contains(selectorKind))throw bad("POLICY_SELECTOR");
             if(selectorKind.startsWith("OPERATION_"))required(artifactClass);
             if(selectorKind.equals("SCHEME_POST")&&!Set.of("terminal","administrative").containsAll(operations)
                     ||selectorKind.equals("NORM_TERMINAL")&&!Set.of("unfulfilled").containsAll(operations))throw bad("POLICY_LIFECYCLE_SELECTION");

@@ -78,6 +78,10 @@ public final class BridgeAgArch extends AgArch {
         emit(RuntimeEventKind.CREATED, RuntimeFactKind.AGENT, Map.of(), Map.of("agent", getAgName()), "");
         if(BridgeRuntimeRegistry.projectDeclarations().isPresent())publishState(true);
     }
+    @Override public void reasoningCycleStarting() {
+        for(var neutral:neutralSteps)neutral.cycleStarting();
+        super.reasoningCycleStarting();
+    }
     @Override public void reasoningCycleFinished() {
         super.reasoningCycleFinished();
         publishState(true);

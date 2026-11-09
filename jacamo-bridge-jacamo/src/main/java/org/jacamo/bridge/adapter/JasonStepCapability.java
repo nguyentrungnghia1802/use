@@ -42,6 +42,7 @@ public final class JasonStepCapability implements ObservationCapabilityRegistry.
         observer=new JasonStepObservation(ts,agent,run,generation,revision,source,root,sink,gap,specification,captures);
     }
     public void action(ActionExec action,RuntimeEventKind kind,String correlation){observer.action(action,kind,correlation);}
+    void cycleStarting(){observer.resumeDeferredTasks();}
     Map<String,Object> dispatchOwner(ActionExec action){return observer.dispatchOwner(action);}
     public void unavailable(String reason){observer.unavailable(reason);}
     public Map<String,Object> manifest(){return observer.manifest();}

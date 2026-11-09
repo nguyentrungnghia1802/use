@@ -44,7 +44,7 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
     }
     private static final class Step {
         final JasonPlanInstrumentation.Site site;final String token;final Episode episode;
-        final List<Map<String,Object>> receipts=new ArrayList<>();String phase="ENABLED",operation="";boolean barrierTask;
+        final List<Map<String,Object>> receipts=new ArrayList<>();String phase="ENABLED",operation="";boolean barrierTask,deferredAtEntry;Object localOwner;
         Step(JasonPlanInstrumentation.Site site,String token,Episode episode){this.site=site;this.token=token;this.episode=episode;}
     }
     public JasonStepObservation(TransitionSystem ts,BridgeEntityId agent,String run,long generation,String revision,AgentProgramSemantic source,Path root,
@@ -81,8 +81,16 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
                 "agentIdentity",agent.canonical(),"agentName",ts.getAgArch().getAgName(),
                 "sourceHash",prepared.manifest().get("sourceSha256"),"instrumentationHash",prepared.hash());
     }
+    synchronized void resumeDeferredTasks() {
+        if(closed||org.jacamo.checkpoint.runtime.ExecutionBarrier.admissionClosed())return;
+        for(var episode:episodes.values())if(episode.active!=null&&episode.active.deferredAtEntry&&!episode.intention.isFinished()) {
+            org.jacamo.checkpoint.runtime.ExecutionBarrier.beginTask(episode.active.localOwner,episode.intention,episode.active.token);
+            episode.active.barrierTask=true;episode.active.deferredAtEntry=false;
+        }
+    }
     @Override public synchronized void marker(TransitionSystem actual,JasonPlanInstrumentation.Site site,String phase) {
         if(closed)return;
+        resumeDeferredTasks();
         if(actual!=ts||!prepared.sites().contains(site))throw new IllegalArgumentException("STEP_OWNER_OR_SITE_MISMATCH");
         var intention=ts.getC().getSelectedIntention();if(intention==null||intention.isFinished())throw new IllegalArgumentException("STEP_SELECTED_INTENTION_UNAVAILABLE");
         var means=intention.peek();var trigger=means.getTrigger();
@@ -97,13 +105,18 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
         if(phase.equals("ENABLED")) {
             if(episode.active!=null)throw new IllegalArgumentException("STEP_ENTRY_WITHOUT_PRIOR_TERMINAL");
             episode.active=new Step(site,"jason-step:"+run+":"+agent.incarnation()+":"+(++nextStep),episode);
-            if(BridgeRuntimeRegistry.checkpointTask(Objects.toString(prepared.manifest().get("sourceSha256")),site.task())) {
+            boolean checkpointTask=BridgeRuntimeRegistry.checkpointTask(Objects.toString(prepared.manifest().get("sourceSha256")),site.task());
+            if(checkpointTask) {
                 Object local=BridgeRuntimeRegistry.agentArchitecture(ts.getAgArch().getAgName()).orElse(null);
                 if(local==null)for(var arch=ts.getAgArch();arch!=null;arch=arch.getNextAgArch())if(arch instanceof jason.infra.local.LocalAgArch){local=arch;break;}
                 if(local==null)throw new IllegalStateException("CHECKPOINT_TASK_AGENT_OWNER_UNAVAILABLE");
-                org.jacamo.checkpoint.runtime.ExecutionBarrier.beginTask(local,intention,episode.active.token);episode.active.barrierTask=true;
+                episode.active.localOwner=local;
             }
             publish(episode.active,"");
+            if(checkpointTask) {
+                if(org.jacamo.checkpoint.runtime.ExecutionBarrier.admissionClosed())episode.active.deferredAtEntry=true;
+                else{org.jacamo.checkpoint.runtime.ExecutionBarrier.beginTask(episode.active.localOwner,intention,episode.active.token);episode.active.barrierTask=true;}
+            }
         }else {
             var active=episode.active;if(active==null||!active.site.equals(site))throw new IllegalArgumentException("STEP_TERMINAL_WITHOUT_MATCHING_ENTRY");
             active.phase="SUCCEEDED";try{publish(active,"");}finally{finishTask(active);episode.active=null;}
@@ -113,6 +126,7 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
      * copy results for that very ActionExec; they never read live BB/unifiers. */
     public synchronized void action(ActionExec action,RuntimeEventKind kind,String correlation) {
         if(closed)return;
+        resumeDeferredTasks();
         if(kind==RuntimeEventKind.STARTED) {
             actionStarts++;var intention=action.getIntention();if(intention==null||intention.isFinished()){unmatchedAction="ACTION_INTENTION_UNAVAILABLE";return;}
             var episode=episodes.get(intention.peek().getTrigger());if(episode==null||episode.active==null){unmatchedAction="ACTION_ACTIVE_STEP_UNAVAILABLE:"+intention.peek().getTrigger();return;}actionStartsMatched++;
@@ -154,7 +168,7 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
     private void finishEpisode(Trigger trigger,GoalStates state) {
         try {
             if(state==GoalStates.failed)failed(trigger,"GOAL_LISTENER_FINISHED_FAILED");
-            var episode=episodes.remove(trigger);if(episode!=null){actions.values().removeIf(s->s.episode==episode);if(episode.active!=null&&episode.active.barrierTask){finishTask(episode.active);unavailable("TASK_TERMINAL_MARKER_UNAVAILABLE");}}
+            var episode=episodes.remove(trigger);if(episode!=null){actions.values().removeIf(s->s.episode==episode);if(episode.active!=null&&(episode.active.barrierTask||episode.active.deferredAtEntry)){finishTask(episode.active);unavailable("TASK_TERMINAL_MARKER_UNAVAILABLE");}}
         }catch(RuntimeException missing){unavailable("GOAL_TERMINAL_CAPTURE:"+missing.getClass().getSimpleName());}
         // Dropped/finished without an after marker is not source execution false.
     }

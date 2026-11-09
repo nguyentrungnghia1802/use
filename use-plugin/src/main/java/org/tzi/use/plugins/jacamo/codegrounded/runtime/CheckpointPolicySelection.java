@@ -8,16 +8,22 @@ public final class CheckpointPolicySelection {
         var rules=new ArrayList<VerifiedCheckpointProtocol.Rule>();
         for(var request:requests)if(request.provider().equals("jason.plan-boundaries.v1")){
             var selected=new LinkedHashMap<String,String>();
+            var entryTasks=new LinkedHashSet<String>();
             for(Object raw:(List<?>)request.parameters().get("plans")){
+                boolean firstNative=true;
                 for(Object entry:(List<?>)CanonicalJson.object(raw).get("steps")){
                     var step=CanonicalJson.object(entry);String task=(String)step.get("task");
                     if(!nativeTask.test(task))continue;
                     String type=Objects.toString(step.get("artifactClass"),"");
                     String prior=selected.putIfAbsent(task,type);
                     if(prior!=null&&!prior.equals(type))throw new IllegalArgumentException("CHECKPOINT_TASK_SCOPE_CONFLICT:"+task);
+                    if(firstNative){entryTasks.add(task);firstNative=false;}
                 }
             }
-            selected.forEach((task,type)->rules.add(new VerifiedCheckpointProtocol.Rule("task-post:"+request.id()+":"+task,"observation:"+request.id(),type,Set.of(task),Set.of(VerifiedCheckpointProtocol.REQUIRED_CHECK),"TASK_POST")));
+            selected.forEach((task,type)->{
+                if(entryTasks.contains(task))rules.add(new VerifiedCheckpointProtocol.Rule("task-pre:"+request.id()+":"+task,"observation:"+request.id(),type,Set.of(task),Set.of(VerifiedCheckpointProtocol.REQUIRED_CHECK),"TASK_PRE"));
+                rules.add(new VerifiedCheckpointProtocol.Rule("task-post:"+request.id()+":"+task,"observation:"+request.id(),type,Set.of(task),Set.of(VerifiedCheckpointProtocol.REQUIRED_CHECK),"TASK_POST"));
+            });
         }
         for(var request:requests)if(request.provider().equals("cartago.operation-history.v1")&&request.parameters().containsKey("sourceRef")&&request.parameters().get("operations") instanceof List<?> names&&!names.isEmpty()){
             String type=(String)request.parameters().get("class");

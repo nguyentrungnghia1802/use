@@ -76,7 +76,12 @@ public final class VerifiedCheckpointInventory {
         Set<String> seen=new HashSet<>();
         for(var outcome:result.outcomes()) {
             if(!required.contains(outcome.constraintId())&&outcome.outcome()!=VerificationOutcome.FAIL&&outcome.outcome()!=VerificationOutcome.ERROR)continue;
-            seen.add(outcome.constraintId());String truth=switch(outcome.outcome()){case PASS->"PASS";case FAIL->"FAIL";case ERROR->"ERROR";default->"UNKNOWN";};
+            seen.add(outcome.constraintId());
+            if(outcome.outcome()==VerificationOutcome.SKIPPED&&awaitingQualifiedActivation(semantic.constraints(),outcome.constraintId())) {
+                rows.put(outcome.constraintId(),new Check("SKIPPED","NOT_APPLICABLE","CONSTRAINT_AWAITING_QUALIFIED_ACTIVATION"));
+                continue;
+            }
+            String truth=switch(outcome.outcome()){case PASS->"PASS";case FAIL->"FAIL";case ERROR->"ERROR";default->"UNKNOWN";};
             rows.put(outcome.constraintId(),new Check(truth,"APPLICABLE",outcome.diagnostic()));failed|=truth.equals("FAIL");unknown|=!Set.of("PASS","FAIL").contains(truth);
         }
         for(String id:required)if(!seen.contains(id)){rows.put(id,new Check("UNKNOWN","APPLICABLE","REQUIRED_NATIVE_INVARIANT_MISSING"));unknown=true;}
@@ -144,8 +149,16 @@ public final class VerifiedCheckpointInventory {
             rows.put("prefix:"+entry.ordinal()+":"+check.id()+":"+check.invocation(),new Check(truth,applicability,check.diagnostic()));
         }
     }
+    private static boolean awaitingQualifiedActivation(List<org.tzi.use.plugins.jacamo.semantics.evidence.SemanticConstraintResult> constraints,String id) {
+        var aggregate=constraints.stream().filter(c->c.kind().equals("INVARIANT")&&c.id().equals(id)).findFirst().orElse(null);
+        if(aggregate==null||!"COMPLETE".equals(aggregate.witness().get("population"))||!"FOR_ALL".equals(aggregate.witness().get("quantifier"))||!"false".equals(aggregate.witness().get("negated")))return false;
+        var bodies=constraints.stream().filter(c->c.kind().equals("INVARIANT_BODY")&&c.id().equals(id)).toList();
+        return !bodies.isEmpty()&&bodies.stream().allMatch(b->b.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.PASS
+                ||b.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.SKIPPED&&"CONSTRAINT_AWAITING_QUALIFIED_ACTIVATION".equals(b.diagnostic()))
+                &&bodies.stream().anyMatch(b->"CONSTRAINT_AWAITING_QUALIFIED_ACTIVATION".equals(b.diagnostic()));
+    }
     private static boolean supportingTaskCheck(Map<String,Object> inventory,org.tzi.use.plugins.jacamo.semantics.evidence.SemanticConstraintResult check) {
-        if(!Set.of("TASK_PRE","TASK_POST","TASK_INVOCATION").contains(check.kind())||check.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.ERROR)return false;
+        if(!"TASK_POST".equals(check.kind())||check.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.ERROR)return false;
         var targets=inventory.get("selectedIntentionalElements") instanceof List<?> list?list:List.of();
         if(targets.isEmpty())return false;
         String targetTask=Objects.toString(check.witness().getOrDefault("targetTaskId",""),"");

@@ -41,12 +41,16 @@ class VerifiedCheckpointTaskYieldTest {
         agent.setEnvInfraTier(env);agent.setCyclesAct(20);runner.addAg(agent);
         var environment=cartago.CartagoEnvironment.getInstance();environment.init();ExecutionBarrier.enable("yield-probe");
         BridgeRuntimeRegistry.checkpointTaskSources(Set.of(source.sourceDigest()+"/Ready",source.sourceDigest()+"/Send"));
-        var epoch=new AtomicLong();var runningAtBoundary=new AtomicInteger();var callbacks=new CopyOnWriteArrayList<VerificationObservation>();var callbackReturned=new CountDownLatch(1);
+        var epoch=new AtomicLong();var preEpoch=new AtomicLong();var runningAtBoundary=new AtomicInteger();var callbacks=new CopyOnWriteArrayList<VerificationObservation>();
+        var preCallbackReturned=new CountDownLatch(1);var callbackReturned=new CountDownLatch(1);
         var captures=List.of(new JasonStepObservation.Capture("Ready",List.of(),"","","",false,List.of()),
                 new JasonStepObservation.Capture("Send",List.of(),"","","",false,List.of()));
         try(var observer=new JasonStepObservation(agent.getTS(),new BridgeEntityId("jason","agent","runtime-agent","dispatch","worker","incarnation"),
                 "run",1,"revision",source,root,observation->{
                     callbacks.add(observation);
+                    if("Ready".equals(observation.data().get("sourceStepId"))&&"ENABLED".equals(observation.data().get("phase"))) {
+                        preEpoch.set(ExecutionBarrier.closeAdmission());preCallbackReturned.countDown();
+                    }
                     if("Ready".equals(observation.data().get("sourceStepId"))&&"SUCCEEDED".equals(observation.data().get("phase"))) {
                         // Jason removes the selected intention from the runnable
                         // queue for act(); it still participates in this cycle.
@@ -55,12 +59,21 @@ class VerifiedCheckpointTaskYieldTest {
                     }
                 },reason->{throw new AssertionError(reason);},specification,captures)) {
             agent.setThread(new Thread(agent,"actual-source-task-agent"));agent.startThread();
+            assertTrue(preCallbackReturned.await(5,TimeUnit.SECONDS),"Pre-plan entry marker returned without waiting");
+            var preProof=ExecutionBarrier.awaitFrozen(preEpoch.get(),Duration.ofSeconds(5));
+            assertTrue(preProof.active().isEmpty());assertEquals(0,preProof.pending());
+            assertEquals(List.of("ENABLED"),callbacks.stream().map(o->o.data().get("phase")).toList());
+            assertNull(agent.getTS().getAg().getBB().contains(jason.asSyntax.ASSyntax.createLiteral("ready")),"First deed must not execute before pre-plan checkpoint release");
+            Thread.sleep(100);assertEquals(1,callbacks.size());
+            ExecutionBarrier.release(preEpoch.get());
+
             assertTrue(callbackReturned.await(5,TimeUnit.SECONDS),"Actual exit marker returned without waiting");
             var proof=ExecutionBarrier.awaitFrozen(epoch.get(),Duration.ofSeconds(5));
             assertTrue(proof.active().isEmpty());assertEquals(0,proof.pending());
             assertTrue(proof.completed().containsKey("jason.task-boundary-yield"));
             assertTrue(runningAtBoundary.get()>1,"Multiple runnable intentions exercise the multi-act path");
             assertEquals(List.of("ENABLED","SUCCEEDED"),callbacks.stream().map(o->o.data().get("phase")).toList());
+            assertNotNull(agent.getTS().getAg().getBB().contains(jason.asSyntax.ASSyntax.createLiteral("ready")));
             assertNull(agent.getTS().getAg().getBB().contains(jason.asSyntax.ASSyntax.createLiteral("sent")));
             Thread.sleep(150);assertEquals(2,callbacks.size(),"Next Task entry must not execute while held");
             ExecutionBarrier.release(epoch.get());

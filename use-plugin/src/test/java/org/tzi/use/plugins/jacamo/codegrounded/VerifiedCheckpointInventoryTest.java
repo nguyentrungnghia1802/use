@@ -149,4 +149,36 @@ class VerifiedCheckpointInventoryTest {
         var rootSettled=VerifiedCheckpointInventory.settled(rootViolatedCut,rootEvaluated,List.of(VerifiedCheckpointProtocol.SETTLED_CHECK_PREFIX+"source:sch-1"));
         assertEquals("FAIL",rootSettled.get(VerifiedCheckpointProtocol.SETTLED_CHECK_PREFIX+"source:sch-1").truth());
     }
+    @Test void prePlanCheckpointEvaluatesTaskPreAndActivationWithoutTreatingMissingPostAsFailure() {
+        var inventory=Map.<String,Object>of(
+                "version","NATIVE_CONTRACT_INVENTORY/1.0",
+                "requiredInvariants",List.of("NATIVE:Domain::Required","NATIVE:Group::Population"),
+                "selectedIntentionalElements",List.of("O_root","do_auction"),
+                "scopeSelectedIntentionalElements",Map.of("initial-auction-setup",List.of("do_auction"),"auction-execution",List.of("O_root")));
+        var outcomes=List.of(
+                invariant(VerificationOutcome.PASS),
+                new ExternalOclConstraintService.Outcome("NATIVE:Group::Population","Group",VerificationOutcome.SKIPPED,"INVARIANT_UNDETERMINED_OR_POPULATION_UNPROVEN","self.players->size() = 1"));
+        var awaitingBody=new SemanticConstraintResult("NATIVE:Group::Population","INVARIANT_BODY","Group","grp1","source-grp1","self.players->size() = 1",SemanticVerdict.SKIPPED,"","CONSTRAINT_AWAITING_QUALIFIED_ACTIVATION",1,"",Map.of());
+        var awaitingAggregate=new SemanticConstraintResult("NATIVE:Group::Population","INVARIANT","Group","grp1","source-grp1","self.players->size() = 1",SemanticVerdict.SKIPPED,"","INVARIANT_UNDETERMINED_OR_POPULATION_UNPROVEN",1,"",Map.of("grp1","SKIPPED","population","COMPLETE","quantifier","FOR_ALL","negated","false"));
+        var taskPrePass=new SemanticConstraintResult("TASK:createScheme:pre:1","TASK_PRE","auction_capabilities","bob","source-bob","step.enabled",SemanticVerdict.PASS,"true","QUALIFIED_TASK_PRE",1,"step-1",Map.of("targetTaskId","createScheme"));
+        var setupOccurrences=Map.<String,Object>of(
+                "do_auction",Map.of("sourceElement","do_auction","aggregateStatus","PENDING","quality","DERIVED_INPUT_UNAVAILABLE"),
+                "createScheme",Map.of("sourceElement","createScheme","aggregateStatus","PENDING","quality","TASK_TERMINAL_CALLBACK_PENDING"));
+        var observation=Map.<String,Object>of(
+                "requirementInventory",inventory,
+                "originalEngine",Map.of("evaluated","PINNED_NATIVE_CUT","historyQuality","OBSERVED_PREFIX","contexts",List.of(
+                        Map.of("context","ctx-setup","scopeDefinition","initial-auction-setup","scopeView",Map.of("definition","initial-auction-setup","bindings",Map.of("setup","setup-1")),"occurrences",setupOccurrences))));
+        var preCut=cut(outcomes,List.of(awaitingBody,awaitingAggregate,taskPrePass),observation);
+        var evaluated=VerifiedCheckpointInventory.evaluate(preCut);
+        assertEquals("PASS",evaluated.get(VerifiedCheckpointProtocol.REQUIRED_CHECK).truth());
+        assertEquals("APPLICABLE",evaluated.get("semantic:TASK:createScheme:pre:1:step-1").applicability());
+        assertEquals("PASS",evaluated.get("semantic:TASK:createScheme:pre:1:step-1").truth());
+        assertEquals("NOT_APPLICABLE",evaluated.get("NATIVE:Group::Population").applicability());
+
+        var taskPreFail=new SemanticConstraintResult("TASK:A_decide_t2:pre:1","TASK_PRE","Auction","a1","source-a1","self.running = true",SemanticVerdict.FAIL,"false","QUALIFIED_TASK_PRE",1,"step-2",Map.of("targetTaskId","A_decide_t2"));
+        var failedPreCut=cut(List.of(invariant(VerificationOutcome.PASS)),List.of(taskPreFail),observation);
+        var failedEvaluated=VerifiedCheckpointInventory.evaluate(failedPreCut);
+        assertEquals("APPLICABLE",failedEvaluated.get("semantic:TASK:A_decide_t2:pre:1:step-2").applicability());
+        assertEquals("FAIL",failedEvaluated.get(VerifiedCheckpointProtocol.REQUIRED_CHECK).truth());
+    }
 }

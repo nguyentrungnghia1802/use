@@ -35,7 +35,7 @@ final class VerifiedCheckpointBridge implements AutoCloseable {
         if(!policy.programHash().equals(plan.programHash()))throw new IllegalArgumentException("CHECKPOINT_POLICY_PROGRAM_NOT_ADMITTED");
         for(var rule:policy.rules()) {
             var provider=switch(rule.selectorKind()){
-                case "TASK_POST"->"jason.plan-boundaries.v1";
+                case "TASK_PRE","TASK_POST"->"jason.plan-boundaries.v1";
                 case "SCHEME_POST"->MoiseSchemeCapability.PROVIDER;
                 case "NORM_TERMINAL"->NplLifecycleCapability.PROVIDER;
                 default->CartagoOperationHistory.PROVIDER;
@@ -55,7 +55,7 @@ final class VerifiedCheckpointBridge implements AutoCloseable {
                 schemeRoots.put(rule.id(),roots.getFirst());continue;
             }
             if(rule.selectorKind().equals("NORM_TERMINAL"))continue;
-            if(rule.selectorKind().equals("TASK_POST")){
+            if(rule.selectorKind().equals("TASK_PRE")||rule.selectorKind().equals("TASK_POST")){
                 var tasks=new HashSet<String>();
                 for(Object raw:(List<?>)parameters.get("plans"))for(Object step:(List<?>)CanonicalJson.object(raw).get("steps")){
                     var site=CanonicalJson.object(step);if(rule.artifactClass().equals(Objects.toString(site.get("artifactClass"),"")))tasks.add((String)site.get("task"));
@@ -77,7 +77,7 @@ final class VerifiedCheckpointBridge implements AutoCloseable {
         },Duration.ofMillis(Long.getLong("jacamo.checkpoint.verificationTimeoutMillis",30000L)));
         jacamo.checkpoint.CheckpointBoot.registerCoordinator(coordinator);
         var taskSources=new HashSet<String>();
-        for(var rule:policy.rules())if(rule.selectorKind().equals("TASK_POST")) {
+        for(var rule:policy.rules())if(rule.selectorKind().equals("TASK_PRE")||rule.selectorKind().equals("TASK_POST")) {
             String hash=Objects.toString(selectedSources.get(rule.id()).parameters().get("sourceHash"),"");
             rule.operations().forEach(task->taskSources.add(hash+"/"+task));
         }
@@ -134,11 +134,14 @@ final class VerifiedCheckpointBridge implements AutoCloseable {
     }
     /** Source-only, nonblocking selection. No capture, network or verifier wait. */
     synchronized void beforeObservation(VerificationObservation observation){
-        if(observation.kind()!=VerificationObservation.Kind.JASON_STEP||"ENABLED".equals(observation.data().get("phase")))return;
-        String occurrence="observation:"+observation.subject()+":"+observation.data().get("phase");
+        if(observation.kind()!=VerificationObservation.Kind.JASON_STEP)return;
+        String phase=Objects.toString(observation.data().get("phase"),"");
+        String expectedKind="ENABLED".equals(phase)?"TASK_PRE":Set.of("SUCCEEDED","FAILED").contains(phase)?"TASK_POST":"";
+        if(expectedKind.isEmpty())return;
+        String occurrence="observation:"+observation.subject()+":"+phase;
         var active=coordinator.view().request();
         if(active!=null&&(active.boundary().sourceOccurrence().equals(occurrence)||active.drainedBoundaries().stream().anyMatch(b->b.sourceOccurrence().equals(occurrence))))return;
-        for(var rule:policy.rules())if(rule.selectorKind().equals("TASK_POST")&&rule.operations().contains(observation.data().get("sourceStepId"))){
+        for(var rule:policy.rules())if(rule.selectorKind().equals(expectedKind)&&rule.operations().contains(observation.data().get("sourceStepId"))){
             var bindings=CanonicalJson.object(observation.data().get("bindings"));
             var sourceHash=selectedSources.get(rule.id()).parameters().get("sourceHash");
             if(sourceHash!=null&&(!(bindings.get("instrumentation") instanceof Map<?,?> manifest)||!sourceHash.equals(manifest.get("sourceSha256"))))continue;

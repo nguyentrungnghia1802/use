@@ -47,7 +47,7 @@ public class VerifiedCheckpointsAuctionIT {
                 if(!view.token().isBlank()&&!view.token().equals(previousToken)) {
                     if(!previousToken.isBlank()&&!lastHeld)automatic++;
                     previousToken=view.token();lastHeld=false;lastActivity=System.nanoTime();
-                    if(view.checkpoint().endsWith(":A_start_t2"))sawStartT2=true;
+                    if(view.checkpoint().endsWith(":A_start_t2")||view.checkpoint().endsWith(":P_bid_t1"))sawStartT2=true;
                     System.out.println("SOURCE_CHECKPOINT token="+view.token()+" checkpoint="+view.checkpoint()+" state="+view.state()+" reason="+view.reason());
                 }
                 if(sawStartT2&&automatic>=1&&!Files.exists(evidence.resolve("request-evidence-input")))Files.writeString(evidence.resolve("request-evidence-input"),"Actual AuctionArtifact.stop() twice as an existing source performer; no model, native state or result mutation");
