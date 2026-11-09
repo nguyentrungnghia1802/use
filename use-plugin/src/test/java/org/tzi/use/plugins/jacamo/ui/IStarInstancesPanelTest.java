@@ -16,6 +16,24 @@ import org.tzi.use.plugins.jacamo.ui.use4goal.istar.IStarView;
 import static org.junit.jupiter.api.Assertions.*;
 
 class IStarInstancesPanelTest {
+    @Test void linkedPhasesShareOneCardAndOutOfScopeNodesAreHidden()throws Exception {
+        var goals=org.vnu.sme.goal.dsl.istar.parser.IStarCompiler.compile("istar Phases { role Skills { goal Prepare : Achieve condition {[ true ]} goal Finish : Achieve condition {[ true ]} goal Unrelated : Achieve condition {[ true ]} } }").model();
+        String before=org.tzi.use.semantic.engine.api.OwnedGoalModel.fingerprint(goals);
+        var cut=ExecutionGroupsTest.cut("final",List.of(
+                ExecutionGroupsTest.context("init","bootstrap","createdReference",ExecutionGroupsTest.scheme("one"),false),
+                ExecutionGroupsTest.context("run","delivery","executionReference",ExecutionGroupsTest.scheme("one"),true)),
+                List.of(ExecutionGroupsTest.goal("Prepare","init","FULFILLED",true,"worker"),ExecutionGroupsTest.goal("Finish","run","FULFILLED",true,"team")));
+        SwingUtilities.invokeAndWait(()->{
+            var panel=new IStarInstancesPanel(goals);panel.setActive(true);panel.update(List.of(cut));
+            var selector=DetachedAuthoredWorkflowTest.find(panel,"istar-instance-selector",JComboBox.class);assertEquals(2,selector.getItemCount());
+            assertEquals(1,components(panel,IStarView.class).size());
+            var diagram=components(panel,org.tzi.use.plugins.jacamo.ui.use4goal.istar.IStarDiagram.class).getFirst();
+            var ids=diagram.getVisibleData().getNodes().stream().map(n->((org.tzi.use.plugins.jacamo.ui.use4goal.istar.IStarDiagramNode)n).node().id).toList();
+            assertTrue(ids.contains("Prepare"));assertTrue(ids.contains("Finish"));assertFalse(ids.contains("Unrelated"));
+            panel.dispose();
+        });
+        assertEquals(before,org.tzi.use.semantic.engine.api.OwnedGoalModel.fingerprint(goals));
+    }
     private final Set<String> introduced=new HashSet<>();
     @org.junit.jupiter.api.BeforeEach void useBundledDiagramDefaults()throws Exception {
         var properties=new Properties();try(var input=getClass().getResourceAsStream("/etc/use.properties")){properties.load(input);}

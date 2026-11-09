@@ -167,6 +167,7 @@ public final class IStarView extends JPanel implements View, PrintableView {
         this.badges = badges == null ? Collections.emptyMap() : badges;
         diagram.setNodeBadges(this.badges);
     }
+    public void setVisibleElements(java.util.Set<String> elements) { diagram.setVisibleElements(elements); }
 
     public void setActorLabelOverrides(Map<String, String> actorLabelOverrides) {
         this.actorLabelOverrides = actorLabelOverrides == null ? Collections.emptyMap() : actorLabelOverrides;

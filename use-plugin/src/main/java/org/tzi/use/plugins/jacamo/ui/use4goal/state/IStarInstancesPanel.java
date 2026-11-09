@@ -20,6 +20,7 @@ public final class IStarInstancesPanel extends JPanel {
     private final Map<String,Integer> ordinals=new LinkedHashMap<>();
     private final Map<String,IStarView> views=new LinkedHashMap<>();
     private List<Map<String,Object>> contexts=List.of();
+    private ExecutionGroups groups=ExecutionGroups.of(List.of());
     private Cut latest;
     private boolean loading,active;
 
@@ -28,11 +29,11 @@ public final class IStarInstancesPanel extends JPanel {
         setName("istar-instances-view");executions.setName("istar-instance-selector");status.setName("istar-instance-status");
         executions.setRenderer(new DefaultListCellRenderer(){@Override public Component getListCellRendererComponent(JList<?> list,Object value,int index,boolean selected,boolean focus){
             var label=(JLabel)super.getListCellRendererComponent(list,value,index,selected,focus);
-            String id=Objects.toString(value,"");label.setText(ExecutionScopeViews.ALL.equals(id)?"All":contexts.stream().filter(c->id.equals(c.get("context"))).findFirst().map(c->ExecutionScopeViews.label(c,ordinal(c))).orElse(id));return label;
+            String id=Objects.toString(value,"");label.setText(ExecutionScopeViews.ALL.equals(id)?"All":groups.label(id,ordinals.getOrDefault(id,1)));return label;
         }});
         var toolbar=new JPanel(new BorderLayout(6,3));toolbar.add(executions,BorderLayout.NORTH);toolbar.add(status,BorderLayout.SOUTH);
         add(toolbar,BorderLayout.NORTH);add(new JScrollPane(content),BorderLayout.CENTER);
-        var legend=new JLabel("Current instances · C = Complete, I = Incomplete, ? = Unknown. Verification history is available in Verification.");
+        var legend=new JLabel("C = Complete · I = Incomplete · ? = Unknown · A number counts assigned instances; hover for their results. History is available in Verification.");
         add(legend,BorderLayout.SOUTH);
         executions.addActionListener(e->{if(!loading&&active)render();});
     }
@@ -43,16 +44,15 @@ public final class IStarInstancesPanel extends JPanel {
         var cut=accepted.getLast();if(latest==cut)return;
         var core=ExecutionScopeViews.object(cut.visualEvidence().get("originalEngine"));
         if(!"PINNED_NATIVE_CUT".equals(core.get("evaluated"))) {status.setText("Waiting for accepted runtime evidence; retaining the last accepted instance view");return;}
-        latest=cut;putClientProperty("accepted-cut",cut.id());contexts=ExecutionScopeViews.contexts(cut).stream().filter(ExecutionScopeViews::boundContext).toList();
-        var alive=new HashSet<String>();contexts.forEach(c->alive.add(Objects.toString(c.get("context"))));
+        latest=cut;putClientProperty("accepted-cut",cut.id());groups=ExecutionGroups.of(accepted);contexts=ExecutionScopeViews.contexts(cut).stream().filter(ExecutionScopeViews::boundContext).toList();
+        var alive=new HashSet<String>();contexts.forEach(c->alive.add(groups.canonical(Objects.toString(c.get("context")))));
         if(Collections.disjoint(alive,ordinals.keySet()))ordinals.clear();
-        contexts.forEach(c->ordinals.computeIfAbsent(Objects.toString(c.get("context")),key->ordinals.size()+1));
-        contexts=contexts.stream().sorted(Comparator.comparingInt(this::ordinal)).toList();
+        groups.ids().stream().filter(alive::contains).forEach(id->ordinals.computeIfAbsent(id,key->ordinals.size()+1));
         for(String id:new ArrayList<>(views.keySet()))if(!alive.contains(id))views.remove(id).detachModel();
-        String previous=Objects.toString(executions.getSelectedItem(),ExecutionScopeViews.ALL);loading=true;
-        try{executions.removeAllItems();executions.addItem(ExecutionScopeViews.ALL);contexts.forEach(c->executions.addItem(Objects.toString(c.get("context"))));executions.setSelectedItem(alive.contains(previous)?previous:ExecutionScopeViews.ALL);}
+        String previous=groups.canonical(Objects.toString(executions.getSelectedItem(),ExecutionScopeViews.ALL));loading=true;
+        try{executions.removeAllItems();executions.addItem(ExecutionScopeViews.ALL);ordinals.keySet().stream().filter(alive::contains).forEach(executions::addItem);executions.setSelectedItem(alive.contains(previous)?previous:ExecutionScopeViews.ALL);}
         finally{loading=false;}
-        status.setText(contexts.isEmpty()?"Waiting for admitted executions":"Current admitted instances: "+contexts.size());
+        status.setText(alive.isEmpty()?"Waiting for admitted executions":"Current admitted instances: "+alive.size());
         if(active)render();
     }
 
@@ -60,28 +60,42 @@ public final class IStarInstancesPanel extends JPanel {
 
     private void render() {
         content.removeAll();String selected=Objects.toString(executions.getSelectedItem(),ExecutionScopeViews.ALL);
-        for(int i=0;i<contexts.size();i++){
-            var context=contexts.get(i);String id=Objects.toString(context.get("context"));
+        for(String id:ordinals.keySet()){
+            var phases=groups.contexts(latest,id).stream().filter(ExecutionScopeViews::boundContext).toList();if(phases.isEmpty())continue;
             if(!ExecutionScopeViews.ALL.equals(selected)&&!id.equals(selected))continue;
             var view=views.computeIfAbsent(id,key->{var result=new IStarView();result.setName("istar-instance-"+key);result.setModelBrowserVisible(false);result.setModel(model);return result;});
-            var evaluations=latest.evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")&&r.context().equals(id)).toList();
+            var scopeMembers=new HashSet<>(groups.members(id));
+            var evaluations=latest.evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")&&scopeMembers.contains(r.context())).toList();
+            var visible=new HashSet<String>();
+            for(var phase:phases)for(var raw:ExecutionScopeViews.object(phase.get("occurrences")).values()) {
+                var occurrence=ExecutionScopeViews.object(raw);visible.add(Objects.toString(occurrence.get("sourceElement"),""));
+            }
+            evaluations.forEach(r->visible.add(r.element()));
+            for(var actor:model.getActors())for(var needed:actor.neededBys())if(visible.contains(needed.task()))visible.add(needed.resource());
+            view.setVisibleElements(visible);
             var badges=new TreeMap<String,NodeBadge>();
             for(var row:summary.rows(evaluations)){
+                if(row.instances().isEmpty())continue;
                 String result=PresentationResults.goal(row.status(),false);
                 Color color=result.equals("Complete")?new Color(30,145,65):result.equals("Incomplete")?new Color(175,110,25):Color.GRAY;
-                badges.put(row.id(),new NodeBadge(color,result.equals("Complete")?"C":result.equals("Incomplete")?"I":"?",result+" · "+row.counts()));
+                var assigned=row.instances().stream().filter(r->!PresentationResults.agentResult(r).equals("Not assigned")).toList();
+                String glyph=result.equals("Complete")?"C":result.equals("Incomplete")?"I":"?";
+                if(assigned.size()>1){color=new Color(40,90,160);glyph=Integer.toString(assigned.size());}
+                badges.put(row.id(),new NodeBadge(color,glyph,row.instances().size()>1?"Instances: "+row.resultText():result+" · "+row.counts()));
             }
             view.setNodeBadges(badges);
             var players=new TreeMap<String,Set<String>>();var labels=new TreeMap<String,String>();
-            for(Object raw:ExecutionScopeViews.object(context.get("occurrences")).values()){
+            for(var context:phases)for(Object raw:ExecutionScopeViews.object(context.get("occurrences")).values()){
                 var occurrence=ExecutionScopeViews.object(raw);String actor=Objects.toString(occurrence.get("sourceActor"),""),player=Objects.toString(occurrence.get("player"),"");
                 if(actor.isBlank()||player.isBlank())continue;
                 players.computeIfAbsent(actor,k->new TreeSet<>()).add(player);
-                if(player.equals(context.get("anchor")))labels.put(actor,actor+" · "+ExecutionScopeViews.actorLabel(context,ordinal(context)));
+                if(player.equals(context.get("anchor")))labels.put(actor,actor+" · "+ExecutionScopeViews.actorLabel(context,ordinals.get(id)));
             }
             players.forEach((actor,members)->labels.putIfAbsent(actor,actor+" · "+(members.size()==1?player(members.iterator().next()):members.size()+" players")));
             view.setActorLabelOverrides(labels);
-            var card=new JPanel(new BorderLayout());card.setBorder(BorderFactory.createTitledBorder(ExecutionScopeViews.label(context,ordinal(context))));card.add(view,BorderLayout.CENTER);card.setPreferredSize(new Dimension(1000,600));content.add(card);
+            var card=new JPanel(new BorderLayout());card.setBorder(BorderFactory.createTitledBorder(groups.label(id,ordinals.get(id))));
+            card.add(new JLabel("Phases: "+phases.stream().map(c->Objects.toString(c.getOrDefault("scopeDefinition","Execution"))).distinct().collect(java.util.stream.Collectors.joining(" → "))),BorderLayout.NORTH);
+            card.add(view,BorderLayout.CENTER);card.setPreferredSize(new Dimension(1000,600));content.add(card);
         }
         content.revalidate();content.repaint();
     }

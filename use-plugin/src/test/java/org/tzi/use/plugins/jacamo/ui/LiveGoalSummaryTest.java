@@ -19,7 +19,7 @@ class LiveGoalSummaryTest {
    var goals=DetachedAuthoredWorkflowTest.find(panel,"live-goal-status",JTable.class);
    var tasks=DetachedAuthoredWorkflowTest.find(panel,"live-task-status",JTable.class);
    assertEquals(1,goals.getRowCount());assertEquals("Observer::Done",goals.getValueAt(0,0));assertEquals("Complete",goals.getValueAt(0,1));
-   assertEquals(1,tasks.getRowCount());assertEquals("Observer::Work",tasks.getValueAt(0,0));assertEquals("Unknown",tasks.getValueAt(0,1));
+   assertEquals(1,tasks.getRowCount());assertEquals("Observer::Work",tasks.getValueAt(0,0));assertEquals("1 Complete · 1 Unknown",tasks.getValueAt(0,1));
    tasks.setRowSelectionInterval(0,0);
    var instances=DetachedAuthoredWorkflowTest.find(panel,"live-goal-instances",JTable.class);
    assertEquals(List.of("Agent / Player","Execution","Result"),java.util.stream.IntStream.range(0,instances.getColumnCount()).mapToObj(instances::getColumnName).toList());

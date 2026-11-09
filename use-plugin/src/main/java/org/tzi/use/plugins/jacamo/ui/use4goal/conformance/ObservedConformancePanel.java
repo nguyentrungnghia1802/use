@@ -133,7 +133,7 @@ public final class ObservedConformancePanel extends JPanel {
     private void restoreCursor(){var cursor=executionCursors.get(executionScope);if(cursor==null||cursor.follow())return;for(int i=0;i<currentCounterexampleStates.size();i++)if(currentCounterexampleStates.get(i).id().equals(cursor.cut())||!details.isSelected()&&milestoneNumbers.containsKey(cursor.cut())&&milestoneNumbers.get(cursor.cut()).equals(milestoneNumbers.get(currentCounterexampleStates.get(i).id()))){updateSelectedCounterexampleState(i);break;}}
     private void refreshExecutions(){
         updatingExecutions=true;
-        try{executionLabels=ExecutionScopeViews.withAll(ExecutionScopeViews.choices(allCuts));
+        try{var groups=ExecutionGroups.of(allCuts);executionScope=groups.canonical(executionScope);executionLabels=ExecutionScopeViews.withAll(groups.choices());
             executionSelector.removeAllItems();cslExecutionSelector.removeAllItems();
             executionLabels.keySet().forEach(k->{executionSelector.addItem(k);cslExecutionSelector.addItem(k);});
             if(!executionLabels.containsKey(executionScope))executionScope=executionLabels.isEmpty()?"":executionLabels.keySet().iterator().next();
@@ -202,18 +202,18 @@ public final class ObservedConformancePanel extends JPanel {
             return prepare(input,requested,live,false);
         }
         public PreparedCuts prepare(List<Cut> input,String requested,boolean live,boolean checkpoints){
-            var all=List.copyOf(input);var labels=live?ExecutionScopeViews.withAll(checkpoints?ExecutionScopeViews.admittedChoices(all):ExecutionScopeViews.choices(all)):java.util.Map.<String,String>of();
-            String scope=requested;
+            var all=List.copyOf(input);var groups=ExecutionGroups.of(all);
+            var labels=live?ExecutionScopeViews.withAll(groups.choices().isEmpty()&&!checkpoints?ExecutionScopeViews.choices(all):groups.choices()):java.util.Map.<String,String>of();
+            String scope=groups.canonical(requested);
             if(live&&!labels.containsKey(scope))scope=labels.isEmpty()?"":labels.keySet().iterator().next();
             boolean awaiting=live&&scope.isBlank()&&all.stream().anyMatch(c->c.visualEvidence().containsKey("originalEngine"));
             var audit=new java.util.ArrayList<Cut>();
             var seenContexts=new java.util.LinkedHashSet<String>();
             if(!awaiting)for(var cut:all){String selected=scope;
                 ExecutionScopeViews.contexts(cut).stream().filter(ExecutionScopeViews::boundContext).forEach(c->seenContexts.add(java.util.Objects.toString(c.get("context"))));
-                var projected=scope.isBlank()?cut:projections.computeIfAbsent(cut,k->new java.util.HashMap<>()).computeIfAbsent(scope,k->ExecutionScopeViews.ALL.equals(selected)?ExecutionScopeViews.all(cut,seenContexts):ExecutionScopeViews.project(cut,selected));
+                var projected=scope.isBlank()?cut:projections.computeIfAbsent(cut,k->new java.util.HashMap<>()).computeIfAbsent(scope,k->ExecutionScopeViews.ALL.equals(selected)?ExecutionScopeViews.all(cut,seenContexts):groups.project(cut,selected));
                 if(checkpoints&&!scope.isBlank()&&!ExecutionScopeViews.ALL.equals(scope)){
-                    var context=ExecutionScopeViews.contexts(cut).stream().filter(c->selected.equals(c.get("context"))).findFirst().orElse(java.util.Map.of());
-                    if(!ExecutionScopeViews.boundContext(context)||!Boolean.TRUE.equals(ExecutionScopeViews.object(projected.visualEvidence().get("presentationState")).get("qualifiedValues")))continue;
+                    if(groups.contexts(cut,selected).stream().noneMatch(ExecutionScopeViews::boundContext)||!Boolean.TRUE.equals(ExecutionScopeViews.object(projected.visualEvidence().get("presentationState")).get("qualifiedValues")))continue;
                 }
                 audit.add(projected);
             }
@@ -471,11 +471,13 @@ public final class ObservedConformancePanel extends JPanel {
 
     private JPanel buildLiveResults(){
         var goals=liveGoalTable;var tasks=liveTaskTable;var checks=liveCheckTable;
-        int[] widths={420,120};
+        int[] widths={340,300};
         for(int i=0;i<widths.length;i++){
             goals.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
             tasks.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
         }
+        goals.setToolTipText("One instance shows its Result. Multiple instances show counts; inspect each agent below. Model quantifiers determine the selected requirement.");
+        tasks.setToolTipText(goals.getToolTipText());
         int[] instanceWidths={180,260,120};for(int i=0;i<instanceWidths.length;i++)liveInstanceTable.getColumnModel().getColumn(i).setPreferredWidth(instanceWidths[i]);
         int[] occurrenceWidths={150,160,160,130,100};for(int i=0;i<occurrenceWidths.length;i++)liveOccurrenceTable.getColumnModel().getColumn(i).setPreferredWidth(occurrenceWidths[i]);
         goals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -758,16 +760,17 @@ public final class ObservedConformancePanel extends JPanel {
         String priorElement=selectedElementId;
         String priorAgent=selectedAgentKey;
         String priorOccurrence=selectedOccurrenceKey;
-        liveRows=liveSummary.rows(cut==null?List.of():cut.evaluations());
+        liveRows=liveSummary.rows(cut==null?List.of():cut.evaluations()).stream()
+                .filter(r->cut==null||ExecutionScopeViews.contexts(cut).isEmpty()||!r.instances().isEmpty()).toList();
         goalRows=liveRows.stream().filter(LiveGoalSummary.Row::isGoal).toList();
         taskRows=liveRows.stream().filter(LiveGoalSummary.Row::isTask).toList();
-        // The M1 row set/order never depends on callback count or runtime population.
+        // Model order is stable; admitted phase membership controls which definitions are shown.
         updatingElementSelection=true;
         try{
             liveGoals.setRowCount(0);
-            for(var row:goalRows)liveGoals.addRow(new Object[]{scopedLabel(row.ownerLabel(),cut),PresentationResults.goal(row.status(),ExecutionScopeViews.ALL.equals(executionScope)&&historicalFailure(cut,row.id()))});
+            for(var row:goalRows)liveGoals.addRow(new Object[]{scopedLabel(row.ownerLabel(),cut),row.resultText()});
             liveTasks.setRowCount(0);
-            for(var row:taskRows)liveTasks.addRow(new Object[]{scopedLabel(row.ownerLabel(),cut),PresentationResults.goal(row.status(),ExecutionScopeViews.ALL.equals(executionScope)&&historicalFailure(cut,row.id()))});
+            for(var row:taskRows)liveTasks.addRow(new Object[]{scopedLabel(row.ownerLabel(),cut),row.resultText()});
             restoreElementSelection(priorElement);
         }finally{updatingElementSelection=false;}
         selectedAgentKey=priorAgent;
@@ -838,7 +841,8 @@ public final class ObservedConformancePanel extends JPanel {
 
     private String scopedLabel(String label,Cut cut){
         if(cut==null||executionScope.isBlank()||ExecutionScopeViews.ALL.equals(executionScope))return label;
-        var context=ExecutionScopeViews.contexts(cut).stream().filter(c->executionScope.equals(c.get("context"))).findFirst().orElse(java.util.Map.of());
+        var contexts=ExecutionGroups.of(List.of(cut)).contexts(cut,executionScope);
+        var context=contexts.stream().filter(c->!ExecutionScopeViews.object(ExecutionScopeViews.object(c.get("scopeView")).get("entities")).isEmpty()).findFirst().orElse(contexts.isEmpty()?java.util.Map.of():contexts.getFirst());
         return label+" · "+ExecutionScopeViews.actorLabel(context,new java.util.ArrayList<>(executionLabels.keySet()).indexOf(executionScope)+1);
     }
 
@@ -849,6 +853,7 @@ public final class ObservedConformancePanel extends JPanel {
     private String executionLabelFor(String context,int fallbackOrdinal){
         if(context==null||context.isBlank()||"UNAVAILABLE".equalsIgnoreCase(context))return "Unavailable";
         if(executionLabels.containsKey(context))return executionLabels.get(context);
+        if(selectedCut()!=null){String group=ExecutionGroups.of(List.of(selectedCut())).canonical(context);if(executionLabels.containsKey(group))return executionLabels.get(group);}
         if(context.startsWith("beid:v1:"))return PresentationResults.shortId(context);
         return context.length()>30?"Context "+fallbackOrdinal:context;
     }
@@ -866,7 +871,7 @@ public final class ObservedConformancePanel extends JPanel {
             if(cut==null||(failureFocus==null&&liveCheckTable.getSelectedRow()<0))liveDetails.setText("");
             return;
         }
-        String summaryStatus=PresentationResults.goal(row.status(),ExecutionScopeViews.ALL.equals(executionScope)&&historicalFailure(cut,row.id()));
+        String summaryStatus=row.resultText();
         selectedElementLabel.setText("Selected "+(row.isGoal()?"Goal: ":"Task: ")+scopedLabel(row.ownerLabel(),cut)+" ("+summaryStatus+")");
         displayedInstances=row.instances();
         var contexts=new java.util.TreeSet<String>();
@@ -1197,7 +1202,7 @@ public final class ObservedConformancePanel extends JPanel {
         if(row.context().equals(ExecutionScopeViews.WHOLE_SYSTEM))return row.element()+" · Whole system";
         if(!ExecutionScopeViews.ALL.equals(executionScope)||row.context().isBlank())return row.element();
         String context=row.context().split(" / ",2)[0];
-        return row.element()+" · "+executionLabels.getOrDefault(context,context);
+        return row.element()+" · "+executionLabelFor(context,1);
     }
     private String verdict(Cut cut){
         if(ExecutionScopeViews.ALL.equals(executionScope)&&historicalFailure(cut,null))return "VIOLATION";

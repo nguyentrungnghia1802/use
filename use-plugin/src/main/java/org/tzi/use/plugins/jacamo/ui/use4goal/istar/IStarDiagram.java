@@ -39,6 +39,7 @@ public final class IStarDiagram extends DiagramView {
     private final Map<String, IStarDiagramNode> nodeMap = new LinkedHashMap<>();
     private final DiagramInputHandling inputHandling;
     private GoalModel model;
+    private Set<String> visibleElements;
     private Path sourceFile;
     private IStarViewMode mode = IStarViewMode.SR;
     private String switchActionLabel;
@@ -91,6 +92,12 @@ public final class IStarDiagram extends DiagramView {
             loadDefaultLayout();
             fitAllActorBoundaries();
         }
+    }
+    /** Instance presentation filter only; the authored/native graph is never rewritten. */
+    public void setVisibleElements(Set<String> elements) {
+        Set<String> next=elements==null?null:Set.copyOf(elements);
+        if(java.util.Objects.equals(visibleElements,next))return;
+        visibleElements=next;rebuild();fitAllActorBoundaries();
     }
 
     /** Optional per-node status overlay (e.g. an IStarScenario satisfaction marking). */
@@ -172,6 +179,13 @@ public final class IStarDiagram extends DiagramView {
     }
 
     private boolean isNodeVisible(IStarNode node) {
+        if(visibleElements!=null) {
+            if(node.actorBoundary||node.kind==IStarNodeKind.ACTOR) {
+                if(model.findActor(node.id).stream().flatMap(a->a.elements().stream()).noneMatch(e->visibleElements.contains(e.id())))return false;
+            } else if(node.dependencyMarker) {
+                if(model.getDependencies().stream().noneMatch(d->d.dependum().id().equals(node.label)&&visibleElements.contains(d.dependerElmt())&&visibleElements.contains(d.dependeeElmt())))return false;
+            } else if(!visibleElements.contains(node.id))return false;
+        }
         if (!showQualities && node.kind == IStarNodeKind.QUALITY) return false;
         return showDependencies || !node.dependencyMarker;
     }

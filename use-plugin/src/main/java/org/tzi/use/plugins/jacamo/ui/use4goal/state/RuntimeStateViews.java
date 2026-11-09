@@ -8,6 +8,7 @@ import org.tzi.use.plugins.jacamo.ui.use4goal.aol.view.AolDiagram;
 import org.tzi.use.plugins.jacamo.ui.use4goal.istar.*;
 import org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ObservedConformancePanel.Cut;
 import org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ExecutionScopeViews;
+import org.tzi.use.plugins.jacamo.ui.use4goal.conformance.ExecutionGroups;
 import org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander;
 import org.tzi.use.semantic.engine.api.EngineSemanticsProfile;
 import org.vnu.sme.goal.dsl.csl.mm.CslModel;
@@ -28,7 +29,8 @@ public final class RuntimeStateViews {
  private java.util.function.Consumer<String> scopeListener=id->{};
  public void onScopeSelected(java.util.function.Consumer<String> listener){scopeListener=Objects.requireNonNull(listener);}
  public void selectScope(String id){if(!id.isBlank()&&!id.equals(contextSelector.getSelectedItem())){loading=true;try{contextSelector.setSelectedItem(id);aolSelector.setSelectedItem(id);}finally{loading=false;}if(iscnActive)renderContext();}}
- private Cut selected;private List<Map<String,Object>> contexts=List.of();private boolean loading;
+ private Cut selected;private List<Map<String,Object>> contexts=List.of();
+ private ExecutionGroups groups=ExecutionGroups.of(List.of());private boolean loading;
  private boolean aolActive=true,iscnActive=true;
  public void setActive(boolean showAol,boolean showIscn){
   if(aolActive==showAol&&iscnActive==showIscn)return;
@@ -41,7 +43,7 @@ public final class RuntimeStateViews {
   aolPanel.setName("runtime-aol-view");iscnPanel.setName("runtime-iscn-view");contextSelector.setName("iscn-context-selector");aolSelector.setName("aol-context-selector");
   contextSelector.setRenderer(new DefaultListCellRenderer(){@Override public Component getListCellRendererComponent(JList<?> list,Object value,int index,boolean selected,boolean focus){
    var label=(JLabel)super.getListCellRendererComponent(list,value,index,selected,focus);
-   String id=Objects.toString(value,"");label.setText(ExecutionScopeViews.ALL.equals(id)?"All":contexts.stream().filter(c->id.equals(c.get("context"))).findFirst().map(c->ExecutionScopeViews.label(c,contexts.indexOf(c)+1)).orElse(id));
+   String id=Objects.toString(value,"");label.setText(ExecutionScopeViews.ALL.equals(id)?"All":groups.choices().getOrDefault(groups.canonical(id),id));
    label.setToolTipText(id);return label;}});
   aolSelector.setRenderer(contextSelector.getRenderer());
   var aolToolbar=new JPanel(new BorderLayout());aolToolbar.add(aolSelector,BorderLayout.NORTH);aolToolbar.add(aolStatus,BorderLayout.SOUTH);
@@ -61,11 +63,14 @@ public final class RuntimeStateViews {
    if(!"PINNED_NATIVE_CUT".equals(core.get("evaluated")))throw new IllegalArgumentException("Verification still pending; no qualified ISCN at this boundary");
    contexts=((List<?>)core.getOrDefault("contexts",List.of())).stream().map(CanonicalJson::object).toList();
    var ids=new HashSet<String>();contexts.forEach(c->ids.add(Objects.toString(c.get("context"))));instanceViews.keySet().retainAll(ids);expansions.keySet().retainAll(ids);
-   for(var context:contexts){contextSelector.addItem(context.get("context").toString());aolSelector.addItem(context.get("context").toString());}
+   groups=ExecutionGroups.of(List.of(cut));
+   var choices=groups.ids().isEmpty()?ExecutionScopeViews.choices(List.of(cut)).keySet():groups.choices().keySet();
+   for(String id:choices){contextSelector.addItem(id);aolSelector.addItem(id);}
    contextSelector.addItem(ExecutionScopeViews.ALL);aolSelector.addItem(ExecutionScopeViews.ALL);
    // An explicitly selected execution that is absent at this cut must stay
    // unavailable. Never display the first other execution as its substitute.
    if(!ExecutionScopeViews.selected(cut).isBlank())contextSelector.setSelectedIndex(-1);
+   if(previous!=null)previous=groups.canonical(previous);
    if(previous!=null)for(int i=0;i<contextSelector.getItemCount();i++)if(previous.equals(contextSelector.getItemAt(i)))contextSelector.setSelectedIndex(i);
    aolSelector.setSelectedIndex(contextSelector.getSelectedIndex());
   }catch(RuntimeException unavailable){iscn.setModel(null);iscnStatus.setText("ISCN unavailable: "+unavailable.getMessage());}
@@ -104,13 +109,14 @@ public final class RuntimeStateViews {
  }
  private void renderContext(){
   String id=Objects.toString(contextSelector.getSelectedItem(),"");
-  if(ExecutionScopeViews.ALL.equals(id)){
+  var phases=ExecutionScopeViews.ALL.equals(id)?contexts:groups.contexts(selected,id);
+  if(ExecutionScopeViews.ALL.equals(id)||phases.size()>1){
    var all=new JPanel();all.setLayout(new BoxLayout(all,BoxLayout.Y_AXIS));
-   for(int i=0;i<contexts.size();i++){var view=instanceViews.computeIfAbsent(Objects.toString(contexts.get(i).get("context")),key->new IStarView());var section=new JPanel(new BorderLayout());section.setBorder(BorderFactory.createTitledBorder(ExecutionScopeViews.label(contexts.get(i),i+1)));section.setPreferredSize(new Dimension(1000,650));section.add(view,BorderLayout.CENTER);renderOne(contexts.get(i),i,view);all.add(section);}
+   for(int i=0;i<phases.size();i++){var view=instanceViews.computeIfAbsent(Objects.toString(phases.get(i).get("context")),key->new IStarView());var section=new JPanel(new BorderLayout());section.setBorder(BorderFactory.createTitledBorder(groups.choices().getOrDefault(groups.canonical(Objects.toString(phases.get(i).get("context"))),"Execution")+" \u00b7 "+Objects.toString(phases.get(i).get("scopeDefinition"),"Phase")));section.setPreferredSize(new Dimension(1000,650));section.add(view,BorderLayout.CENTER);renderOne(phases.get(i),i,view);all.add(section);}
    iscnContent.removeAll();iscnContent.add(new JScrollPane(all),BorderLayout.CENTER);iscnStatus.setText("All executions — separate admitted instance graphs");iscnContent.revalidate();iscnContent.repaint();return;
   }
   iscnContent.removeAll();iscnContent.add(iscn,BorderLayout.CENTER);iscnContent.revalidate();iscnContent.repaint();
-  int index=-1;for(int i=0;i<contexts.size();i++)if(id.equals(contexts.get(i).get("context")))index=i;
+  int index=-1;for(int i=0;i<contexts.size();i++)if(groups.members(id).contains(Objects.toString(contexts.get(i).get("context"))))index=i;
   if(index<0||index>=contexts.size()){iscn.setModel(null);iscnStatus.setText("No admitted actor instances at this state");return;}
   renderOne(contexts.get(index),index,iscn);
  }

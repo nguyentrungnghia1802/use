@@ -12,6 +12,15 @@ public final class LiveGoalSummary {
   public boolean isGoal(){return label!=null&&label.startsWith("Goal: ");}
   public boolean isTask(){return label!=null&&label.startsWith("Task: ");}
   public String ownerLabel(){if(label==null)return id;if(label.startsWith("Goal: "))return label.substring("Goal: ".length());if(label.startsWith("Task: "))return label.substring("Task: ".length());return label;}
+  /** Counts describe a population; they never invent an ALL/ANY Goal above its members. */
+  public String resultText(){
+   if(instances.size()<=1)return PresentationResults.goal(status,false);
+   var counts=new LinkedHashMap<String,Long>();
+   for(String value:List.of("Complete","Incomplete","Unknown","Not assigned")){
+    long n=instances.stream().filter(i->PresentationResults.agentResult(i).equals(value)).count();if(n>0)counts.put(value,n);
+   }
+   return counts.entrySet().stream().map(e->e.getValue()+" "+e.getKey()).collect(java.util.stream.Collectors.joining(" · "));
+  }
  }
  public List<Row> goalRows(List<Evaluation> evaluations){return rows(evaluations).stream().filter(Row::isGoal).toList();}
  public List<Row> taskRows(List<Evaluation> evaluations){return rows(evaluations).stream().filter(Row::isTask).toList();}

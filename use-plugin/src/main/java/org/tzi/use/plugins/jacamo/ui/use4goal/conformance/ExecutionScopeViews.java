@@ -76,7 +76,8 @@ public final class ExecutionScopeViews {
   if(names.isEmpty()&&boundContext(context)){
    var scopeView=object(context.get("scopeView"));
    var bindings=object(scopeView.get("bindings"));
-   String keyId=Objects.toString(bindings.getOrDefault("auctionId",""),"");
+   String keyId=bindings.entrySet().stream().filter(e->e.getValue() instanceof String s&&!s.startsWith("beid:")&&s.length()<=32)
+     .sorted(Map.Entry.comparingByKey()).map(e->e.getKey()+"="+e.getValue()).limit(2).collect(java.util.stream.Collectors.joining(", "));
    return "Execution "+ordinal+" — "+Objects.toString(scopeView.get("definition"),"context")+(keyId.isBlank()?"":" · id="+keyId);
   }
   return "Execution "+ordinal+(names.isEmpty()?" · entity binding unavailable":" — "+String.join(", ",names));
@@ -97,8 +98,9 @@ public final class ExecutionScopeViews {
   * negation/existential semantics remain authoritative in that aggregate. */
  public static List<Evaluation> failureEvaluations(Cut cut){
   String id=selected(cut);if(id.isBlank())return cut.evaluations();
-  var context=contexts(cut).stream().filter(c->id.equals(c.get("context"))).findFirst().orElse(Map.of());
-  Object checks=context.get("executionConstraints");if(!(checks instanceof List<?> list))return cut.evaluations();
+  var members=cut.visualEvidence().get("selectedExecutionContexts") instanceof List<?> selected?selected:List.of(id);
+  var list=contexts(cut).stream().filter(c->members.contains(c.get("context"))).flatMap(c->c.get("executionConstraints") instanceof List<?> rows?rows.stream():java.util.stream.Stream.empty()).toList();
+  if(list.isEmpty())return cut.evaluations();
   var failed=cut.evaluations().stream().filter(r->r.kind().equals("INVARIANT")&&r.status().equals("FAIL")).map(Evaluation::element).collect(java.util.stream.Collectors.toSet());
   var result=new ArrayList<>(cut.evaluations());
   for(Object raw:list){var body=object(raw);String name=Objects.toString(body.get("id"),"");
@@ -183,6 +185,36 @@ public final class ExecutionScopeViews {
   String requirements="Selected execution requirements: "+(failed?"VIOLATION":missing>0?"INCOMPLETE ("+missing+" unavailable)":"KNOWN")+" | Shared group rules apply to this execution too";
   return new Cut(cut.id(),cut.trace(),cut.state(),rows,cut.coverage(),cut.freshness(),failed,key,
     requirements,text.toString(),!domainBound&&cut.executionMilestones(),cut.selectedRequirements(),selected.isEmpty()&&context.isEmpty(),evidence);
+ }
+ /** Join phase projections only; their native context/occurrence identities remain untouched. */
+ public static Cut projectMembers(Cut cut,String id,List<String> members){
+  var present=contexts(cut).stream().map(c->Objects.toString(c.get("context"))).collect(java.util.stream.Collectors.toSet());
+  var phases=members.stream().filter(present::contains).map(member->project(cut,member)).toList();
+  if(phases.isEmpty())return project(cut,id);
+  if(phases.size()==1&&id.equals(members.getFirst()))return phases.getFirst();
+  var rows=new LinkedHashSet<Evaluation>();var objects=new TreeMap<String,Object>();var qualities=new TreeMap<String,Object>();
+  var entities=new TreeMap<String,Object>();var links=new LinkedHashSet<Object>();var targets=new TreeSet<String>();var text=new StringBuilder();
+  boolean qualified=true,failed=false;var keys=new ArrayList<String>();
+  for(var phase:phases){
+   rows.addAll(phase.evaluations());failed|=phase.failed();
+   var projection=object(phase.visualEvidence().get("presentationState"));
+   objects.putAll(object(projection.get("objects")));qualities.putAll(object(projection.get("objectQuality")));
+   links.addAll((List<?>)projection.getOrDefault("links",List.of()));entities.putAll(object(phase.visualEvidence().get("selectedEntityState")));
+   qualified&=Boolean.TRUE.equals(projection.get("qualifiedValues"));keys.add(phase.businessKey());
+   for(Object target:(List<?>)object(phase.visualEvidence().get("requirementInventory")).getOrDefault("selectedIntentionalElements",List.of()))targets.add(target.toString());
+   var context=contexts(cut).stream().filter(c->selected(phase).equals(c.get("context"))).findFirst().orElse(Map.of());
+   text.append("Phase: ").append(object(context.get("scopeView")).getOrDefault("definition","Execution")).append('\n').append(phase.businessState()).append('\n');
+  }
+  var evidence=new TreeMap<String,Object>(cut.visualEvidence());evidence.put("selectedExecution",id);
+  evidence.put("selectedExecutionContexts",members.stream().filter(present::contains).toList());
+  evidence.put("selectedEntityState",entities);
+  var projection=new TreeMap<String,Object>(object(evidence.get("presentationState")));
+  projection.put("objects",objects);projection.put("objectQuality",qualities);projection.put("links",List.copyOf(links));projection.put("qualifiedValues",qualified);evidence.put("presentationState",projection);
+  var inventory=new TreeMap<String,Object>(object(evidence.get("requirementInventory")));
+  if(!inventory.isEmpty()){inventory.put("selectedIntentionalElements",List.copyOf(targets));evidence.put("requirementInventory",inventory);}
+  return new Cut(cut.id(),cut.trace(),cut.state(),List.copyOf(rows),cut.coverage(),cut.freshness(),failed,
+    keys.stream().allMatch(k->!k.isBlank())?SemanticJson.hash(List.of(id,keys)):"",cut.requirements(),text.toString(),
+    phases.stream().anyMatch(Cut::executionMilestones),cut.selectedRequirements(),false,evidence);
  }
  public static String goalVerdict(Cut cut){
   var rows=cut.evaluations().stream().filter(r->r.kind().equals("GOAL_TASK")&&r.required()&&!r.status().equals("NOT_ASSIGNED")).toList();
