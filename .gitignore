@@ -142,6 +142,14 @@ fabric.properties
 **/.DS_Store
 *.class
 
+# Reproducible Python bytecode and tool caches; keep scripts and run evidence.
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
 
 # Large raw evidence is retained locally; byte-identical archives and hashes are versioned.
 /use-plugin/verification/authored-models/P05-domain-live/run-11008457034790524280/journal.jsonl
