@@ -511,6 +511,7 @@ public final class RuntimeFactSources {
             if(sourceQuality==Completeness.UNAVAILABLE)quality=Completeness.UNAVAILABLE;
             if(!Objects.equals(cut.startWatermarks().get("cartago"),cut.endWatermarks().get("cartago")))quality=merge(quality,Completeness.PARTIAL);
             var values=new LinkedHashMap<String,Object>();values.put("identity",artifact.id().canonical());values.put("incarnation",artifact.id().incarnation());
+            values.put("run",run);values.put("generation",generation);values.put("revision",cut.modelRevision());
             var proofs=new LinkedHashMap<String,String>();proofs.put("source-cut",proof);proofs.put("physical-identity",artifact.id().canonical());
             if(quality==Completeness.COMPLETE){values.putAll(decoded.values());proofs.put("capability:"+request.id(),decoded.cutId());}else values.put("diagnostic",decoded.diagnostic());
             rows.add(new RuntimeTables.Row(artifact.id().canonical(),values,quality,proofs,Set.of(artifact.id().canonical())));population=merge(population,quality);
@@ -577,6 +578,7 @@ public final class RuntimeFactSources {
             if(sourceQuality==Completeness.UNAVAILABLE)quality=Completeness.UNAVAILABLE;
             if(cut.startWatermarks().containsKey(source)&&!cut.startWatermarks().get(source).equals(cut.endWatermarks().get(source)))quality=merge(quality,Completeness.PARTIAL);
             var data=new LinkedHashMap<String,Object>();data.put("identity",board.id().canonical());data.put("incarnation",board.id().incarnation());data.put("request",request.id());
+            data.put("run",run);data.put("generation",generation);data.put("revision",cut.modelRevision());
             var proofs=new LinkedHashMap<String,String>();proofs.put("source-cut",proof);proofs.put("physical-identity",board.id().canonical());
             if(quality==Completeness.COMPLETE){data.putAll(decoded.values());publicSchemeBindings(data,board,artifact,cut,run,context);proofs.put("capability:"+request.id(),decoded.cutId());}else data.put("diagnostic",decoded.diagnostic());
             // The decoder checked the public MOISE UUID against this exact current

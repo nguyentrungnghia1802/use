@@ -13,6 +13,16 @@ class RuntimeFactSourcesTest {
         assertFalse(RuntimeFactSources.producerCartagoKinds(specification).contains(RuntimeFactKind.OPERATION));
         assertTrue(RuntimeFactSources.queryCartagoKinds(specification).contains(RuntimeFactKind.OPERATION));
     }
+    @Test void operationCapabilityEnvelopeKeepsItsExactEpochEvenWhenTheReceiptIsMissing()throws Exception {
+        String runtime="<runtime><datasets><operationCuts id=\"operations\" requestRef=\"history\"/></datasets></runtime>";
+        String requirements="<requirements><capability id=\"history\" provider=\"cartago.operation-history.v1\" required=\"true\" class=\"inventory.Stock\" hash=\""+"a".repeat(64)+"\"/></requirements>";
+        var specification=MappingXmlReaderTest.parse(MappingXmlReaderTest.XML.replace("<runtime/>",runtime).replace("<requirements/>",requirements));
+        var snapshot=cut(List.of(artifact("epoch-object",Completeness.COMPLETE,ProjectionStatus.MATERIALIZED_FAITHFULLY)),Map.of("cartago",Completeness.COMPLETE));
+        var request=new ObservationCapabilityRequest("history","cartago.operation-history.v1",true,Map.of("class","inventory.Stock","hash","a".repeat(64)));
+        var row=new RuntimeFactSources(specification,GenericMappingEngineTest.official(GenericMappingEngineTest.JCM),List.of(request)).capture(snapshot,"run-epoch",7).get("operations").rows().getFirst();
+        assertEquals("run-epoch",row.values().get("run"));assertEquals(7L,new java.math.BigDecimal(row.values().get("generation").toString()).longValueExact());assertEquals(snapshot.modelRevision(),row.values().get("revision"));
+        assertNotEquals(Completeness.COMPLETE,row.quality(),"Envelope identity cannot certify a missing operation receipt");
+    }
     static final String SOURCES="<runtime><datasets><facts id=\"artifacts\" authority=\"cartago\" kind=\"ARTIFACT\"/><facts id=\"groups\" authority=\"moise\" kind=\"GROUP_BOARD\"/></datasets></runtime>";
     RuntimeFactSources sources(){return new RuntimeFactSources(MappingXmlReaderTest.parse(MappingXmlReaderTest.XML.replace("<runtime/>",SOURCES)));}
     static RuntimeSnapshot cut(List<RuntimeFact> facts,Map<String,Completeness> quality){

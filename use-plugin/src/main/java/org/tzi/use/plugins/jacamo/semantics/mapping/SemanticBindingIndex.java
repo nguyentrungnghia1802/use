@@ -44,6 +44,8 @@ public final class SemanticBindingIndex {
                         && "ASL_CAPABILITY_VIEW".equals(binding.metadata().get("roleAbstraction"))&&!binding.abstractionReason().isBlank()
                         &&csl.generalizations().stream().anyMatch(g->g.general().equals(binding.targetId()))))throw new IllegalArgumentException("ROLE_SOURCE_KIND_REQUIRED");
             if(binding.kind()==Kind.ORG_CONTEXT&&!node.concept().equals("Group")
+                    && !(node.sourceKind().equals("MOISE_SCHEME")&&node.layer()==NormalizedSourceModel.Layer.MODEL_DEFINITION
+                        &&"SCHEME_EXECUTION_VIEW/1.0".equals(binding.metadata().get("contextAbstraction"))&&!binding.abstractionReason().isBlank())
                     && !(node.sourceKind().equals("JACAMO_ORGANIZATION_DEPLOYMENT")
                         && "ORGANIZATION_DEPLOYMENT_VIEW".equals(binding.metadata().get("contextAbstraction"))
                         && !binding.abstractionReason().isBlank())

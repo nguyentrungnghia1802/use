@@ -62,48 +62,32 @@ public final class LiveJaCaMoLauncherMain {
 
         BaseLocalMAS.logger = Logger.getLogger(JaCaMoLauncher.class.getName());
         JaCaMoLauncher launcher = new org.jacamo.bridge.adapter.BridgeControlledLauncher() {
-            /** Official platforms (including Bridge) start before RunLocalMAS calls this hook. */
+            private java.util.Map<String,Object> startRequest;
+            private boolean observationsActivated;
+            @Override protected void beforeDomainPlatformsStart() {
+                awaitObservationOwner();
+            }
+            private void awaitObservationOwner() {
+                if(observationsActivated)return;
+                try {
+                    if(startupDirectory!=null) {
+                        var owner=org.jacamo.bridge.contract.ManagedStartupControl.owner(runId,controlledProject,
+                            System.getProperty("jacamo.bridge.session",""),Long.parseLong(System.getProperty("jacamo.bridge.generation","0")),
+                            System.getProperty("jacamo.bridge.modelRevision",""),ProcessHandle.current().pid());
+                        org.jacamo.bridge.contract.ManagedStartupControl.waiting(startupDirectory,owner,startupSeconds);
+                        System.out.println("REAL_JACAMO_MANAGED_WAIT_START run="+runId);System.out.flush();
+                        startRequest=org.jacamo.bridge.contract.ManagedStartupControl.awaitRequest(startupDirectory,owner,stop);
+                    } else if(consumerReady!=null)awaitConsumerReady(consumerReady,stop,startupSeconds);
+                    activateObservationPlan();observationsActivated=true;
+                } catch(InterruptedException interrupted){Thread.currentThread().interrupt();throw new IllegalStateException("STARTUP_INTERRUPTED",interrupted);}
+            }
             @Override protected void startAgs() {
-                long initialHold=0;
-                if(jacamo.checkpoint.CheckpointBoot.verified()) {
-                    initialHold=org.jacamo.checkpoint.runtime.ExecutionBarrier.closeAdmission();
-                    try{org.jacamo.checkpoint.runtime.ExecutionBarrier.awaitFrozen(initialHold,java.time.Duration.ofSeconds(15));}
-                    catch(InterruptedException interrupted){Thread.currentThread().interrupt();throw new IllegalStateException("CHECKPOINT_STARTUP_DRAIN_INTERRUPTED",interrupted);}
-                }
-                if (startupDirectory != null) {
-                    var owner = org.jacamo.bridge.contract.ManagedStartupControl.owner(runId, controlledProject,
-                            System.getProperty("jacamo.bridge.session", ""),
-                            Long.parseLong(System.getProperty("jacamo.bridge.generation", "0")),
-                            System.getProperty("jacamo.bridge.modelRevision", ""), ProcessHandle.current().pid());
-                    org.jacamo.bridge.contract.ManagedStartupControl.waiting(startupDirectory, owner, startupSeconds);
-                    System.out.println("REAL_JACAMO_MANAGED_WAIT_START run=" + runId);
-                    System.out.flush();
-                    try {
-                        var request = org.jacamo.bridge.contract.ManagedStartupControl.awaitRequest(startupDirectory, owner, stop);
-                        activateObservationPlan();
-                        if(initialHold>0)org.jacamo.checkpoint.runtime.ExecutionBarrier.release(initialHold);
-                        super.startAgs();
-                        org.jacamo.bridge.contract.ManagedStartupControl.acknowledged(startupDirectory, request);
-                        System.out.println("REAL_JACAMO_MANAGED_START_ACK run=" + runId);
-                        System.out.flush();
-                        return;
-                    } catch (InterruptedException error) {
-                        Thread.currentThread().interrupt(); throw new IllegalStateException("STARTUP_INTERRUPTED", error);
-                    }
-                }
-                if (consumerReady != null) {
-                    System.out.println("REAL_JACAMO_WAIT_CONSUMER_READY");
-                    System.out.flush();
-                    try { awaitConsumerReady(consumerReady, stop, startupSeconds); }
-                    catch (InterruptedException error) {
-                        Thread.currentThread().interrupt(); throw new IllegalStateException("REAL_JACAMO_START_INTERRUPTED", error);
-                    }
-                    System.out.println("REAL_JACAMO_CONSUMER_READY_START_AGENTS");
-                    System.out.flush();
-                }
-                activateObservationPlan();
-                if(initialHold>0)org.jacamo.checkpoint.runtime.ExecutionBarrier.release(initialHold);
+                awaitObservationOwner();
                 super.startAgs();
+                if(startRequest!=null) {
+                    org.jacamo.bridge.contract.ManagedStartupControl.acknowledged(startupDirectory,startRequest);
+                    System.out.println("REAL_JACAMO_MANAGED_START_ACK run="+runId);System.out.flush();
+                }
             }
             private void activateObservationPlan() {
                 var platforms=getPlatforms().stream().filter(JaCaMoBridgePlatform.class::isInstance).map(JaCaMoBridgePlatform.class::cast).toList();

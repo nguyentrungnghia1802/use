@@ -8,6 +8,13 @@ import jacamo.infra.JaCaMoLauncher;
 public class BridgeControlledLauncher extends JaCaMoLauncher {
     @Override public void create() throws JasonException {
         super.create();
+        if (!System.getProperty(org.jacamo.bridge.contract.ObservationRequestPlan.PROPERTY, "").isBlank()) {
+            // Attach the observer before declarative platform artifacts are born.
+            // Preserve relative ordering of every domain platform; no agent runs here.
+            var observers=getPlatforms().stream().filter(JaCaMoBridgePlatform.class::isInstance).toList();
+            if(observers.size()!=1)throw new IllegalStateException("OBSERVATION_BRIDGE_OWNER_NOT_UNIQUE");
+            var observer=observers.getFirst();getPlatforms().remove(observer);getPlatforms().addFirst(observer);
+        }
         if(getProject().isJade() || getControllerInfraTier()!=null || getProject().getControlClass()!=null
                 || getAgs().values().stream().anyMatch(a->a.getClass()!=LocalAgArch.class)) {
             if(jacamo.checkpoint.CheckpointBoot.verified())throw new IllegalStateException("CHECKPOINT_AGENT_SCHEDULER_UNSUPPORTED");
@@ -17,6 +24,12 @@ public class BridgeControlledLauncher extends JaCaMoLauncher {
         control=execution;BridgeRuntimeRegistry.controller(execution);
         getAgs().values().forEach(execution::admit);
     }
+    @Override protected void afterPlatformStart(jacamo.platform.Platform platform) {
+        if(platform instanceof JaCaMoBridgePlatform
+                && !System.getProperty(org.jacamo.bridge.contract.ObservationRequestPlan.PROPERTY, "").isBlank())beforeDomainPlatformsStart();
+    }
+    /** No platform/source/scheduler lock is held while the consumer imports. */
+    protected void beforeDomainPlatformsStart() { }
     @Override public void addAg(LocalAgArch agent) {
         super.addAg(agent);
         admitAddedAgent(agent);

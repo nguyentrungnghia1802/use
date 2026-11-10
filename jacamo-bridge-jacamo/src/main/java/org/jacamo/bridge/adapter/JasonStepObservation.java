@@ -236,7 +236,12 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
         inputExposure.accept(bindings,Collections.unmodifiableMap(inputs));
         ArtifactId artifact=capture.artifactVariable().isEmpty()?null:artifact(substitution,capture.artifactVariable(),capture.artifactClass());
         String artifactId=artifact==null?"":OfficialCartagoAdapter.artifactId(CartagoEnvironment.getInstance().getId().toString(),artifact);
-        var scheme=capture.schemeVariable().isEmpty()?null:scheme(ASSyntax.createVar(capture.schemeVariable()).capply(substitution));
+        Term schemeTerm=capture.schemeVariable().isEmpty()?null:ASSyntax.createVar(capture.schemeVariable()).capply(substitution);
+        if(schemeTerm==null) {
+            var annotation=step.episode.means.getTrigger().getLiteral().getAnnot("scheme");
+            if(annotation!=null&&annotation.getArity()==1&&annotation.getTerm(0).isGround())schemeTerm=annotation.getTerm(0);
+        }
+        var scheme=scheme(schemeTerm);
         String schemeId=scheme==null?"":new BridgeEntityId("moise","organisation","scheme-board",scheme.getWorkspaceId().getName(),scheme.getName(),run+":"+scheme.getId()).canonical();
         String environment=CartagoEnvironment.getInstance().getId().toString();
         bindings.put("schemeArtifact",scheme==null?Map.of():CartagoArgumentObservation.value(scheme,environment));
@@ -257,11 +262,15 @@ public class JasonStepObservation implements JasonPlanInstrumentation.Reporter,G
         if(term==null||!term.isGround())return null;var arch=jaca.CAgentArch.getCartagoAgArch(ts);if(arch==null)return null;
         if(arch.getJavaLib().termToObject(term) instanceof ArtifactId id&&"ora4mas.nopl.SchemeBoard".equals(id.getArtifactType()))return id;
         var candidates=new LinkedHashMap<String,ArtifactId>();
-        for(var belief:ts.getAg().getBB())if(!belief.isRule()&&belief.getFunctor().equals("goalArgument")&&belief.getArity()==4&&belief.getTerm(0).equals(term)) {
+        for(var belief:ts.getAg().getBB())if(!belief.isRule()) {
+            var name=belief.getAnnot("artifact_name");
+            boolean reference=belief.getFunctor().equals("goalArgument")&&belief.getArity()==4&&belief.getTerm(0).equals(term)
+                    ||name!=null&&name.getArity()==1&&name.getTerm(0).equals(term);
+            if(!reference)continue;
             var annotation=belief.getAnnot("artifact_id");
             if(annotation==null||annotation.getArity()!=1||!annotation.getTerm(0).isGround())continue;
             Object value=arch.getJavaLib().termToObject(annotation.getTerm(0));
-            if(value instanceof ArtifactId id&&"ora4mas.nopl.SchemeBoard".equals(id.getArtifactType()))candidates.put(id.getId().toString(),id);
+            if(value instanceof ArtifactId id&&"ora4mas.nopl.SchemeBoard".equals(id.getArtifactType())&&id.getName().equals(term.toString()))candidates.put(id.getId().toString(),id);
         }
         return candidates.size()==1?candidates.values().iterator().next():null;
     }

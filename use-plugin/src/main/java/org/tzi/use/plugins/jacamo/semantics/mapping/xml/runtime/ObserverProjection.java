@@ -34,7 +34,7 @@ public final class ObserverProjection {
             for(Node write:node.children("write")) {
                 if(!write.name().equals("write")||!assigned.add(write.attr("field"))||!columns.contains(write.attr("column")))throw write.location().error("OBSERVER_WRITE_FIELD_OR_COLUMN_INVALID");
                 var field=type.attribute(write.attr("field"),true);
-                if(field==null||field.isDerived()||!Set.of("Integer","String","Boolean","Set(String)").contains(field.type().toString()))throw write.location().error("UNSUPPORTED:OBSERVER_FIELD_REQUIRES_SCALAR_OR_STRING_SET");
+                if(field==null||field.isDerived()||!Set.of("Integer","String","Boolean","Set(String)","Sequence(String)").contains(field.type().toString()))throw write.location().error("UNSUPPORTED:OBSERVER_FIELD_REQUIRES_SCALAR_OR_STRING_COLLECTION");
                 String mode=write.attr("mode");
                 if(!Set.of("current","latch-true","freeze-first-qualified").contains(mode))throw write.location().error("OBSERVER_WRITE_POLICY_UNSUPPORTED");
                 if(mode.equals("latch-true")&&!field.type().isTypeOfBoolean())throw write.location().error("OBSERVER_LATCH_BOOLEAN_REQUIRED");
@@ -242,6 +242,7 @@ public final class ObserverProjection {
             case "String"->{if(!(value instanceof String text))throw new IllegalArgumentException("OBSERVER_TYPED_STRING_REQUIRED");yield new StringValue(text);}
             case "Integer"->{if(!(value instanceof Number n))throw new IllegalArgumentException("OBSERVER_TYPED_INTEGER_REQUIRED");try{yield IntegerValue.valueOf(new java.math.BigDecimal(n.toString()).intValueExact());}catch(ArithmeticException e){throw new IllegalArgumentException("OBSERVER_INTEGER_RANGE_OR_FRACTION");}}
             case "Set(String)"->{if(!(value instanceof List<?> list)||list.size()>4096||list.stream().anyMatch(v->!(v instanceof String)))throw new IllegalArgumentException("OBSERVER_TYPED_STRING_SET_REQUIRED");yield new SetValue(TypeFactory.mkString(),list.stream().map(v->(Value)new StringValue((String)v)).toList());}
+            case "Sequence(String)"->{if(!(value instanceof List<?> list)||list.size()>4096||list.stream().anyMatch(v->!(v instanceof String)))throw new IllegalArgumentException("OBSERVER_TYPED_STRING_SEQUENCE_REQUIRED");yield new SequenceValue(TypeFactory.mkString(),list.stream().map(v->(Value)new StringValue((String)v)).toList());}
             default->throw new IllegalArgumentException("OBSERVER_SCALAR_TYPE_UNSUPPORTED");
         };
     }

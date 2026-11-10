@@ -12,6 +12,24 @@ import static org.junit.jupiter.api.Assertions.*;
 class DynamicWorkspaceObservationTest {
     /** No initial property callback: a read used to mark this birth as published. */
     public static class EmptyArtifact extends Artifact {public void init(){}}
+    @Test @Timeout(25) void declarativeWorkspaceBirthIsSubscribedBeforeAnyAgentFeedbackOrPoll()throws Exception {
+        var env=CartagoEnvironment.getInstance();env.init();var events=new CopyOnWriteArrayList<RuntimeEvent>();
+        var parent=env.getRootWSP().getWorkspace();var observed=new ArrayList<Workspace>();
+        try(var listener=Workspace.observeCreation(child->{assertFalse(Thread.holdsLock(parent));observed.add(child);});
+            var source=new CartagoSnapshotSource(env,List.of(),"declarative-birth")) {
+            source.attach(events::add);
+            var child=parent.createWorkspace("declared").getWorkspace();assertEquals(List.of(child),observed);
+            var context=child.joinWorkspace(new AgentIdCredential("bootstrap"),event->{});
+            var created=child.makeArtifact(context.getAgentId(),"domain",FieldProbeArtifact.class.getName(),new ArtifactConfig());
+            assertTrue(events.stream().anyMatch(e->e.kind()==RuntimeEventKind.CREATED&&created.getId().toString().equals(e.after().get("uuid"))),"Observe real birth without agent feedback, synthetic replay or a later poll");
+            assertFalse(source.capture().isEmpty());assertEquals(Completeness.COMPLETE,source.completeness(),"Constructor-owned infrastructure is pre-existing; genuine domain births still need their callback");
+            long watermark=source.watermark().sequence();source.close();
+            var later=parent.createWorkspace("after_close").getWorkspace();
+            var lateContext=later.joinWorkspace(new AgentIdCredential("bootstrap"),event->{});
+            later.makeArtifact(lateContext.getAgentId(),"domain",FieldProbeArtifact.class.getName(),new ArtifactConfig());
+            assertEquals(watermark,source.watermark().sequence(),"Disposed subscriptions cannot publish into a later workspace");
+        }finally{env.shutdown();}
+    }
     @Test void onlySuccessfulTypedWorkspaceFeedbackNotifiesTheRunOwnedObserver()throws Exception {
         var calls=new java.util.concurrent.atomic.AtomicInteger();
         var action=new jason.asSemantics.ActionExec(jason.asSyntax.ASSyntax.parseStructure("createWorkspace(\"new\")"),new jason.asSemantics.Intention());

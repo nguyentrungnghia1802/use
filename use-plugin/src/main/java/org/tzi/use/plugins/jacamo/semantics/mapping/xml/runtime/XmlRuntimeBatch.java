@@ -173,6 +173,18 @@ public final class XmlRuntimeBatch {
                     }
                 }
             }
+            // An exactly empty filtered table has no row on which to carry its
+            // inventory authority. Verify the current source certificate directly;
+            // never infer closure from the absence of mapped native objects.
+            if(table.rows().isEmpty()&&table.populationQuality()==Completeness.COMPLETE) {
+                String dataset=rule.table().attr("dataset");var definition=sources.definition(dataset);
+                if(definition.name().equals("facts")&&sources.authority(dataset).equals("jason")
+                        &&sources.kind(dataset)==RuntimeFactKind.AGENT&&JasonAgentInventory.complete(cut,run))populationAuthority=JasonAgentInventory.POLICY;
+                else if(MoisePopulationClosure.POLICY.equals(definition.optional("population"))
+                        &&MoisePopulationClosure.complete(cut,sources.kind(dataset),run))populationAuthority=MoisePopulationClosure.POLICY;
+                else if(definition.name().equals("facts")&&sources.authority(dataset).equals("cartago")
+                        &&sources.kind(dataset)==RuntimeFactKind.WORKSPACE&&workspaceInventory)populationAuthority="CARTAGO_WORKSPACE_INVENTORY_V1";
+            }
             if(writes.size()==1)populationReceipts.put(rule.rule().attr("id"),Map.of("target",writes.getFirst().attr("targetType"),
                     "complete",qualified&&populationCertified&&mappedMembers.size()==table.rows().size()&&!populationAuthority.isBlank(),
                     "authority",populationAuthority,"members",List.copyOf(mappedMembers)));

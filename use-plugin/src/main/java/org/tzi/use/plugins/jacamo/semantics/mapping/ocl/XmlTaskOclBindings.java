@@ -64,7 +64,11 @@ public final class XmlTaskOclBindings implements AutoCloseable {
             var operations=new ArrayList<String>();var selected=new HashSet<String>();
             for(Node receipt:node.children("actionReceipt")) {
                 Node operation=spec.requireId(receipt.attr("operationRef"));
-                if(!selected.add(operation.attr("id"))||!operation.name().equals("operation")||!operation.attr("owner").equals(node.attr("self"))||!operation.optional("task").equals(task))throw receipt.location().error("TASK_EXACT_OPERATION_BINDING_REQUIRED");
+                // An unowned operation contract may be explicitly shared by Tasks.
+                // Credit still requires this Task's pinned source step and exact
+                // correlated action receipt; method-name fallback is never used.
+                if(!selected.add(operation.attr("id"))||!operation.name().equals("operation")||!operation.attr("owner").equals(node.attr("self"))
+                        ||!operation.optional("task").isBlank()&&!operation.optional("task").equals(task))throw receipt.location().error("TASK_EXACT_OPERATION_BINDING_REQUIRED");
                 var signature=CanonicalJson.decode(operation.attr("signature").getBytes(java.nio.charset.StandardCharsets.UTF_8));
                 var installed=model.getClass(node.attr("self")).allOperations().stream().filter(o->operation.attr("id").equals(o.getAnnotationValue("DeclarativeOperationBinding","id"))&&spec.sourceHash().equals(o.getAnnotationValue("DeclarativeOperationBinding","mappingHash"))).toList();
                 if(installed.size()!=1||!(signature instanceof List<?> list)||list.size()!=4||!(list.get(1) instanceof String name)||operations.contains(name))throw receipt.location().error("UNSUPPORTED:TASK_NATIVE_OPERATION_UNRESOLVED_OR_ACTION_OVERLOAD_AMBIGUOUS");

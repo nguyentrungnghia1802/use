@@ -47,4 +47,26 @@ class AgentContextPopulationTest {
         batch.apply(f.port(),"run",0,cut(List.of(a),List.of(a),5,true));
         assertFalse(MappedPopulationInventory.complete(type,engine),"A retained old agent context must be withdrawn by an admitted mapping rule, never silently certified");
     }
+    @Test void emptyFilteredMappingNeedsTheSameCurrentSourceInventoryAsNonemptyMappings()throws Exception {
+        String plan=PLAN.replace("</tables>","""
+            <table id="absent-contexts" dataset="agents"><where path="values.name" type="String" equals="unobserved"/>
+            <column name="player" path="identity" required="true"/><identity mode="PHYSICAL" path="identity"/></table></tables>
+            """).replace("</inputs>","""
+            <input id="absent-input" tableRef="absent-contexts" identityKind="PHYSICAL" identityFields="player">
+            <field name="player" type="String" required="true"/></input></inputs>
+            """).replace("</runtime>","""
+            <rule id="absent-program" inputRef="absent-input"><requireEvidence proof="source-cut"/>
+            <upsertInstance targetType="Team" keyFields="player" playerFrom="player"/></rule></runtime>
+            """);
+        var helper=new M0RuleExecutorTest();helper.temp=temp;
+        var f=helper.fixture(plan,true,text->text.replace("<runtime/>",plan));var engine=f.engine();
+        var batch=new XmlRuntimeBatch(engine.canonicalProgram().xmlPlan().inputs().specification(),engine.system().model(),engine.canonicalProgramHash());
+        var actual=agent("one");f.port().upsert(actual.id().canonical(),"AtomicAgent","one");
+        var type=engine.system().model().getClass("OrgContext");
+        batch.apply(f.port(),"run",0,cut(List.of(actual),List.of(actual),1,true));
+        assertTrue(MappedPopulationInventory.complete(type,engine),"An exact filtered empty subset must not invent missing performers");
+        batch.apply(f.port(),"run",0,cut(List.of(actual),List.of(actual),2,false));
+        assertFalse(MappedPopulationInventory.complete(type,engine),"No certificate means no proof of the empty subset either");
+    }
+
 }

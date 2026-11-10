@@ -11,7 +11,7 @@ import org.tzi.use.uml.ocl.type.*;
 /** XML-selected observer schema in the existing native model; no MSystem, values or history. */
 public final class ObserverSchema {
     private final String annotation,version,sourceHash;
-    private static final Set<String> SCALARS=Set.of("Integer","String","Boolean","Set(String)");
+    private static final Set<String> SCALARS=Set.of("Integer","String","Boolean","Set(String)","Sequence(String)");
     private final MappingSpecification.Node root;
     private final Map<String,MappingSpecification.Node> views;
     private final Map<String,String> classViews;
@@ -126,6 +126,7 @@ public final class ObserverSchema {
         return switch(type) {
             case "Integer"->TypeFactory.mkInteger();case "String"->TypeFactory.mkString();case "Boolean"->TypeFactory.mkBoolean();
             case "Set(String)"->TypeFactory.mkSet(TypeFactory.mkString());
+            case "Sequence(String)"->TypeFactory.mkSequence(TypeFactory.mkString());
             default->throw new IllegalArgumentException("OBSERVER_SCALAR_TYPE_UNSUPPORTED:"+type);
         };
     }

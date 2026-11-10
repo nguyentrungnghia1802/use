@@ -2,6 +2,7 @@ package org.jacamo.bridge.adapter;
 
 import cartago.AgentId;
 import cartago.ArtifactId;
+import cartago.Workspace;
 import cartago.ArtifactObsProperty;
 import cartago.CartagoEnvironment;
 import cartago.ICartagoController;
@@ -63,6 +64,7 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
     private volatile ProductionObservationSession capabilities;
     private volatile Set<RuntimeFactKind> observationKinds=Set.of(RuntimeFactKind.values());
     private volatile org.jacamo.bridge.contract.ObservationCaptureScope observationScope;
+    private AutoCloseable workspaceCreationSubscription;
     private volatile boolean closed;
     private volatile boolean awaitingObservationPlan;
     void deferObservation(){synchronized(captureLock){if(observer!=null||observationScope!=null)throw new IllegalStateException("CARTAGO_OBSERVATION_ALREADY_ACTIVE");awaitingObservationPlan=true;}}
@@ -99,6 +101,7 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
         synchronized(captureLock) {
             if (closed||this.observer != null) throw new IllegalStateException("CARTAGO_CLOSED_OR_ALREADY_ATTACHED");
             this.observer = java.util.Objects.requireNonNull(observer);
+            workspaceCreationSubscription=Workspace.observeCreation(this::observeCreatedWorkspace);
             refreshRegistrations();
         }
     }
@@ -369,7 +372,10 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
     }
 
     @Override public void close() throws Exception {
-        synchronized(captureLock) {closed=true;closeLoggers();}
+        closed=true;
+        var subscription=workspaceCreationSubscription;workspaceCreationSubscription=null;
+        if(subscription!=null)subscription.close();
+        synchronized(captureLock) {closeLoggers();}
     }
 
     private void closeLoggers() throws Exception {
@@ -563,6 +569,20 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
     /** Jason/JaCa callbacks may complete workspace management outside an
      * observable WorkspaceArtifact operation. Attach before that agent's TS
      * consumes success feedback, without taking captureLock or reading state. */
+    private void observeCreatedWorkspace(Workspace owner) {
+        if(closed)return;
+        try {
+            String name=owner.getId().getFullName();
+            synchronized(registrationLock) {
+                if(closed||loggerOwners.get(name)==owner||pendingLoggerOwners.get(name)==owner)return;
+                owner.registerLogger(this);pendingLoggerOwners.put(name,owner);
+                // The Workspace constructor has already created its infrastructure
+                // artifacts before publishing this lifecycle hook. Record those as
+                // pre-existing, without fabricating a domain creation receipt.
+                for(ArtifactId existing:environment.getController(name).getCurrentArtifacts())synchronized(this){if(!pendingCreations.contains(artifactId(existing)))knownArtifacts.add(artifactId(existing));}
+            }
+        }catch(Exception unavailable){gap("CARTAGO_WORKSPACE_CREATION_SUBSCRIPTION_UNAVAILABLE:"+unavailable.getClass().getSimpleName());}
+    }
     void observeWorkspaceTopology() {
         if(closed)return;
         try {

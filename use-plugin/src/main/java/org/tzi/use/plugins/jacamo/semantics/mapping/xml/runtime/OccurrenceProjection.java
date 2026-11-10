@@ -42,7 +42,9 @@ public final class OccurrenceProjection {
         }
         var compiled=new ArrayList<Definition>();var sections=specification.root().child("runtime").children("occurrences");
         if(sections.size()>1)throw specification.root().location().error("OCCURRENCE_SECTION_DUPLICATE");
-        var leaves=elements.values().stream().filter(e->e.attr("derived").equals("false")).map(e->e.attr("target")).collect(java.util.stream.Collectors.toSet());
+        var leaves=elements.values().stream().filter(e->e.attr("derived").equals("false")
+                ||goals!=null&&goals.findElement(e.attr("target")).orElse(null) instanceof org.vnu.sme.goal.dsl.istar.mm.Goal goal&&!goal.conditions().isEmpty())
+                .map(e->e.attr("target")).collect(java.util.stream.Collectors.toSet());
         var allSelectedActors=new HashSet<String>();var allAssignedLeaves=new HashSet<String>();
         if(!sections.isEmpty()) {
             for(Node scope:sections.getFirst().children("scope")) {
