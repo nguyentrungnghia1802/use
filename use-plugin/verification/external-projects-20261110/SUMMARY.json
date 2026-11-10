@@ -1,0 +1,107 @@
+{
+  "focusedTestsPassed": 16,
+  "productionChanges": true,
+  "manualDesktopAcceptance": false,
+  "cases": {
+    "hello-world": {
+      "goals": {
+        "FULFILLED": 2
+      },
+      "checkpoints": 14,
+      "matchedAutomaticSourceReleases": 14,
+      "nativeOperationChecks": {
+        "POST:PASS": 13,
+        "PRE:PASS": 13
+      },
+      "requiredEvidenceGaps": 0,
+      "manualReviews": 0,
+      "sourceUnchanged": true,
+      "nativeOutcomeReached": true,
+      "rawHistoryPagesRead": 0,
+      "heartbeatP95Millis": 41,
+      "heartbeatMaxMillis": 215,
+      "rawCoverage": "INCOMPLETE",
+      "finalNonpassConstraints": [
+        {
+          "id": "NATIVE:OrgContext::CslV4RoleCompatibility",
+          "kind": "INVARIANT",
+          "verdict": "SKIPPED",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN"
+        }
+      ],
+      "producerRun": "20261110-115139-680-7d5a5f27",
+      "preparedFile": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\use-plugin\\target\\owned-runtime\\e66de059-ad38-40b8-992b-ee2e4e99abb9\\prepared.json",
+      "producerFingerprintMatched": true,
+      "consumerExitCode": 0,
+      "sourceInstallParity": true,
+      "provedNativePopulationCheckpoints": 14,
+      "nativePopulationResults": {
+        "PASS:COMPLETE": 14
+      },
+      "externalProject": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\doc\\tutorials\\hello-world\\code\\helloworld\\helloworld.jcm",
+      "actualSelectedProject": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\doc\\tutorials\\hello-world\\code\\helloworld\\helloworld.jcm",
+      "graphicalProducer": true
+    },
+    "house-building": {
+      "goals": {
+        "FULFILLED": 15
+      },
+      "checkpoints": 30,
+      "matchedAutomaticSourceReleases": 30,
+      "nativeOperationChecks": {
+        "PRE:PASS": 121,
+        "POST:PASS": 121
+      },
+      "requiredEvidenceGaps": 0,
+      "manualReviews": 0,
+      "sourceUnchanged": true,
+      "nativeOutcomeReached": true,
+      "rawHistoryPagesRead": 0,
+      "heartbeatP95Millis": 50,
+      "heartbeatMaxMillis": 230,
+      "rawCoverage": "INCOMPLETE",
+      "finalNonpassConstraints": [
+        {
+          "id": "NATIVE:OrgContext::CslV4RoleCompatibility",
+          "kind": "INVARIANT",
+          "verdict": "SKIPPED",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN"
+        }
+      ],
+      "producerRun": "20261110-114958-140-d40db739",
+      "preparedFile": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\use-plugin\\target\\owned-runtime\\a92bad7d-3d01-4d83-909d-5f812e3610ee\\prepared.json",
+      "producerFingerprintMatched": true,
+      "consumerExitCode": 0,
+      "sourceInstallParity": true,
+      "provedNativePopulationCheckpoints": 30,
+      "nativePopulationResults": {
+        "PASS:COMPLETE": 30
+      },
+      "externalProject": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\house-building.jcm",
+      "actualSelectedProject": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\house-building\\house-building.jcm",
+      "graphicalProducer": true
+    }
+  },
+  "inputSelection": {
+    "hello-world": {
+      "availableMrvFiles": [
+        "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\examples\\hello-world\\hello.mrv"
+      ],
+      "selected": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\examples\\hello-world\\hello.mrv",
+      "status": "READY"
+    },
+    "house-building": {
+      "availableMrvFiles": [
+        "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\examples\\house-building\\house.mrv"
+      ],
+      "selected": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\examples\\house-building\\house.mrv",
+      "status": "READY"
+    }
+  },
+  "installedArtifacts": {
+    "lib/plugins/use-jacamo-plugin-1.0.1.jar": "7a0e6ad26acdc262e13570362b6a64ace0494b728e33ebeebe46270b92ca5627",
+    "bridge/lib/jacamo-bridge-contract-1.0.0.jar": "871065bdd653c16b6936c667452a0f6cccfd62ae9d48fe68edc53f81609a1f9b",
+    "bridge/lib/jacamo-bridge-jacamo-1.0.0.jar": "959778fac0625b0d646265de17b60e24c467869cf4b932c74ea6efceb53ffd8a"
+  },
+  "externalTrackedSourceUnchanged": true
+}

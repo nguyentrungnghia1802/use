@@ -15,11 +15,14 @@ final class DeclaredArtifactTypeProof {
     /** A parsed class reference is not a JCM declaration or proof of creation. */
     static SemanticMetadata attachAction(SemanticMetadata action,jason.asSyntax.Term source) {
         if(!(source instanceof jason.asSyntax.Structure term)||!action.sourceKind().equals("JASON_EXTERNAL_ACTION")||action.evidenceAuthority()!=EvidenceAuthority.OFFICIAL_JASON_API
-                ||!term.getFunctor().equals("makeArtifact")||term.getArity()!=4
+                ||!term.getFunctor().equals("makeArtifact")||!Set.of(2,4).contains(term.getArity())
                 ||!(term.getTerm(1) instanceof jason.asSyntax.StringTerm literal))return action;
-        return attach(action,literal.getString(),true);
+        return attach(action,literal.getString(),true,term.getArity());
     }
     private static SemanticMetadata attach(SemanticMetadata declaration,String fqcn,boolean actionReference) {
+        return attach(declaration,fqcn,actionReference,4);
+    }
+    private static SemanticMetadata attach(SemanticMetadata declaration,String fqcn,boolean actionReference,int arity) {
         try {
             Class<?> type=Class.forName(fqcn,false,Thread.currentThread().getContextClassLoader());
             var provider=type.getProtectionDomain().getCodeSource();var platform=cartago.Artifact.class.getProtectionDomain().getCodeSource();
@@ -28,7 +31,7 @@ final class DeclaredArtifactTypeProof {
             var binary=readBinary(type);if(binary==null)return declaration;
             String prefix=actionReference?"SOURCE_ACTION_":"DECLARED_";
             var proofTags=new ArrayList<>(List.of(prefix+"CARTAGO_ARTIFACT_APPLICATION_CLASS","PROVIDER:"+provider.getLocation().toExternalForm()));
-            if(actionReference)proofTags.add("CLASS_REFERENCE:makeArtifact/4:1:"+fqcn);
+            if(actionReference)proofTags.add("CLASS_REFERENCE:makeArtifact/"+arity+":1:"+fqcn);
             var proof=new SourceEvidence(EvidenceAuthority.OFFICIAL_CARTAGO_API,binary.resource().toExternalForm(),AdapterEvidence.digest(binary.bytes()),fqcn,
                     declaration.semanticId(),0,0,"","",0,Fidelity.EXACT,CapabilityStatus.COMPLETE,
                     proofTags);

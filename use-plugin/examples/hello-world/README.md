@@ -6,6 +6,13 @@ Select `helloworld.jcm` as the project and `hello.mrv` as the system model in th
 main verification workflow. The entry resolves the existing CSL, iStar, XML and
 OCL files without changing their contents or verification semantics.
 
+The same model can verify the external tutorial entry
+`jacamo/doc/tutorials/hello-world/code/helloworld/helloworld.jcm`. Use the default
+validated-source policy (Strict source checksums off) to freeze the selected
+project's actual source revision; authored model/OCL hashes and loaded binary
+proofs remain enforced. Keep Show JaCaMo GUI enabled for the original Swing
+source. The other tutorial JCM entries require their own matching models.
+
 ## Chạy trên main USE GUI
 
 Mở **Plugins → JaCaMo / use4Goal verification...** (entry five-input hiện có).

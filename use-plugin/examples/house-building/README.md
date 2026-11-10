@@ -1,5 +1,15 @@
 # House Building — observed world requirements v1
 
+## External project entry
+
+Select `jacamo/examples/house-building/house-building.jcm` as the project and this
+folder's `house.mrv` as the system model. The default validated-source policy
+(Strict source checksums off) freezes the external project's actual source
+revision and retains authored model/OCL hashes and exact loaded-class proofs.
+The original `makeArtifact/2` reference is supported. Keep Show JaCaMo GUI enabled
+for the original Swing artifact. Original ASL waits and domain behavior are not
+rewritten; the adaptations described below apply to the local example only.
+
 ## Chạy trên main USE GUI
 
 Mở main **Plugins → JaCaMo / use4Goal verification...**, chọn đúng năm inputs:
@@ -67,10 +77,10 @@ Full MOISE role/norm/mission/epistemic verification và iStar per-invocation
 TaskMarking không được claim bởi profile state/outcome này. Source OS vẫn có
 đầy đủ roles/missions/norms để tham khảo; thiếu source evidence giữ UNKNOWN.
 
-Nguồn read-only gốc ở folder jacamo không dùng trực tiếp với hash fixture này.
-Chọn `house-building.jcm` trong bundle, hoặc copy TOÀN BỘ bundle sang chỗ khác.
-Muốn đổi source/model/OCL phải tạo mapping revision và hash tương ứng; không
-bỏ checksum guard. `case-manifest.json` là danh sách five inputs đồng phiên bản.
+Pinned-source mode requires the local bundle's exact reference hashes. External
+projects use the admitted validated-source revision described above; this does
+not disable authored model/OCL checksum guards. `case-manifest.json` identifies
+the local bundle's five reference inputs.
 
 BuildProgress.workspace là execution-context workspace, được join qua official
 parentSemanticId từ workspace chứa House về workspace procurement. Physical

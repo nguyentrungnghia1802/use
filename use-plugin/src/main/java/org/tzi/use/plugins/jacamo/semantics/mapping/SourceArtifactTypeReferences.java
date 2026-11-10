@@ -33,12 +33,12 @@ public final class SourceArtifactTypeReferences {
             var roots=action.metadata().evidence().stream().filter(e->e.diagnostics().contains(CLASS)).distinct().toList();
             if(roots.isEmpty())continue;
             String id=action.metadata().semanticId();
-            if(roots.size()!=1||!action.kind().equals("EXTERNAL")||!action.functor().equals("makeArtifact")||action.arity()!=4
+            if(roots.size()!=1||!action.kind().equals("EXTERNAL")||!action.functor().equals("makeArtifact")||!Set.of(2,4).contains(action.arity())
                     ||!action.metadata().sourceKind().equals("JASON_EXTERNAL_ACTION")
                     ||action.metadata().evidenceAuthority()!=EvidenceAuthority.OFFICIAL_JASON_API)throw invalid("ACTION_CARRIER_INVALID",id);
             var root=roots.getFirst();String fqcn=root.sourceJavaFqcn();
             requireEvidence(root,id);
-            if(!root.diagnostics().contains("CLASS_REFERENCE:makeArtifact/4:1:"+fqcn))throw invalid("PARSED_CLASS_REFERENCE_REQUIRED",id);
+            if(!root.diagnostics().contains("CLASS_REFERENCE:makeArtifact/"+action.arity()+":1:"+fqcn))throw invalid("PARSED_CLASS_REFERENCE_REQUIRED",id);
             var providers=root.diagnostics().stream().filter(s->s.startsWith("PROVIDER:")).toList();
             if(providers.size()!=1||!providerResource(providers.getFirst().substring("PROVIDER:".length()),root.sourceUri(),fqcn))
                 throw invalid("PROVIDER_RESOURCE_MISMATCH",id);

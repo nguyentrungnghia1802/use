@@ -45,6 +45,15 @@ class SourceActionArtifactTypeProofTest {
             assertSame(metadata,DeclaredArtifactTypeProof.attachAction(metadata,ASSyntax.parseLiteral("makeArtifact(id,\""+type+"\",[],A)")));
         } finally {Thread.currentThread().setContextClassLoader(original);}
     }
+    @Test void twoArgumentCreationHasItsOwnExactArityProofWithoutInitialization()throws Exception {
+        var metadata=action();String type=ReferencedArtifact.class.getName();
+        var result=DeclaredArtifactTypeProof.attachAction(metadata,ASSyntax.parseLiteral("makeArtifact(id,\""+type+"\")"));
+        assertEquals(0,INITIALIZED.get());assertEquals(2,result.evidence().size());
+        assertTrue(result.evidence().getFirst().diagnostics().contains("CLASS_REFERENCE:makeArtifact/2:1:"+type));
+        assertFalse(result.evidence().getFirst().diagnostics().contains("CLASS_REFERENCE:makeArtifact/4:1:"+type));
+        assertSame(metadata,DeclaredArtifactTypeProof.attachAction(metadata,ASSyntax.parseLiteral("makeArtifact(id,Type)")));
+        assertSame(metadata,DeclaredArtifactTypeProof.attachAction(metadata,ASSyntax.parseLiteral("makeArtifact(id,\""+type+"\",[])")));
+    }
     static Path compilePinnedAuction()throws Exception {
         Path source=Path.of("../use-plugin/examples/auction/src/env/auction_env/AuctionArtifact.java").toRealPath();
         assertEquals("34036fc220274853e39f93682cdb22c350fe6a06739669860f2a66afe606ff4b",AdapterEvidence.digest(Files.readAllBytes(source)));
