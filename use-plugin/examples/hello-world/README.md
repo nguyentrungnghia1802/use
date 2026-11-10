@@ -1,5 +1,11 @@
 # Hello World — observed world requirements v1
 
+## Current model entry
+
+Select `helloworld.jcm` as the project and `hello.mrv` as the system model in the
+main verification workflow. The entry resolves the existing CSL, iStar, XML and
+OCL files without changing their contents or verification semantics.
+
 ## Chạy trên main USE GUI
 
 Mở **Plugins → JaCaMo / use4Goal verification...** (entry five-input hiện có).

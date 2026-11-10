@@ -1,0 +1,5 @@
+# Hello World system model specification
+csl = hello.csl
+istar = hello.istar
+xml = hello-mapping.xml
+ocl = hello.ocl

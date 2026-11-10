@@ -99,6 +99,7 @@ public final class XmlRuntimeBatch {
         if(writer==null)throw new IllegalArgumentException("XML_RUNTIME_PLAN_REQUIRED");
         // Query/identity compilation finishes before any native write. No second state/cache is retained.
         var capture=sources.captureWithClocks(cut,run,generation,event);var captured=capture.datasets();var selected=tables.execute(captured,capture.clocks());
+        boolean workspaceInventory=CartagoWorkspaceInventory.complete(cut);
         for(BoundRule rule:rules) {
             var rows=selected.get(rule.table().attr("id")).rows();
             if(rows.stream().map(RuntimeTables.Row::identity).distinct().count()!=rows.size())throw rule.table().location().error("XML_M0_DUPLICATE_TABLE_IDENTITY");
@@ -150,7 +151,7 @@ public final class XmlRuntimeBatch {
                     port.metadata(outcome.object(),"xml:m0:population",table.populationQuality().name());
                     String inventory=row.proofs().getOrDefault(MoisePopulationClosure.PROOF,"");
                     String authority=!inventory.isBlank()?MoisePopulationClosure.POLICY:
-                            currentInventory&&sources.definition(rule.table().attr("dataset")).name().equals("facts")
+                            (currentInventory||workspaceInventory)&&sources.definition(rule.table().attr("dataset")).name().equals("facts")
                             &&sources.authority(rule.table().attr("dataset")).equals("cartago")
                             &&sources.kind(rule.table().attr("dataset"))==RuntimeFactKind.WORKSPACE?"CARTAGO_WORKSPACE_INVENTORY_V1":
                             row.proofs().containsKey("jason-agent-inventory")?JasonAgentInventory.POLICY:"";
@@ -192,7 +193,7 @@ public final class XmlRuntimeBatch {
         }
         for(var entry:invalidated.entrySet())if("INCOMPLETE".equals(port.metadata(entry.getKey(),"xml:m0:quality"))&&outcomes.stream().noneMatch(o->o.object()==entry.getKey()&&Set.of("MAPPED","INCOMPLETE").contains(o.status())))
             outcomes.add(new M0RuleExecutor.Outcome("CURRENT-CUT-INVALIDATION","INCOMPLETE",entry.getValue(),entry.getKey(),"CURRENT_SOURCE_ROW_UNAVAILABLE"));
-        if(currentInventory||JasonAgentInventory.complete(cut,run))for(var object:port.objects())if(writer.owns(port,object)&&object.cls().isSubClassifierOf(port.readState().system().model().getClass("OrgContext"))) {
+        if(currentInventory||workspaceInventory||JasonAgentInventory.complete(cut,run))for(var object:port.objects())if(writer.owns(port,object)&&object.cls().isSubClassifierOf(port.readState().system().model().getClass("OrgContext"))) {
             port.metadata(object,"xml:m0:roles-quality",roleScopes.getOrDefault(object,true)?"COMPLETE":"INCOMPLETE");
             port.metadata(object,"xml:m0:roles-cut",cut.snapshotId());
         }

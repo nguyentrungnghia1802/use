@@ -1,0 +1,100 @@
+{
+  "focusedTestsPassed": 18,
+  "productionChanges": true,
+  "manualDesktopAcceptance": false,
+  "cases": {
+    "hello-world": {
+      "goals": {
+        "FULFILLED": 2
+      },
+      "checkpoints": 14,
+      "matchedAutomaticSourceReleases": 14,
+      "nativeOperationChecks": {
+        "POST:PASS": 13,
+        "PRE:PASS": 13
+      },
+      "requiredEvidenceGaps": 0,
+      "manualReviews": 0,
+      "sourceUnchanged": true,
+      "nativeOutcomeReached": true,
+      "rawHistoryPagesRead": 0,
+      "heartbeatP95Millis": 56,
+      "heartbeatMaxMillis": 374,
+      "rawCoverage": "INCOMPLETE",
+      "finalNonpassConstraints": [
+        {
+          "id": "NATIVE:OrgContext::CslV4RoleCompatibility",
+          "kind": "INVARIANT",
+          "verdict": "SKIPPED",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN"
+        }
+      ],
+      "producerRun": "20261110-113048-014-8bd5bbfd",
+      "preparedFile": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\use-plugin\\target\\owned-runtime\\88dcfc44-a8fa-4e71-b881-999ff2b3ea18\\prepared.json",
+      "producerFingerprintMatched": true,
+      "consumerExitCode": 0,
+      "sourceInstallParity": true,
+      "provedNativePopulationCheckpoints": 14,
+      "nativePopulationResults": {
+        "PASS:COMPLETE": 14
+      }
+    },
+    "house-building": {
+      "goals": {
+        "FULFILLED": 15
+      },
+      "checkpoints": 31,
+      "matchedAutomaticSourceReleases": 31,
+      "nativeOperationChecks": {
+        "PRE:PASS": 120,
+        "POST:PASS": 120
+      },
+      "requiredEvidenceGaps": 0,
+      "manualReviews": 0,
+      "sourceUnchanged": true,
+      "nativeOutcomeReached": true,
+      "rawHistoryPagesRead": 0,
+      "heartbeatP95Millis": 55,
+      "heartbeatMaxMillis": 292,
+      "rawCoverage": "INCOMPLETE",
+      "finalNonpassConstraints": [
+        {
+          "id": "NATIVE:OrgContext::CslV4RoleCompatibility",
+          "kind": "INVARIANT",
+          "verdict": "SKIPPED",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_UNPROVEN"
+        }
+      ],
+      "producerRun": "20261110-113141-498-4db0a84e",
+      "preparedFile": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\use-plugin\\target\\owned-runtime\\6ae31e23-86b0-4b28-b9ed-bd1ad7e2dc7d\\prepared.json",
+      "producerFingerprintMatched": true,
+      "consumerExitCode": 0,
+      "sourceInstallParity": true,
+      "provedNativePopulationCheckpoints": 31,
+      "nativePopulationResults": {
+        "PASS:COMPLETE": 31
+      }
+    }
+  },
+  "inputSelection": {
+    "hello-world": {
+      "availableMrvFiles": [
+        "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\examples\\hello-world\\hello.mrv"
+      ],
+      "selected": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\examples\\hello-world\\hello.mrv",
+      "status": "READY"
+    },
+    "house-building": {
+      "availableMrvFiles": [
+        "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\examples\\house-building\\house.mrv"
+      ],
+      "selected": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\examples\\house-building\\house.mrv",
+      "status": "READY"
+    }
+  },
+  "installedArtifacts": {
+    "lib/plugins/use-jacamo-plugin-1.0.1.jar": "dbaa914581ff3f5138036582576306b1166aabd7bdfd2bf9af9e1838ed821376",
+    "bridge/lib/jacamo-bridge-contract-1.0.0.jar": "871065bdd653c16b6936c667452a0f6cccfd62ae9d48fe68edc53f81609a1f9b",
+    "bridge/lib/jacamo-bridge-jacamo-1.0.0.jar": "91ebb7b02998e5ff7f93d883a1aaffe69432f322dcb357360e1c34438ae61d16"
+  }
+}

@@ -44,6 +44,15 @@ class CaseStudyFilesTest {
         assertThrows(IllegalArgumentException.class, () -> CaseStudyFiles.read(root));
     }
 
+    @Test void helloWorldBundleHasAUsableModelEntry() {
+        var folder=Path.of("examples/hello-world").toAbsolutePath().normalize();
+        var input=CaseStudyFiles.read(folder.resolve("hello.mrv"));
+        assertEquals(folder.resolve("hello.csl"),input.csl());
+        assertEquals(folder.resolve("hello.istar"),input.istar());
+        assertEquals(folder.resolve("hello-mapping.xml"),input.mapping());
+        assertEquals(folder.resolve("hello.ocl"),input.ocl());
+    }
+
     @Test void rejectsEveryMissingRequiredType() throws Exception {
         required();
         for (String type : List.of("csl", "istar", "xml")) {
