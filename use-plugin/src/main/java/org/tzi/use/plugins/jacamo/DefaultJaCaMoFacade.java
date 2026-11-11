@@ -229,12 +229,17 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             String observationPlan=ownedObservationPlan==null?System.getProperty(org.jacamo.bridge.contract.ObservationRequestPlan.PROPERTY,""):ownedObservationPlan.toString();
             if(!observationPlan.isBlank()) {
                 var current=nativeWorkspace;
-                if(current==null||current.canonical==null||current.canonical.program().xmlPlan()==null)throw new IllegalStateException("OBSERVATION_DECLARATIVE_PROGRAM_REQUIRED");
+                if(current==null||current.canonical==null||(current.canonical.program().xmlPlan()==null&&current.canonical.program().compactPlan()==null))throw new IllegalStateException("OBSERVATION_DECLARATIVE_PROGRAM_REQUIRED");
                 var accepted=authorityStatus();var program=current.canonical.program();
-                var preflight=current.canonical.xmlPreparation()==null?Map.<String,Object>of():current.canonical.xmlPreparation().preflight();
-                var scope=preflight.get("captureScope") instanceof Map<?,?> rawScope?org.jacamo.bridge.contract.ObservationCaptureScope.fromMap(org.jacamo.bridge.contract.CanonicalJson.object(rawScope)):null;
-                org.jacamo.bridge.contract.ObservationRequestPlan.publish(Path.of(observationPlan),accepted.sessionId(),accepted.generation(),accepted.modelRevision(),program.hash(),program.xmlPlan().requirements(),org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerFields(program.xmlPlan().inputs().specification()),org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerCartagoKinds(program.xmlPlan().inputs().specification()),scope);
-                if(verifiedCheckpointMode)publishCheckpointPolicy(program,Path.of(observationPlan+".checkpoints.json"));
+                if(program.compactPlan()!=null) {
+                    org.jacamo.bridge.contract.ObservationRequestPlan.publish(Path.of(observationPlan),accepted.sessionId(),accepted.generation(),accepted.modelRevision(),program.hash(),program.compactPlan().capabilityDemands(),program.compactPlan().producerFields(),program.compactPlan().cartagoKinds(),program.compactPlan().captureScope());
+                    if(verifiedCheckpointMode)publishCheckpointPolicy(program,Path.of(observationPlan+".checkpoints.json"));
+                } else {
+                    var preflight=current.canonical.xmlPreparation()==null?Map.<String,Object>of():current.canonical.xmlPreparation().preflight();
+                    var scope=preflight.get("captureScope") instanceof Map<?,?> rawScope?org.jacamo.bridge.contract.ObservationCaptureScope.fromMap(org.jacamo.bridge.contract.CanonicalJson.object(rawScope)):null;
+                    org.jacamo.bridge.contract.ObservationRequestPlan.publish(Path.of(observationPlan),accepted.sessionId(),accepted.generation(),accepted.modelRevision(),program.hash(),program.xmlPlan().requirements(),org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerFields(program.xmlPlan().inputs().specification()),org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerCartagoKinds(program.xmlPlan().inputs().specification()),scope);
+                    if(verifiedCheckpointMode)publishCheckpointPolicy(program,Path.of(observationPlan+".checkpoints.json"));
+                }
             }
             return imported;
         } catch (RuntimeException failure) { workflow.importFailed(failure.getMessage()); throw failure; }
@@ -260,6 +265,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 "goalHash",program.goalHash(),"validators","original CSL/iStar; native USE OCL", "diagnostics",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(program.diagnostics()),
                 "traceBindings",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(program.bindings().bindings())));
         if(program.xmlPlan()!=null){evidence.put("declarativeProgram",program.xmlPlan().evidence());if(canonical.xmlPreparation()!=null)evidence.put("bindingPreflight",canonical.xmlPreparation().preflight());}
+        if(program.compactPlan()!=null){evidence.put("compactPlanFingerprint",program.compactPlan().fingerprint());evidence.put("compactCapabilityDemands",program.compactPlan().capabilityDemands());}
         return java.util.Collections.unmodifiableMap(evidence);
     }
 
@@ -898,7 +904,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
             NativeRuntimeProjector nativeProjector = compatibleResync ? previous.runtimeProjector
                     : next.canonical==null?new NativeRuntimeProjector(next.pipeline, accepted.sessionId(), accepted.generation(),
                             accepted.modelRevision(), RuntimeVerificationCoordinator.createEphemeralDirectory(runtimeRoot()),nextJournalBudgetBytes())
-                    : new NativeRuntimeProjector(next.canonical,accepted.sessionId(),accepted.generation(),accepted.modelRevision(),RuntimeVerificationCoordinator.createEphemeralDirectory(runtimeRoot()),nextJournalBudgetBytes(),verifiedCheckpointMode&&next.canonical.program().xmlPlan()!=null);
+                    : new NativeRuntimeProjector(next.canonical,accepted.sessionId(),accepted.generation(),accepted.modelRevision(),RuntimeVerificationCoordinator.createEphemeralDirectory(runtimeRoot()),nextJournalBudgetBytes(),verifiedCheckpointMode&&(next.canonical.program().xmlPlan()!=null||next.canonical.program().compactPlan()!=null));
             if (!compatibleResync) newlyCreatedNativeProjector.set(nativeProjector);
             nativeProjector.coordinator().runtimeCapabilities(accepted.capabilities().stream().collect(
                     java.util.stream.Collectors.toMap(org.jacamo.bridge.contract.Capability::name,c->c.status().name())),accepted.sourceVersions());
@@ -1067,7 +1073,15 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
         }
     }
     private void publishCheckpointPolicy(org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram program,Path file) {
-        var rules=org.tzi.use.plugins.jacamo.codegrounded.runtime.CheckpointPolicySelection.rules(program.xmlPlan().requirements(),id->program.goalModel().findElement(id).orElse(null) instanceof org.vnu.sme.goal.dsl.istar.mm.Task);
+        List<org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Rule> rules;
+        if (program.compactPlan() != null) {
+            rules = program.compactPlan().checkpointRules();
+        } else {
+            rules = org.tzi.use.plugins.jacamo.codegrounded.runtime.CheckpointPolicySelection.rules(
+                    program.xmlPlan().requirements(),
+                    id -> program.goalModel().findElement(id).orElse(null) instanceof org.vnu.sme.goal.dsl.istar.mm.Task
+            );
+        }
         var hashes=new java.util.TreeMap<String,String>();program.complement().assets().forEach(asset->hashes.put(asset.id(),asset.sha256()));
         var policy=new org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Policy(program.hash(),hashes,rules);
         checkpointPolicyHash=policy.hash();

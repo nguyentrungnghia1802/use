@@ -57,7 +57,7 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
     private final NativeRuntimeMutationEngine nativeEngine;
     private final NativeOclBackend ocl;
     private final DependencyGoalEvaluation goalEvaluation=new DependencyGoalEvaluation();
-    private final XmlTaskOclBindings xmlTaskOcl;
+    private final org.tzi.use.plugins.jacamo.semantics.mapping.ocl.NativeTaskBindings xmlTaskOcl;
     private final XmlTaskCheckpoints xmlSteps;
     private final OccurrenceGoalModelExpander xmlExpander;
     private final Map<List<Object>,OccurrenceGoalModelExpander.Expansion> xmlExpansionCache=new ConcurrentHashMap<>();
@@ -97,9 +97,13 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
         try {
             xmlTaskOcl=program.xmlPlan()==null?null:new XmlTaskOclBindings(program,engine.system().model(),ocl);
             xmlSteps=xmlTaskOcl==null?null:new XmlTaskCheckpoints(program,engine,xmlTaskOcl);
-            xmlExpander=program.xmlPlan()==null?null:new OccurrenceGoalModelExpander(program.goalModel(),program.profile().engine(),program.xmlPlan().dependencyPopulations(),program.xmlPlan().goalViews(),program.xmlPlan().physicalActorViews());
+            xmlExpander=program.isCompact()?new OccurrenceGoalModelExpander(program.goalModel(),program.profile().engine(),Map.of()):program.xmlPlan()==null?null:new OccurrenceGoalModelExpander(program.goalModel(),program.profile().engine(),program.xmlPlan().dependencyPopulations(),program.xmlPlan().goalViews(),program.xmlPlan().physicalActorViews());
             if(program.xmlPlan()!=null) {
                 for(var bound:new org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlIntentionalOclBindings().compile(program,engine.system().model()).contracts())
+                    if(bound.specification().kind()==OclContractSpec.Kind.GOAL)conditions.put(bound.elementId(),ocl.compile(bound.specification()));
+            }else if(program.isCompact()) {
+                org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactNativePreparation.requireSupportedRuntime(program);
+                for(var bound:org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactNativePreparation.intentional(program,engine.system().model()).contracts())
                     if(bound.specification().kind()==OclContractSpec.Kind.GOAL)conditions.put(bound.elementId(),ocl.compile(bound.specification()));
             }else for(var element:program.goalBindings().elements().values())if(!element.derived()&&program.goalModel().findElement(element.elementId()).orElse(null) instanceof Goal goal) {
                 String id=program.contracts().stream().filter(c->c.kind()==OclContractSpec.Kind.GOAL&&c.targetElementId().equals(goal.id())).map(MappingRuleSet.Contract::id).findFirst().orElse("GOAL:"+goal.id());
@@ -158,7 +162,7 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
         }}
         requireOpen();program.assertUnchanged();if(estimatedBytes<0||estimatedBytes>16L*1024*1024)throw new IllegalStateException("ENGINE_PIN_BYTE_CAPACITY");
         var casts=new ArrayList<PreparedCast>();
-        if(program.xmlPlan()!=null)prepareXml(casts,sources,lost,nativeChecks);
+        if(program.xmlPlan()!=null||program.isCompact())prepareXml(casts,sources,lost,nativeChecks);
         else for(var cast:bindings.resolve(program,nativeEngine)) {
             var reads=new TreeMap<String,GoalRead>();
             for(var item:conditions.entrySet()) {
@@ -212,8 +216,9 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
                 var expression=conditions.get(trace.source());if(expression==null)continue;
                 var variables=new TreeMap<String,Value>();var self=nativeEngine.objectForSemanticId(selfId);String reason=self==null?"XML_EXACT_NATIVE_SELF_UNAVAILABLE":"";
                 if(self!=null)variables.put("self",self.value());
-                var definition=program.xmlPlan().inputs().specification().root().child("bindings").children("elementRuntime").stream().filter(n->n.attr("target").equals(trace.source())).findFirst().orElseThrow();
-                for(var binding:definition.children("variable")) {
+                var definitions=program.xmlPlan()==null?List.<org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingSpecification.Node>of():
+                        program.xmlPlan().inputs().specification().root().child("bindings").children("elementRuntime").stream().filter(n->n.attr("target").equals(trace.source())).findFirst().orElseThrow().children("variable");
+                for(var binding:definitions) {
                     String id=switch(binding.attr("origin")){case "player"->member.player();case "role"->member.role();case "context"->member.context();case "self"->selfId;default->"";};
                     var object=nativeEngine.objectForSemanticId(id);
                     if(object==null)reason="UNSUPPORTED:XML_GOAL_VARIABLE_ORIGIN_OR_BINDING:"+binding.attr("origin");else variables.put(binding.attr("name"),object.value());
@@ -227,6 +232,11 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
         }
     }
     private Set<String> scopeLeaves(String definitionId) {
+        if(program.isCompact()) {
+            var actors=program.compactPlan().istarBindings().stream().filter(b->b.kind()==org.tzi.use.plugins.jacamo.semantics.mapping.compact.IStarBinding.BindingKind.ACTOR_MAPPING&&b.sourceRef().raw().equals(definitionId))
+                    .map(b->b.targetSymbol().name()).collect(java.util.stream.Collectors.toSet());
+            return program.goalModel().getActors().stream().filter(a->actors.contains(a.name())).flatMap(a->a.elements().stream()).map(IntentionalElement::id).collect(java.util.stream.Collectors.toSet());
+        }
         var scopes=program.xmlPlan().inputs().specification().root().child("runtime").children("occurrences").stream().flatMap(o->o.children("scope").stream()).toList();
         if(scopes.size()<=1)return null;
         return scopes.stream().filter(s->s.attr("id").equals(definitionId)).findFirst()
@@ -301,10 +311,14 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
                         var self=read.variables().get("self");
                         rows.add(new SemanticConstraintResult("ORIGINAL:CONDITION:"+cast.contextId()+":"+id,"GOAL_CONDITION",read.expression().specification().self().name(),self instanceof ObjectValue object?object.value().name():"",cast.selves().getOrDefault(prepared.xmlExpansion()!=null?occurrence.sourceElementId():template.elementId(),""),read.expression().specification().body(),verdict(value),value.backendValue(),decision.reason(),cut.version(),"",Map.of("occurrence",id,"episode",episode)));
                     } else {
+                        if(program.isCompact()&&program.goalModel().findElement(template.elementId()).orElse(null) instanceof Goal) {
+                            goals.put(id,new EngineInputs.GoalInput(episode,activation(owned.engine(),id,exact),null));
+                            statusQuality.put(id,"UNAVAILABLE:GOAL_SOURCE_OR_AUTHORED_CONDITION_REQUIRED");continue;
+                        }
                         if(program.xmlPlan()!=null) {
                             var taskRead=prepared.xmlTasks().get(occurrence.sourceElementId());var tuple=xmlTaskInput(taskRead,exact,cut.lost());
                             Boolean required=!exact||taskRead==null||taskRead.demand()==null||taskRead.demand().quality()!=Completeness.COMPLETE?null:taskRead.demand().required();
-                            tasks.put(id,new EngineInputs.TaskInput(episode,required,tuple[0],tuple[1]));statusQuality.put(id,gaps.contains(key)?"HISTORY_GAP":Boolean.FALSE.equals(required)?"false".equals(taskRead.demand().witness().get("assigned"))?"SOURCE_NOT_ASSIGNED":"INACTIVE_SOURCE_DEMAND":tuple[0]!=null&&tuple[1]!=null&&exact?"KNOWN":xmlTaskOcl.slots().containsKey(template.elementId())?"XML_TASK_TUPLE_UNAVAILABLE:"+xmlTaskUnavailable(taskRead,exact,cut.lost()):"UNSUPPORTED:XML_TASK_OBSERVATION_BINDING_REQUIRED");
+                            tasks.put(id,new EngineInputs.TaskInput(episode,required,tuple[0],tuple[1]));statusQuality.put(id,gaps.contains(key)?"HISTORY_GAP":Boolean.FALSE.equals(required)?"false".equals(taskRead.demand().witness().get("assigned"))?"SOURCE_NOT_ASSIGNED":"INACTIVE_SOURCE_DEMAND":tuple[0]!=null&&tuple[1]!=null&&exact?"KNOWN":xmlTaskOcl.tasks().contains(template.elementId())?"XML_TASK_TUPLE_UNAVAILABLE:"+xmlTaskUnavailable(taskRead,exact,cut.lost()):"UNSUPPORTED:XML_TASK_OBSERVATION_BINDING_REQUIRED");
                             if(certifyExecution&&cut.advance()&&exact&&taskRead!=null&&taskRead.marker()!=null
                                     &&Boolean.TRUE.equals(required)
                                     &&Boolean.TRUE.equals(tuple[0])&&Boolean.FALSE.equals(tuple[1]))

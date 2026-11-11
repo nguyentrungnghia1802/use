@@ -358,6 +358,7 @@ public final class CartagoSnapshotSource implements SnapshotSource, ICartagoLogg
     @Override public Map<String,Object> captureMetadata() {
         var metadata=new LinkedHashMap<String,Object>(Map.of("operationLifecycleCoverage","PARTIAL","suspendResumeObservation","UNSUPPORTED_CARTAGO_3_1_AWAIT_NO_LOGGER_HOOKS",
                 "invocationBoundary","ICARTAGOLOGGER_OBSERVED_PREFIX","globalAtomicity","UNSUPPORTED"));
+        metadata.put("capturedFactKinds",observationKinds.stream().map(Enum::name).sorted().toList());
         var scope=observationScope;if(scope!=null){metadata.put("captureScope",scope.evidence());metadata.put("captureScopeHash",scope.hash());metadata.put("inventoryAcquisition","OFFICIAL_CONTROLLER_ENUMERATION_THEN_SELECTED_ARTIFACT_INFO_AND_VALUES");}
         if(awaitingObservationPlan)metadata.put("observationPolicy","AWAITING_PLAN_METADATA_ONLY_NOT_COMPLETE_POPULATION");
         return Map.copyOf(metadata);

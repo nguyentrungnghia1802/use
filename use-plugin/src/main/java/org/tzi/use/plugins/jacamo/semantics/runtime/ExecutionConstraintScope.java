@@ -16,6 +16,7 @@ import org.tzi.use.uml.sys.MObject;
 public final class ExecutionConstraintScope {
  private ExecutionConstraintScope(){}
  public static Map<String,Object> capture(SemanticProgram program,NativeRuntimeMutationEngine engine,OccurrenceProjection.Scope scope){
+  if(program.isCompact())return compactCapture(program,engine,scope);
   var state=engine.system().state();var owners=new TreeMap<String,Object>();var entities=new TreeMap<String,Object>();
   var ids=new TreeSet<String>(scope.resources().values());ids.add(scope.anchor());ids.add(scope.context());
   var participants=new ArrayList<Map<String,Object>>();
@@ -74,6 +75,20 @@ public final class ExecutionConstraintScope {
   var result=new TreeMap<String,Object>(Map.of("domainBound",domainBound,"version","BOUND_EXECUTION_VIEW/2.0","entities",entities,"owners",owners,"participation",participants,"bindings",scope.bindings(),"definition",scope.definition(),"complete",scope.complete()&&issues.isEmpty(),"unavailable",issues));
   if(multiScope)result.put("multiScope",Boolean.TRUE);
   return Map.copyOf(result);
+ }
+ private static Map<String,Object> compactCapture(SemanticProgram program,NativeRuntimeMutationEngine engine,OccurrenceProjection.Scope scope) {
+  var anchor=engine.objectForSemanticId(scope.anchor());var owners=new TreeMap<String,Object>();var entities=new TreeMap<String,Object>();
+  String workspace=anchor==null?"":engine.metadata(anchor,"compact:workspace"),epoch=anchor==null?"":engine.metadata(anchor,"compact:epoch");
+  for(var object:engine.system().state().allObjects())if(program.hash().equals(engine.metadata(object,"compact:program"))
+      &&!workspace.isBlank()&&workspace.equals(engine.metadata(object,"compact:workspace"))&&epoch.equals(engine.metadata(object,"compact:epoch"))) {
+   owners.put(object.name(),Map.of("type",object.cls().name(),"source",engine.metadata(object,"semanticId")));
+   if(program.cslModel().findEntity(object.cls().name()).isPresent()) {
+    var attributes=new TreeMap<String,Object>();object.state(engine.system().state()).attributeValueMap().forEach((a,v)->attributes.put(a.name(),v.toString()));
+    entities.put(object.cls().name()+":"+object.name(),Map.of("identity",engine.metadata(object,"semanticId"),"attributes",attributes));
+   }
+  }
+  return Map.of("domainBound",false,"version","BOUND_EXECUTION_VIEW/2.0","entities",entities,"owners",owners,"participation",List.of(),
+      "bindings",scope.bindings(),"definition",scope.definition(),"complete",scope.complete()&&anchor!=null,"unavailable",scope.unavailable());
  }
  public static List<SemanticInvariantEvaluator.Prepared> prepare(ExternalOclConstraintService.PreparedEvaluation nativeChecks,Map<String,Object> view){
   var owners=CanonicalJson.object(view.get("owners"));var result=new ArrayList<SemanticInvariantEvaluator.Prepared>();

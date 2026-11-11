@@ -6,7 +6,7 @@ import org.tzi.use.plugins.jacamo.codegrounded.runtime.*;
 import org.tzi.use.plugins.jacamo.codegrounded.use.NativeUseSoilExporter;
 import org.tzi.use.plugins.jacamo.semantics.evidence.*;
 import org.tzi.use.plugins.jacamo.semantics.mapping.*;
-import org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlTaskOclBindings;
+import org.tzi.use.plugins.jacamo.semantics.mapping.ocl.NativeTaskBindings;
 import org.tzi.use.semantic.engine.use75.UseStateReadView;
 
 /** Native writer-owned bounded PRE journal for XML-selected source callbacks. No
@@ -21,7 +21,7 @@ public final class XmlTaskCheckpoints {
     private record Candidate(OccurrenceProjection.Scope scope,OccurrenceProjection.Member member,TaskDemandProjection.Demand demand) { }
     private final SemanticProgram program;
     private final NativeRuntimeMutationEngine engine;
-    private final XmlTaskOclBindings bindings;
+    private final NativeTaskBindings bindings;
     private final List<JasonStepCutDecoder> decoders;
     private final Map<String,Entry> active=new LinkedHashMap<>();
     private final Map<String,Marker> latest=new LinkedHashMap<>();
@@ -29,12 +29,12 @@ public final class XmlTaskCheckpoints {
     private final Set<String> seen=new LinkedHashSet<>();
     private List<NativeInvocationEvaluation.Work> prepared=List.of();
     private Epoch epoch;
-    public XmlTaskCheckpoints(SemanticProgram program,NativeRuntimeMutationEngine engine,XmlTaskOclBindings bindings) {
+    public XmlTaskCheckpoints(SemanticProgram program,NativeRuntimeMutationEngine engine,NativeTaskBindings bindings) {
         this.program=program;this.engine=engine;this.bindings=bindings;
-        if(program.xmlPlan()==null||engine.canonicalProgram()!=program)throw new IllegalArgumentException("XML_TASK_CHECKPOINT_OWNER_MISMATCH");
+        if(program.xmlPlan()==null&&!program.isCompact()||engine.canonicalProgram()!=program)throw new IllegalArgumentException("XML_TASK_CHECKPOINT_OWNER_MISMATCH");
         var source=ContractPayloads.model(CanonicalJson.object(CanonicalJson.decode(program.complement().assets().stream().filter(a->a.id().equals("official-model")).findFirst().orElseThrow().bytes())));
         program.requireSourceHash(new SourceModelNormalizer().normalize(source).sourceHash());
-        decoders=program.xmlPlan().requirements().stream().filter(r->r.provider().equals("jason.plan-boundaries.v1")).map(r->new JasonStepCutDecoder(source,r)).toList();
+        decoders=(program.isCompact()?program.compactPlan().capabilityRequests():program.xmlPlan().requirements()).stream().filter(r->r.provider().equals("jason.plan-boundaries.v1")).map(r->new JasonStepCutDecoder(source,r)).toList();
     }
     public Image savepoint(){return new Image(active,latest,historical,seen,prepared,epoch);}
     public void restore(Image image){active.clear();active.putAll(image.active());latest.clear();latest.putAll(image.latest());historical.clear();historical.putAll(image.historical());seen.clear();seen.addAll(image.seen());prepared=image.prepared();epoch=image.epoch();}
@@ -51,11 +51,11 @@ public final class XmlTaskCheckpoints {
         program.assertUnchanged();if(!VerificationObservation.present(event))return;var observation=VerificationObservation.require(event);if(observation.kind()!=VerificationObservation.Kind.JASON_STEP)return;
         var selected=decoders.stream().filter(d->d.accepts(observation)).toList();if(selected.isEmpty())return;if(selected.size()!=1)throw new IllegalArgumentException("XML_TASK_SOURCE_REQUEST_AMBIGUOUS");
         var step=selected.getFirst().decode(observation,event.sessionId(),event.generation(),event.modelRevision());
-        if(program.xmlPlan().inputs().specification().root().child("omittedConcepts").children("omit").stream().anyMatch(n->n.optional("sourceStep").equals(step.task())&&n.optional("handledBy").equals("TRACE_ONLY"))) {
+        if(bindings.traceOnly(step.task())) {
             if(step.quality()!=Completeness.COMPLETE){unavailable(step,step.diagnostic());return;}
             append(new NativeInvocationEvaluation.Work(List.of(),List.of(),List.of(new SemanticConstraintResult("XML:TRACE:"+step.invocation(),"SOURCE_TRACE","","","","",SemanticVerdict.SKIPPED,"","DECLARED_SOURCE_OBSERVATION_ONLY",0,step.invocation(),Map.of("sourceStepId",step.task(),"sourcePhase",step.phase()))),0));return;
         }
-        if(!bindings.slots().containsKey(step.task())){unavailable(step,"UNSUPPORTED:XML_TASK_OBSERVATION_BINDING_REQUIRED");return;}
+        if(!bindings.tasks().contains(step.task())){unavailable(step,"UNSUPPORTED:XML_TASK_OBSERVATION_BINDING_REQUIRED");return;}
         var next=new Epoch(event.sessionId(),event.generation(),event.modelRevision());if(epoch!=null&&!epoch.equals(next))throw new IllegalArgumentException("XML_TASK_EPOCH_REQUIRES_CLEAR");epoch=next;
         if(lost){clear();unavailable(step,"COVERAGE_LOST");return;}
         var scopes=engine.xmlOccurrences(next.run(),next.generation(),next.revision());var demands=engine.xmlTaskDemands(next.run(),next.generation(),next.revision());
@@ -69,16 +69,9 @@ public final class XmlTaskCheckpoints {
             }
         if(candidates.size()!=1){if(!step.phase().equals("ENABLED"))active.remove(step.invocation());unavailable(step,"EXACT_TASK_CAST_OR_DEMAND_UNAVAILABLE");return;}
         var candidate=candidates.getFirst();var member=candidate.member();var scope=candidate.scope();var demand=candidate.demand();
-        var role=engine.objectForSemanticId(member.role());
-        if(member.role().isBlank()) {
-            var contexts=engine.system().state().allObjects().stream().filter(o->program.hash().equals(engine.metadata(o,"xml:m0:program"))
-                    &&member.player().equals(engine.metadata(o,"xml:m0:representedPlayer"))
-                    &&!member.interval().isBlank()&&member.interval().equals(engine.metadata(o,"xml:m0:lifetime"))).toList();
-            if(contexts.size()==1)role=contexts.getFirst();
-        }
-        String floor=role==null?"":engine.metadata(role,"xml:m0:observer-floor");
+        String floor=bindings.intervalFloor(engine,member);
         try{if(floor.isBlank()||event.sourceSequence()<=Long.parseLong(floor)){unavailable(step,"STEP_PRECEDES_OBSERVED_ROLE_INTERVAL");return;}}catch(NumberFormatException invalid){unavailable(step,"OBSERVED_ROLE_INTERVAL_FLOOR_UNAVAILABLE");return;}
-        String references=referenceHash(bindings.slots().get(step.task()).definition(),scope,member,step.task());
+        String references=new String(CanonicalJson.encode(bindings.referenceIdentity(scope,member,step.task())),java.nio.charset.StandardCharsets.UTF_8);
         var marker=new Marker(scope.id(),member.actor(),member.player(),member.role(),member.interval(),step.task(),demand.episode(),step.goalInvocation(),step.invocation(),step.phase(),event.sourceSequence(),references,"");String slot=key(marker);
         if(step.phase().equals("ENABLED")) {
             if(seen.contains(step.invocation())){active.remove(step.invocation());latest.remove(slot);unavailable(step,"DUPLICATE_TASK_ENTRY_INVALIDATED");return;}
@@ -104,25 +97,6 @@ public final class XmlTaskCheckpoints {
             append(NativeInvocationEvaluation.prepare(List.of(entry.pre(),post),List.of(),List.of()));
         }
     }
-    private String referenceHash(org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingSpecification.Node definition,OccurrenceProjection.Scope scope,OccurrenceProjection.Member member,String task) {
-        var refs=new TreeMap<String,Object>();for(String attribute:List.of("stepSchemeColumn","stepArtifactColumn"))if(!definition.optional(attribute).isBlank())refs.put(attribute,scope.bindings().getOrDefault(definition.attr(attribute),""));refs.put("self",member.selves().getOrDefault(task,""));refs.put("resources",scope.resources());
-        if(!definition.optional("stepInputMatches").isBlank()) {
-            var inputs=new TreeMap<String,Object>();
-            for(String pair:definition.attr("stepInputMatches").trim().split(" +")) {int sep=pair.indexOf(':');String col=pair.substring(sep+1);inputs.put(col,scope.bindings().getOrDefault(col,""));}
-            refs.put("stepInputMatches",inputs);
-        }
-        if(!program.xmlPlan().goalViews().isEmpty())refs.put("goalViews",viewReferences(scope,member,task));
-        return new String(CanonicalJson.encode(refs),java.nio.charset.StandardCharsets.UTF_8);
-    }
-    private Map<String,Object> viewReferences(OccurrenceProjection.Scope scope,OccurrenceProjection.Member performer,String task) {
-        var refs=new TreeMap<String,Object>();
-        for(var view:program.xmlPlan().goalViews().values())if(org.tzi.use.plugins.jacamo.semantics.runtime.GoalViewRealizations.includes(program.goalModel(),view,task)) {
-            String actor=program.goalModel().ownerOf(view.target()).orElseThrow();
-            var matching=scope.members().stream().filter(m->m.actor().equals(actor)&&m.player().equals(performer.player())).toList();
-            refs.put(view.target(),matching.size()==1?List.of(actor,matching.getFirst().player(),matching.getFirst().role(),matching.getFirst().interval()):List.of("EXACT_GOAL_VIEW_ENACTMENT_UNAVAILABLE"));
-        }
-        return refs;
-    }
     private boolean same(Entry entry,Marker second){var first=entry.marker();return key(first).equals(key(second))&&first.actor().equals(second.actor())&&first.demand().equals(second.demand())&&first.goal().equals(second.goal())&&first.invocation().equals(second.invocation())&&compatibleReferences(entry,second);}
     private static Marker certify(Marker m,String certificate){return new Marker(m.scope(),m.actor(),m.player(),m.role(),m.interval(),m.task(),m.demand(),m.goal(),m.invocation(),m.phase(),m.entrySequence(),m.references(),certificate);}
     private static NativeInvocationEvaluation.Condition certificate(NativeInvocationEvaluation.Condition c,String certificate){var witness=new TreeMap<>(c.witness());witness.put("checkpointBinding",certificate);return new NativeInvocationEvaluation.Condition(c.id(),c.kind(),c.context(),c.object(),c.source(),c.text(),c.expression(),c.before(),c.after(),c.variables(),c.unavailable(),c.unavailableVerdict(),c.invocation(),witness);}
@@ -146,19 +120,15 @@ public final class XmlTaskCheckpoints {
     }
     private boolean currentRole(Marker marker,List<OccurrenceProjection.Scope> scopes){return scopes.stream().anyMatch(s->s.complete()&&s.id().equals(marker.scope())&&s.members().stream().anyMatch(m->m.player().equals(marker.player())&&m.role().equals(marker.role())&&m.interval().equals(marker.interval())&&sameViewReferences(marker,s,m)));}
     private boolean sameViewReferences(Marker marker,OccurrenceProjection.Scope scope,OccurrenceProjection.Member performer) {
-        if(program.xmlPlan().goalViews().isEmpty())return true;
         var saved=CanonicalJson.object(CanonicalJson.decode(marker.references().getBytes(java.nio.charset.StandardCharsets.UTF_8)));
-        return Objects.equals(saved.get("goalViews"),viewReferences(scope,performer,marker.task()));
+        return Objects.equals(saved.get("goalViews"),bindings.referenceIdentity(scope,performer,marker.task()).get("goalViews"));
     }
     /** Retention is not verification authority. A pending exact PRE survives temporary
      * unavailability, but terminal evaluation still requires a fresh complete cast/demand
      * and same() checks all invocation, actor, interval, episode and reference identities. */
     private boolean retainPending(Marker marker,List<OccurrenceProjection.Scope> scopes,List<TaskDemandProjection.Demand> demands) {
         if(engine.objectForSemanticId(marker.player())==null)return false;
-        if(!marker.role().isBlank()) {
-            var role=engine.objectForSemanticId(marker.role());
-            if(role==null||!marker.interval().equals(engine.metadata(role,"xml:m0:lifetime"))||!marker.player().equals(engine.metadata(role,"rolePlayer")))return false;
-        }
+        if(!bindings.currentInterval(engine,marker.player(),marker.role(),marker.interval()))return false;
         var selected=scopes.stream().filter(s->s.id().equals(marker.scope())).toList();
         if(selected.size()!=1)return false;
         if(!selected.getFirst().complete())return true;

@@ -44,13 +44,15 @@ public final class SemanticBindingIndex {
                         && "ASL_CAPABILITY_VIEW".equals(binding.metadata().get("roleAbstraction"))&&!binding.abstractionReason().isBlank()
                         &&csl.generalizations().stream().anyMatch(g->g.general().equals(binding.targetId()))))throw new IllegalArgumentException("ROLE_SOURCE_KIND_REQUIRED");
             if(binding.kind()==Kind.ORG_CONTEXT&&!node.concept().equals("Group")
+                    && !(Set.of("DERIVED_JASON_PROGRAM_ALIAS","JACAMO_AGENT_DECLARATION").contains(node.sourceKind())&&"SINGLE_AGENT_CONTEXT/1.0".equals(binding.metadata().get("contextAbstraction")))
+                    && !(node.sourceKind().equals("JACAMO_WORKSPACE_DECLARATION")&&"WORKSPACE_EXECUTION_VIEW/1.0".equals(binding.metadata().get("contextAbstraction")))
                     && !(node.sourceKind().equals("MOISE_SCHEME")&&node.layer()==NormalizedSourceModel.Layer.MODEL_DEFINITION
                         &&"SCHEME_EXECUTION_VIEW/1.0".equals(binding.metadata().get("contextAbstraction"))&&!binding.abstractionReason().isBlank())
                     && !(node.sourceKind().equals("JACAMO_ORGANIZATION_DEPLOYMENT")
                         && "ORGANIZATION_DEPLOYMENT_VIEW".equals(binding.metadata().get("contextAbstraction"))
                         && !binding.abstractionReason().isBlank())
                     && !(node.sourceKind().equals("JACAMO_PROJECT")&&node.layer()==NormalizedSourceModel.Layer.MODEL_DEFINITION
-                        && Set.of("PROJECT_EXECUTION_VIEW/1.0","SINGLE_AGENT_CONTEXT/1.0").contains(binding.metadata().getOrDefault("contextAbstraction",""))
+                        && Set.of("PROJECT_EXECUTION_VIEW/1.0","SINGLE_AGENT_CONTEXT/1.0","WORKSPACE_EXECUTION_VIEW/1.0").contains(binding.metadata().getOrDefault("contextAbstraction",""))
                         && !binding.abstractionReason().isBlank()))throw new IllegalArgumentException("ORG_CONTEXT_SOURCE_GROUP_OR_EXPLICIT_ORGANIZATION_VIEW_REQUIRED");
             if(Set.of("Belief","AGoal","Plan","OPlan","Norm").contains(node.concept())&&binding.abstractionReason().isBlank())throw new IllegalArgumentException("EXPLICIT_SEMANTIC_ABSTRACTION_REQUIRED:"+node.concept());
         }

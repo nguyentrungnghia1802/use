@@ -28,7 +28,7 @@ public record MappingRuleSet(String version,String id,String profileId,String pr
         }
     }
     public MappingRuleSet {
-        if(!"2.0".equals(version))throw new IllegalArgumentException("CANONICAL_MAPPING_RULESET_VERSION_UNSUPPORTED");
+        if(!Set.of("2.0","3.0").contains(version))throw new IllegalArgumentException("CANONICAL_MAPPING_RULESET_VERSION_UNSUPPORTED");
         Objects.requireNonNull(id);Objects.requireNonNull(profileId);Objects.requireNonNull(profileVersion);Objects.requireNonNull(expectedSourceHash);Objects.requireNonNull(cslSource);Objects.requireNonNull(iStarSource);
         if(id.isBlank()||cslSource.isBlank()||iStarSource.isBlank())throw new IllegalArgumentException("AUTHORED_PROGRAM_REQUIRED");
         if(profileId.isBlank()||profileVersion.isBlank()||!expectedSourceHash.isEmpty()&&!expectedSourceHash.matches("[0-9a-fA-F]{64}"))throw new IllegalArgumentException("MAPPING_PROFILE_OR_SOURCE_HASH_INVALID");

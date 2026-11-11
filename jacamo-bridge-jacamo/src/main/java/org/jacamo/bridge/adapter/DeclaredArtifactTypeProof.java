@@ -50,6 +50,18 @@ final class DeclaredArtifactTypeProof {
                         declaration.semanticId(),0,0,"","",0,Fidelity.EXACT,CapabilityStatus.COMPLETE,
                         List.of(prefix+"CARTAGO_ARTIFACT_OPERATION","OWNER:"+fqcn,"SIGNATURE:"+signature)));
             }
+            // Copy the declared interface only. Reading a Field's type does not
+            // initialize the class, read an instance value or grant field access.
+            // USE can replay this schema without reopening producer class files.
+            var fields=Arrays.stream(type.getDeclaredFields())
+                    .filter(f->!java.lang.reflect.Modifier.isStatic(f.getModifiers())&&!f.isSynthetic())
+                    .sorted(Comparator.comparing(java.lang.reflect.Field::getName)).toList();
+            for(var field:fields) {
+                String signature=new String(org.jacamo.bridge.contract.CanonicalJson.encode(List.of(fqcn,field.getName(),field.getType().getName())),java.nio.charset.StandardCharsets.UTF_8);
+                evidence.add(new SourceEvidence(EvidenceAuthority.OFFICIAL_CARTAGO_API,binary.resource().toExternalForm(),AdapterEvidence.digest(binary.bytes()),fqcn,
+                        declaration.semanticId(),0,0,"","",0,Fidelity.EXACT,CapabilityStatus.COMPLETE,
+                        List.of(prefix+"CARTAGO_ARTIFACT_FIELD","OWNER:"+fqcn,"FIELD_SIGNATURE:"+signature)));
+            }
             return new SemanticMetadata(declaration.semanticId(),declaration.sourceKind(),declaration.sourceJavaFqcn(),declaration.evidenceAuthority(),
                     declaration.fidelity(),declaration.capabilityStatus(),evidence,declaration.diagnostics());
         }catch(Exception|LinkageError unavailable){return declaration;}

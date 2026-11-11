@@ -1,0 +1,864 @@
+[
+  {
+    "directory": "accuracy-audit-20261105",
+    "files": 68,
+    "bytes": 2343315,
+    "tracked": 15,
+    "extensions": {
+      ".log": 11,
+      ".py": 3,
+      ".json": 5,
+      ".md": 1,
+      ".gz": 32,
+      ".class": 7,
+      ".txt": 5,
+      ".java": 2,
+      ".asl": 2
+    }
+  },
+  {
+    "directory": "additional-cases",
+    "files": 353,
+    "bytes": 1091151132,
+    "tracked": 288,
+    "extensions": {
+      ".json": 162,
+      ".log": 106,
+      ".txt": 2,
+      ".xml": 2,
+      ".jsonl": 30,
+      ".gz": 18,
+      ".cmd": 11,
+      ".ocl": 11,
+      ".use": 11
+    }
+  },
+  {
+    "directory": "additional-cases-20261106",
+    "files": 169,
+    "bytes": 5729310,
+    "tracked": 166,
+    "extensions": {
+      "": 1,
+      ".properties": 1,
+      ".java": 1,
+      ".py": 4,
+      ".log": 11,
+      ".json": 11,
+      ".md": 2,
+      ".png": 6,
+      ".gz": 125,
+      ".txt": 4,
+      ".class": 3
+    }
+  },
+  {
+    "directory": "additional-verified-20261102",
+    "files": 31,
+    "bytes": 581776,
+    "tracked": 31,
+    "extensions": {
+      ".java": 2,
+      ".log": 13,
+      ".txt": 3,
+      ".md": 1,
+      ".py": 1,
+      ".json": 11
+    }
+  },
+  {
+    "directory": "attempt-semantics",
+    "files": 10,
+    "bytes": 395097,
+    "tracked": 10,
+    "extensions": {
+      ".json": 4,
+      ".log": 6
+    }
+  },
+  {
+    "directory": "auction",
+    "files": 881,
+    "bytes": 489355841,
+    "tracked": 863,
+    "extensions": {
+      ".json": 268,
+      ".log": 313,
+      ".err": 13,
+      ".ndjson": 15,
+      ".txt": 3,
+      ".xml": 161,
+      ".png": 34,
+      ".zip": 13,
+      ".sha256": 13,
+      ".cmd": 3,
+      ".use": 3,
+      ".java": 12,
+      ".asl": 12,
+      ".class": 18
+    }
+  },
+  {
+    "directory": "auction-cleanup",
+    "files": 2,
+    "bytes": 23601,
+    "tracked": 2,
+    "extensions": {
+      ".log": 1,
+      ".json": 1
+    }
+  },
+  {
+    "directory": "auction-false",
+    "files": 34,
+    "bytes": 272902927,
+    "tracked": 17,
+    "extensions": {
+      ".java": 1,
+      ".json": 13,
+      ".log": 9,
+      ".md": 2,
+      ".class": 4,
+      ".txt": 1,
+      ".cmd": 1,
+      ".ocl": 1,
+      ".use": 1,
+      ".jsonl": 1
+    }
+  },
+  {
+    "directory": "auction-false-proposal",
+    "files": 1,
+    "bytes": 6885,
+    "tracked": 1,
+    "extensions": {
+      ".md": 1
+    }
+  },
+  {
+    "directory": "auction-layout",
+    "files": 3,
+    "bytes": 60044,
+    "tracked": 3,
+    "extensions": {
+      ".log": 2,
+      ".json": 1
+    }
+  },
+  {
+    "directory": "auction-reported-fix",
+    "files": 44,
+    "bytes": 1390876,
+    "tracked": 44,
+    "extensions": {
+      ".json": 21,
+      ".log": 23
+    }
+  },
+  {
+    "directory": "auction-setup-semantics-20261107",
+    "files": 5,
+    "bytes": 14474,
+    "tracked": 5,
+    "extensions": {
+      ".java": 1,
+      ".json": 1,
+      ".log": 2,
+      ".md": 1
+    }
+  },
+  {
+    "directory": "authored-models",
+    "files": 706,
+    "bytes": 3455412669,
+    "tracked": 675,
+    "extensions": {
+      ".json": 323,
+      ".log": 149,
+      ".txt": 2,
+      ".png": 17,
+      ".java": 1,
+      ".properties": 3,
+      ".cmd": 41,
+      ".ocl": 43,
+      ".use": 41,
+      ".jsonl": 49,
+      ".xml": 2,
+      ".csl": 2,
+      ".istar": 2,
+      ".gz": 31
+    }
+  },
+  {
+    "directory": "authoring-istar-instances-20261105",
+    "files": 13,
+    "bytes": 104599,
+    "tracked": 12,
+    "extensions": {
+      ".png": 1,
+      ".log": 5,
+      ".json": 3,
+      ".java": 2,
+      ".py": 1,
+      ".md": 1
+    }
+  },
+  {
+    "directory": "capability-applicability",
+    "files": 12,
+    "bytes": 328340,
+    "tracked": 12,
+    "extensions": {
+      ".log": 6,
+      ".png": 3,
+      ".json": 2,
+      ".py": 1
+    }
+  },
+  {
+    "directory": "certified-execution",
+    "files": 9,
+    "bytes": 89095,
+    "tracked": 9,
+    "extensions": {
+      ".json": 4,
+      ".log": 5
+    }
+  },
+  {
+    "directory": "checkpoint-presentation-20261105",
+    "files": 13,
+    "bytes": 795103,
+    "tracked": 11,
+    "extensions": {
+      ".log": 5,
+      ".json": 5,
+      ".py": 1,
+      ".java": 1,
+      ".md": 1
+    }
+  },
+  {
+    "directory": "checkpoint-stability",
+    "files": 46,
+    "bytes": 327361826,
+    "tracked": 14,
+    "extensions": {
+      ".json": 15,
+      ".log": 13,
+      ".py": 1,
+      ".md": 1,
+      ".txt": 4,
+      ".jar": 7,
+      "": 1,
+      ".cmd": 1,
+      ".ocl": 1,
+      ".use": 1,
+      ".jsonl": 1
+    }
+  },
+  {
+    "directory": "checkpoint-transport-ui-20261106",
+    "files": 315,
+    "bytes": 18669781,
+    "tracked": 308,
+    "extensions": {
+      "": 1,
+      ".log": 32,
+      ".py": 8,
+      ".properties": 1,
+      ".json": 29,
+      ".java": 4,
+      ".md": 3,
+      ".gz": 200,
+      ".txt": 20,
+      ".png": 14,
+      ".class": 3
+    }
+  },
+  {
+    "directory": "compact-auction",
+    "files": 32,
+    "bytes": 12978252,
+    "tracked": 32,
+    "extensions": {
+      ".json": 17,
+      ".log": 7,
+      ".cmd": 2,
+      ".ocl": 2,
+      ".use": 2,
+      ".jsonl": 2
+    }
+  },
+  {
+    "directory": "compact-repair-20261111",
+    "files": 56,
+    "bytes": 1152785,
+    "tracked": 0,
+    "extensions": {
+      ".log": 16,
+      ".json": 4,
+      ".txt": 1,
+      ".patch": 1,
+      ".py": 5,
+      ".md": 1,
+      ".java": 28
+    }
+  },
+  {
+    "directory": "compact-results-20261110",
+    "files": 8,
+    "bytes": 105504,
+    "tracked": 8,
+    "extensions": {
+      ".json": 3,
+      ".java": 1,
+      ".log": 2,
+      ".md": 1,
+      ".png": 1
+    }
+  },
+  {
+    "directory": "compact-review-20261111",
+    "files": 13,
+    "bytes": 100405,
+    "tracked": 0,
+    "extensions": {
+      ".class": 1,
+      ".java": 1,
+      ".log": 5,
+      ".py": 2,
+      ".json": 1,
+      ".args": 2,
+      ".md": 1
+    }
+  },
+  {
+    "directory": "compact-semantic-mapping-20261110",
+    "files": 4,
+    "bytes": 19595,
+    "tracked": 0,
+    "extensions": {
+      ".md": 4
+    }
+  },
+  {
+    "directory": "durable-ingress",
+    "files": 12,
+    "bytes": 244028,
+    "tracked": 12,
+    "extensions": {
+      ".py": 1,
+      ".log": 9,
+      ".json": 2
+    }
+  },
+  {
+    "directory": "enactment-navigation",
+    "files": 17,
+    "bytes": 445471,
+    "tracked": 17,
+    "extensions": {
+      ".log": 9,
+      ".py": 1,
+      ".png": 3,
+      ".json": 4
+    }
+  },
+  {
+    "directory": "essential-state",
+    "files": 9,
+    "bytes": 115659,
+    "tracked": 9,
+    "extensions": {
+      ".json": 5,
+      ".log": 4
+    }
+  },
+  {
+    "directory": "execution-failure-navigation",
+    "files": 16,
+    "bytes": 622949,
+    "tracked": 16,
+    "extensions": {
+      ".log": 3,
+      ".png": 8,
+      ".json": 4,
+      ".py": 1
+    }
+  },
+  {
+    "directory": "execution-presentation-20261110",
+    "files": 11,
+    "bytes": 177956,
+    "tracked": 11,
+    "extensions": {
+      ".json": 4,
+      ".log": 2,
+      ".gz": 1,
+      ".java": 2,
+      ".md": 1,
+      ".png": 1
+    }
+  },
+  {
+    "directory": "execution-scopes",
+    "files": 18,
+    "bytes": 584650,
+    "tracked": 18,
+    "extensions": {
+      ".png": 4,
+      ".py": 1,
+      ".json": 5,
+      ".log": 8
+    }
+  },
+  {
+    "directory": "external-projects-20261110",
+    "files": 2,
+    "bytes": 8504,
+    "tracked": 2,
+    "extensions": {
+      ".md": 1,
+      ".json": 1
+    }
+  },
+  {
+    "directory": "failure-milestones",
+    "files": 6,
+    "bytes": 108999,
+    "tracked": 6,
+    "extensions": {
+      ".py": 1,
+      ".png": 1,
+      ".json": 2,
+      ".log": 2
+    }
+  },
+  {
+    "directory": "flexible-source-import",
+    "files": 6,
+    "bytes": 115381,
+    "tracked": 6,
+    "extensions": {
+      ".json": 3,
+      ".log": 3
+    }
+  },
+  {
+    "directory": "folder-inputs",
+    "files": 10,
+    "bytes": 146388,
+    "tracked": 8,
+    "extensions": {
+      ".log": 2,
+      ".java": 1,
+      ".png": 2,
+      ".json": 2,
+      ".txt": 1,
+      ".class": 2
+    }
+  },
+  {
+    "directory": "generic-checkpoints-20261102",
+    "files": 319,
+    "bytes": 3831772181,
+    "tracked": 118,
+    "extensions": {
+      ".md": 4,
+      ".java": 8,
+      ".json": 124,
+      ".log": 78,
+      ".txt": 29,
+      ".py": 1,
+      ".asl": 4,
+      "": 4,
+      ".mf": 1,
+      ".jar": 3,
+      ".jpg": 4,
+      ".gz": 2,
+      ".ps1": 1,
+      ".cmd": 14,
+      ".ocl": 14,
+      ".use": 14,
+      ".jsonl": 13,
+      ".class": 1
+    }
+  },
+  {
+    "directory": "generic-mapping",
+    "files": 550,
+    "bytes": 152949042,
+    "tracked": 544,
+    "extensions": {
+      ".log": 386,
+      ".json": 112,
+      ".png": 24,
+      ".zip": 11,
+      ".txt": 5,
+      ".java": 2,
+      ".ndjson": 2,
+      ".asl": 2,
+      ".class": 6
+    }
+  },
+  {
+    "directory": "goal-task-do-auction-20261107",
+    "files": 5,
+    "bytes": 52863,
+    "tracked": 5,
+    "extensions": {
+      ".java": 1,
+      ".md": 2,
+      ".json": 2
+    }
+  },
+  {
+    "directory": "history-panel-20261110",
+    "files": 8,
+    "bytes": 91035,
+    "tracked": 8,
+    "extensions": {
+      ".json": 3,
+      ".log": 2,
+      ".java": 1,
+      ".md": 1,
+      ".png": 1
+    }
+  },
+  {
+    "directory": "import-package-20261107",
+    "files": 8,
+    "bytes": 36962,
+    "tracked": 7,
+    "extensions": {
+      ".log": 4,
+      ".gz": 1,
+      ".json": 1,
+      ".java": 1,
+      ".md": 1
+    }
+  },
+  {
+    "directory": "live-results-ui",
+    "files": 687,
+    "bytes": 4529409039,
+    "tracked": 555,
+    "extensions": {
+      ".json": 467,
+      ".log": 81,
+      ".cmd": 29,
+      ".ocl": 29,
+      ".use": 29,
+      ".jsonl": 29,
+      ".gz": 23
+    }
+  },
+  {
+    "directory": "milestone-isolation",
+    "files": 29,
+    "bytes": 488732832,
+    "tracked": 19,
+    "extensions": {
+      ".json": 11,
+      ".py": 3,
+      ".log": 9,
+      ".md": 1,
+      ".txt": 1,
+      ".cmd": 1,
+      ".ocl": 1,
+      ".use": 1,
+      ".jsonl": 1
+    }
+  },
+  {
+    "directory": "milestone-state-diagnosis-20261101",
+    "files": 11,
+    "bytes": 4334096,
+    "tracked": 11,
+    "extensions": {
+      ".py": 2,
+      ".log": 3,
+      ".json": 3,
+      ".gz": 1,
+      ".java": 1,
+      ".md": 1
+    }
+  },
+  {
+    "directory": "model-native-contracts",
+    "files": 17,
+    "bytes": 414834,
+    "tracked": 17,
+    "extensions": {
+      ".json": 4,
+      ".log": 13
+    }
+  },
+  {
+    "directory": "no-case-production",
+    "files": 12,
+    "bytes": 347100,
+    "tracked": 12,
+    "extensions": {
+      ".json": 4,
+      ".log": 8
+    }
+  },
+  {
+    "directory": "population-audit",
+    "files": 11,
+    "bytes": 77284,
+    "tracked": 9,
+    "extensions": {
+      ".log": 3,
+      ".json": 4,
+      ".class": 2,
+      ".java": 1,
+      ".md": 1
+    }
+  },
+  {
+    "directory": "population-coverage-20261106",
+    "files": 38,
+    "bytes": 1015690,
+    "tracked": 17,
+    "extensions": {
+      ".py": 4,
+      ".png": 3,
+      ".log": 11,
+      ".json": 5,
+      ".java": 2,
+      ".md": 2,
+      ".gz": 9,
+      ".class": 2
+    }
+  },
+  {
+    "directory": "population-repair",
+    "files": 12,
+    "bytes": 357870,
+    "tracked": 12,
+    "extensions": {
+      ".log": 5,
+      ".py": 1,
+      ".png": 3,
+      ".json": 3
+    }
+  },
+  {
+    "directory": "responsive-results",
+    "files": 11,
+    "bytes": 170154,
+    "tracked": 11,
+    "extensions": {
+      ".py": 1,
+      ".log": 8,
+      ".json": 2
+    }
+  },
+  {
+    "directory": "restored-state-browser",
+    "files": 9,
+    "bytes": 165916,
+    "tracked": 9,
+    "extensions": {
+      ".png": 1,
+      ".json": 4,
+      ".log": 4
+    }
+  },
+  {
+    "directory": "result-scope",
+    "files": 6,
+    "bytes": 230800,
+    "tracked": 6,
+    "extensions": {
+      ".json": 1,
+      ".png": 2,
+      ".log": 3
+    }
+  },
+  {
+    "directory": "selected-requirements",
+    "files": 9,
+    "bytes": 174871,
+    "tracked": 9,
+    "extensions": {
+      ".json": 3,
+      ".log": 6
+    }
+  },
+  {
+    "directory": "selective-runtime",
+    "files": 95,
+    "bytes": 11343063,
+    "tracked": 95,
+    "extensions": {
+      ".log": 35,
+      ".json": 30,
+      ".txt": 5,
+      ".err": 1,
+      ".png": 19,
+      ".jsonl": 3,
+      ".java": 1,
+      ".py": 1
+    }
+  },
+  {
+    "directory": "semantic-migration",
+    "files": 606,
+    "bytes": 127231669,
+    "tracked": 606,
+    "extensions": {
+      ".json": 204,
+      ".log": 183,
+      ".java": 2,
+      ".txt": 121,
+      ".args": 1,
+      ".zip": 1,
+      ".use": 13,
+      ".png": 11,
+      ".xml": 2,
+      ".istar": 16,
+      ".csl": 18,
+      ".cmd": 12,
+      ".ocl": 10,
+      ".jsonl": 10,
+      ".lock": 2
+    }
+  },
+  {
+    "directory": "single-agent-context",
+    "files": 6,
+    "bytes": 137543,
+    "tracked": 6,
+    "extensions": {
+      ".json": 4,
+      ".log": 2
+    }
+  },
+  {
+    "directory": "single-execution",
+    "files": 24,
+    "bytes": 757577,
+    "tracked": 24,
+    "extensions": {
+      ".log": 12,
+      ".png": 6,
+      ".py": 1,
+      ".json": 5
+    }
+  },
+  {
+    "directory": "source-checkpoints-20261105",
+    "files": 160,
+    "bytes": 684998771,
+    "tracked": 38,
+    "extensions": {
+      ".py": 6,
+      ".log": 55,
+      ".json": 45,
+      ".txt": 17,
+      ".md": 4,
+      ".java": 7,
+      ".jar": 7,
+      "": 1,
+      ".asl": 6,
+      ".cmd": 3,
+      ".ocl": 3,
+      ".use": 3,
+      ".jsonl": 3
+    }
+  },
+  {
+    "directory": "state-views",
+    "files": 5,
+    "bytes": 148774,
+    "tracked": 5,
+    "extensions": {
+      ".png": 2,
+      ".log": 2,
+      ".json": 1
+    }
+  },
+  {
+    "directory": "status-header-20261107",
+    "files": 9,
+    "bytes": 19376,
+    "tracked": 9,
+    "extensions": {
+      ".gz": 1,
+      ".json": 1,
+      ".log": 3,
+      ".java": 2,
+      ".png": 1,
+      ".md": 1
+    }
+  },
+  {
+    "directory": "terminal-milestones",
+    "files": 10,
+    "bytes": 169558,
+    "tracked": 10,
+    "extensions": {
+      ".json": 4,
+      ".log": 6
+    }
+  },
+  {
+    "directory": "truth-colors-20261107",
+    "files": 3,
+    "bytes": 3808,
+    "tracked": 3,
+    "extensions": {
+      ".json": 1,
+      ".png": 1,
+      ".md": 1
+    }
+  },
+  {
+    "directory": "ui-tabs",
+    "files": 3,
+    "bytes": 50027,
+    "tracked": 3,
+    "extensions": {
+      ".json": 1,
+      ".log": 2
+    }
+  },
+  {
+    "directory": "verified-checkpoints",
+    "files": 911,
+    "bytes": 10274578942,
+    "tracked": 127,
+    "extensions": {
+      ".xml": 5,
+      ".ps1": 3,
+      ".json": 492,
+      ".md": 4,
+      ".py": 1,
+      ".txt": 36,
+      ".java": 4,
+      ".png": 1,
+      ".log": 122,
+      ".jar": 31,
+      "": 22,
+      ".asl": 3,
+      ".cmd": 47,
+      ".ocl": 47,
+      ".use": 47,
+      ".jsonl": 46
+    }
+  },
+  {
+    "directory": "workspace-population-20261110",
+    "files": 2,
+    "bytes": 10345,
+    "tracked": 2,
+    "extensions": {
+      ".md": 1,
+      ".json": 1
+    }
+  }
+]

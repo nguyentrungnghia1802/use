@@ -29,16 +29,39 @@ public final class RequirementInventory {
             var specification=org.tzi.use.plugins.jacamo.semantics.mapping.ocl.ModelNativeContracts.read(program.xmlPlan().inputs());
             specification.clauses().stream().filter(c->c.kind()==org.tzi.use.plugins.jacamo.semantics.mapping.ocl.AuthoredOclSpecificationLoader.Kind.INVARIANT)
                 .forEach(c->explicit.add("NATIVE:"+c.context().owner()+"::"+c.name()));
+        } else if(program.isCompact()&&program.compactPlan().mappingInputs().isPresent()) {
+            var specification=org.tzi.use.plugins.jacamo.semantics.mapping.ocl.ModelNativeContracts.read(program.compactPlan().mappingInputs().get());
+            specification.clauses().stream().filter(c->c.kind()==org.tzi.use.plugins.jacamo.semantics.mapping.ocl.AuthoredOclSpecificationLoader.Kind.INVARIANT)
+                .forEach(c->explicit.add("NATIVE:"+c.context().owner()+"::"+c.name()));
         }
         var required=new TreeSet<>(explicit);var supporting=new TreeSet<String>();
         for(var invariant:model.classInvariants()) {
             String id="NATIVE:"+invariant.qualifiedName();
             if(explicit.contains(id)||invariant.getAnnotation("AuthoredOclSource")!=null
+                    ||invariant.getAnnotation("CslConstraint")!=null
                     ||invariant.cls().getAnnotation(Use75CslModelBackend.DECLARATION)!=null)required.add(id);
             else supporting.add(id);
         }
-        var targets=program.xmlPlan()==null?List.<String>of():program.xmlPlan().inputs().specification().root().child("bindings").children("requirement").stream().map(n->n.attr("target")).distinct().sorted().toList();
+        List<String> targets;
+        if(program.xmlPlan()!=null) {
+            targets=program.xmlPlan().inputs().specification().root().child("bindings").children("requirement").stream().map(n->n.attr("target")).distinct().sorted().toList();
+        } else if(program.isCompact()) {
+            var selected=program.compactPlan().specification().verificationRequirements();
+            if(selected.isEmpty()&&!program.goalBindings().elements().isEmpty())throw new IllegalArgumentException("COMPACT_EXPLICIT_INTENTIONAL_REQUIREMENT_SELECTION_REQUIRED");
+            var catalog=org.tzi.use.plugins.jacamo.semantics.mapping.compact.NativeTargetCatalog.fromModels(program.cslModel(),program.goalModel());
+            targets=selected.stream().filter(v->v.scope().isBlank()).map(v->catalog.resolve(org.tzi.use.plugins.jacamo.semantics.mapping.compact.TargetReference.parse(v.target()),"ISTAR").name()).distinct().sorted().toList();
+        } else {
+            targets=List.of();
+        }
         var scopeTargets=new TreeMap<String,List<String>>();
+        if(program.isCompact()) {
+            var catalog=org.tzi.use.plugins.jacamo.semantics.mapping.compact.NativeTargetCatalog.fromModels(program.cslModel(),program.goalModel());
+            for(var selection:program.compactPlan().specification().verificationRequirements())if(!selection.scope().isBlank()) {
+                var combined=new TreeSet<>(scopeTargets.getOrDefault(selection.scope(),targets));
+                combined.add(catalog.resolve(org.tzi.use.plugins.jacamo.semantics.mapping.compact.TargetReference.parse(selection.target()),"ISTAR").name());
+                scopeTargets.put(selection.scope(),List.copyOf(combined));
+            }
+        }
         if(program.xmlPlan()!=null) {
             var grouped=new TreeMap<String,TreeSet<String>>();
             for(var node:program.xmlPlan().inputs().specification().root().child("bindings").children("requirement")) {

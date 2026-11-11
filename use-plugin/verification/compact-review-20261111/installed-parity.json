@@ -1,0 +1,8 @@
+{
+  "installedJar": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-assembly\\target\\new\\lib\\plugins\\use-jacamo-plugin-1.0.1.jar",
+  "sha256": "dd1ea89bec8345f00cc28160e0990761ea2180b7885802b5d2dead38bb45a381",
+  "compactClassCount": 58,
+  "mismatches": [],
+  "missing": [],
+  "evidenceLevel": "ZIP class parity only; not fresh installed class loading/live MAS"
+}

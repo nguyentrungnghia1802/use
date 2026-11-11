@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mapping id="auction-false-compact" xmlns="urn:use:jacamo-mapping:3" version="3.0">
+  <csl>
+    <map source="artifact:auction_env.AuctionArtifact" target="Auction"/>
+    <map source="artifact:auction_env.AuctionArtifact/property:winner" target="Auction.winner"/>
+    <map source="artifact:auction_env.AuctionArtifact/field:currentWinner" target="Auction.currentWinner"/>
+  </csl>
+  <istar>
+    <map source="agent:auction_capabilities" target="auction_capabilities"/>
+    <map source="asl:src/agt/auction_capabilities.asl/goal:do_auction" target="auction_capabilities.do_auction"/>
+  </istar>
+  <runtime>
+    <actorRuntime actor="auction_capabilities" activationPolicy="MODEL_ONLY_CAPABILITY_ROLE" episodePolicy="MODEL_REVISION"/>
+    <requirement id="cartago.artifact-field.v1" provider="cartago"/>
+    <milestones kind="DOMAIN"/>
+  </runtime>
+</mapping>
+

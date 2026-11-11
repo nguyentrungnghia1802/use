@@ -42,12 +42,36 @@
       "compressedSha256": "ced367e6b2ed65d7dad770dad15d06d739638e6c4643a8c0ce6467198f1f1e97"
     },
     {
+      "path": "additional-cases/hello-world-16527741823702874968/replay/runtime.jsonl",
+      "bytes": 32204656,
+      "sha256": "d3772ea48fd674a22ecf61b382d03b0e4f214d7287e478ef4509e9cbb6526503",
+      "compressed": "additional-cases/hello-world-16527741823702874968/replay/runtime.jsonl.gz",
+      "compressedBytes": 2862073,
+      "compressedSha256": "70725540b0d5d9ec4f2168f705e63333535941bdae826e97771821bce549343d"
+    },
+    {
       "path": "additional-cases/hello-world-2123578817593806409/replay/runtime.jsonl",
       "bytes": 10479473,
       "sha256": "2fde3ff95197de63f1593d7d21304b74c831dd9c6c31271ea4c00f6e42d5aac4",
       "compressed": "additional-cases/hello-world-2123578817593806409/replay/runtime.jsonl.gz",
       "compressedBytes": 716804,
       "compressedSha256": "2b7dcb729e15ca46edc967d45e981dfa75fd38e843655ae60dbe08a007f47cef"
+    },
+    {
+      "path": "additional-cases/hello-world-2710205972145095189/cartago-events.jsonl",
+      "bytes": 30029638,
+      "sha256": "e3d764e17593e28f681e6c893e9db232aea331c237a63e8d6970c2168b3ac844",
+      "compressed": "additional-cases/hello-world-2710205972145095189/cartago-events.jsonl.gz",
+      "compressedBytes": 1805574,
+      "compressedSha256": "2cc18ee962f7b52b8554f45a692085be000d210a3484f083636add445b033295"
+    },
+    {
+      "path": "additional-cases/hello-world-2710205972145095189/replay/runtime.jsonl",
+      "bytes": 38135709,
+      "sha256": "c205a383d82cfcc8aaee21e9d2ac79d1b098bf3072966f841cb9be5c945bb53b",
+      "compressed": "additional-cases/hello-world-2710205972145095189/replay/runtime.jsonl.gz",
+      "compressedBytes": 3157827,
+      "compressedSha256": "64200dfc7d0558a419baa0f3dafe7f8394dfa4e350fcdffeb2cc2ca3a177f492"
     },
     {
       "path": "additional-cases/hello-world-2901354043011864963/cartago-events.jsonl",
@@ -72,6 +96,22 @@
       "compressed": "additional-cases/hello-world-9596413875591659644/replay/runtime.jsonl.gz",
       "compressedBytes": 2618424,
       "compressedSha256": "30ccddad8289952ec9f1d79eb1c5231d138b72a50f7102442824c5b9a0a927f6"
+    },
+    {
+      "path": "additional-cases/house-building-10184017443313623345/cartago-events.jsonl",
+      "bytes": 19960452,
+      "sha256": "77934b002ab6243aa19be17a20d1274d7dbbe0dd93eb7358335aa31c0fc4c412",
+      "compressed": "additional-cases/house-building-10184017443313623345/cartago-events.jsonl.gz",
+      "compressedBytes": 1164571,
+      "compressedSha256": "7f40ce0a3d6a7c15274e4ac1bd8bd62d9741fe4bdafd492cb74485fd56a3438c"
+    },
+    {
+      "path": "additional-cases/house-building-10184017443313623345/replay/runtime.jsonl",
+      "bytes": 112532440,
+      "sha256": "c14db8e981f8c280bb7992a984549b625a4ab0de80a1afaff9688dd1a77f2613",
+      "compressed": "additional-cases/house-building-10184017443313623345/replay/runtime.jsonl.gz",
+      "compressedBytes": 10608520,
+      "compressedSha256": "1571bfaf20f97ad5d099ac7c3d77faf1b6d2c977278c410ed8d665fcf089572e"
     },
     {
       "path": "additional-cases/house-building-10349910220100358256/cartago-events.jsonl",
@@ -144,6 +184,14 @@
       "compressed": "additional-cases/house-building-409965555452055426/cartago-events.jsonl.gz",
       "compressedBytes": 1071677,
       "compressedSha256": "a99e4fd64ad24be4fccdd8597cbebceca098ab9622d656c775afbe678afbcb01"
+    },
+    {
+      "path": "auction-false/live-direct/replay/runtime.jsonl",
+      "bytes": 267259218,
+      "sha256": "9950ea8058143aeeb096a8aea36d5bab59df0228387708928d2a56f9bcfa8aa4",
+      "compressed": "auction-false/live-direct/replay/runtime.jsonl.gz",
+      "compressedBytes": 31035176,
+      "compressedSha256": "6bc8dcf540e9b83742b822021992dc3d9c4a45a04a9f8999ee06e06ca91ac9dc"
     },
     {
       "path": "authored-models/P05-domain-live/run-11008457034790524280/journal.jsonl",
@@ -394,6 +442,118 @@
       "compressedSha256": "623bcaa911ffeae85060bc4cdfadeb0fb34f3391db1ebf25d8ce6acb532c21b6"
     },
     {
+      "path": "checkpoint-stability/live-1793507424631/replay/runtime.jsonl",
+      "bytes": 318101317,
+      "sha256": "4e5c01b404ddb83b33a32155359ce9411dc327b576ecd75444531b3715b34a7d",
+      "compressed": "checkpoint-stability/live-1793507424631/replay/runtime.jsonl.gz",
+      "compressedBytes": 36354640,
+      "compressedSha256": "698084a75cf90e26c5c5611940eab027d16962ff583a0ddf848431f363a12e2f"
+    },
+    {
+      "path": "generic-checkpoints-20261102/G07-auction-isolated/replay/runtime.jsonl",
+      "bytes": 321899563,
+      "sha256": "ae579c36308a4241938caa9dbcb20b4369879cdf38395fa01e3352c6c79d165a",
+      "compressed": "generic-checkpoints-20261102/G07-auction-isolated/replay/runtime.jsonl.gz",
+      "compressedBytes": 36794645,
+      "compressedSha256": "4b0db6a79c6e3731d9ff934154c0d0b56765d5766e6c17ff14d6a9d505c62dbe"
+    },
+    {
+      "path": "generic-checkpoints-20261102/G07-closeout-auction-2/replay/runtime.jsonl",
+      "bytes": 313692667,
+      "sha256": "0c77505a5a205b87093f6b340ac321230dd688fc1723424efcc88dd11bbc3d57",
+      "compressed": "generic-checkpoints-20261102/G07-closeout-auction-2/replay/runtime.jsonl.gz",
+      "compressedBytes": 36054840,
+      "compressedSha256": "f6a0b4b678cd7ff847beb21b24c3e6ecef9dc9f568b1ae6146606081273cea66"
+    },
+    {
+      "path": "generic-checkpoints-20261102/G07-closeout-hello-world/replay/runtime.jsonl",
+      "bytes": 178035065,
+      "sha256": "bc5b87fb2d801da1a37adb944ee04214b404680c8ccaab2af1dbe5a01b5e78c5",
+      "compressed": "generic-checkpoints-20261102/G07-closeout-hello-world/replay/runtime.jsonl.gz",
+      "compressedBytes": 12530763,
+      "compressedSha256": "8d588a2fb0326b89a5a6c5786bba3211992a92ca9d54d06256f0bdbb98cf2526"
+    },
+    {
+      "path": "generic-checkpoints-20261102/G07-final-hello-world/replay/runtime.jsonl",
+      "bytes": 171143919,
+      "sha256": "93ec43c402a476aabc3add634d5cfde223e7a21262c729eb317b3cfb20295f67",
+      "compressed": "generic-checkpoints-20261102/G07-final-hello-world/replay/runtime.jsonl.gz",
+      "compressedBytes": 12036722,
+      "compressedSha256": "ae5ae781098c8bb4aad050b15f7a84046f04e73469dac4655c1536d98df43083"
+    },
+    {
+      "path": "generic-checkpoints-20261102/G07-final-house-building/replay/runtime.jsonl",
+      "bytes": 597199321,
+      "sha256": "511c8527e8b9b2bfbf2c4fc35a22be704e068cbd790f0188668a428186698aa9",
+      "compressed": "generic-checkpoints-20261102/G07-final-house-building/replay/runtime.jsonl.gz",
+      "compressedBytes": 48279035,
+      "compressedSha256": "19523c115194792e598b7c1e8715d3fb2ecbb78adf6b8e19f3bd3f3338a8963a"
+    },
+    {
+      "path": "generic-checkpoints-20261102/G07-hello-compressed/replay/runtime.jsonl",
+      "bytes": 175390193,
+      "sha256": "ac29eec0d0a2ca2aef38094a546142934a86150a09800f91941c2a27231925de",
+      "compressed": "generic-checkpoints-20261102/G07-hello-compressed/replay/runtime.jsonl.gz",
+      "compressedBytes": 12314985,
+      "compressedSha256": "345cfa25bd1f4c146d550184eb1228962cdf1ae74d2c40dc8f78de709f875c5f"
+    },
+    {
+      "path": "generic-checkpoints-20261102/G07-hello-final/replay/runtime.jsonl",
+      "bytes": 193086891,
+      "sha256": "6e1e86cb7119150dcd9e417dabd35069ad339b4de87deab55c70ea2f0ca88113",
+      "compressed": "generic-checkpoints-20261102/G07-hello-final/replay/runtime.jsonl.gz",
+      "compressedBytes": 13305745,
+      "compressedSha256": "c1d68abd8c95fea583479743f38a2456a230bace6668134f80e6abedf1c8040b"
+    },
+    {
+      "path": "generic-checkpoints-20261102/G07-hello-first/replay/runtime.jsonl",
+      "bytes": 186864564,
+      "sha256": "932cb0651a972bd3b09fd9070c559d9bff4ab60d7b74c6bd4960c2d8344179d1",
+      "compressed": "generic-checkpoints-20261102/G07-hello-first/replay/runtime.jsonl.gz",
+      "compressedBytes": 12948143,
+      "compressedSha256": "61ac81bbdd46d0effcd23442fd3bf8b7a7962e3d3314f7647c1da4327fd42353"
+    },
+    {
+      "path": "generic-checkpoints-20261102/G07-hello-second/replay/runtime.jsonl",
+      "bytes": 184641779,
+      "sha256": "04c8c26f9c763a615c205365b5db32c352fc37c28c908f895e8cc282977c4676",
+      "compressed": "generic-checkpoints-20261102/G07-hello-second/replay/runtime.jsonl.gz",
+      "compressedBytes": 12882410,
+      "compressedSha256": "a4f43f7ec471995e376ff8149db67fca5ea9b43954d3506d576932f8183ec1f3"
+    },
+    {
+      "path": "generic-checkpoints-20261102/G07-hello-third/replay/runtime.jsonl",
+      "bytes": 175419749,
+      "sha256": "9aab93485930e28d75ba379a7e726fb6f38b1678da8612a914e214be48942179",
+      "compressed": "generic-checkpoints-20261102/G07-hello-third/replay/runtime.jsonl.gz",
+      "compressedBytes": 12290174,
+      "compressedSha256": "90abcce073027f3725773d89c6ee52a1c268c8aeede65ad7f9a0412ec6588e4a"
+    },
+    {
+      "path": "generic-checkpoints-20261102/G07-house-compressed/replay/runtime.jsonl",
+      "bytes": 613113956,
+      "sha256": "1332359383162fc4c1723fd9d5bc5598d9eda5e140c14f849360ac4e3538a487",
+      "compressed": "generic-checkpoints-20261102/G07-house-compressed/replay/runtime.jsonl.gz",
+      "compressedBytes": 49363157,
+      "compressedSha256": "49c4413a7da4febc582709106b42b036b09081d69e2ec30d21564583e8d94f25"
+    },
+    {
+      "path": "generic-checkpoints-20261102/G07-house-second/replay/runtime.jsonl",
+      "bytes": 12638521,
+      "sha256": "8b013ff933029b48bbbb9a6179b8ad6241de06151e7316ffb1c766e3e7dda3f7",
+      "compressed": "generic-checkpoints-20261102/G07-house-second/replay/runtime.jsonl.gz",
+      "compressedBytes": 973846,
+      "compressedSha256": "e62efc6e22eaa67c490af98b57def34915e2dea250f433d6c7cb1153f2c6ee86"
+    },
+    {
+      "path": "generic-checkpoints-20261102/G07-house-stable-artifacts/replay/runtime.jsonl",
+      "bytes": 593432107,
+      "sha256": "61c9f6660ecc659a7216789d27e3c760a4f5b639104cb0bb8c330a2807c4df79",
+      "compressed": "generic-checkpoints-20261102/G07-house-stable-artifacts/replay/runtime.jsonl.gz",
+      "compressedBytes": 47573096,
+      "compressedSha256": "2923d49671efba3a751e563e5dc6c7560e969e3b732b72a0a04f6cd0deaf7a8e"
+    },
+    {
       "path": "live-results-ui/auction-10080899007607398949/replay/runtime.jsonl",
       "bytes": 92913988,
       "sha256": "f31725bf4599d834fd0abc8ac37754e7d434e09c9415750bc9bdef510ca09e4b",
@@ -426,12 +586,28 @@
       "compressedSha256": "3b13ad31c71a2b64330b6f956ccab0a1e1cca4e3985e41ccffd15b27a069af26"
     },
     {
+      "path": "live-results-ui/auction-13471184572337605195/replay/runtime.jsonl",
+      "bytes": 199888598,
+      "sha256": "33d92975fcb7417ca784041a2b3f37247e390c1b8b56beffd32854240507fdb8",
+      "compressed": "live-results-ui/auction-13471184572337605195/replay/runtime.jsonl.gz",
+      "compressedBytes": 23241211,
+      "compressedSha256": "dc80f9aa971bff981fd77be833b6607841d16c89cc135016427734301a4f24a6"
+    },
+    {
       "path": "live-results-ui/auction-14077818521943702388/replay/runtime.jsonl",
       "bytes": 97844285,
       "sha256": "1376e05b994abd31035df18337e9a9d942137005a13528dca010b6eae9bd6236",
       "compressed": "live-results-ui/auction-14077818521943702388/replay/runtime.jsonl.gz",
       "compressedBytes": 7869593,
       "compressedSha256": "126f5274d9d64bcf2d0154c994ca00c6ccb067f08eb3cad5f6a170fb344341ce"
+    },
+    {
+      "path": "live-results-ui/auction-14420620117277149684/replay/runtime.jsonl",
+      "bytes": 230928428,
+      "sha256": "23471cd306aa851fc0075f5228a2e4f4cf702d98801783f88ae56aa37b8a86e0",
+      "compressed": "live-results-ui/auction-14420620117277149684/replay/runtime.jsonl.gz",
+      "compressedBytes": 26905020,
+      "compressedSha256": "d69857e46b207b6235c093b909f5f7a76ef050d9b831f684669252afab6753ec"
     },
     {
       "path": "live-results-ui/auction-16619791341345676774/replay/runtime.jsonl",
@@ -456,6 +632,14 @@
       "compressed": "live-results-ui/auction-17473406535072442727/replay/runtime.jsonl.gz",
       "compressedBytes": 7428606,
       "compressedSha256": "e4f425ee7764001e98a2dc58069e34a3c1c5bbffb9ab295f60e0f8a3604b1cee"
+    },
+    {
+      "path": "live-results-ui/auction-17579300591258698629/diagnostic-replay/runtime.jsonl",
+      "bytes": 176349738,
+      "sha256": "e98541b3d546d8a5fda768b15052797de1e146450df731ce55d8156e8fcaf6c5",
+      "compressed": "live-results-ui/auction-17579300591258698629/diagnostic-replay/runtime.jsonl.gz",
+      "compressedBytes": 20605299,
+      "compressedSha256": "7a027aeef38df5e65bae3f8c1d164031be63ba2d69c37ba971a7445a824249a2"
     },
     {
       "path": "live-results-ui/auction-1873398308936760061/replay/runtime.jsonl",
@@ -506,6 +690,14 @@
       "compressedSha256": "f969b1cb243a3fd7cb0a39095b39125883e4727194cf2b403346d8f1dea34305"
     },
     {
+      "path": "live-results-ui/auction-3848876290495629397/diagnostic-replay/runtime.jsonl",
+      "bytes": 338695980,
+      "sha256": "e4b8fbd8acadcaa9df081f418c49cb3f18a8a2a5958c8042bc8fce8456e8e69d",
+      "compressed": "live-results-ui/auction-3848876290495629397/diagnostic-replay/runtime.jsonl.gz",
+      "compressedBytes": 40251562,
+      "compressedSha256": "2e21f5f70b6c4f52b423fa9561db0ddc11f4126969a8ac3fc4908a32a27c8f94"
+    },
+    {
       "path": "live-results-ui/auction-4471281074889294652/diagnostic-replay/runtime.jsonl",
       "bytes": 169148734,
       "sha256": "9632889b9a638d39a63bda8211338c60bd5e002ad199e6a4980c972db67c9cfd",
@@ -546,6 +738,14 @@
       "compressedSha256": "19558b178b32cb6a66e3d0374d5bf2b7ac632312e273ab7c93e64ed8bdc2c836"
     },
     {
+      "path": "live-results-ui/auction-6591688268547047712/diagnostic-replay/runtime.jsonl",
+      "bytes": 134486393,
+      "sha256": "1b47ba1206120dea67b8b72dba8dca22ef0794e5bfe66595a2a0fa4f5d42136a",
+      "compressed": "live-results-ui/auction-6591688268547047712/diagnostic-replay/runtime.jsonl.gz",
+      "compressedBytes": 15879509,
+      "compressedSha256": "cdef5a4a4ef7ef1beaf02fa2e6bbefd51c4641c1e6dc87606540306c17163a98"
+    },
+    {
       "path": "live-results-ui/auction-6641115257691176122/diagnostic-replay/runtime.jsonl",
       "bytes": 170677983,
       "sha256": "a1f4450aa3a27a5d932926d79b34713ae178bccb869c1c81aa45d7f228362e62",
@@ -562,6 +762,14 @@
       "compressedSha256": "a64bd975658a708a2de82ab642d50e4917ace6cb91d20dd7013e4f06dc3783d3"
     },
     {
+      "path": "live-results-ui/auction-741621637928788713/diagnostic-replay/runtime.jsonl",
+      "bytes": 238859839,
+      "sha256": "c52ae5245ff51b3cd6d35c1b555501d31129aaed9cf416f119f7717c11fd2b65",
+      "compressed": "live-results-ui/auction-741621637928788713/diagnostic-replay/runtime.jsonl.gz",
+      "compressedBytes": 28138583,
+      "compressedSha256": "6ea6a4701f39c79a627b0d8b5e1f33a7300607275ef690fd86646d4036394ce4"
+    },
+    {
       "path": "live-results-ui/auction-7831997453405771525/diagnostic-replay/runtime.jsonl",
       "bytes": 172288496,
       "sha256": "61626f5481368cdfde6c755b481cfcd8c0e87d2776379366123762140f58c597",
@@ -576,6 +784,406 @@
       "compressed": "live-results-ui/auction-9141219160766461805/replay/runtime.jsonl.gz",
       "compressedBytes": 7132062,
       "compressedSha256": "81da46032ed1b108113144e3f4eaa15996769b5f6ae217cdc8f0bfa782833d35"
+    },
+    {
+      "path": "milestone-isolation/live-1794205717006/replay/runtime.jsonl",
+      "bytes": 484996388,
+      "sha256": "2f3cd2adc95985bf1e881b25cadbaf0dec7790d1b8d01dadf1ea427f7429ab61",
+      "compressed": "milestone-isolation/live-1794205717006/replay/runtime.jsonl.gz",
+      "compressedBytes": 56445664,
+      "compressedSha256": "c39640d934fb8aefe1986b7a99e41b72c39610b82ddb5fd3160f46029281b078"
+    },
+    {
+      "path": "source-checkpoints-20261105/live-auction-final-1793875495276/replay-before-disconnect/runtime.jsonl",
+      "bytes": 115882168,
+      "sha256": "ae3aec702d24d882958a73a33a9496c8b0dc64801cfb22768f2ec337bcb589de",
+      "compressed": "source-checkpoints-20261105/live-auction-final-1793875495276/replay-before-disconnect/runtime.jsonl.gz",
+      "compressedBytes": 13605980,
+      "compressedSha256": "41b3ec3b61ebf1c030c4fb1a24e07bcf99eeed959c9fbec27f44f4a0411b544e"
+    },
+    {
+      "path": "source-checkpoints-20261105/live-auction-final-1793875495276/replay-interrupted-monitor/runtime.jsonl",
+      "bytes": 122113416,
+      "sha256": "5a4939b517095ae87410b9c856a3b9761c4bd1e1ed916e9f85494110d66998f2",
+      "compressed": "source-checkpoints-20261105/live-auction-final-1793875495276/replay-interrupted-monitor/runtime.jsonl.gz",
+      "compressedBytes": 14286617,
+      "compressedSha256": "ea4895704370f90860b6fe7fc489ba837bbfd75dba51524f3927e01b459f0c4d"
+    },
+    {
+      "path": "source-checkpoints-20261105/live-auction-final-1793875495276/replay/runtime.jsonl",
+      "bytes": 426762036,
+      "sha256": "c0255e15f4555cb98301dae76e9e7a9ea89fc7380fe8b866707372af66eb6066",
+      "compressed": "source-checkpoints-20261105/live-auction-final-1793875495276/replay/runtime.jsonl.gz",
+      "compressedBytes": 48451352,
+      "compressedSha256": "a1b06e5e67632e0ef8b2e56b2dc139d2e53d106aaf77f86f4303972c2cda5027"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793444578745/replay/runtime.jsonl",
+      "bytes": 323593566,
+      "sha256": "0bd696f8547ac12d5707270d456795370d44e77b6397707cd1cdd424c98db5e3",
+      "compressed": "verified-checkpoints/live-auction-1793444578745/replay/runtime.jsonl.gz",
+      "compressedBytes": 36911879,
+      "compressedSha256": "627502faf2b64ea2c64ee574aaacbec13d63b16f685df35ab57989195025d131"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793444906026/replay/runtime.jsonl",
+      "bytes": 259318900,
+      "sha256": "49d234a207e661c46ddcf9f51de67b27dc26e42afda09eb2d538a0d13820ad5b",
+      "compressed": "verified-checkpoints/live-auction-1793444906026/replay/runtime.jsonl.gz",
+      "compressedBytes": 30477460,
+      "compressedSha256": "17ef850f1bb2be083dadf217ca9eb8de4ce6c541c172683db093df87181a78dc"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793445145976/replay/runtime.jsonl",
+      "bytes": 218201879,
+      "sha256": "b935002149c99c351e089c904f703e8ec71dffa1ae22fd3f932f9343b1f7b598",
+      "compressed": "verified-checkpoints/live-auction-1793445145976/replay/runtime.jsonl.gz",
+      "compressedBytes": 25628443,
+      "compressedSha256": "c153142b6fbc6fcd37de8af54abd224b1a749fc457dcf4211e7935d91bfb84e0"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793445461454/replay-before-disconnect/runtime.jsonl",
+      "bytes": 168450712,
+      "sha256": "cdce237593396cb2909b1e12b324720e09c228f2220084964ddef8bb706c4809",
+      "compressed": "verified-checkpoints/live-auction-1793445461454/replay-before-disconnect/runtime.jsonl.gz",
+      "compressedBytes": 19886084,
+      "compressedSha256": "5256b7cda69b331d0a8d47aa6e2c8275b46a2baa1675e9bee7b1e8fe5ffd864e"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793445461454/replay-interrupted-monitor/runtime.jsonl",
+      "bytes": 173272167,
+      "sha256": "1fe3b7aa14361ad08b56a6d8a40b873cee31e70acee581629e69268a6c458a98",
+      "compressed": "verified-checkpoints/live-auction-1793445461454/replay-interrupted-monitor/runtime.jsonl.gz",
+      "compressedBytes": 20411206,
+      "compressedSha256": "a55934e7fbc07e2ff7cef5c3a4aee46b331615856661a0717246da7ec8f930fb"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793445768147/replay-before-disconnect/runtime.jsonl",
+      "bytes": 157189198,
+      "sha256": "7c1f5001ecd8f97403a064c9b82099defc8cdeb69e16aba66ef3de183c7b99ef",
+      "compressed": "verified-checkpoints/live-auction-1793445768147/replay-before-disconnect/runtime.jsonl.gz",
+      "compressedBytes": 18829050,
+      "compressedSha256": "c27e6c230f0e66fc428c38010ef6fdf8dc1e9a2b0217a959e5e35102ba48e432"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793445768147/replay-interrupted-monitor/runtime.jsonl",
+      "bytes": 161841261,
+      "sha256": "bab1cca061ec644ce263bba7871bcdca9a613dcbadb2b3f94b28123600597e54",
+      "compressed": "verified-checkpoints/live-auction-1793445768147/replay-interrupted-monitor/runtime.jsonl.gz",
+      "compressedBytes": 19332425,
+      "compressedSha256": "0c5763481ab0405d63d702cfc5f674b45eaea1313ff6c489dcaf538a4bfced84"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793445768147/replay/runtime.jsonl",
+      "bytes": 215300101,
+      "sha256": "5fc7812aca40534269f31ccb63cfbda9a7a0f1745506d74ea9a6746d4ee28576",
+      "compressed": "verified-checkpoints/live-auction-1793445768147/replay/runtime.jsonl.gz",
+      "compressedBytes": 25540158,
+      "compressedSha256": "dca96854d39e00d03c9aa18c874575ce8ba1ea2d2e12b27612d1828a6e0455e5"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793446161236/replay-before-disconnect/runtime.jsonl",
+      "bytes": 168687020,
+      "sha256": "2697f97c6e1d15ba5023163a1d405a953c8c08372e7bc8324765766868e77bf1",
+      "compressed": "verified-checkpoints/live-auction-1793446161236/replay-before-disconnect/runtime.jsonl.gz",
+      "compressedBytes": 20102487,
+      "compressedSha256": "43d3a9102b206b6ba46d75b2bab634b5fb32dce367f622cbc64a8fe0f4a3282f"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793446161236/replay-interrupted-monitor/runtime.jsonl",
+      "bytes": 173414470,
+      "sha256": "d772a6449f461d6760b6432c152ed78a3f069347a0af7e183d8e806e9f8d4c54",
+      "compressed": "verified-checkpoints/live-auction-1793446161236/replay-interrupted-monitor/runtime.jsonl.gz",
+      "compressedBytes": 20618754,
+      "compressedSha256": "dc41a4c26c2910bc1367e7ccb4126b2106125b1d9df47fad3cdab7bdf725aa62"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793446161236/replay/runtime.jsonl",
+      "bytes": 255062028,
+      "sha256": "36e0ee3acd01b92ba6b2ff934c82c47e269d4e83853b900e72d29cd6778f8e02",
+      "compressed": "verified-checkpoints/live-auction-1793446161236/replay/runtime.jsonl.gz",
+      "compressedBytes": 30171492,
+      "compressedSha256": "aca944d019f434f5a166ae8ad6b2237bb27532e8ff189357744c84c8576a40c7"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793446618119/replay-before-disconnect/runtime.jsonl",
+      "bytes": 178573751,
+      "sha256": "65bbefa24e6451cb07c0c4f471d1c38bb53c5c75583452c6cc497076a501dc04",
+      "compressed": "verified-checkpoints/live-auction-1793446618119/replay-before-disconnect/runtime.jsonl.gz",
+      "compressedBytes": 21015261,
+      "compressedSha256": "3f428a01f5a2eda1781fd695d4262065e4cb09f13a798aa2a652320ffdbf07ea"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793446618119/replay-interrupted-monitor/runtime.jsonl",
+      "bytes": 183517919,
+      "sha256": "5990305e09639a9be94db82ccd02f69f0f2ee5a8ee71da36202fa82b62a15cac",
+      "compressed": "verified-checkpoints/live-auction-1793446618119/replay-interrupted-monitor/runtime.jsonl.gz",
+      "compressedBytes": 21545842,
+      "compressedSha256": "bbd668d47773830d9f1bdffc180401a56401aa2cb0785d3e466f8e8fffef18c6"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793447047155/replay/runtime.jsonl",
+      "bytes": 218291029,
+      "sha256": "8ef868094c6fd3ed66d37c84f2aa3e88210de83158f584a672433f7ac35aafd0",
+      "compressed": "verified-checkpoints/live-auction-1793447047155/replay/runtime.jsonl.gz",
+      "compressedBytes": 25453806,
+      "compressedSha256": "29cbc2b1a3748bcc29af1d7df14e35496da8ec9e0eb5290dfa2c7380a90280fc"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793447580127/replay/runtime.jsonl",
+      "bytes": 304041921,
+      "sha256": "09f65ec81ee6bd4d5d4e5ce961fb6d2004dff733a61c1424a82396702b581a09",
+      "compressed": "verified-checkpoints/live-auction-1793447580127/replay/runtime.jsonl.gz",
+      "compressedBytes": 34753752,
+      "compressedSha256": "09e78d876f98bbe991673f33ec36fe7be19d5aa649e7ec859111493d961af89a"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793447920508/replay-before-disconnect/runtime.jsonl",
+      "bytes": 151075102,
+      "sha256": "f0ee5be6e79ab3d343e0929c9feba2b29778d22d2c037eb2377bcad6b5036c1c",
+      "compressed": "verified-checkpoints/live-auction-1793447920508/replay-before-disconnect/runtime.jsonl.gz",
+      "compressedBytes": 18047658,
+      "compressedSha256": "894d6b9a2297163aaf6a0806d206f3726e62eb6fe9da3eafbdbb063d52b63e88"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793447920508/replay-interrupted-monitor/runtime.jsonl",
+      "bytes": 155897257,
+      "sha256": "2783b83bad0284e23757be581ad9d4ce75be4dd35963d94438d96e0306e1b8df",
+      "compressed": "verified-checkpoints/live-auction-1793447920508/replay-interrupted-monitor/runtime.jsonl.gz",
+      "compressedBytes": 18573082,
+      "compressedSha256": "c6db782d51e71d62ee705cdd3f888352709225080fed6acfe4e95c740fdb3f6e"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793447920508/replay/runtime.jsonl",
+      "bytes": 244345893,
+      "sha256": "24a93251a48f11eea2c8a0e2c008ccaef82a46b0ffd848b2cc1da0731ee0fe58",
+      "compressed": "verified-checkpoints/live-auction-1793447920508/replay/runtime.jsonl.gz",
+      "compressedBytes": 28926336,
+      "compressedSha256": "9377d2920dad1920a7d4299d0abc9fbf22c4353e5453084a15beacd144ed6132"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793448414077/replay-before-disconnect/runtime.jsonl",
+      "bytes": 77576565,
+      "sha256": "5878d1bb365d6d8b40d3a673bf67f3c71f3c55348ab65b43ed8fef8f8dd27d9c",
+      "compressed": "verified-checkpoints/live-auction-1793448414077/replay-before-disconnect/runtime.jsonl.gz",
+      "compressedBytes": 9320589,
+      "compressedSha256": "ae1e04f8e389a5dd44be2c00d95397515ab3c52c5c0d9794313246ec09edf833"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793448414077/replay-interrupted-monitor/runtime.jsonl",
+      "bytes": 81777116,
+      "sha256": "a0668f059f165d6df4ce0157e0de72af2d711306c1c391d55ad006812d1d5dfd",
+      "compressed": "verified-checkpoints/live-auction-1793448414077/replay-interrupted-monitor/runtime.jsonl.gz",
+      "compressedBytes": 9779533,
+      "compressedSha256": "65514ac9b49fe467c7469ce002f3dd5c652344c26acbc591688acc0ecd77498a"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793448414077/replay/runtime.jsonl",
+      "bytes": 300019365,
+      "sha256": "8b5bb486f347dc8f7a1f88b9ed27ea41336816dc963e88c7320863afb96438b4",
+      "compressed": "verified-checkpoints/live-auction-1793448414077/replay/runtime.jsonl.gz",
+      "compressedBytes": 35281247,
+      "compressedSha256": "d7621bd3ef83c91c7b793a3d898f6fd3fc28b6e9bc4cf845ff912ba93e66a650"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793449383488/replay-before-disconnect/runtime.jsonl",
+      "bytes": 114487618,
+      "sha256": "666ca8cdc2513f4e7b06bdcb6edc587cee5fa324f601c181bb017c3f13d2b546",
+      "compressed": "verified-checkpoints/live-auction-1793449383488/replay-before-disconnect/runtime.jsonl.gz",
+      "compressedBytes": 13586006,
+      "compressedSha256": "e2dbe4eda04c310a6bf04f4c18988c9c1f20281d87e0cf1e6b593bf2af0d4d9e"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793449383488/replay-interrupted-monitor/runtime.jsonl",
+      "bytes": 118849380,
+      "sha256": "f46ae9873b3c5321ff4f5b679b68f6911471a1f015e57ce00034a9fa4a7d8438",
+      "compressed": "verified-checkpoints/live-auction-1793449383488/replay-interrupted-monitor/runtime.jsonl.gz",
+      "compressedBytes": 14060513,
+      "compressedSha256": "5ea7f22f6dba83bc19974fdfb0ca9360d908f041d72faae81191db0fa956d39a"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793449383488/replay/runtime.jsonl",
+      "bytes": 316325239,
+      "sha256": "e425696ad77b3758ccfb27fd344e06f85eb49f338ffca10cabb866bec4d3340f",
+      "compressed": "verified-checkpoints/live-auction-1793449383488/replay/runtime.jsonl.gz",
+      "compressedBytes": 37255201,
+      "compressedSha256": "3257a5e0bbd1777f043758ca904de09d997e33ff453ff937bc6d2b46adf6c79b"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793780758307/replay-before-disconnect/runtime.jsonl",
+      "bytes": 88010068,
+      "sha256": "a0140741635c3e15b19d1c171df1f45d12c7aee0696d0515369dd6279be831ee",
+      "compressed": "verified-checkpoints/live-auction-1793780758307/replay-before-disconnect/runtime.jsonl.gz",
+      "compressedBytes": 10612490,
+      "compressedSha256": "2fff09bc2786303f0181d7e239b53b4583f3f4321df108a3b5e0d225d482556e"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793780758307/replay-interrupted-monitor/runtime.jsonl",
+      "bytes": 93559559,
+      "sha256": "4df39bf542c129f16da7ca04c62479df408709d37f83ff33f32ab97925178ff0",
+      "compressed": "verified-checkpoints/live-auction-1793780758307/replay-interrupted-monitor/runtime.jsonl.gz",
+      "compressedBytes": 11209507,
+      "compressedSha256": "30375b96e38286adfb6031ba8039a6ffd98289e18d0ec0c0fb00e2cea9eac1c9"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793780758307/replay/runtime.jsonl",
+      "bytes": 322348809,
+      "sha256": "4767ca61f18730c9ff93aa8f3f8fb1c46df688640674fbcda69c57617ff4ff95",
+      "compressed": "verified-checkpoints/live-auction-1793780758307/replay/runtime.jsonl.gz",
+      "compressedBytes": 37878589,
+      "compressedSha256": "9d5b7e0f3c47992ba7091bbfeec4a69326bb673c1823184fdad68d4a90ba2a6f"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793853753584/replay-before-disconnect/runtime.jsonl",
+      "bytes": 95455534,
+      "sha256": "5716ffdb149e622e7f45fdd1742713d96f76c441698b60446c7e3d0f7c02fc3f",
+      "compressed": "verified-checkpoints/live-auction-1793853753584/replay-before-disconnect/runtime.jsonl.gz",
+      "compressedBytes": 11428850,
+      "compressedSha256": "0bb140f5a2d07ebd54afb961105ed9053bad3a46a402375f77ca34b6c89f6e25"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793853753584/replay-interrupted-monitor/runtime.jsonl",
+      "bytes": 100990822,
+      "sha256": "3cd91a424aab53d4409662f295ebafb00e7e4c8c10041c47f38dc8cc14334ae8",
+      "compressed": "verified-checkpoints/live-auction-1793853753584/replay-interrupted-monitor/runtime.jsonl.gz",
+      "compressedBytes": 12028988,
+      "compressedSha256": "ea31fb91d694f33d671c65eeed6447385cd739b70249272548c3118a7c1ed506"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793853753584/replay/runtime.jsonl",
+      "bytes": 417199253,
+      "sha256": "e4a7415e83f10f9d8754801a8a78cbf8e5dff0a7400d3d636e5538621dafd969",
+      "compressed": "verified-checkpoints/live-auction-1793853753584/replay/runtime.jsonl.gz",
+      "compressedBytes": 48510592,
+      "compressedSha256": "e4d9060fd114026a1c02b3cae3aca66896c2c90350884826461a6db594863250"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793875879199/replay-before-disconnect/runtime.jsonl",
+      "bytes": 123319752,
+      "sha256": "e8f8bfb79341e1dc0c5062c37eb25c3cacbb27475d1d2852bf448c99419ae0f0",
+      "compressed": "verified-checkpoints/live-auction-1793875879199/replay-before-disconnect/runtime.jsonl.gz",
+      "compressedBytes": 14364179,
+      "compressedSha256": "eb4708aaf38c101c2c21a476895c343411fb83e0031e925084b8d5dfc9f65e12"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793875879199/replay-interrupted-monitor/runtime.jsonl",
+      "bytes": 129488843,
+      "sha256": "4decf5e83ffe32b1da2aab2e0afaa32f2ea4e56ec24c70662dac14521244c30a",
+      "compressed": "verified-checkpoints/live-auction-1793875879199/replay-interrupted-monitor/runtime.jsonl.gz",
+      "compressedBytes": 15036305,
+      "compressedSha256": "f70e6da9072f4785df4cf977d10ab68c20b5f001ddd9f231f2cc5b942a1fb366"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1793875879199/replay/runtime.jsonl",
+      "bytes": 437117144,
+      "sha256": "69c7401b5b2a3b272f7b24a3a244c9d680a790b5116c7753b49201f275e25937",
+      "compressed": "verified-checkpoints/live-auction-1793875879199/replay/runtime.jsonl.gz",
+      "compressedBytes": 49686293,
+      "compressedSha256": "0fdaec0a261b1245c1be860ac10044ca3c2aa1e356ebe3d20c610de002eb5904"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1794082173978/replay/runtime.jsonl",
+      "bytes": 274662259,
+      "sha256": "d38e81f730d6620ea02377ae7dbd7cada571614990735d72d69b4563c043b2eb",
+      "compressed": "verified-checkpoints/live-auction-1794082173978/replay/runtime.jsonl.gz",
+      "compressedBytes": 31856222,
+      "compressedSha256": "66b8c964d5493effb60153b79edda0ce12afc4a0f5ddea347e70701d89fa5427"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1794085493080/replay-before-disconnect/runtime.jsonl",
+      "bytes": 246965074,
+      "sha256": "dd37fa7de0a1575634691bf4db9ca7886d580aefe192e5c7fde02e3606d8e088",
+      "compressed": "verified-checkpoints/live-auction-1794085493080/replay-before-disconnect/runtime.jsonl.gz",
+      "compressedBytes": 29858413,
+      "compressedSha256": "6ec421cba645b3505b38693a51cda51a3c4e5ade5f56ca5240345243edd65e6a"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1794085493080/replay-interrupted-monitor/runtime.jsonl",
+      "bytes": 254190891,
+      "sha256": "6e4e5165011ad82d892d2a092f1ff0770857258bbaf9d4c5d9e6b319a65396c1",
+      "compressed": "verified-checkpoints/live-auction-1794085493080/replay-interrupted-monitor/runtime.jsonl.gz",
+      "compressedBytes": 30680707,
+      "compressedSha256": "a9ae8c7a3006f591460fc676afb15b7dcf8710c20fa7821b6c559e39dac4424e"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1794085493080/replay/runtime.jsonl",
+      "bytes": 539269851,
+      "sha256": "011f53ca612078755feb9bbe8440a506623a69f9a3ae388693125079da3c94ae",
+      "compressed": "verified-checkpoints/live-auction-1794085493080/replay/runtime.jsonl.gz",
+      "compressedBytes": 63703576,
+      "compressedSha256": "4759a86cd96fa2cf9421d5d656672d2085e9c82f8c1dc051496e9ea59130dac4"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1794087109927/replay-before-disconnect/runtime.jsonl",
+      "bytes": 201777111,
+      "sha256": "9307423eaef66c026936f734154082e5c376d60a679d833ab630bec69a29cb5a",
+      "compressed": "verified-checkpoints/live-auction-1794087109927/replay-before-disconnect/runtime.jsonl.gz",
+      "compressedBytes": 24498705,
+      "compressedSha256": "64f5368ecfd3232ca6c871ad9d30d4a4fd2ee24fb205f3d2c4807ed8882d724d"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1794087109927/replay-interrupted-monitor/runtime.jsonl",
+      "bytes": 208742185,
+      "sha256": "12e8b07c642b6307ab15b11b4cca5624df5f102b659eb219f5455d040d9fe4ff",
+      "compressed": "verified-checkpoints/live-auction-1794087109927/replay-interrupted-monitor/runtime.jsonl.gz",
+      "compressedBytes": 25276534,
+      "compressedSha256": "06bc981708c7d2d33682ee625743a4af8a86cb71e4d2eec5d0261f4afe347597"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1794087109927/replay/runtime.jsonl",
+      "bytes": 381527843,
+      "sha256": "ceaf8942620e0805c95db165f1463d3658c36f058daeced3d1c5656f743351ed",
+      "compressed": "verified-checkpoints/live-auction-1794087109927/replay/runtime.jsonl.gz",
+      "compressedBytes": 45305852,
+      "compressedSha256": "f169b778b621135d1db5e74b9bc1481ef3810c68541004c7fbacaf36e7f44647"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1794205882453/replay/runtime.jsonl",
+      "bytes": 473579219,
+      "sha256": "2eedd925d6f5155f8ce7cc6963a5c7c027a3ccf8a784f73a338f413bfc2589ac",
+      "compressed": "verified-checkpoints/live-auction-1794205882453/replay/runtime.jsonl.gz",
+      "compressedBytes": 55152007,
+      "compressedSha256": "44bdfdc6384c1299710ad9b554691cd7eea81f41ac8e88fcb57c063575574102"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1794206352133/replay-before-disconnect/runtime.jsonl",
+      "bytes": 162754790,
+      "sha256": "c46c7bb250e6a9729a14854d50e89472eab3dcc0b4495e8698a142eab152a997",
+      "compressed": "verified-checkpoints/live-auction-1794206352133/replay-before-disconnect/runtime.jsonl.gz",
+      "compressedBytes": 19561444,
+      "compressedSha256": "ee25be2f18703e9654d7714ac36bfb49f4431e01cc8e1e60d6824a891d4639e5"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1794206352133/replay-interrupted-monitor/runtime.jsonl",
+      "bytes": 169593257,
+      "sha256": "f5b4a3d6d9ffe8f04f3a1ea270bcdb9470eac554ab8eec9190e680e160c5ee38",
+      "compressed": "verified-checkpoints/live-auction-1794206352133/replay-interrupted-monitor/runtime.jsonl.gz",
+      "compressedBytes": 20331078,
+      "compressedSha256": "2fecd01b5dfa369ad680b9ed557464f608d1a7381216adf4b5c77ed1339867a7"
+    },
+    {
+      "path": "verified-checkpoints/live-auction-1794206352133/replay/runtime.jsonl",
+      "bytes": 294255297,
+      "sha256": "1b80bdcd0cecea9bfe5028ba21ea06de0e28a713b39cffd50ad991dcd88ef7b1",
+      "compressed": "verified-checkpoints/live-auction-1794206352133/replay/runtime.jsonl.gz",
+      "compressedBytes": 34713524,
+      "compressedSha256": "a97ece8a9abf4f588cedca5e4036431a446909dc653a458f44148b25cb60ad57"
+    },
+    {
+      "path": "verified-checkpoints/ui-auction-1793457192221/replay/runtime.jsonl",
+      "bytes": 93554605,
+      "sha256": "2585d4ed08c5057562c23b7efbf87baac4e2b2c8c4745c91de016970ae0430c1",
+      "compressed": "verified-checkpoints/ui-auction-1793457192221/replay/runtime.jsonl.gz",
+      "compressedBytes": 11176736,
+      "compressedSha256": "d3fa488cda0bcc98262247befa9720563ec2161363d9a5cd23716c97fa6b09fa"
+    },
+    {
+      "path": "verified-checkpoints/ui-auction-1793458813137/replay/runtime.jsonl",
+      "bytes": 101696810,
+      "sha256": "914173650adbdbec1da551ca150e37ec6461391ff585b9b230f6b7e41c744baf",
+      "compressed": "verified-checkpoints/ui-auction-1793458813137/replay/runtime.jsonl.gz",
+      "compressedBytes": 12107299,
+      "compressedSha256": "efaa51af6d7128a17edff9011d82047af0df3b8e6c5addc2bbcb1263aea198da"
     }
   ]
 }

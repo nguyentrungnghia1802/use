@@ -16,6 +16,17 @@ public final class SemanticProgramManifest {
         if(assets.size()!=1)throw new IllegalArgumentException("REPLAY_OFFICIAL_MODEL_ASSET_REQUIRED");
         var source=CanonicalJson.object(CanonicalJson.decode(assets.getFirst().bytes()));
         program.requireSourceHash(SemanticJson.hash(source));
+        if(program.isCompact()) {
+            var inputs=program.compactPlan().mappingInputs().orElseThrow(()->new IllegalArgumentException("REPLAY_COMPACT_OWNED_INPUTS_REQUIRED"));
+            var body=new TreeMap<String,Object>();
+            body.put("schemaVersion","1.4.0");body.put("profile",SemanticJson.tree(program.profile()));body.put("source",source);
+            body.put("rules",CanonicalJson.decode(program.rules().bytes()));body.put("programHash",program.hash());body.put("cslHash",program.cslHash());
+            body.put("goalHash",program.goalHash());body.put("bindingHash",program.bindings().hash());body.put("traceHash",SemanticJson.hash(SemanticJson.tree(program.complement())));
+            body.put("implementation",compactImplementation());
+            body.put("declarative",Map.of("version","JACAMO_MAPPING_XML/3.0","location",inputs.compactSpecification().location().sourceName(),
+                    "xml",SemanticJson.tree(inputs.xml()),"ocl",SemanticJson.tree(inputs.ocl()),"sources",SemanticJson.tree(inputs.sources().values())));
+            return CanonicalJson.encode(body);
+        }
         if(program.xmlPlan()!=null) {
             var inputs=program.xmlPlan().inputs();var body=new TreeMap<String,Object>();
             body.put("schemaVersion",inputs.authoredModels()?"1.3.0":"1.2.0");body.put("profile",SemanticJson.tree(program.profile()));body.put("source",source);body.put("rules",CanonicalJson.decode(program.rules().bytes()));
@@ -30,6 +41,7 @@ public final class SemanticProgramManifest {
     }
     public Decoded decode(byte[] bytes) {
         var body=CanonicalJson.object(CanonicalJson.decode(bytes));
+        if("1.4.0".equals(body.get("schemaVersion")))return decodeCompact(body);
         if("1.2.0".equals(body.get("schemaVersion"))||"1.3.0".equals(body.get("schemaVersion")))return decodeDeclarative(body);
         if("1.1.0".equals(body.get("schemaVersion")))throw new IllegalArgumentException("REPLAY_CASE_PROFILE_RETIRED_USE_DECLARATIVE_XML");
         if(!body.keySet().equals(FIELDS)||!"1.0.0".equals(body.get("schemaVersion")))throw new IllegalArgumentException("REPLAY_PROGRAM_SCHEMA_UNSUPPORTED");
@@ -43,6 +55,45 @@ public final class SemanticProgramManifest {
                 ||!program.bindings().hash().equals(body.get("bindingHash"))||!SemanticJson.hash(SemanticJson.tree(program.complement())).equals(body.get("traceHash")))
             throw new IllegalArgumentException("REPLAY_PROGRAM_FINGERPRINT_MISMATCH");
         return new Decoded(source,program);
+    }
+    private Decoded decodeCompact(Map<String,Object> body) {
+        var expected=new HashSet<>(FIELDS);expected.add("declarative");
+        if(!body.keySet().equals(expected))throw new IllegalArgumentException("REPLAY_COMPACT_FIELDS");
+        if(!SemanticJson.hash(compactImplementation()).equals(SemanticJson.hash(body.get("implementation"))))throw new IllegalArgumentException("REPLAY_COMPACT_IMPLEMENTATION_INCOMPATIBLE");
+        var spec=CanonicalJson.object(body.get("declarative"));
+        if(!spec.keySet().equals(Set.of("version","location","xml","ocl","sources"))||!"JACAMO_MAPPING_XML/3.0".equals(spec.get("version"))
+                ||!(spec.get("location") instanceof String location)||!(spec.get("sources") instanceof List<?> rows)||rows.size()>128)
+            throw new IllegalArgumentException("REPLAY_COMPACT_SCHEMA_UNSUPPORTED");
+        var xml=asset(spec.get("xml"));var ocl=asset(spec.get("ocl"));
+        if(!xml.id().equals("mapping-specification")||!xml.format().equals("JACAMO_MAPPING_XML/3.0")||!ocl.id().equals("authored-ocl")||!ocl.format().equals("NATIVE_USE_OCL"))
+            throw new IllegalArgumentException("REPLAY_COMPACT_ASSET_TYPE");
+        var sources=new LinkedHashMap<String,TraceComplement.Asset>();
+        for(var raw:rows){var value=asset(raw);if(sources.putIfAbsent(value.id(),value)!=null)throw new IllegalArgumentException("REPLAY_COMPACT_SOURCE_DUPLICATE");}
+        var inputs=org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs.fromFrozen(xml.bytes(),ocl.bytes(),sources,location);
+        if(!inputs.isCompact()||!inputs.authoredModels())throw new IllegalArgumentException("REPLAY_COMPACT_NATIVE_MODELS_REQUIRED");
+        var source=ContractPayloads.model(CanonicalJson.object(body.get("source")));
+        var program=new org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericMappingEngine().map(source,inputs);
+        if(!program.profile().hash().equals(SemanticJson.hash(body.get("profile")))||!Arrays.equals(program.rules().bytes(),CanonicalJson.encode(body.get("rules")))
+                ||!program.hash().equals(body.get("programHash"))||!program.cslHash().equals(body.get("cslHash"))||!program.goalHash().equals(body.get("goalHash"))
+                ||!program.bindings().hash().equals(body.get("bindingHash"))||!SemanticJson.hash(SemanticJson.tree(program.complement())).equals(body.get("traceHash")))
+            throw new IllegalArgumentException("REPLAY_COMPACT_FINGERPRINT_MISMATCH");
+        return new Decoded(source,program);
+    }
+    private static Map<String,Object> compactImplementation() {
+        var result=new TreeMap<String,Object>(declarativeImplementation());
+        for(String name:List.of("CompactMappingReader","CompactMappingSpecification","CorrespondenceValidator","SourceReference","SourceSymbol","SourceSymbolCatalog",
+                "NativeTargetCatalog","TargetReference","TargetSymbol","CslBinding","IStarBinding","ActorRuntimeBinding","BindingExplanation",
+                "ObservationPlanCompiler","ObservationCapabilityPlanner","CompiledObservationPlan","CompactNativePreparation","CompactRuntimeStateMapping")) {
+            try {compactClass(result,Class.forName("org.tzi.use.plugins.jacamo.semantics.mapping.compact."+name,false,SemanticProgramManifest.class.getClassLoader()));}
+            catch(ClassNotFoundException missing){throw new IllegalArgumentException("REPLAY_COMPACT_IMPLEMENTATION_CLASS_MISSING:"+name,missing);}
+        }
+        compactClass(result,org.tzi.use.plugins.jacamo.semantics.mapping.ocl.NativeTaskBindings.class);
+        compactClass(result,org.tzi.use.plugins.jacamo.semantics.mapping.SourceModelNormalizer.class);
+        return Map.copyOf(result);
+    }
+    private static void compactClass(Map<String,Object> hashes,Class<?> type) {
+        hashes.put(type.getName(),resource("/"+type.getName().replace('.','/')+".class"));
+        for(var nested:type.getDeclaredClasses())compactClass(hashes,nested);
     }
     private Decoded decodeDeclarative(Map<String,Object> body) {
         var expected=new HashSet<>(FIELDS);expected.add("declarative");if(!body.keySet().equals(expected))throw new IllegalArgumentException("REPLAY_DECLARATIVE_FIELDS");

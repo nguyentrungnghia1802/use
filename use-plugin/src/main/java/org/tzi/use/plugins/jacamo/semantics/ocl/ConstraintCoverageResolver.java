@@ -52,6 +52,8 @@ public final class ConstraintCoverageResolver {
         return unavailableSelf(expression,engine,self,sources,lost,Set.of());
     }
     public String unavailableSelf(Expression expression,NativeRuntimeMutationEngine engine,MObject self,Map<String,Completeness> sources,boolean lost,Set<String> freshBoards) {
+        if(engine.canonicalMappingConfigured()&&engine.canonicalProgram().isCompact()
+                &&(!engine.canonicalProgramHash().equals(engine.metadata(self,"compact:program"))||!"COMPLETE".equals(engine.metadata(self,"compact:quality"))))return "COMPACT_EXACT_NATIVE_SELF_UNAVAILABLE";
         if(engine.xmlCase()) {
             if(xmlObserver(self)) {if(!xmlObserverOwned(engine,self))return "XML_EXACT_OBSERVER_BINDING_UNAVAILABLE";}
             else if(!engine.canonicalProgramHash().equals(engine.metadata(self,"xml:m0:program"))||!"COMPLETE".equals(engine.metadata(self,"xml:m0:quality")))return "XML_EXACT_M0_BINDING_UNAVAILABLE";
@@ -71,7 +73,7 @@ public final class ConstraintCoverageResolver {
         // Explicit allInstances and authoritative relation populations still
         // require their own global completeness. Other profiles keep the
         // previous conservative admission policy.
-        String reason=engine.xmlCase()?unavailablePopulations(expression,engine,sources,lost):unavailable(expression,engine,sources,lost);if(!reason.isBlank())return reason;
+        String reason=engine.declarativeMapping()?unavailablePopulations(expression,engine,sources,lost):unavailable(expression,engine,sources,lost);if(!reason.isBlank())return reason;
         var visitor=ExternalOclConstraintService.dependencyVisitor();expression.processWithVisitor(visitor);
         if(engine.xmlCase())for(var association:visitor.getCoverageData().getAssociationCoverage().keySet())if(association.getAnnotation("OriginalCslAssociation")!=null) {
             String source=engine.system().model().getAnnotationValue("CanonicalTupleAuthority","sourceId");if(source.isBlank()||sources.get(source)!=Completeness.COMPLETE)return "AUTHORITATIVE_ASSOCIATION_TUPLE_POPULATION_UNPROVEN:"+association.name();
@@ -107,6 +109,9 @@ public final class ConstraintCoverageResolver {
             boolean optional="true".equals(attribute.getAnnotationValue(annotation,"optional"));
             if(optional&&!canonical)continue;
             for(var object:candidates) {
+                if(engine.canonicalMappingConfigured()&&engine.canonicalProgram().isCompact()
+                        &&(!engine.canonicalProgramHash().equals(engine.metadata(object,"compact:program"))||!"COMPLETE".equals(engine.metadata(object,"compact:quality"))))
+                    return "COMPACT_CURRENT_ATTRIBUTE_OWNER_UNAVAILABLE:"+object.name();
                 boolean caseObservation=canonical&&!"true".equals(engine.metadata(object,"propertyAbsent:"+attribute.name()))
                         &&(engine.xmlCase()&&engine.canonicalProgramHash().equals(engine.metadata(object,"xml:m0:program"))&&"COMPLETE".equals(engine.metadata(object,"xml:m0:quality"))&&!engine.metadata(object,"observedValueHash:"+attribute.name()).isBlank());
                 if(!caseObservation&&engine.metadata(object,"propertySlot:"+attribute.name()).isBlank()) {
@@ -120,7 +125,7 @@ public final class ConstraintCoverageResolver {
         return "";
     }
     private List<MObject> receivers(ExternalOclConstraintService.DependencyVisitor.AttributeRead read,NativeRuntimeMutationEngine engine,MObject self) {
-        if(engine.xmlCase()) {
+        if(engine.declarativeMapping()) {
             var objects=OclReadReceivers.resolve(read.receiver(),read.iterators(),read.frames(),engine.system().state(),self);
             return objects==null||objects.stream().anyMatch(o->!o.cls().isSubClassifierOf(read.attribute().owner()))?null:objects;
         }
@@ -173,6 +178,9 @@ public final class ConstraintCoverageResolver {
         return false; // Unknown source authority cannot certify an empty or complete population.
     }
     public boolean populationComplete(org.tzi.use.uml.mm.MClassifier cls,Map<String,Completeness> sources,NativeRuntimeMutationEngine engine) {
+        // Compact populations need an explicit inventory certificate. Transport
+        // completeness cannot certify allInstances or an absent native class.
+        if(engine!=null&&engine.canonicalMappingConfigured()&&engine.canonicalProgram().isCompact())return compactPopulationComplete(cls,sources,engine);
         if(engine!=null&&engine.xmlCase()&&cls.getAnnotation("DeclarativeObserverView")!=null
                 &&sources.get("cartago")==Completeness.COMPLETE) {
             if(org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.EmptyObserverPopulation.complete(cls,engine))return true;
@@ -191,6 +199,24 @@ public final class ConstraintCoverageResolver {
             return !objects.isEmpty()&&objects.stream().allMatch(o->engine.canonicalProgramHash().equals(engine.metadata(o,"xml:m0:program"))&&"COMPLETE".equals(engine.metadata(o,"xml:m0:quality"))&&"COMPLETE".equals(engine.metadata(o,"xml:m0:population")));
         }
         return true;
+    }
+    private static boolean compactPopulationComplete(org.tzi.use.uml.mm.MClassifier cls,Map<String,Completeness> sources,NativeRuntimeMutationEngine engine) {
+        if(sources.get("cartago")!=Completeness.COMPLETE)return false;
+        var program=engine.canonicalProgram();
+        var mapped=program.compactPlan().cslBindings().stream().filter(b->!b.isAttribute()
+                &&(b.sourceRef() instanceof org.tzi.use.plugins.jacamo.semantics.mapping.compact.SourceReference.ArtifactRef
+                    ||b.sourceRef() instanceof org.tzi.use.plugins.jacamo.semantics.mapping.compact.SourceReference.WorkspaceRef))
+                .map(b->b.targetRef().qualifier()).collect(java.util.stream.Collectors.toSet());
+        // No authority is implied for unmapped types or a mixed superclass universe.
+        if(!mapped.contains(cls.name()))return false;
+        if(engine.system().model().classes().stream().anyMatch(c->c.isSubClassifierOf(cls)&&!c.equals(cls)&&!c.isAbstract()&&!mapped.contains(c.name())))return false;
+        var contexts=engine.system().state().allObjects().stream().filter(o->program.hash().equals(engine.metadata(o,"compact:program"))
+                &&"WORKSPACE_CONTEXT".equals(engine.metadata(o,"compact:kind"))).toList();
+        if(contexts.isEmpty()||contexts.stream().anyMatch(o->!"COMPLETE".equals(engine.metadata(o,"compact:inventory"))))return false;
+        var cuts=contexts.stream().map(o->engine.metadata(o,"compact:cut")).distinct().toList();
+        if(cuts.size()!=1||cuts.getFirst().isBlank())return false;
+        return engine.system().state().allObjects().stream().filter(o->o.cls().isSubClassifierOf(cls)).allMatch(o->program.hash().equals(engine.metadata(o,"compact:program"))
+                &&"COMPLETE".equals(engine.metadata(o,"compact:inventory"))&&"COMPLETE".equals(engine.metadata(o,"compact:quality"))&&cuts.getFirst().equals(engine.metadata(o,"compact:cut")));
     }
     /** Source-derived current inventory certificates do not upgrade polling history. */
     private static boolean xmlInventoryComplete(org.tzi.use.uml.mm.MClassifier cls,NativeRuntimeMutationEngine engine) {

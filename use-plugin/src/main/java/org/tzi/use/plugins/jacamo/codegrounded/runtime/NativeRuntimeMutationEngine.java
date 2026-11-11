@@ -116,13 +116,17 @@ public final class NativeRuntimeMutationEngine {
     public boolean canonicalMappingConfigured(){return canonicalMapper!=null;}
     public boolean declarativeMapping(){return caseMapping!=null;}
     public boolean xmlCase(){return canonicalProgram!=null&&canonicalProgram.xmlPlan()!=null;}
+    public synchronized org.tzi.use.plugins.jacamo.semantics.mapping.CaseRuntimeMapping caseMapping(){return caseMapping;}
     /** Read under the existing native barrier; the XML adapter returns immutable casts, not another state. */
     public synchronized List<org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.OccurrenceProjection.Scope> xmlOccurrences(String run,long generation,String revision) {
-        if(!(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping xml))throw new IllegalStateException("XML_RUNTIME_MAPPING_REQUIRED");
-        return xml.occurrences(cslPort(),run,generation,revision);
+        if(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping xml)return xml.occurrences(cslPort(),run,generation,revision);
+        if(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactRuntimeStateMapping compact)return compact.occurrences(cslPort(),run,generation,revision);
+        throw new IllegalStateException("XML_RUNTIME_MAPPING_REQUIRED");
     }
     public synchronized List<org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.TaskDemandProjection.Demand> xmlTaskDemands(String run,long generation,String revision) {
-        if(!(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping xml))throw new IllegalStateException("XML_RUNTIME_MAPPING_REQUIRED");return xml.taskDemands(cslPort(),run,generation,revision);
+        if(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping xml)return xml.taskDemands(cslPort(),run,generation,revision);
+        if(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactRuntimeStateMapping compact)return compact.taskDemands(cslPort(),run,generation,revision);
+        throw new IllegalStateException("XML_RUNTIME_MAPPING_REQUIRED");
     }
     public void validateVerificationObservation(VerificationObservation observation,String run,long generation,String revision) {
         if(caseMapping!=null)try{caseMapping.validateObservation(observation,run,generation,revision);}

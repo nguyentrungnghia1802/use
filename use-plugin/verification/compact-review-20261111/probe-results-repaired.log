@@ -1,0 +1,11 @@
+PASS missing_agent_rejected observed=SOURCE_AGENT_NOT_FOUND: 'does_not_exist'
+PASS missing_plan_rejected observed=SOURCE_ASL_PLAN_NOT_FOUND: no plans registered for 'missing.asl'
+PASS both_instances_projected observed=2
+PASS workspace_in_identity observed=parcel_workspace_a_first / parcel_workspace_b_first
+PASS task_rules_exist observed=3
+PASS no_approval_without_task_evidence observed=HOLD_UNVERIFIED {task-pre:req_plan_bounds:pack=Check[truth=UNKNOWN, applicability=APPLICABLE, diagnostic=Task pack evidence missing in cut], task-post:req_plan_bounds:pack=Check[truth=UNKNOWN, applicability=APPLICABLE, diagnostic=Task pack evidence missing in cut], task-post:req_plan_bounds:send=Check[truth=UNKNOWN, applicability=APPLICABLE, diagnostic=Task send evidence missing in cut], native.applicable=Check[truth=UNKNOWN, applicability=APPLICABLE, diagnostic=One or more checks pending/unknown]}
+PASS missing_status_not_success observed=UNKNOWN
+PASS rollback_restores_disposed_object observed=retained
+PASS invalid_boolean_not_false observed=null
+REVIEW_FAILURES=0
+

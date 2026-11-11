@@ -1,0 +1,9 @@
+ M use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java
+ M use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/CodeGroundedNativePipeline.java
+ M use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java
+ M use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/JaCaMoRuntimeStateMapping.java
+ M use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/MappingRuleSet.java
+ M use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/SemanticProgram.java
+ M use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/GenericMappingEngine.java
+ M use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingInputs.java
+ M use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/RequirementInventory.java

@@ -8,10 +8,15 @@ import org.tzi.use.plugins.jacamo.semantics.mapping.*;
 import org.tzi.use.plugins.jacamo.semantics.evidence.*;
 import org.tzi.use.semantic.engine.api.*;
 import org.vnu.sme.goal.dsl.istar.mm.*;
+import org.tzi.use.plugins.jacamo.semantics.mapping.compact.*;
 import static org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingSpecification.Node;
 public final class GenericMappingEngine {
     public SemanticProgram map(ModelSnapshot input,MappingInputs inputs) {
-        EngineInstallationGuard.verify();verifySource(input,inputs);
+        EngineInstallationGuard.verify();
+        if (inputs.isCompact()) {
+            return mapCompact(input, inputs);
+        }
+        verifySource(input,inputs);
         var source=new SourceModelNormalizer().normalize(input);var selections=SourceSelections.execute(inputs);
         var authored=new AuthoredModelLoader();
         var csl=inputs.authoredModels()?authored.csl(inputs):new CslRuleExecutor().prepare(inputs);
@@ -114,5 +119,258 @@ public final class GenericMappingEngine {
         var matcher=Pattern.compile("\\$\\{([A-Za-z_][A-Za-z0-9_]*)}").matcher(text);var output=new StringBuilder();
         while(matcher.find()){var value=values.get(matcher.group(1));if(value==null)throw at.location().error("STATIC_CAPTURE_REQUIRED");matcher.appendReplacement(output,Matcher.quoteReplacement(value));}
         matcher.appendTail(output);if(output.indexOf("${")>=0)throw at.location().error("STATIC_TEMPLATE_UNSUPPORTED");return output.toString();
+    }
+
+    public SemanticProgram mapCompact(ModelSnapshot input, MappingInputs inputs) {
+        EngineInstallationGuard.verify();
+        var official = input.semanticContract();
+        if (official.project() != null && !inputs.projectDigest().isEmpty()
+                && !official.project().sourceDigest().equals(inputs.projectDigest())) {
+            throw new IllegalArgumentException("COMPACT_OFFICIAL_PROJECT_DIGEST_MISMATCH");
+        }
+        var compactSpec = inputs.compactSpecification();
+        if (compactSpec == null) {
+            throw new IllegalArgumentException("COMPACT_SPECIFICATION_REQUIRED");
+        }
+
+        // 1. Compile Authored Models
+        if (!inputs.authoredModels()) {
+            throw new IllegalArgumentException("COMPACT_MAPPING_AUTHORED_MODELS_REQUIRED");
+        }
+        var cslAsset = inputs.require(MappingInputs.AUTHORED_CSL);
+        String cslText = new String(cslAsset.bytes(), java.nio.charset.StandardCharsets.UTF_8);
+        var cslModel = new org.tzi.use.semantic.engine.frontend.CslFrontend().compile(cslText, cslAsset.id()).requireModel();
+
+        var istarAsset = inputs.require(MappingInputs.AUTHORED_ISTAR);
+        String istarText = new String(istarAsset.bytes(), java.nio.charset.StandardCharsets.UTF_8);
+        var engineProfile = EngineSemanticsProfile.ROLE_SPECIALIZATION_V1;
+        var istarModel = new org.tzi.use.semantic.engine.frontend.IStarFrontend().compile(istarText, istarAsset.id(), engineProfile).requireModel();
+
+        // 2. Build Source and Target Catalogues
+        var sourceCatalog = SourceSymbolCatalog.fromSnapshot(official);
+        var targetCatalog = NativeTargetCatalog.fromModels(cslModel, istarModel);
+
+        // 3. Compile Observation Plan (performs strict correspondence and type validation)
+        String cslFp = CslModelFingerprint.of(cslModel);
+        String goalFp = new OwnedGoalModel(istarModel, engineProfile).hash();
+        var compactPlan = ObservationPlanCompiler.compile(
+                compactSpec, sourceCatalog, targetCatalog,
+                cslFp, goalFp, inputs.ocl().sha256(), engineProfile.name()).withInputs(inputs);
+
+        // 4. Build Supporting Structures for SemanticProgram
+        var source = new SourceModelNormalizer().normalize(input);
+        var bindings = new ArrayList<SemanticBindingIndex.Binding>();
+        var seenTargets = new HashSet<List<String>>();
+
+        // 4.1 CSL Bindings
+        for (var b : compactPlan.cslBindings()) {
+            SemanticBindingIndex.Kind targetKind;
+            String targetId;
+            String nativeSymbol;
+            Map<String, String> meta = new TreeMap<>();
+            compactSpec.cslMappings().stream().filter(c->c.source().equals(b.sourceRef().raw())&&c.target().equals(b.targetRef().raw())).findFirst()
+                    .ifPresent(c->c.attributes().forEach((k,v)->{if(Set.of("contextAbstraction","enactsRoles","converter").contains(k))meta.put(k,v);}));
+            if (b.isAttribute()) {
+                targetKind = SemanticBindingIndex.Kind.ATTRIBUTE;
+                targetId = b.targetRef().qualifier() + "::" + b.targetRef().member();
+                nativeSymbol = targetId;
+            } else if (cslModel.findRole(b.targetRef().qualifier()).isPresent()) {
+                targetKind = SemanticBindingIndex.Kind.ROLE;
+                targetId = b.targetRef().qualifier();
+                nativeSymbol = targetId;
+            } else if (cslModel.findOrgContext(b.targetRef().qualifier()).isPresent()) {
+                targetKind = SemanticBindingIndex.Kind.ORG_CONTEXT;
+                targetId = b.targetRef().qualifier();
+                nativeSymbol = targetId;
+            } else {
+                targetKind = SemanticBindingIndex.Kind.ENTITY;
+                targetId = b.targetRef().qualifier();
+                nativeSymbol = targetId;
+            }
+            String sourceId = resolveSourceNodeId(source, b.sourceRef(), targetKind, meta);
+            if (seenTargets.add(List.of(targetKind.name(), targetId))) {
+                bindings.add(new SemanticBindingIndex.Binding(
+                        sourceId,
+                        targetKind,
+                        targetId,
+                        nativeSymbol,
+                        "CSL3",
+                        "Compact mapping correspondence",
+                        meta
+                ));
+            }
+        }
+
+        // Unmapped declarations remain model definitions. They do not acquire
+        // a source object, role, group or runtime population by position/name.
+        String projectNodeId = findProjectNodeId(source);
+
+        // 4.2 iStar Actor and Element Bindings + GoalRuntimeBindingPlan
+        var actorTemplates = new TreeMap<String, GoalRuntimeBindingPlan.ActorTemplate>();
+        Map<String, ActorRuntimeBinding> explicitActorRuntimes = new LinkedHashMap<>();
+        for (var ar : compactPlan.actorBindings()) {
+            explicitActorRuntimes.put(ar.actorName(), ar);
+        }
+        Map<String, IStarBinding> actorIStarBindings = new LinkedHashMap<>();
+        Map<String, IStarBinding> elementIStarBindings = new LinkedHashMap<>();
+        for (var b : compactPlan.iStarBindings()) {
+            if (b.kind() == IStarBinding.BindingKind.ACTOR_MAPPING) {
+                actorIStarBindings.putIfAbsent(b.targetRef().qualifier(), b);
+            } else {
+                String elemId = b.targetRef().member() != null ? b.targetRef().member() : b.targetRef().qualifier();
+                elementIStarBindings.putIfAbsent(elemId, b);
+            }
+        }
+
+        for (Actor actor : istarModel.getActors()) {
+            IStarBinding ib = actorIStarBindings.get(actor.name());
+            ActorRuntimeBinding ar = explicitActorRuntimes.get(actor.name());
+            if (ib == null) throw new IllegalArgumentException("COMPACT_ACTOR_SOURCE_MAPPING_REQUIRED:" + actor.name());
+            String actorSourceId = resolveSourceNodeId(source, ib.sourceRef(), SemanticBindingIndex.Kind.ACTOR, new TreeMap<>());
+            String roleSourceId = ib.sourceRef() instanceof SourceReference.MoiseRoleRef ? actorSourceId : "";
+            String contextSourceId = "";
+            String activationPolicy = ar != null ? ar.activationPolicy() : "EXPLICIT_ENACTMENT";
+            String episodePolicy = ar != null ? ar.episodePolicy() : "STATIC_LIFETIME";
+            actorTemplates.put(actor.name(), new GoalRuntimeBindingPlan.ActorTemplate(
+                    actor.name(), actorSourceId, roleSourceId, contextSourceId, "", activationPolicy, episodePolicy));
+            if (seenTargets.add(List.of(SemanticBindingIndex.Kind.ACTOR.name(), actor.name()))) {
+                bindings.add(new SemanticBindingIndex.Binding(
+                        actorSourceId, SemanticBindingIndex.Kind.ACTOR, actor.name(), actor.name(),
+                        "ISTAR3", "Compact actor correspondence", Map.of()));
+            }
+        }
+
+        var elementTemplates = new TreeMap<String, GoalRuntimeBindingPlan.ElementTemplate>();
+        for (Actor actor : istarModel.getActors()) {
+            String actorSelf = compactSpec.actorRuntimes().stream().filter(a -> a.actor().equals(actor.name()))
+                    .map(a -> a.attributes().getOrDefault("self", "")).findFirst().orElse("");
+            for (IntentionalElement elem : actor.elements()) {
+                if (!(elem instanceof Goal) && !(elem instanceof Task)) continue;
+                String elemId = elem.id();
+                boolean structural = istarModel.getActors().stream().flatMap(a -> a.refinements().stream()).anyMatch(r -> r.parent().equals(elemId))
+                        || istarModel.getDependencies().stream().anyMatch(d -> elemId.equals(d.dependerElmt()));
+                if (elem instanceof Task) structural = false;
+                if (elem instanceof Goal authored && !authored.conditions().isEmpty()) structural = false;
+
+                String contractExpr = "";
+                if (elem instanceof Goal g && !g.conditions().isEmpty()) {
+                    contractExpr = g.oclSource();
+                } else if (elem instanceof Task t) {
+                    contractExpr = t.postconditions().stream().findFirst().map(IStarOclConstraint::oclBody).orElse("");
+                }
+
+                String selfDecl = compactSpec.istarMappings().stream()
+                        .filter(c -> targetCatalog.resolve(TargetReference.parse(c.target()), "ISTAR").name().equals(elemId))
+                        .map(c -> c.attributes().getOrDefault("self", actorSelf)).findFirst().orElse(actorSelf);
+                if (!structural && !contractExpr.isBlank() && selfDecl.isBlank())
+                    throw new IllegalArgumentException("COMPACT_EXPLICIT_NATIVE_SELF_REQUIRED:" + elemId);
+                String selfKind = selfDecl.isBlank() ? "" : cslModel.findEntity(selfDecl).isPresent() ? "ENTITY"
+                        : cslModel.findRole(selfDecl).isPresent() ? "ROLE" : cslModel.findOrgContext(selfDecl).isPresent() ? "ORG_CONTEXT" : "";
+                if (!selfDecl.isBlank() && selfKind.isBlank()) throw new IllegalArgumentException("COMPACT_NATIVE_SELF_NOT_FOUND:" + selfDecl);
+                final String receiver = selfDecl;
+                String selfSourceId = selfDecl.isBlank() ? "" : bindings.stream()
+                        .filter(b -> Set.of(SemanticBindingIndex.Kind.ENTITY, SemanticBindingIndex.Kind.ROLE, SemanticBindingIndex.Kind.ORG_CONTEXT).contains(b.kind()) && b.targetId().equals(receiver))
+                        .map(SemanticBindingIndex.Binding::sourceId).findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("COMPACT_NATIVE_SELF_SOURCE_REQUIRED:" + receiver));
+                elementTemplates.put(elemId, new GoalRuntimeBindingPlan.ElementTemplate(
+                        elemId, actor.name(), structural, selfDecl, selfSourceId, selfKind, contractExpr));
+
+                IStarBinding eb = elementIStarBindings.get(elemId);
+                String elemSourceId = eb != null
+                        ? resolveSourceNodeId(source, eb.sourceRef(), elem instanceof Goal ? SemanticBindingIndex.Kind.GOAL : SemanticBindingIndex.Kind.TASK, new TreeMap<>())
+                        : actorTemplates.get(actor.name()).sourceId();
+                var kind = elem instanceof Goal ? SemanticBindingIndex.Kind.GOAL : SemanticBindingIndex.Kind.TASK;
+                if (seenTargets.add(List.of(kind.name(), elemId))) {
+                    bindings.add(new SemanticBindingIndex.Binding(
+                            elemSourceId, kind, elemId, "", "ISTAR3", "Compact intentional correspondence", Map.of()));
+                }
+            }
+        }
+
+        var goalBindings = new GoalRuntimeBindingPlan(actorTemplates, elementTemplates, List.of());
+        var index = new SemanticBindingIndex(bindings);
+        var profile = new JaCaMoMappingProfile("jacamo.mapping.compact", "3.0", engineProfile, Set.of("csl.v4", "istar.original", "source.complement", "mapping.xml/3.0"));
+        var rules = new MappingRuleSet("3.0", compactSpec.id(), profile.id(), profile.version(), source.sourceHash(), cslText, istarText, index.bindings(), List.of(), List.of(), Map.of());
+
+        var preserved = new SemanticTransformationService().preserveCanonical(input, source, index);
+        var assets = new ArrayList<TraceComplement.Asset>(preserved.assets());
+        assets.addAll(inputs.sources().values());
+        assets.add(inputs.xml());
+        assets.add(inputs.ocl());
+        assets.add(TraceComplement.Asset.of("compact-plan", "COMPACT_PLAN_JSON", CanonicalJson.encode(compactPlan.evidenceSummary())));
+        var complement = new TraceComplement(preserved.version(), preserved.ruleVersion(), preserved.sourceHash(), preserved.metamodelHash(), assets, preserved.decisions());
+
+        return SemanticProgram.fromCompact(profile, rules, source, cslModel, istarModel, index, complement, goalBindings, compactPlan);
+    }
+
+    private static String findProjectNodeId(NormalizedSourceModel source) {
+        return uniqueSource(source.nodes().stream().filter(n -> "JACAMO_PROJECT".equals(n.sourceKind())).toList(), "project");
+    }
+    private static String feature(NormalizedSourceModel.Node node,String key) {
+        var value=node.features().get(key); return value != null && value.value() instanceof String text ? text : "";
+    }
+    private static String uniqueSource(List<NormalizedSourceModel.Node> candidates,String reference) {
+        if(candidates.size()!=1) throw new IllegalArgumentException("COMPACT_SOURCE_NODE_UNAVAILABLE_OR_AMBIGUOUS:"+reference+":"+candidates.stream().map(NormalizedSourceModel.Node::id).toList());
+        return candidates.getFirst().id();
+    }
+    private static boolean organization(NormalizedSourceModel source,NormalizedSourceModel.Node node,String name) {
+        var visited=new HashSet<String>();
+        while(node!=null && visited.add(node.id())) {
+            if(node.sourceKind().equals("MOISE_OS")) return name.equals(feature(node,"name"));
+            String parent=node.container();
+            node=source.nodes().stream().filter(n -> n.id().equals(parent)).findFirst().orElse(null);
+        }
+        return false;
+    }
+    private static String resolveSourceNodeId(NormalizedSourceModel source, SourceReference ref,
+            SemanticBindingIndex.Kind targetKind, Map<String,String> meta) {
+        String type=switch(ref) {
+            case SourceReference.ArtifactRef r -> r.className();
+            case SourceReference.ArtifactPropertyRef r -> r.className();
+            case SourceReference.ArtifactFieldRef r -> r.className();
+            case SourceReference.ArtifactIdentityRef r -> r.className();
+            case SourceReference.ArtifactOpRef r -> r.className();
+            default -> "";
+        };
+        if(!type.isBlank()) {
+            String id=org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.artifactId(type);
+            return uniqueSource(source.nodes().stream().filter(n -> n.id().equals(id)).toList(), ref.raw());
+        }
+        if(ref instanceof SourceReference.ProjectRef) {
+            meta.put("contextAbstraction","PROJECT_EXECUTION_VIEW/1.0");return findProjectNodeId(source);
+        }
+        if(ref instanceof SourceReference.WorkspaceRef workspace) {
+            meta.put("contextAbstraction","WORKSPACE_EXECUTION_VIEW/1.0");
+            if(workspace.name().equals("*"))return findProjectNodeId(source);
+            return uniqueSource(source.nodes().stream().filter(n->n.sourceKind().equals("JACAMO_WORKSPACE_DECLARATION")&&workspace.name().equals(feature(n,"name"))).toList(),ref.raw());
+        }
+        if(ref instanceof SourceReference.WorkspaceIdentityRef workspace)
+            return resolveSourceNodeId(source,new SourceReference.WorkspaceRef(workspace.name(),"workspace:"+workspace.name()),targetKind,meta);
+        if(ref instanceof SourceReference.OrganizationRef organization) {
+            meta.put("contextAbstraction","ORGANIZATION_DEPLOYMENT_VIEW");
+            return uniqueSource(source.nodes().stream().filter(n->n.sourceKind().equals("JACAMO_ORGANIZATION_DEPLOYMENT")&&organization.name().equals(feature(n,"name"))).toList(),ref.raw());
+        }
+        if(ref instanceof SourceReference.AgentRef selected) {
+            var declarations=source.nodes().stream().filter(n->n.sourceKind().equals("JACAMO_AGENT_DECLARATION")&&selected.agentOrProgram().equals(feature(n,"name"))).toList();
+            if(!declarations.isEmpty())return uniqueSource(declarations,ref.raw());
+        }
+        var candidates=source.nodes().stream().filter(n -> switch(ref) {
+            case SourceReference.MoiseGroupRef r -> n.concept().equals("Group") && r.groupName().equals(feature(n,"groupId")) && organization(source,n,r.organization());
+            case SourceReference.MoiseRoleRef r -> n.concept().equals("Role") && r.roleName().equals(feature(n,"roleId")) && organization(source,n,r.organization());
+            case SourceReference.MoiseSchemeRef r -> n.sourceKind().equals("MOISE_SCHEME") && r.schemeName().equals(feature(n,"schemeId")) && organization(source,n,r.organization());
+            case SourceReference.MoiseGoalRef r -> n.sourceKind().equals("MOISE_GOAL") && r.goalName().equals(feature(n,"goalId")) && organization(source,n,r.organization());
+            case SourceReference.AgentRef r -> n.sourceKind().equals("JACAMO_AGENT_DECLARATION") && r.agentOrProgram().equals(feature(n,"name"))
+                    || n.sourceKind().equals("DERIVED_JASON_PROGRAM_ALIAS") && programPath(feature(n,"sourceUri"), r.agentOrProgram());
+            case SourceReference.AslGoalRef r -> n.sourceKind().equals("DERIVED_JASON_PROGRAM_ALIAS") && programPath(feature(n,"sourceUri"),r.aslPath());
+            case SourceReference.AslPlanStepRef r -> n.sourceKind().equals("DERIVED_JASON_PROGRAM_ALIAS") && programPath(feature(n,"sourceUri"),r.aslPath());
+            default -> false;
+        }).toList();
+        return uniqueSource(candidates, ref.raw());
+    }
+    private static boolean programPath(String actual,String selected) {
+        String normalized=actual.replace('\\','/').replaceFirst("^project:/", "");
+        String path=selected.replace('\\','/');
+        if(!path.endsWith(".asl")) path += ".asl";
+        return normalized.equals(path) || !path.contains("/") && normalized.endsWith("/"+path);
     }
 }

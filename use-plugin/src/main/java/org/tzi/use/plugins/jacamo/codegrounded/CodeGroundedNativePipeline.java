@@ -28,8 +28,8 @@ public final class CodeGroundedNativePipeline {
         var source=new JacamoSpecificationModel(snapshot.semanticContract());var trace=new CodeGroundedTraceCollector();
         var xmlPreparation=program.xmlPlan()==null?null:new org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlNativePreparation().prepare(snapshot,program,trace);
         var binding=xmlPreparation!=null?xmlPreparation.binding():new org.tzi.use.semantic.engine.use75.Use75CslModelBackend().compile(program.cslModel(),org.tzi.use.semantic.engine.use75.M0ExtensionSpec.observedPlayers());
-        if(xmlPreparation==null)new org.tzi.use.plugins.jacamo.semantics.mapping.CanonicalUseBindingAdapter().install(program,binding,trace);
-        var contracts=xmlPreparation!=null?xmlPreparation.intentional():new org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoOclContractMapping().install(snapshot,program,binding);
+        if(xmlPreparation==null && !program.isCompact())new org.tzi.use.plugins.jacamo.semantics.mapping.CanonicalUseBindingAdapter().install(program,binding,trace);
+        var contracts=xmlPreparation!=null?xmlPreparation.intentional():(program.isCompact()?new org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactNativePreparation().prepare(snapshot,program,binding,trace):new org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoOclContractMapping().install(snapshot,program,binding));
         boolean tupleWriter="EXPLICIT_RUNTIME_MODEL_BINDING".equals(program.rules().options().get("associationTupleAuthority"))&&!program.rules().options().getOrDefault("associationTupleSourceId","").isBlank();
         if(tupleWriter)binding.model().addAnnotation(new org.tzi.use.uml.mm.MElementAnnotation("CanonicalTupleAuthority",java.util.Map.of("authority","EXPLICIT_RUNTIME_MODEL_BINDING","sourceId",program.rules().options().get("associationTupleSourceId"))));
         var model=new NativeUseModelBuilder().buildCsl(binding,trace,mode,tupleWriter);var state=new NativeUseStateBuilder().build(source,model,trace);

@@ -12,11 +12,16 @@ public final class MappingInputs {
     public static final String AUTHORED_CSL="authored-csl",AUTHORED_ISTAR="authored-istar";
     private static final int MAX_FILE=8*1024*1024, MAX_TOTAL=32*1024*1024;
     private final MappingSpecification specification;
+    private final org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactMappingSpecification compactSpecification;
     private final Map<String,TraceComplement.Asset> sources;
     private final TraceComplement.Asset xml,ocl;
     private MappingInputs(MappingSpecification spec,Map<String,TraceComplement.Asset> sources,byte[] xml,byte[] ocl) {
-        specification=spec;this.sources=Collections.unmodifiableMap(new LinkedHashMap<>(sources));
-        this.xml=TraceComplement.Asset.of("mapping-specification","JACAMO_MAPPING_XML/2.0",xml);
+        this(spec,null,sources,xml,ocl);
+    }
+    private MappingInputs(MappingSpecification spec,org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactMappingSpecification compactSpec,
+            Map<String,TraceComplement.Asset> sources,byte[] xml,byte[] ocl) {
+        specification=spec;this.compactSpecification=compactSpec;this.sources=Collections.unmodifiableMap(new LinkedHashMap<>(sources));
+        this.xml=TraceComplement.Asset.of("mapping-specification",compactSpec!=null?"JACAMO_MAPPING_XML/3.0":"JACAMO_MAPPING_XML/2.0",xml);
         this.ocl=TraceComplement.Asset.of("authored-ocl","NATIVE_USE_OCL",ocl);
     }
     public static MappingInputs read(Path jcm,Path xml,Path ocl) {
@@ -32,6 +37,44 @@ public final class MappingInputs {
         try {
             Path project=jcm.toRealPath(),root=project.getParent();
             byte[] specification=bounded(xml,MappingXmlReader.MAX_BYTES),authored=ocl==null?new byte[0]:bounded(ocl,1024*1024);
+            if (isCompactXml(specification)) {
+                var compactSpec = org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactMappingReader.read(specification, xml.getFileName().toString());
+                var sources = new LinkedHashMap<String, TraceComplement.Asset>();
+                int total = specification.length + authored.length;
+                byte[] rawJcm = bounded(project, MAX_FILE);
+                String jcmId = project.getFileName().toString();
+                byte[] canonicalJcm = BridgeJcmDerivation.removeBootstrap(rawJcm, project);
+                total = Math.addExact(total, canonicalJcm.length);
+                sources.put(jcmId, TraceComplement.Asset.of(jcmId, "JCM", canonicalJcm));
+                if (!Arrays.equals(canonicalJcm, rawJcm)) {
+                    var derived = TraceComplement.Asset.of(jcmId + ":bridge-derived", BridgeJcmDerivation.RECIPE, rawJcm);
+                    total = Math.addExact(total, derived.bytes().length);
+                    sources.put(derived.id(), derived);
+                }
+                if (csl != null) {
+                    Path cslPath = csl.toRealPath();
+                    if (!cslPath.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".csl"))
+                        throw new IllegalArgumentException("AUTHORED_MODEL_EXTENSION_REQUIRED:.csl");
+                    byte[] cslBytes = bounded(cslPath, MAX_FILE);
+                    total = Math.addExact(total, cslBytes.length);
+                    sources.put(AUTHORED_CSL, TraceComplement.Asset.of(AUTHORED_CSL, "NATIVE_CSL/4.0", cslBytes));
+                }
+                if (istar != null) {
+                    Path istarPath = istar.toRealPath();
+                    if (!istarPath.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".istar"))
+                        throw new IllegalArgumentException("AUTHORED_MODEL_EXTENSION_REQUIRED:.istar");
+                    byte[] istarBytes = bounded(istarPath, MAX_FILE);
+                    total = Math.addExact(total, istarBytes.length);
+                    sources.put(AUTHORED_ISTAR, TraceComplement.Asset.of(AUTHORED_ISTAR, "NATIVE_ISTAR/1.0", istarBytes));
+                }
+                var pins = new TreeMap<String, Object>();
+                sources.forEach((id, asset) -> pins.put(id, asset.sha256()));
+                var manifest = TraceComplement.Asset.of("source-admission-manifest", "VALIDATED_SOURCE_V1", org.jacamo.bridge.contract.CanonicalJson.encode(pins));
+                total = Math.addExact(total, manifest.bytes().length);
+                sources.put(manifest.id(), manifest);
+                if (total > MAX_TOTAL) throw new IllegalArgumentException("INPUT_TOTAL_CAPACITY");
+                return new MappingInputs(null, compactSpec, sources, specification, authored);
+            }
             if(policy!=null||ocl==null)specification=withSelection(specification,policy,ocl==null);
             var spec=new MappingXmlReader().parse(specification,xml.toString());
             boolean validated=validated(spec);
@@ -96,8 +139,22 @@ public final class MappingInputs {
         return asset;
     }
     private static String derivedId(MappingSpecification spec){return spec.root().attr("jcmRef")+":bridge-derived";}
-    public String projectDigest(){return sources.getOrDefault(derivedId(specification),require(specification.root().attr("jcmRef"))).sha256();}
+    public String projectDigest(){
+        if(compactSpecification != null) {
+            var jcm = sources.values().stream().filter(a -> a.format().equals("JCM")).findFirst();
+            if (jcm.isEmpty()) return "";
+            var derived = sources.get(jcm.get().id() + ":bridge-derived");
+            return derived != null ? derived.sha256() : jcm.get().sha256();
+        }
+        return sources.getOrDefault(derivedId(specification),require(specification.root().attr("jcmRef"))).sha256();
+    }
     public Map<String,Object> projectDerivation(){
+        if(compactSpecification != null) {
+            var jcm = sources.values().stream().filter(a -> a.format().equals("JCM")).findFirst();
+            if (jcm.isEmpty()) return Map.of();
+            var derived = sources.get(jcm.get().id() + ":bridge-derived");
+            return derived == null ? Map.of() : Map.of("recipe", derived.format(), "canonicalHash", jcm.get().sha256(), "derivedHash", derived.sha256());
+        }
         var derived=sources.get(derivedId(specification));
         return derived==null?Map.of():Map.of("recipe",derived.format(),"canonicalHash",require(specification.root().attr("jcmRef")).sha256(),"derivedHash",derived.sha256());
     }
@@ -110,6 +167,42 @@ public final class MappingInputs {
     /** Portable replay reconstructs from owned bytes only; never reopens diagnostic source paths. */
     public static MappingInputs fromFrozen(byte[] xml,byte[] ocl,Map<String,TraceComplement.Asset> sources,String location) {
         if(xml.length>MappingXmlReader.MAX_BYTES||ocl.length>1024*1024||location==null||location.length()>4096)throw new IllegalArgumentException("MAPPING_FROZEN_CAPACITY");
+        if(isCompactXml(xml)) {
+            if(sources.size()>128)throw new IllegalArgumentException("MAPPING_FROZEN_SOURCE_CAPACITY");
+            var compactSpec = org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactMappingReader.read(xml, location);
+            var owned = new LinkedHashMap<String, TraceComplement.Asset>();
+            long total = (long) xml.length + ocl.length;
+            for (var entry : sources.entrySet()) {
+                if ("source-admission-manifest".equals(entry.getKey())) continue;
+                var asset = entry.getValue();
+                if (asset == null || !entry.getKey().equals(asset.id()) || asset.bytes().length > MAX_FILE)
+                    throw new IllegalArgumentException("MAPPING_FROZEN_SOURCE_MISMATCH:" + entry.getKey());
+                var recomputed = TraceComplement.Asset.of(asset.id(), asset.format(), asset.bytes());
+                if (!recomputed.sha256().equals(asset.sha256()))
+                    throw new IllegalArgumentException("MAPPING_FROZEN_SOURCE_DIGEST_MISMATCH:" + entry.getKey());
+                total += asset.bytes().length;
+                owned.put(entry.getKey(), asset);
+            }
+            var manifest = sources.get("source-admission-manifest");
+            if (manifest != null) {
+                if (!"source-admission-manifest".equals(manifest.id())||!"VALIDATED_SOURCE_V1".equals(manifest.format())
+                        ||!TraceComplement.Asset.of(manifest.id(),manifest.format(),manifest.bytes()).sha256().equals(manifest.sha256()))
+                    throw new IllegalArgumentException("FROZEN_SOURCE_MANIFEST_REQUIRED");
+                var pins = new TreeMap<String, Object>();
+                owned.forEach((id, asset) -> pins.put(id, asset.sha256()));
+                if (!pins.equals(org.jacamo.bridge.contract.CanonicalJson.object(org.jacamo.bridge.contract.CanonicalJson.decode(manifest.bytes()))))
+                    throw new IllegalArgumentException("FROZEN_SOURCE_REVISION_MISMATCH");
+                owned.put(manifest.id(), manifest);
+                total += manifest.bytes().length;
+            }
+            if (total > MAX_TOTAL || !owned.keySet().equals(sources.keySet()))
+                throw new IllegalArgumentException("MAPPING_FROZEN_ASSETS_OR_CAPACITY");
+            if(owned.values().stream().filter(a->a.format().equals("JCM")).count()!=1
+                    ||!owned.containsKey(AUTHORED_CSL)||!owned.containsKey(AUTHORED_ISTAR)
+                    ||!owned.get(AUTHORED_CSL).format().equals("NATIVE_CSL/4.0")||!owned.get(AUTHORED_ISTAR).format().equals("NATIVE_ISTAR/1.0"))
+                throw new IllegalArgumentException("MAPPING_FROZEN_COMPACT_NATIVE_INPUTS_REQUIRED");
+            return new MappingInputs(null, compactSpec, owned, xml, ocl);
+        }
         var spec=new MappingXmlReader().parse(xml,location);var owned=new LinkedHashMap<String,TraceComplement.Asset>();long total=(long)xml.length+ocl.length;
         if(!spec.root().child("ocl").attr("sha256").equals(TraceComplement.Asset.of("check","bytes",ocl).sha256()))throw new IllegalArgumentException("MAPPING_FROZEN_OCL_DIGEST_MISMATCH");
         for(var file:spec.root().child("sources").children("file")) {
@@ -167,8 +260,18 @@ public final class MappingInputs {
             return output.toByteArray();
         }catch(Exception error){throw new IllegalArgumentException("SOURCE_POLICY_ENCODING_FAILED",error);}
     }
+    public static boolean isCompactXml(byte[] bytes) {
+        if (bytes == null || bytes.length == 0) return false;
+        String sample = new String(bytes, 0, Math.min(bytes.length, 1024), java.nio.charset.StandardCharsets.UTF_8);
+        return sample.contains("urn:use:jacamo-mapping:3") || (sample.contains("<mapping") && sample.contains("version=\"3.0\""));
+    }
+    public boolean isCompact() { return compactSpecification != null; }
+    public org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactMappingSpecification compactSpecification() { return compactSpecification; }
     public Map<String,TraceComplement.Asset> sources(){return sources;}
-    public boolean authoredModels(){return !specification.root().children("models").isEmpty();}
+    public boolean authoredModels(){
+        if(compactSpecification != null) return sources.containsKey(AUTHORED_CSL) && sources.containsKey(AUTHORED_ISTAR);
+        return specification != null && !specification.root().children("models").isEmpty();
+    }
     public TraceComplement.Asset xml(){return xml;}
     public TraceComplement.Asset ocl(){return ocl;}
     public TraceComplement.Asset require(String id){var asset=sources.get(id);if(asset==null)throw new IllegalArgumentException("MAPPING_SOURCE_REQUIRED:"+id);return asset;}

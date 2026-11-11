@@ -33,6 +33,17 @@ public final class SourceModelNormalizer {
             var alias=new NormalizedSourceModel.Node(id,"Artifact",NormalizedSourceModel.Layer.MODEL_DEFINITION,"DERIVED_ARTIFACT_CLASS_ALIAS",fqcn,root,values);
             if(nodes.putIfAbsent(id,alias)!=null)throw new IllegalArgumentException("SOURCE_DERIVED_ID_COLLISION:"+id);
         });
+        var programs=new TreeMap<String,List<org.jacamo.bridge.contract.semantic.JasonSemanticContract.AgentProgramSemantic>>();
+        for(var program:input.semanticContract().jasonPrograms())programs.computeIfAbsent(program.sourceUri()+"\n"+program.sourceDigest(),k->new ArrayList<>()).add(program);
+        for(var entries:programs.values()) {
+            var program=entries.getFirst();String id="jason:program-template:"+SemanticJson.hash(List.of(program.sourceUri(),program.sourceDigest()));
+            var values=new TreeMap<String,NormalizedSourceModel.Feature>();
+            values.put("sourceUri",new NormalizedSourceModel.Feature(program.sourceUri(),true,"EXACT_PROGRAM_SOURCE"));
+            values.put("sourceDigest",new NormalizedSourceModel.Feature(program.sourceDigest(),true,"EXACT_PROGRAM_SOURCE"));
+            values.put("sourceDefinitions",new NormalizedSourceModel.Feature(entries.stream().map(p->Map.of("reference",p.metadata().semanticId())).sorted(Comparator.comparing(m->m.get("reference"))).toList(),true,"EXACT_PROGRAM_USAGES"));
+            var alias=new NormalizedSourceModel.Node(id,"Agent",NormalizedSourceModel.Layer.MODEL_DEFINITION,"DERIVED_JASON_PROGRAM_ALIAS","org.jacamo.bridge.contract.semantic.JasonSemanticContract.AgentProgramSemantic",root,values);
+            if(nodes.putIfAbsent(id,alias)!=null)throw new IllegalArgumentException("SOURCE_DERIVED_ID_COLLISION:"+id);
+        }
         return new NormalizedSourceModel("OFFICIAL_CONTRACT",hash,"",List.copyOf(nodes.values()),List.copyOf(diagnostics));
     }
     private void walk(Object raw,String container,Map<String,NormalizedSourceModel.Node> nodes,Set<String> diagnostics) {

@@ -1,0 +1,753 @@
+diff --git a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java
+index cc54044b..0186f240 100644
+--- a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java
++++ b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java
+@@ -229,12 +229,17 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
+             String observationPlan=ownedObservationPlan==null?System.getProperty(org.jacamo.bridge.contract.ObservationRequestPlan.PROPERTY,""):ownedObservationPlan.toString();
+             if(!observationPlan.isBlank()) {
+                 var current=nativeWorkspace;
+-                if(current==null||current.canonical==null||current.canonical.program().xmlPlan()==null)throw new IllegalStateException("OBSERVATION_DECLARATIVE_PROGRAM_REQUIRED");
++                if(current==null||current.canonical==null||(current.canonical.program().xmlPlan()==null&&current.canonical.program().compactPlan()==null))throw new IllegalStateException("OBSERVATION_DECLARATIVE_PROGRAM_REQUIRED");
+                 var accepted=authorityStatus();var program=current.canonical.program();
+-                var preflight=current.canonical.xmlPreparation()==null?Map.<String,Object>of():current.canonical.xmlPreparation().preflight();
+-                var scope=preflight.get("captureScope") instanceof Map<?,?> rawScope?org.jacamo.bridge.contract.ObservationCaptureScope.fromMap(org.jacamo.bridge.contract.CanonicalJson.object(rawScope)):null;
+-                org.jacamo.bridge.contract.ObservationRequestPlan.publish(Path.of(observationPlan),accepted.sessionId(),accepted.generation(),accepted.modelRevision(),program.hash(),program.xmlPlan().requirements(),org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerFields(program.xmlPlan().inputs().specification()),org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerCartagoKinds(program.xmlPlan().inputs().specification()),scope);
+-                if(verifiedCheckpointMode)publishCheckpointPolicy(program,Path.of(observationPlan+".checkpoints.json"));
++                if(program.compactPlan()!=null) {
++                    org.jacamo.bridge.contract.ObservationRequestPlan.publish(Path.of(observationPlan),accepted.sessionId(),accepted.generation(),accepted.modelRevision(),program.hash(),program.compactPlan().capabilityDemands());
++                    if(verifiedCheckpointMode)publishCheckpointPolicy(program,Path.of(observationPlan+".checkpoints.json"));
++                } else {
++                    var preflight=current.canonical.xmlPreparation()==null?Map.<String,Object>of():current.canonical.xmlPreparation().preflight();
++                    var scope=preflight.get("captureScope") instanceof Map<?,?> rawScope?org.jacamo.bridge.contract.ObservationCaptureScope.fromMap(org.jacamo.bridge.contract.CanonicalJson.object(rawScope)):null;
++                    org.jacamo.bridge.contract.ObservationRequestPlan.publish(Path.of(observationPlan),accepted.sessionId(),accepted.generation(),accepted.modelRevision(),program.hash(),program.xmlPlan().requirements(),org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerFields(program.xmlPlan().inputs().specification()),org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerCartagoKinds(program.xmlPlan().inputs().specification()),scope);
++                    if(verifiedCheckpointMode)publishCheckpointPolicy(program,Path.of(observationPlan+".checkpoints.json"));
++                }
+             }
+             return imported;
+         } catch (RuntimeException failure) { workflow.importFailed(failure.getMessage()); throw failure; }
+@@ -260,6 +265,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
+                 "goalHash",program.goalHash(),"validators","original CSL/iStar; native USE OCL", "diagnostics",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(program.diagnostics()),
+                 "traceBindings",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(program.bindings().bindings())));
+         if(program.xmlPlan()!=null){evidence.put("declarativeProgram",program.xmlPlan().evidence());if(canonical.xmlPreparation()!=null)evidence.put("bindingPreflight",canonical.xmlPreparation().preflight());}
++        if(program.compactPlan()!=null){evidence.put("compactPlanFingerprint",program.compactPlan().fingerprint());evidence.put("compactCapabilityDemands",program.compactPlan().capabilityDemands());}
+         return java.util.Collections.unmodifiableMap(evidence);
+     }
+ 
+@@ -898,7 +904,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
+             NativeRuntimeProjector nativeProjector = compatibleResync ? previous.runtimeProjector
+                     : next.canonical==null?new NativeRuntimeProjector(next.pipeline, accepted.sessionId(), accepted.generation(),
+                             accepted.modelRevision(), RuntimeVerificationCoordinator.createEphemeralDirectory(runtimeRoot()),nextJournalBudgetBytes())
+-                    : new NativeRuntimeProjector(next.canonical,accepted.sessionId(),accepted.generation(),accepted.modelRevision(),RuntimeVerificationCoordinator.createEphemeralDirectory(runtimeRoot()),nextJournalBudgetBytes(),verifiedCheckpointMode&&next.canonical.program().xmlPlan()!=null);
++                    : new NativeRuntimeProjector(next.canonical,accepted.sessionId(),accepted.generation(),accepted.modelRevision(),RuntimeVerificationCoordinator.createEphemeralDirectory(runtimeRoot()),nextJournalBudgetBytes(),verifiedCheckpointMode&&(next.canonical.program().xmlPlan()!=null||next.canonical.program().compactPlan()!=null));
+             if (!compatibleResync) newlyCreatedNativeProjector.set(nativeProjector);
+             nativeProjector.coordinator().runtimeCapabilities(accepted.capabilities().stream().collect(
+                     java.util.stream.Collectors.toMap(org.jacamo.bridge.contract.Capability::name,c->c.status().name())),accepted.sourceVersions());
+@@ -1067,7 +1073,15 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
+         }
+     }
+     private void publishCheckpointPolicy(org.tzi.use.plugins.jacamo.semantics.mapping.SemanticProgram program,Path file) {
+-        var rules=org.tzi.use.plugins.jacamo.codegrounded.runtime.CheckpointPolicySelection.rules(program.xmlPlan().requirements(),id->program.goalModel().findElement(id).orElse(null) instanceof org.vnu.sme.goal.dsl.istar.mm.Task);
++        List<org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Rule> rules;
++        if (program.compactPlan() != null) {
++            rules = program.compactPlan().checkpointRules();
++        } else {
++            rules = org.tzi.use.plugins.jacamo.codegrounded.runtime.CheckpointPolicySelection.rules(
++                    program.xmlPlan().requirements(),
++                    id -> program.goalModel().findElement(id).orElse(null) instanceof org.vnu.sme.goal.dsl.istar.mm.Task
++            );
++        }
+         var hashes=new java.util.TreeMap<String,String>();program.complement().assets().forEach(asset->hashes.put(asset.id(),asset.sha256()));
+         var policy=new org.jacamo.bridge.contract.VerifiedCheckpointProtocol.Policy(program.hash(),hashes,rules);
+         checkpointPolicyHash=policy.hash();
+diff --git a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/CodeGroundedNativePipeline.java b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/CodeGroundedNativePipeline.java
+index 17cdb60f..f7d316f9 100644
+--- a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/CodeGroundedNativePipeline.java
++++ b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/CodeGroundedNativePipeline.java
+@@ -28,8 +28,8 @@ public final class CodeGroundedNativePipeline {
+         var source=new JacamoSpecificationModel(snapshot.semanticContract());var trace=new CodeGroundedTraceCollector();
+         var xmlPreparation=program.xmlPlan()==null?null:new org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlNativePreparation().prepare(snapshot,program,trace);
+         var binding=xmlPreparation!=null?xmlPreparation.binding():new org.tzi.use.semantic.engine.use75.Use75CslModelBackend().compile(program.cslModel(),org.tzi.use.semantic.engine.use75.M0ExtensionSpec.observedPlayers());
+-        if(xmlPreparation==null)new org.tzi.use.plugins.jacamo.semantics.mapping.CanonicalUseBindingAdapter().install(program,binding,trace);
+-        var contracts=xmlPreparation!=null?xmlPreparation.intentional():new org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoOclContractMapping().install(snapshot,program,binding);
++        if(xmlPreparation==null && !program.isCompact())new org.tzi.use.plugins.jacamo.semantics.mapping.CanonicalUseBindingAdapter().install(program,binding,trace);
++        var contracts=xmlPreparation!=null?xmlPreparation.intentional():(program.isCompact()?new org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactNativePreparation().prepare(snapshot,program,binding,trace):new org.tzi.use.plugins.jacamo.semantics.mapping.JaCaMoOclContractMapping().install(snapshot,program,binding));
+         boolean tupleWriter="EXPLICIT_RUNTIME_MODEL_BINDING".equals(program.rules().options().get("associationTupleAuthority"))&&!program.rules().options().getOrDefault("associationTupleSourceId","").isBlank();
+         if(tupleWriter)binding.model().addAnnotation(new org.tzi.use.uml.mm.MElementAnnotation("CanonicalTupleAuthority",java.util.Map.of("authority","EXPLICIT_RUNTIME_MODEL_BINDING","sourceId",program.rules().options().get("associationTupleSourceId"))));
+         var model=new NativeUseModelBuilder().buildCsl(binding,trace,mode,tupleWriter);var state=new NativeUseStateBuilder().build(source,model,trace);
+diff --git a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java
+index c6f84ec2..eef85285 100644
+--- a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java
++++ b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeMutationEngine.java
+@@ -115,14 +115,18 @@ public final class NativeRuntimeMutationEngine {
+     public boolean canonicalProfile() {return org.tzi.use.semantic.engine.use75.Use75CslModelBackend.active(system.model())&&system.model().getAnnotation("CanonicalSemanticProgram")!=null;}
+     public boolean canonicalMappingConfigured(){return canonicalMapper!=null;}
+     public boolean declarativeMapping(){return caseMapping!=null;}
+-    public boolean xmlCase(){return canonicalProgram!=null&&canonicalProgram.xmlPlan()!=null;}
++    public boolean xmlCase(){return canonicalProgram!=null&&(canonicalProgram.xmlPlan()!=null||canonicalProgram.isCompact());}
++    public synchronized org.tzi.use.plugins.jacamo.semantics.mapping.CaseRuntimeMapping caseMapping(){return caseMapping;}
+     /** Read under the existing native barrier; the XML adapter returns immutable casts, not another state. */
+     public synchronized List<org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.OccurrenceProjection.Scope> xmlOccurrences(String run,long generation,String revision) {
+-        if(!(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping xml))throw new IllegalStateException("XML_RUNTIME_MAPPING_REQUIRED");
+-        return xml.occurrences(cslPort(),run,generation,revision);
++        if(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping xml)return xml.occurrences(cslPort(),run,generation,revision);
++        if(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactRuntimeStateMapping compact)return compact.occurrences(cslPort(),run,generation,revision);
++        throw new IllegalStateException("XML_RUNTIME_MAPPING_REQUIRED");
+     }
+     public synchronized List<org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.TaskDemandProjection.Demand> xmlTaskDemands(String run,long generation,String revision) {
+-        if(!(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping xml))throw new IllegalStateException("XML_RUNTIME_MAPPING_REQUIRED");return xml.taskDemands(cslPort(),run,generation,revision);
++        if(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping xml)return xml.taskDemands(cslPort(),run,generation,revision);
++        if(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactRuntimeStateMapping compact)return compact.taskDemands(cslPort(),run,generation,revision);
++        throw new IllegalStateException("XML_RUNTIME_MAPPING_REQUIRED");
+     }
+     public void validateVerificationObservation(VerificationObservation observation,String run,long generation,String revision) {
+         if(caseMapping!=null)try{caseMapping.validateObservation(observation,run,generation,revision);}
+diff --git a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/JaCaMoRuntimeStateMapping.java b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/JaCaMoRuntimeStateMapping.java
+index 53cf1d0b..9819582a 100644
+--- a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/JaCaMoRuntimeStateMapping.java
++++ b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/JaCaMoRuntimeStateMapping.java
+@@ -36,10 +36,11 @@ public final class JaCaMoRuntimeStateMapping implements RuntimeStateMapping {
+     }
+     public void removeProperty(SemanticObservationMapper.Port writer,org.tzi.use.uml.sys.MObject object,String property) throws UseApiException {mapper.removeProperty(writer,object,property);}
+     public String programHash(){return program.hash();}
+-    public boolean caseSpecific(){return program.xmlPlan()!=null;}
++    public boolean caseSpecific(){return program.xmlPlan()!=null||program.isCompact();}
+     /** Selection belongs to mapping infrastructure, never to the native writer. */
+     public CaseRuntimeMapping caseMapping(MModel model) {
+         if(program.xmlPlan()!=null)return new org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping(program,model);
++        if(program.isCompact())return new org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactRuntimeStateMapping(program,model);
+         return null;
+     }
+     public static boolean caseHelper(String kind){return Set.of("UPSERT_CARTAGO_WORKSPACE","UPSERT_CARTAGO_AGENT_IDENTITY","UPSERT_JASON_AGENT_STATE","DELETE_CARTAGO_AGENT_IDENTITY").contains(kind);}
+diff --git a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/MappingRuleSet.java b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/MappingRuleSet.java
+index 65970df7..2ca89977 100644
+--- a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/MappingRuleSet.java
++++ b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/MappingRuleSet.java
+@@ -28,7 +28,7 @@ public record MappingRuleSet(String version,String id,String profileId,String pr
+         }
+     }
+     public MappingRuleSet {
+-        if(!"2.0".equals(version))throw new IllegalArgumentException("CANONICAL_MAPPING_RULESET_VERSION_UNSUPPORTED");
++        if(!Set.of("2.0","3.0").contains(version))throw new IllegalArgumentException("CANONICAL_MAPPING_RULESET_VERSION_UNSUPPORTED");
+         Objects.requireNonNull(id);Objects.requireNonNull(profileId);Objects.requireNonNull(profileVersion);Objects.requireNonNull(expectedSourceHash);Objects.requireNonNull(cslSource);Objects.requireNonNull(iStarSource);
+         if(id.isBlank()||cslSource.isBlank()||iStarSource.isBlank())throw new IllegalArgumentException("AUTHORED_PROGRAM_REQUIRED");
+         if(profileId.isBlank()||profileVersion.isBlank()||!expectedSourceHash.isEmpty()&&!expectedSourceHash.matches("[0-9a-fA-F]{64}"))throw new IllegalArgumentException("MAPPING_PROFILE_OR_SOURCE_HASH_INVALID");
+diff --git a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/SemanticProgram.java b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/SemanticProgram.java
+index 943cc6c1..643b91e1 100644
+--- a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/SemanticProgram.java
++++ b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/SemanticProgram.java
+@@ -13,33 +13,50 @@ public final class SemanticProgram {
+     private final List<MappingDiagnostic> diagnostics;private final String cslHash,hash;
+     private final GoalRuntimeBindingPlan goalBindings;
+     private final org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericBindingPlan xmlPlan;
++    private final org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompiledObservationPlan compactPlan;
+     public SemanticProgram(JaCaMoMappingProfile profile,MappingRuleSet rules,NormalizedSourceModel source,CslModel csl,GoalModel goals,
+             SemanticBindingIndex bindings,TraceComplement complement,List<MappingDiagnostic> diagnostics,GoalRuntimeBindingPlan goalBindings) {
+-        this(profile,rules,source,csl,goals,bindings,complement,diagnostics,goalBindings,null);
++        this(profile,rules,source,csl,goals,bindings,complement,diagnostics,goalBindings,null,null);
+     }
+     public static SemanticProgram fromXml(JaCaMoMappingProfile profile,MappingRuleSet rules,NormalizedSourceModel source,CslModel csl,GoalModel goals,
+             SemanticBindingIndex bindings,TraceComplement complement,GoalRuntimeBindingPlan goalBindings,
+             org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericBindingPlan xmlPlan) {
+-        return new SemanticProgram(profile,rules,source,csl,goals,bindings,complement,List.of(),goalBindings,Objects.requireNonNull(xmlPlan));
++        return new SemanticProgram(profile,rules,source,csl,goals,bindings,complement,List.of(),goalBindings,Objects.requireNonNull(xmlPlan),null);
++    }
++    public static SemanticProgram fromCompact(JaCaMoMappingProfile profile,MappingRuleSet rules,NormalizedSourceModel source,CslModel csl,GoalModel goals,
++            SemanticBindingIndex bindings,TraceComplement complement,GoalRuntimeBindingPlan goalBindings,
++            org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompiledObservationPlan compactPlan) {
++        return new SemanticProgram(profile,rules,source,csl,goals,bindings,complement,List.of(),goalBindings,null,Objects.requireNonNull(compactPlan));
+     }
+     private SemanticProgram(JaCaMoMappingProfile profile,MappingRuleSet rules,NormalizedSourceModel source,CslModel csl,GoalModel goals,
+             SemanticBindingIndex bindings,TraceComplement complement,List<MappingDiagnostic> diagnostics,GoalRuntimeBindingPlan goalBindings,
+-            org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericBindingPlan xmlPlan) {
++            org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericBindingPlan xmlPlan,
++            org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompiledObservationPlan compactPlan) {
+         this.profile=profile;this.rules=rules;this.source=source;this.csl=csl;this.goals=new OwnedGoalModel(goals,profile.engine());this.bindings=bindings;this.complement=complement;this.diagnostics=List.copyOf(diagnostics);
+         this.goalBindings=goalBindings;
+         this.xmlPlan=xmlPlan;
++        this.compactPlan=compactPlan;
+         if(xmlPlan!=null){xmlPlan.requireOwnership(profile,rules,source,csl,goals,bindings,goalBindings);xmlPlan.requireComplement(complement);}
+-        else if(profile.id().equals(org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericBindingPlan.PROFILE_ID))throw new IllegalArgumentException("GENERIC_PROGRAM_PLAN_REQUIRED");
++        else if(compactPlan==null && profile.id().equals(org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericBindingPlan.PROFILE_ID))throw new IllegalArgumentException("GENERIC_PROGRAM_PLAN_REQUIRED");
+         MappingBundle.validateComplement(source,complement);bindings.validate(source,csl,goals,rules.contracts());
+         cslHash=CslModelFingerprint.of(csl);
+-        hash=SemanticJson.hash(Map.of("format","SEMANTIC_PROGRAM/2.0","source",source.sourceHash(),"profile",profile.hash(),"rules",rules.hash(),
+-                "cslM1",cslHash,"goalM1",this.goals.hash(),"bindings",bindings.hash(),"trace",SemanticJson.hash(SemanticJson.tree(complement)),"engineCommit",profile.engine().upstreamCommit(),"intentionalBindings",SemanticJson.hash(SemanticJson.tree(goalBindings))));
++        if(compactPlan!=null) {
++            hash=SemanticJson.hash(Map.of("format","SEMANTIC_PROGRAM/3.0","source",source.sourceHash(),"profile",profile.hash(),"rules",rules.hash(),
++                    "cslM1",cslHash,"goalM1",this.goals.hash(),"bindings",bindings.hash(),"trace",SemanticJson.hash(SemanticJson.tree(complement)),
++                    "engineCommit",profile.engine().upstreamCommit(),"intentionalBindings",SemanticJson.hash(SemanticJson.tree(goalBindings)),
++                    "compactPlanFingerprint",compactPlan.fingerprint()));
++        } else {
++            hash=SemanticJson.hash(Map.of("format","SEMANTIC_PROGRAM/2.0","source",source.sourceHash(),"profile",profile.hash(),"rules",rules.hash(),
++                    "cslM1",cslHash,"goalM1",this.goals.hash(),"bindings",bindings.hash(),"trace",SemanticJson.hash(SemanticJson.tree(complement)),"engineCommit",profile.engine().upstreamCommit(),"intentionalBindings",SemanticJson.hash(SemanticJson.tree(goalBindings))));
++        }
+     }
+     public JaCaMoMappingProfile profile(){return profile;}public MappingRuleSet rules(){return rules;}public NormalizedSourceModel source(){return source;}
+     public CslModel cslModel(){return csl;}public GoalModel goalModel(){return goals.model();}public String cslHash(){return cslHash;}public String goalHash(){return goals.hash();}
+     public List<MappingRuleSet.Contract> contracts(){return rules.contracts();}public SemanticBindingIndex bindings(){return bindings;}public TraceComplement complement(){return complement;}
+     public GoalRuntimeBindingPlan goalBindings(){return goalBindings;}
+     public org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericBindingPlan xmlPlan(){return xmlPlan;}
++    public org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompiledObservationPlan compactPlan(){return compactPlan;}
++    public boolean isCompact(){return compactPlan!=null;}
+     public List<MappingDiagnostic> diagnostics(){return diagnostics;}public String hash(){return hash;}public void assertUnchanged(){goals.assertUnchanged();if(!cslHash.equals(CslModelFingerprint.of(csl)))throw new IllegalStateException("CANONICAL_CSL_MODEL_MUTATED_AFTER_OWNERSHIP");}
+     public void requireSourceHash(String hash){if(!source.sourceHash().equals(hash))throw new IllegalArgumentException("SEMANTIC_PROGRAM_SOURCE_MISMATCH");}
+ }
+diff --git a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/GenericMappingEngine.java b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/GenericMappingEngine.java
+index 9a44f487..4075ec7f 100644
+--- a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/GenericMappingEngine.java
++++ b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/GenericMappingEngine.java
+@@ -8,10 +8,15 @@ import org.tzi.use.plugins.jacamo.semantics.mapping.*;
+ import org.tzi.use.plugins.jacamo.semantics.evidence.*;
+ import org.tzi.use.semantic.engine.api.*;
+ import org.vnu.sme.goal.dsl.istar.mm.*;
++import org.tzi.use.plugins.jacamo.semantics.mapping.compact.*;
+ import static org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingSpecification.Node;
+ public final class GenericMappingEngine {
+     public SemanticProgram map(ModelSnapshot input,MappingInputs inputs) {
+-        EngineInstallationGuard.verify();verifySource(input,inputs);
++        EngineInstallationGuard.verify();
++        if (inputs.isCompact()) {
++            return mapCompact(input, inputs);
++        }
++        verifySource(input,inputs);
+         var source=new SourceModelNormalizer().normalize(input);var selections=SourceSelections.execute(inputs);
+         var authored=new AuthoredModelLoader();
+         var csl=inputs.authoredModels()?authored.csl(inputs):new CslRuleExecutor().prepare(inputs);
+@@ -115,4 +120,355 @@ public final class GenericMappingEngine {
+         while(matcher.find()){var value=values.get(matcher.group(1));if(value==null)throw at.location().error("STATIC_CAPTURE_REQUIRED");matcher.appendReplacement(output,Matcher.quoteReplacement(value));}
+         matcher.appendTail(output);if(output.indexOf("${")>=0)throw at.location().error("STATIC_TEMPLATE_UNSUPPORTED");return output.toString();
+     }
++
++    public SemanticProgram mapCompact(ModelSnapshot input, MappingInputs inputs) {
++        EngineInstallationGuard.verify();
++        var official = input.semanticContract();
++        if (official.project() != null && !inputs.projectDigest().isEmpty()
++                && !official.project().sourceDigest().equals(inputs.projectDigest())) {
++            throw new IllegalArgumentException("COMPACT_OFFICIAL_PROJECT_DIGEST_MISMATCH");
++        }
++        var compactSpec = inputs.compactSpecification();
++        if (compactSpec == null) {
++            throw new IllegalArgumentException("COMPACT_SPECIFICATION_REQUIRED");
++        }
++
++        // 1. Compile Authored Models
++        if (!inputs.authoredModels()) {
++            throw new IllegalArgumentException("COMPACT_MAPPING_AUTHORED_MODELS_REQUIRED");
++        }
++        var cslAsset = inputs.require(MappingInputs.AUTHORED_CSL);
++        String cslText = new String(cslAsset.bytes(), java.nio.charset.StandardCharsets.UTF_8);
++        var cslModel = new org.tzi.use.semantic.engine.frontend.CslFrontend().compile(cslText, cslAsset.id()).requireModel();
++
++        var istarAsset = inputs.require(MappingInputs.AUTHORED_ISTAR);
++        String istarText = new String(istarAsset.bytes(), java.nio.charset.StandardCharsets.UTF_8);
++        var engineProfile = EngineSemanticsProfile.ROLE_SPECIALIZATION_V1;
++        var istarModel = new org.tzi.use.semantic.engine.frontend.IStarFrontend().compile(istarText, istarAsset.id(), engineProfile).requireModel();
++
++        // 2. Build Source and Target Catalogues
++        var sourceCatalog = SourceSymbolCatalog.fromSnapshot(official);
++        var targetCatalog = NativeTargetCatalog.fromModels(cslModel, istarModel);
++
++        // 3. Compile Observation Plan (performs strict correspondence and type validation)
++        String cslFp = CslModelFingerprint.of(cslModel);
++        String goalFp = new OwnedGoalModel(istarModel, engineProfile).hash();
++        var compactPlan = ObservationPlanCompiler.compile(
++                compactSpec, sourceCatalog, targetCatalog,
++                cslFp, goalFp, inputs.ocl().sha256(), engineProfile.name()).withInputs(inputs);
++
++        // 4. Build Supporting Structures for SemanticProgram
++        var source = new SourceModelNormalizer().normalize(input);
++        var bindings = new ArrayList<SemanticBindingIndex.Binding>();
++        var seenTargets = new HashSet<List<String>>();
++
++        // 4.1 CSL Bindings
++        for (var b : compactPlan.cslBindings()) {
++            SemanticBindingIndex.Kind targetKind;
++            String targetId;
++            String nativeSymbol;
++            Map<String, String> meta = new TreeMap<>();
++            if (b.isAttribute()) {
++                targetKind = SemanticBindingIndex.Kind.ATTRIBUTE;
++                targetId = b.targetRef().qualifier() + "::" + b.targetRef().member();
++                nativeSymbol = targetId;
++            } else if (cslModel.findRole(b.targetRef().qualifier()).isPresent()) {
++                targetKind = SemanticBindingIndex.Kind.ROLE;
++                targetId = b.targetRef().qualifier();
++                nativeSymbol = targetId;
++            } else if (cslModel.findOrgContext(b.targetRef().qualifier()).isPresent()) {
++                targetKind = SemanticBindingIndex.Kind.ORG_CONTEXT;
++                targetId = b.targetRef().qualifier();
++                nativeSymbol = targetId;
++            } else {
++                targetKind = SemanticBindingIndex.Kind.ENTITY;
++                targetId = b.targetRef().qualifier();
++                nativeSymbol = targetId;
++            }
++            String sourceId = resolveSourceNodeId(source, b.sourceRef(), targetKind, meta);
++            if (seenTargets.add(List.of(targetKind.name(), targetId))) {
++                bindings.add(new SemanticBindingIndex.Binding(
++                        sourceId,
++                        targetKind,
++                        targetId,
++                        nativeSymbol,
++                        "CSL3",
++                        "Compact mapping correspondence",
++                        meta
++                ));
++            }
++        }
++
++        // Ensure all CSL entities, roles, and orgContexts have a static binding for CanonicalUseBindingAdapter
++        String projectNodeId = findProjectNodeId(source);
++        for (var entity : cslModel.entities()) {
++            if (seenTargets.add(List.of(SemanticBindingIndex.Kind.ENTITY.name(), entity.name()))) {
++                String artNodeId = source.nodes().stream()
++                        .filter(n -> "Artifact".equals(n.concept()) && n.layer() == NormalizedSourceModel.Layer.MODEL_DEFINITION
++                                && !Set.of("CARTAGO_ARTIFACT", "CARTAGO_ARTIFACT_INFO").contains(n.sourceKind()))
++                        .map(NormalizedSourceModel.Node::id)
++                        .findFirst()
++                        .orElse(projectNodeId);
++                bindings.add(new SemanticBindingIndex.Binding(
++                        artNodeId, SemanticBindingIndex.Kind.ENTITY, entity.name(), entity.name(),
++                        "CSL3", "Compact entity correspondence", Map.of()));
++            }
++        }
++        for (var role : cslModel.roles()) {
++            if (seenTargets.add(List.of(SemanticBindingIndex.Kind.ROLE.name(), role.name()))) {
++                String roleNodeId = source.nodes().stream()
++                        .filter(n -> "Role".equals(n.concept()) && role.name().equalsIgnoreCase(String.valueOf(n.features().getOrDefault("roleId", new NormalizedSourceModel.Feature("", true, "")).value())))
++                        .map(NormalizedSourceModel.Node::id)
++                        .findFirst()
++                        .orElseGet(() -> source.nodes().stream()
++                                .filter(n -> "Role".equals(n.concept()))
++                                .map(NormalizedSourceModel.Node::id)
++                                .findFirst()
++                                .orElse(projectNodeId));
++                bindings.add(new SemanticBindingIndex.Binding(
++                        roleNodeId, SemanticBindingIndex.Kind.ROLE, role.name(), role.name(),
++                        "CSL3", "Compact role correspondence", Map.of()));
++            }
++        }
++        for (var group : cslModel.orgContexts()) {
++            if (seenTargets.add(List.of(SemanticBindingIndex.Kind.ORG_CONTEXT.name(), group.name()))) {
++                var matchedGroup = source.nodes().stream()
++                        .filter(n -> "Group".equals(n.concept()) && group.name().equalsIgnoreCase(String.valueOf(n.features().getOrDefault("groupId", new NormalizedSourceModel.Feature("", true, "")).value())))
++                        .findFirst();
++                String groupNodeId;
++                Map<String, String> meta = new TreeMap<>();
++                if (matchedGroup.isPresent()) {
++                    groupNodeId = matchedGroup.get().id();
++                } else {
++                    groupNodeId = projectNodeId;
++                    meta.put("contextAbstraction", "PROJECT_EXECUTION_VIEW/1.0");
++                }
++                bindings.add(new SemanticBindingIndex.Binding(
++                        groupNodeId, SemanticBindingIndex.Kind.ORG_CONTEXT, group.name(), group.name(),
++                        "CSL3", "Compact organization context correspondence", meta));
++            }
++        }
++
++        // 4.2 iStar Actor and Element Bindings + GoalRuntimeBindingPlan
++        var actorTemplates = new TreeMap<String, GoalRuntimeBindingPlan.ActorTemplate>();
++        Map<String, ActorRuntimeBinding> explicitActorRuntimes = new LinkedHashMap<>();
++        for (var ar : compactPlan.actorBindings()) {
++            explicitActorRuntimes.put(ar.actorName(), ar);
++        }
++        Map<String, IStarBinding> actorIStarBindings = new LinkedHashMap<>();
++        Map<String, IStarBinding> elementIStarBindings = new LinkedHashMap<>();
++        for (var b : compactPlan.iStarBindings()) {
++            if (b.kind() == IStarBinding.BindingKind.ACTOR_MAPPING) {
++                actorIStarBindings.putIfAbsent(b.targetRef().qualifier(), b);
++            } else {
++                String elemId = b.targetRef().member() != null ? b.targetRef().member() : b.targetRef().qualifier();
++                elementIStarBindings.putIfAbsent(elemId, b);
++            }
++        }
++
++        for (Actor actor : istarModel.getActors()) {
++            IStarBinding ib = actorIStarBindings.get(actor.name());
++            String actorSourceId = ib != null ? resolveSourceNodeId(source, ib.sourceRef(), SemanticBindingIndex.Kind.ACTOR, new TreeMap<>()) : projectNodeId;
++            String roleSourceId = "";
++            String contextSourceId = "";
++            if (ib != null && ib.sourceRef() instanceof SourceReference.MoiseRoleRef) {
++                roleSourceId = actorSourceId;
++                contextSourceId = source.nodes().stream()
++                        .filter(n -> "Group".equals(n.concept()))
++                        .map(NormalizedSourceModel.Node::id)
++                        .findFirst()
++                        .orElse("");
++            }
++            ActorRuntimeBinding ar = explicitActorRuntimes.get(actor.name());
++            String activationPolicy = ar != null ? ar.activationPolicy() : "WORKSPACE_PARTICIPATION";
++            String episodePolicy = ar != null ? ar.episodePolicy() : "PROJECT_RUN";
++            actorTemplates.put(actor.name(), new GoalRuntimeBindingPlan.ActorTemplate(
++                    actor.name(), actorSourceId, roleSourceId, contextSourceId, "", activationPolicy, episodePolicy));
++            if (seenTargets.add(List.of(SemanticBindingIndex.Kind.ACTOR.name(), actor.name()))) {
++                bindings.add(new SemanticBindingIndex.Binding(
++                        actorSourceId, SemanticBindingIndex.Kind.ACTOR, actor.name(), actor.name(),
++                        "ISTAR3", "Compact actor correspondence", Map.of()));
++            }
++        }
++
++        String defaultSelfName = !cslModel.entities().isEmpty()
++                ? cslModel.entities().getFirst().name()
++                : (!cslModel.orgContexts().isEmpty() ? cslModel.orgContexts().getFirst().name() : "");
++        String defaultSelfKind = !cslModel.entities().isEmpty() ? "ENTITY" : "ORG_CONTEXT";
++
++        var elementTemplates = new TreeMap<String, GoalRuntimeBindingPlan.ElementTemplate>();
++        for (Actor actor : istarModel.getActors()) {
++            String selfDecl = defaultSelfName;
++            String selfKind = defaultSelfKind;
++            for (var gr : compactSpec.goalRealizations()) {
++                if (gr.actor().equals(actor.name())) {
++                    selfDecl = gr.rootClass();
++                    selfKind = cslModel.findEntity(selfDecl).isPresent() ? "ENTITY"
++                            : (cslModel.findRole(selfDecl).isPresent() ? "ROLE" : "ORG_CONTEXT");
++                    break;
++                }
++            }
++            final String resolvedSelfDecl = selfDecl;
++            String selfSourceId = bindings.stream()
++                    .filter(b -> Set.of(SemanticBindingIndex.Kind.ENTITY, SemanticBindingIndex.Kind.ROLE, SemanticBindingIndex.Kind.ORG_CONTEXT).contains(b.kind())
++                            && b.targetId().equals(resolvedSelfDecl))
++                    .map(SemanticBindingIndex.Binding::sourceId)
++                    .findFirst()
++                    .orElse(projectNodeId);
++
++            for (IntentionalElement elem : actor.elements()) {
++                if (!(elem instanceof Goal) && !(elem instanceof Task)) continue;
++                String elemId = elem.id();
++                boolean structural = istarModel.getActors().stream().flatMap(a -> a.refinements().stream()).anyMatch(r -> r.parent().id().equals(elemId))
++                        || istarModel.getDependencies().stream().anyMatch(d -> elemId.equals(d.dependerElement().id()));
++                if (elem instanceof Task) structural = false;
++
++                String contractExpr = "";
++                if (elem instanceof Goal g && g.condition().isPresent()) {
++                    contractExpr = g.condition().get().expression();
++                } else if (elem instanceof Task t) {
++                    contractExpr = t.postCondition().or(t::preCondition).map(OclExpression::expression).orElse("");
++                }
++
++                elementTemplates.putIfAbsent(elemId, new GoalRuntimeBindingPlan.ElementTemplate(
++                        elemId, actor.name(), structural, resolvedSelfDecl, selfSourceId, selfKind, contractExpr));
++
++                IStarBinding eb = elementIStarBindings.get(elemId);
++                String elemSourceId = eb != null
++                        ? resolveSourceNodeId(source, eb.sourceRef(), elem instanceof Goal ? SemanticBindingIndex.Kind.GOAL : SemanticBindingIndex.Kind.TASK, new TreeMap<>())
++                        : actorTemplates.get(actor.name()).sourceId();
++                var kind = elem instanceof Goal ? SemanticBindingIndex.Kind.GOAL : SemanticBindingIndex.Kind.TASK;
++                if (seenTargets.add(List.of(kind.name(), elemId))) {
++                    bindings.add(new SemanticBindingIndex.Binding(
++                            elemSourceId, kind, elemId, "", "ISTAR3", "Compact intentional correspondence", Map.of()));
++                }
++            }
++        }
++
++        var goalBindings = new GoalRuntimeBindingPlan(actorTemplates, elementTemplates, List.of());
++        var index = new SemanticBindingIndex(bindings);
++        var profile = new JaCaMoMappingProfile("jacamo.mapping.compact", "3.0", engineProfile, Set.of("csl.v4", "istar.original", "source.complement", "mapping.xml/3.0"));
++        var rules = new MappingRuleSet("3.0", compactSpec.id(), profile.id(), profile.version(), source.sourceHash(), cslText, istarText, index.bindings(), List.of(), List.of(), Map.of());
++
++        var preserved = new SemanticTransformationService().preserveCanonical(input, source, index);
++        var assets = new ArrayList<TraceComplement.Asset>(preserved.assets());
++        assets.addAll(inputs.sources().values());
++        assets.add(inputs.xml());
++        assets.add(inputs.ocl());
++        assets.add(TraceComplement.Asset.of("compact-plan", "COMPACT_PLAN_JSON", CanonicalJson.encode(compactPlan.evidenceSummary())));
++        var complement = new TraceComplement(preserved.version(), preserved.ruleVersion(), preserved.sourceHash(), preserved.metamodelHash(), assets, preserved.decisions());
++
++        return SemanticProgram.fromCompact(profile, rules, source, cslModel, istarModel, index, complement, goalBindings, compactPlan);
++    }
++
++    private static String findProjectNodeId(NormalizedSourceModel source) {
++        return source.nodes().stream()
++                .filter(n -> "JACAMO_PROJECT".equals(n.sourceKind()))
++                .map(NormalizedSourceModel.Node::id)
++                .findFirst()
++                .orElseGet(() -> source.nodes().getFirst().id());
++    }
++
++    private static String resolveSourceNodeId(
++            NormalizedSourceModel source,
++            SourceReference ref,
++            SemanticBindingIndex.Kind targetKind,
++            Map<String, String> meta) {
++        String projectNodeId = findProjectNodeId(source);
++        if (targetKind == SemanticBindingIndex.Kind.ENTITY) {
++            String className = switch (ref) {
++                case SourceReference.ArtifactRef ar -> ar.className();
++                case SourceReference.ArtifactPropertyRef pr -> pr.className();
++                case SourceReference.ArtifactFieldRef fr -> fr.className();
++                case SourceReference.ArtifactOpRef or -> or.className();
++                default -> "";
++            };
++            String exactAlias = org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.artifactId(className);
++            for (var n : source.nodes()) {
++                if (n.id().equals(exactAlias)) return n.id();
++                if ("Artifact".equals(n.concept()) && n.layer() == NormalizedSourceModel.Layer.MODEL_DEFINITION
++                        && !Set.of("CARTAGO_ARTIFACT", "CARTAGO_ARTIFACT_INFO").contains(n.sourceKind())) {
++                    String jc = String.valueOf(n.features().getOrDefault("javaClass", n.features().getOrDefault("javaClassName", new NormalizedSourceModel.Feature("", true, ""))).value());
++                    if (jc.equals(className) || jc.endsWith("." + className)) return n.id();
++                }
++            }
++        }
++        return switch (ref) {
++            case SourceReference.ArtifactRef ar -> {
++                String alias = org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.artifactId(ar.className());
++                yield source.nodes().stream().filter(n -> n.id().equals(alias) || ar.className().equals(n.sourceJavaFqcn())).map(NormalizedSourceModel.Node::id).findFirst().orElse(projectNodeId);
++            }
++            case SourceReference.ArtifactPropertyRef pr -> {
++                String alias = org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.artifactId(pr.className());
++                yield source.nodes().stream().filter(n -> n.id().equals(alias)).map(NormalizedSourceModel.Node::id).findFirst().orElse(projectNodeId);
++            }
++            case SourceReference.ArtifactFieldRef fr -> {
++                String alias = org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.artifactId(fr.className());
++                yield source.nodes().stream().filter(n -> n.id().equals(alias)).map(NormalizedSourceModel.Node::id).findFirst().orElse(projectNodeId);
++            }
++            case SourceReference.ArtifactOpRef or -> {
++                String alias = org.tzi.use.plugins.jacamo.codegrounded.use.DomainProjection.artifactId(or.className());
++                yield source.nodes().stream().filter(n -> n.id().equals(alias)).map(NormalizedSourceModel.Node::id).findFirst().orElse(projectNodeId);
++            }
++            case SourceReference.MoiseGroupRef gr -> {
++                var found = source.nodes().stream()
++                        .filter(n -> "Group".equals(n.concept()) && gr.groupName().equals(String.valueOf(n.features().getOrDefault("groupId", new NormalizedSourceModel.Feature("", true, "")).value())))
++                        .map(NormalizedSourceModel.Node::id)
++                        .findFirst();
++                if (found.isEmpty() && targetKind == SemanticBindingIndex.Kind.ORG_CONTEXT) {
++                    meta.put("contextAbstraction", "PROJECT_EXECUTION_VIEW/1.0");
++                }
++                yield found.orElse(projectNodeId);
++            }
++            case SourceReference.MoiseRoleRef rr -> source.nodes().stream()
++                    .filter(n -> "Role".equals(n.concept()) && rr.roleName().equals(String.valueOf(n.features().getOrDefault("roleId", new NormalizedSourceModel.Feature("", true, "")).value())))
++                    .map(NormalizedSourceModel.Node::id)
++                    .findFirst()
++                    .orElse(projectNodeId);
++            case SourceReference.MoiseSchemeRef sr -> {
++                if (targetKind == SemanticBindingIndex.Kind.ORG_CONTEXT) {
++                    meta.put("contextAbstraction", "SCHEME_EXECUTION_VIEW/1.0");
++                }
++                yield source.nodes().stream()
++                        .filter(n -> "MOISE_SCHEME".equals(n.sourceKind()) && sr.schemeName().equals(String.valueOf(n.features().getOrDefault("schemeId", new NormalizedSourceModel.Feature("", true, "")).value())))
++                        .map(NormalizedSourceModel.Node::id)
++                        .findFirst()
++                        .orElse(projectNodeId);
++            }
++            case SourceReference.MoiseGoalRef mgr -> source.nodes().stream()
++                    .filter(n -> "MOISE_GOAL".equals(n.sourceKind()) && mgr.goalName().equals(String.valueOf(n.features().getOrDefault("goalId", new NormalizedSourceModel.Feature("", true, "")).value())))
++                    .map(NormalizedSourceModel.Node::id)
++                    .findFirst()
++                    .orElse(projectNodeId);
++            case SourceReference.AgentRef ag -> {
++                String base = ag.agentOrProgram().endsWith(".asl") ? ag.agentOrProgram().substring(0, ag.agentOrProgram().length() - 4) : ag.agentOrProgram();
++                if (targetKind == SemanticBindingIndex.Kind.ORG_CONTEXT) {
++                    meta.put("contextAbstraction", "SINGLE_AGENT_CONTEXT/1.0");
++                    yield projectNodeId;
++                }
++                yield source.nodes().stream()
++                        .filter(n -> ("JACAMO_AGENT_DECLARATION".equals(n.sourceKind()) && base.equals(String.valueOf(n.features().getOrDefault("name", new NormalizedSourceModel.Feature("", true, "")).value())))
++                                || ("JASON_AGENT_PROGRAM".equals(n.sourceKind()) && String.valueOf(n.features().getOrDefault("sourceUri", new NormalizedSourceModel.Feature("", true, "")).value()).endsWith(base + ".asl")))
++                        .map(NormalizedSourceModel.Node::id)
++                        .findFirst()
++                        .orElse(projectNodeId);
++            }
++            case SourceReference.AslGoalRef agr -> {
++                String base = agr.aslPath().endsWith(".asl") ? agr.aslPath() : agr.aslPath() + ".asl";
++                yield source.nodes().stream()
++                        .filter(n -> "JASON_AGENT_PROGRAM".equals(n.sourceKind()) && String.valueOf(n.features().getOrDefault("sourceUri", new NormalizedSourceModel.Feature("", true, "")).value()).endsWith(base))
++                        .map(NormalizedSourceModel.Node::id)
++                        .findFirst()
++                        .orElse(projectNodeId);
++            }
++            case SourceReference.AslPlanStepRef psr -> {
++                String base = psr.aslPath().endsWith(".asl") ? psr.aslPath() : psr.aslPath() + ".asl";
++                yield source.nodes().stream()
++                        .filter(n -> "JASON_AGENT_PROGRAM".equals(n.sourceKind()) && String.valueOf(n.features().getOrDefault("sourceUri", new NormalizedSourceModel.Feature("", true, "")).value()).endsWith(base))
++                        .map(NormalizedSourceModel.Node::id)
++                        .findFirst()
++                        .orElse(projectNodeId);
++            }
++        };
++    }
+ }
+diff --git a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingInputs.java b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingInputs.java
+index b44cc51a..d35cb73a 100644
+--- a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingInputs.java
++++ b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/xml/MappingInputs.java
+@@ -12,11 +12,16 @@ public final class MappingInputs {
+     public static final String AUTHORED_CSL="authored-csl",AUTHORED_ISTAR="authored-istar";
+     private static final int MAX_FILE=8*1024*1024, MAX_TOTAL=32*1024*1024;
+     private final MappingSpecification specification;
++    private final org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactMappingSpecification compactSpecification;
+     private final Map<String,TraceComplement.Asset> sources;
+     private final TraceComplement.Asset xml,ocl;
+     private MappingInputs(MappingSpecification spec,Map<String,TraceComplement.Asset> sources,byte[] xml,byte[] ocl) {
+-        specification=spec;this.sources=Collections.unmodifiableMap(new LinkedHashMap<>(sources));
+-        this.xml=TraceComplement.Asset.of("mapping-specification","JACAMO_MAPPING_XML/2.0",xml);
++        this(spec,null,sources,xml,ocl);
++    }
++    private MappingInputs(MappingSpecification spec,org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactMappingSpecification compactSpec,
++            Map<String,TraceComplement.Asset> sources,byte[] xml,byte[] ocl) {
++        specification=spec;this.compactSpecification=compactSpec;this.sources=Collections.unmodifiableMap(new LinkedHashMap<>(sources));
++        this.xml=TraceComplement.Asset.of("mapping-specification",compactSpec!=null?"JACAMO_MAPPING_XML/3.0":"JACAMO_MAPPING_XML/2.0",xml);
+         this.ocl=TraceComplement.Asset.of("authored-ocl","NATIVE_USE_OCL",ocl);
+     }
+     public static MappingInputs read(Path jcm,Path xml,Path ocl) {
+@@ -32,6 +37,44 @@ public final class MappingInputs {
+         try {
+             Path project=jcm.toRealPath(),root=project.getParent();
+             byte[] specification=bounded(xml,MappingXmlReader.MAX_BYTES),authored=ocl==null?new byte[0]:bounded(ocl,1024*1024);
++            if (isCompactXml(specification)) {
++                var compactSpec = org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactMappingReader.read(specification, xml.getFileName().toString());
++                var sources = new LinkedHashMap<String, TraceComplement.Asset>();
++                int total = specification.length + authored.length;
++                byte[] rawJcm = bounded(project, MAX_FILE);
++                String jcmId = project.getFileName().toString();
++                byte[] canonicalJcm = BridgeJcmDerivation.removeBootstrap(rawJcm, project);
++                total = Math.addExact(total, canonicalJcm.length);
++                sources.put(jcmId, TraceComplement.Asset.of(jcmId, "JCM", canonicalJcm));
++                if (!Arrays.equals(canonicalJcm, rawJcm)) {
++                    var derived = TraceComplement.Asset.of(jcmId + ":bridge-derived", BridgeJcmDerivation.RECIPE, rawJcm);
++                    total = Math.addExact(total, derived.bytes().length);
++                    sources.put(derived.id(), derived);
++                }
++                if (csl != null) {
++                    Path cslPath = csl.toRealPath();
++                    if (!cslPath.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".csl"))
++                        throw new IllegalArgumentException("AUTHORED_MODEL_EXTENSION_REQUIRED:.csl");
++                    byte[] cslBytes = bounded(cslPath, MAX_FILE);
++                    total = Math.addExact(total, cslBytes.length);
++                    sources.put(AUTHORED_CSL, TraceComplement.Asset.of(AUTHORED_CSL, "NATIVE_CSL/4.0", cslBytes));
++                }
++                if (istar != null) {
++                    Path istarPath = istar.toRealPath();
++                    if (!istarPath.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".istar"))
++                        throw new IllegalArgumentException("AUTHORED_MODEL_EXTENSION_REQUIRED:.istar");
++                    byte[] istarBytes = bounded(istarPath, MAX_FILE);
++                    total = Math.addExact(total, istarBytes.length);
++                    sources.put(AUTHORED_ISTAR, TraceComplement.Asset.of(AUTHORED_ISTAR, "NATIVE_ISTAR/1.0", istarBytes));
++                }
++                var pins = new TreeMap<String, Object>();
++                sources.forEach((id, asset) -> pins.put(id, asset.sha256()));
++                var manifest = TraceComplement.Asset.of("source-admission-manifest", "VALIDATED_SOURCE_V1", org.jacamo.bridge.contract.CanonicalJson.encode(pins));
++                total = Math.addExact(total, manifest.bytes().length);
++                sources.put(manifest.id(), manifest);
++                if (total > MAX_TOTAL) throw new IllegalArgumentException("INPUT_TOTAL_CAPACITY");
++                return new MappingInputs(null, compactSpec, sources, specification, authored);
++            }
+             if(policy!=null||ocl==null)specification=withSelection(specification,policy,ocl==null);
+             var spec=new MappingXmlReader().parse(specification,xml.toString());
+             boolean validated=validated(spec);
+@@ -96,8 +139,22 @@ public final class MappingInputs {
+         return asset;
+     }
+     private static String derivedId(MappingSpecification spec){return spec.root().attr("jcmRef")+":bridge-derived";}
+-    public String projectDigest(){return sources.getOrDefault(derivedId(specification),require(specification.root().attr("jcmRef"))).sha256();}
++    public String projectDigest(){
++        if(compactSpecification != null) {
++            var jcm = sources.values().stream().filter(a -> a.format().equals("JCM")).findFirst();
++            if (jcm.isEmpty()) return "";
++            var derived = sources.get(jcm.get().id() + ":bridge-derived");
++            return derived != null ? derived.sha256() : jcm.get().sha256();
++        }
++        return sources.getOrDefault(derivedId(specification),require(specification.root().attr("jcmRef"))).sha256();
++    }
+     public Map<String,Object> projectDerivation(){
++        if(compactSpecification != null) {
++            var jcm = sources.values().stream().filter(a -> a.format().equals("JCM")).findFirst();
++            if (jcm.isEmpty()) return Map.of();
++            var derived = sources.get(jcm.get().id() + ":bridge-derived");
++            return derived == null ? Map.of() : Map.of("recipe", derived.format(), "canonicalHash", jcm.get().sha256(), "derivedHash", derived.sha256());
++        }
+         var derived=sources.get(derivedId(specification));
+         return derived==null?Map.of():Map.of("recipe",derived.format(),"canonicalHash",require(specification.root().attr("jcmRef")).sha256(),"derivedHash",derived.sha256());
+     }
+@@ -110,6 +167,36 @@ public final class MappingInputs {
+     /** Portable replay reconstructs from owned bytes only; never reopens diagnostic source paths. */
+     public static MappingInputs fromFrozen(byte[] xml,byte[] ocl,Map<String,TraceComplement.Asset> sources,String location) {
+         if(xml.length>MappingXmlReader.MAX_BYTES||ocl.length>1024*1024||location==null||location.length()>4096)throw new IllegalArgumentException("MAPPING_FROZEN_CAPACITY");
++        if(isCompactXml(xml)) {
++            var compactSpec = org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactMappingReader.read(xml, location);
++            var owned = new LinkedHashMap<String, TraceComplement.Asset>();
++            long total = (long) xml.length + ocl.length;
++            for (var entry : sources.entrySet()) {
++                if ("source-admission-manifest".equals(entry.getKey())) continue;
++                var asset = entry.getValue();
++                if (asset == null || asset.bytes().length > MAX_FILE)
++                    throw new IllegalArgumentException("MAPPING_FROZEN_SOURCE_MISMATCH:" + entry.getKey());
++                var recomputed = TraceComplement.Asset.of(asset.id(), asset.format(), asset.bytes());
++                if (!recomputed.sha256().equals(asset.sha256()))
++                    throw new IllegalArgumentException("MAPPING_FROZEN_SOURCE_DIGEST_MISMATCH:" + entry.getKey());
++                total += asset.bytes().length;
++                owned.put(entry.getKey(), asset);
++            }
++            var manifest = sources.get("source-admission-manifest");
++            if (manifest != null) {
++                if (!"VALIDATED_SOURCE_V1".equals(manifest.format()))
++                    throw new IllegalArgumentException("FROZEN_SOURCE_MANIFEST_REQUIRED");
++                var pins = new TreeMap<String, Object>();
++                owned.forEach((id, asset) -> pins.put(id, asset.sha256()));
++                if (!pins.equals(org.jacamo.bridge.contract.CanonicalJson.object(org.jacamo.bridge.contract.CanonicalJson.decode(manifest.bytes()))))
++                    throw new IllegalArgumentException("FROZEN_SOURCE_REVISION_MISMATCH");
++                owned.put(manifest.id(), manifest);
++                total += manifest.bytes().length;
++            }
++            if (total > MAX_TOTAL || !owned.keySet().equals(sources.keySet()))
++                throw new IllegalArgumentException("MAPPING_FROZEN_ASSETS_OR_CAPACITY");
++            return new MappingInputs(null, compactSpec, owned, xml, ocl);
++        }
+         var spec=new MappingXmlReader().parse(xml,location);var owned=new LinkedHashMap<String,TraceComplement.Asset>();long total=(long)xml.length+ocl.length;
+         if(!spec.root().child("ocl").attr("sha256").equals(TraceComplement.Asset.of("check","bytes",ocl).sha256()))throw new IllegalArgumentException("MAPPING_FROZEN_OCL_DIGEST_MISMATCH");
+         for(var file:spec.root().child("sources").children("file")) {
+@@ -167,8 +254,18 @@ public final class MappingInputs {
+             return output.toByteArray();
+         }catch(Exception error){throw new IllegalArgumentException("SOURCE_POLICY_ENCODING_FAILED",error);}
+     }
++    public static boolean isCompactXml(byte[] bytes) {
++        if (bytes == null || bytes.length == 0) return false;
++        String sample = new String(bytes, 0, Math.min(bytes.length, 1024), java.nio.charset.StandardCharsets.UTF_8);
++        return sample.contains("urn:use:jacamo-mapping:3") || (sample.contains("<mapping") && sample.contains("version=\"3.0\""));
++    }
++    public boolean isCompact() { return compactSpecification != null; }
++    public org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactMappingSpecification compactSpecification() { return compactSpecification; }
+     public Map<String,TraceComplement.Asset> sources(){return sources;}
+-    public boolean authoredModels(){return !specification.root().children("models").isEmpty();}
++    public boolean authoredModels(){
++        if(compactSpecification != null) return sources.containsKey(AUTHORED_CSL) && sources.containsKey(AUTHORED_ISTAR);
++        return specification != null && !specification.root().children("models").isEmpty();
++    }
+     public TraceComplement.Asset xml(){return xml;}
+     public TraceComplement.Asset ocl(){return ocl;}
+     public TraceComplement.Asset require(String id){var asset=sources.get(id);if(asset==null)throw new IllegalArgumentException("MAPPING_SOURCE_REQUIRED:"+id);return asset;}
+diff --git a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/RequirementInventory.java b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/RequirementInventory.java
+index 7ffa00c3..411e87ec 100644
+--- a/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/RequirementInventory.java
++++ b/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/RequirementInventory.java
+@@ -29,15 +29,27 @@ public final class RequirementInventory {
+             var specification=org.tzi.use.plugins.jacamo.semantics.mapping.ocl.ModelNativeContracts.read(program.xmlPlan().inputs());
+             specification.clauses().stream().filter(c->c.kind()==org.tzi.use.plugins.jacamo.semantics.mapping.ocl.AuthoredOclSpecificationLoader.Kind.INVARIANT)
+                 .forEach(c->explicit.add("NATIVE:"+c.context().owner()+"::"+c.name()));
++        } else if(program.isCompact()&&program.compactPlan().mappingInputs().isPresent()) {
++            var specification=org.tzi.use.plugins.jacamo.semantics.mapping.ocl.ModelNativeContracts.read(program.compactPlan().mappingInputs().get());
++            specification.clauses().stream().filter(c->c.kind()==org.tzi.use.plugins.jacamo.semantics.mapping.ocl.AuthoredOclSpecificationLoader.Kind.INVARIANT)
++                .forEach(c->explicit.add("NATIVE:"+c.context().owner()+"::"+c.name()));
+         }
+         var required=new TreeSet<>(explicit);var supporting=new TreeSet<String>();
+         for(var invariant:model.classInvariants()) {
+             String id="NATIVE:"+invariant.qualifiedName();
+             if(explicit.contains(id)||invariant.getAnnotation("AuthoredOclSource")!=null
++                    ||invariant.getAnnotation("CslConstraint")!=null
+                     ||invariant.cls().getAnnotation(Use75CslModelBackend.DECLARATION)!=null)required.add(id);
+             else supporting.add(id);
+         }
+-        var targets=program.xmlPlan()==null?List.<String>of():program.xmlPlan().inputs().specification().root().child("bindings").children("requirement").stream().map(n->n.attr("target")).distinct().sorted().toList();
++        List<String> targets;
++        if(program.xmlPlan()!=null) {
++            targets=program.xmlPlan().inputs().specification().root().child("bindings").children("requirement").stream().map(n->n.attr("target")).distinct().sorted().toList();
++        } else if(program.isCompact()) {
++            targets=program.goalBindings().elements().keySet().stream().sorted().toList();
++        } else {
++            targets=List.of();
++        }
+         var scopeTargets=new TreeMap<String,List<String>>();
+         if(program.xmlPlan()!=null) {
+             var grouped=new TreeMap<String,TreeSet<String>>();

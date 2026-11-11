@@ -15,7 +15,7 @@ import org.tzi.use.semantic.engine.use75.*;
 
 /** XML-selected original Task predicates on borrowed native cuts. The caller supplies
  * a source-qualified decoder result and owns PRE/terminal pairing and ordered evaluation. */
-public final class XmlTaskOclBindings implements AutoCloseable {
+public final class XmlTaskOclBindings implements NativeTaskBindings {
     public record Slots(String task,Node definition,NativeOclBackend.Compiled pre,NativeOclBackend.Compiled post,List<String> operations) {public Slots{operations=List.copyOf(operations);}}
     private final SemanticProgram program;
     private final MModel model;
@@ -79,6 +79,46 @@ public final class XmlTaskOclBindings implements AutoCloseable {
         slots=new java.util.concurrent.ConcurrentSkipListMap<>(result);
     }
     public Map<String,Slots> slots(){if(closed)throw new IllegalStateException("XML_TASK_BINDINGS_CLOSED");return Map.copyOf(slots);}
+    @Override public Set<String> tasks(){return slots().keySet();}
+    @Override public boolean traceOnly(String sourceStep) {
+        return program.xmlPlan().inputs().specification().root().child("omittedConcepts").children("omit").stream()
+                .anyMatch(n->n.optional("sourceStep").equals(sourceStep)&&n.optional("handledBy").equals("TRACE_ONLY"));
+    }
+    @Override public String intervalFloor(NativeRuntimeMutationEngine engine,OccurrenceProjection.Member member) {
+        var role=engine.objectForSemanticId(member.role());
+        if(member.role().isBlank()) {
+            var contexts=engine.system().state().allObjects().stream().filter(o->program.hash().equals(engine.metadata(o,"xml:m0:program"))
+                    &&member.player().equals(engine.metadata(o,"xml:m0:representedPlayer"))
+                    &&!member.interval().isBlank()&&member.interval().equals(engine.metadata(o,"xml:m0:lifetime"))).toList();
+            if(contexts.size()==1)role=contexts.getFirst();
+        }
+        return role==null?"":engine.metadata(role,"xml:m0:observer-floor");
+    }
+    @Override public boolean currentInterval(NativeRuntimeMutationEngine engine,String player,String roleId,String interval) {
+        if(roleId.isBlank())return true;
+        var role=engine.objectForSemanticId(roleId);
+        return role!=null&&interval.equals(engine.metadata(role,"xml:m0:lifetime"))&&player.equals(engine.metadata(role,"rolePlayer"));
+    }
+    @Override public Map<String,Object> referenceIdentity(OccurrenceProjection.Scope scope,OccurrenceProjection.Member member,String task) {
+        var definition=slots().get(task).definition();var refs=new TreeMap<String,Object>();
+        for(String attribute:List.of("stepSchemeColumn","stepArtifactColumn"))if(!definition.optional(attribute).isBlank())refs.put(attribute,scope.bindings().getOrDefault(definition.attr(attribute),""));
+        refs.put("self",member.selves().getOrDefault(task,""));refs.put("resources",scope.resources());
+        if(!definition.optional("stepInputMatches").isBlank()) {
+            var inputs=new TreeMap<String,Object>();
+            for(String pair:definition.attr("stepInputMatches").trim().split(" +")) {int sep=pair.indexOf(':');String col=pair.substring(sep+1);inputs.put(col,scope.bindings().getOrDefault(col,""));}
+            refs.put("stepInputMatches",inputs);
+        }
+        if(!program.xmlPlan().goalViews().isEmpty()) {
+            var views=new TreeMap<String,Object>();
+            for(var view:program.xmlPlan().goalViews().values())if(org.tzi.use.plugins.jacamo.semantics.runtime.GoalViewRealizations.includes(program.goalModel(),view,task)) {
+                String actor=program.goalModel().ownerOf(view.target()).orElseThrow();
+                var matching=scope.members().stream().filter(m->m.actor().equals(actor)&&m.player().equals(member.player())).toList();
+                views.put(view.target(),matching.size()==1?List.of(actor,matching.getFirst().player(),matching.getFirst().role(),matching.getFirst().interval()):List.of("EXACT_GOAL_VIEW_ENACTMENT_UNAVAILABLE"));
+            }
+            refs.put("goalViews",views);
+        }
+        return Collections.unmodifiableMap(refs);
+    }
     public int expressionCount(){return slots.size()*2;}
     @Override public void close(){closed=true;slots.clear();}
     public boolean permitsLateSelf(String task,NativeInvocationEvaluation.Condition entry) {

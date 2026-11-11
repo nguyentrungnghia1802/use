@@ -30,7 +30,7 @@ public final class SemanticResultAdapter {
             if(neutral!=null) {
                 var trace=neutral.trace().get(binding.sourceElementId());
                 value.put("executionElement",binding.sourceElementId());value.put("sourceElement",trace.source());value.put("player",trace.player());value.put("role",trace.role());value.put("sourceActor",trace.actor());value.put("expansionKind",trace.kind());
-                value.put("mappingPlanHash",program.xmlPlan().hash());
+                value.put("mappingPlanHash",program.isCompact()?program.compactPlan().fingerprint():program.xmlPlan().hash());
                 program.bindings().bindings().stream().filter(b->b.targetId().equals(trace.source())).findFirst().ifPresent(b->value.put("sourceRule",b.ruleId()));
             }
             value.put("aggregateStatus",step==null?"NOT_ADVANCED":step.aggregate().goalTaskStatus(id).name());
@@ -219,13 +219,14 @@ public final class SemanticResultAdapter {
         dependencies.getOrDefault(id,Set.of()).forEach(child->collectProofs(child,proofs,dependencies,result,visited));
     }
     static RuntimeEngineSessionOwner.Evaluation result(SemanticProgram program,RuntimeEngineSessionOwner.Cut cut,List<SemanticConstraintResult> rows,List<ExternalOclConstraintService.Outcome> nativeOutcomes,List<Object> contexts,Map<String,String> originalClasses,boolean historyGap,Map<String,Object> requirementInventory) {
-        if(program.xmlPlan()!=null&&contexts.isEmpty())rows.add(new SemanticConstraintResult("XML:OCCURRENCES","RUNTIME_BINDING","","","","",SemanticVerdict.SKIPPED,"",
-                "XML_OCCURRENCE_BINDING_UNAVAILABLE",cut.version(),"",Map.of("mappingPlanHash",program.xmlPlan().hash())));
+        if((program.xmlPlan()!=null||program.isCompact())&&contexts.isEmpty())rows.add(new SemanticConstraintResult("XML:OCCURRENCES","RUNTIME_BINDING","","","","",SemanticVerdict.SKIPPED,"",
+                "DECLARATIVE_OCCURRENCE_BINDING_UNAVAILABLE",cut.version(),"",Map.of("mappingPlanHash",program.isCompact()?program.compactPlan().fingerprint():program.xmlPlan().hash())));
         var core=new TreeMap<String,Object>();core.put("version","1.0");core.put("engineProfile",program.profile().engine().name());core.put("upstreamCommit",program.profile().engine().upstreamCommit());core.put("classHashes",originalClasses);core.put("programHash",program.hash());core.put("cslHash",program.cslHash());core.put("goalHash",program.goalHash());core.put("identity",SemanticJson.tree(cut.identity()));core.put("stateVersion",cut.version());core.put("stateHash",cut.stateHash());core.put("contexts",contexts);core.put("expectedIntentionalElements",program.goalBindings().elements().size());core.put("historyQuality",historyGap||cut.lost()?"GAP":"OBSERVED_PREFIX");core.put("evaluated","PINNED_NATIVE_CUT");
-        var envelope=new SemanticVerificationEnvelope("1.0",program.profile().engine().name(),program.rules().hash(),cut.boundary(),rows,Map.of(),Map.of("history",historyGap||cut.lost()?"GAP":"OBSERVED_PREFIX"),List.of("ORIGINAL_RAW_MARKINGS_ARE_SEPARATE_FROM_OBSERVATION_QUALITY","TASK_INVOCATION_CONFORMANCE_IS_SEPARATE_FROM_HISTORICAL_TASK_MARKING"),Map.of("originalEngine",core,"presentationState",presentation(program,cut.state().after()),"requirementInventory",requirementInventory,"requirementCoveragePolicy",program.xmlPlan()!=null?"SELECTED_REQUIREMENTS/1.0":"ALL_SOURCES/1.0"));
+        var envelope=new SemanticVerificationEnvelope("1.0",program.profile().engine().name(),program.rules().hash(),cut.boundary(),rows,Map.of(),Map.of("history",historyGap||cut.lost()?"GAP":"OBSERVED_PREFIX"),List.of("ORIGINAL_RAW_MARKINGS_ARE_SEPARATE_FROM_OBSERVATION_QUALITY","TASK_INVOCATION_CONFORMANCE_IS_SEPARATE_FROM_HISTORICAL_TASK_MARKING"),Map.of("originalEngine",core,"presentationState",presentation(program,cut.state().after()),"requirementInventory",requirementInventory,"requirementCoveragePolicy",program.xmlPlan()!=null||program.isCompact()?"SELECTED_REQUIREMENTS/1.0":"ALL_SOURCES/1.0"));
         var outcomes=new ArrayList<>(nativeOutcomes);rows.stream().filter(r->!Set.of("INVARIANT_BODY","TASK_PRE","TASK_POST","GOAL_CONDITION","EXECUTION_OUTCOME").contains(r.kind())&&nativeOutcomes.stream().noneMatch(o->o.constraintId().equals(r.id()))).forEach(r->outcomes.add(r.legacy()));return new RuntimeEngineSessionOwner.Evaluation(envelope,outcomes);
     }
     private static Map<String,Object> presentation(SemanticProgram program,org.tzi.use.uml.sys.MSystemState state) {
+        if(program.isCompact())return authoredPresentation(program,state);
         if(program.xmlPlan()==null)return Map.of();
         if(program.xmlPlan().inputs().specification().root().children("presentation").isEmpty())return authoredPresentation(program,state);
         var selected=new TreeMap<String,Object>();var objectQuality=new TreeMap<String,Object>();boolean qualified=true;
@@ -265,7 +266,7 @@ public final class SemanticResultAdapter {
                 changed|=fields.get(inheritance.specific()).addAll(fields.get(inheritance.general()));required.get(inheritance.specific()).addAll(required.get(inheritance.general()));
             }
         }}
-        for(var declaration:program.xmlPlan().inputs().specification().root().child("observers").children("view"))if(declaration.attr("category").equals("CLASS")){
+        for(var declaration:program.xmlPlan()==null?List.<org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingSpecification.Node>of():program.xmlPlan().inputs().specification().root().child("observers").children("view"))if(declaration.attr("category").equals("CLASS")){
             var names=fields.computeIfAbsent(declaration.attr("name"),k->new TreeSet<>());var needed=required.computeIfAbsent(declaration.attr("name"),k->new TreeSet<>());
             for(var field:declaration.children("field")){names.add(field.attr("name"));needed.add(field.attr("name"));}
         }
