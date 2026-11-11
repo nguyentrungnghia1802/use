@@ -37,7 +37,7 @@ public final class NaturalAuctionVerificationAudit {
             }catch(Throwable error){return CompletableFuture.failedFuture(error);}
         });
         try {
-            facade.prepareOwnedProducer(project,new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",models.resolve("auction-mapping.xml"),models.resolve("auction.ocl"),models.resolve("auction.csl"),models.resolve("auction.istar"),false),checkout.resolve("jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt"));
+            facade.prepareOwnedProducer(project,new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",models.resolve("auction-mapping.xml"),models.resolve("auction.ocl"),models.resolve("auction.csl"),models.resolve("auction.istar"),false),checkout.resolve("use-plugin/modules/bridge-jacamo/target/jacamo-bridge-classpath.txt"));
             facade.startRuntime();long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(240);VerificationSnapshot latest=null;
             while(System.nanoTime()<end) {
                 var view=facade.verifiedCheckpointState();latest=facade.verificationSnapshot();

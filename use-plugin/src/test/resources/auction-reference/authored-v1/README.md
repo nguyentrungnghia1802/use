@@ -25,7 +25,7 @@ Trong JaCaMo Workbench của USE, chọn:
    bấm `Start Runtime` để bắt đầu run đó.
 
 Trong checkout đã build, classpath dùng
-`jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt`. Trong distribution,
+`use-plugin/modules/bridge-jacamo/target/jacamo-bridge-classpath.txt`. Trong distribution,
 dùng `Runtime libs...` chọn file text chứa classpath các JAR framework JaCaMo
 được cài trên máy; script dùng các Bridge JAR đi kèm distribution.
 JDK 21 và Windows PowerShell cần có để chuẩn bị bản sao project. Project có

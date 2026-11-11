@@ -1,0 +1,20 @@
+[
+  {
+    "source": "build-log",
+    "destination": "work/history/layout-20261112/build-log",
+    "files": 1,
+    "bytes": 1128094.0
+  },
+  {
+    "source": "failure-reports",
+    "destination": "work/history/layout-20261112/failure-reports",
+    "files": 850,
+    "bytes": 15821358.0
+  },
+  {
+    "source": "use/use-plugin/use-plugin",
+    "destination": "use/use-plugin/target/history/layout-20261112/legacy-working-directory",
+    "files": 1180,
+    "bytes": 1973024228.0
+  }
+]

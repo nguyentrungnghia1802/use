@@ -26,7 +26,7 @@ inside the plugin). The original contextual seam patch is P-CTX-01; its
 diff and the separate native USE printer adapter changes are included in
 provenance/. No full legacy goal plugin, legacy CSL runtime backend or
 solver is installed. Corresponding selected source and build inputs are
-in use-jacamo-semantic-engine/ in this repository; see the provenance README.
+in use-plugin/modules/semantic-engine/ in this repository; see the provenance README.
 
 ANTLR 4.9.3 runtime and parser generator are pinned to the same version.
 The ANTLR Project copyright and BSD-3-Clause license are retained in

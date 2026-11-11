@@ -15,7 +15,7 @@ Bấm **Prepare + Import**, rồi **Start Runtime**. Kết quả ở cửa sổ 
 Execution & Results / CSL model / iStar model; thông tin kỹ thuật ở Advanced / Diagnostics.
 JaCaMo chạy process riêng qua TCP, USE có một authoritative MSystem.
 Runtime libs tự phát hiện trong checkout đã build; nếu cần chọn
-`jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt`.
+`use-plugin/modules/bridge-jacamo/target/jacamo-bridge-classpath.txt`.
 
 ## Semantics hiện hành
 

@@ -1,5 +1,7 @@
 package org.tzi.use.plugins.jacamo.codegrounded.runtime;
 
+import org.tzi.use.plugins.jacamo.semantics.mapping.compact.runtime.*;
+
 import org.tzi.use.plugins.jacamo.codegrounded.trace.NativeObjectBindings;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -120,12 +122,12 @@ public final class NativeRuntimeMutationEngine {
     /** Read under the existing native barrier; the XML adapter returns immutable casts, not another state. */
     public synchronized List<org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.OccurrenceProjection.Scope> xmlOccurrences(String run,long generation,String revision) {
         if(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping xml)return xml.occurrences(cslPort(),run,generation,revision);
-        if(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactRuntimeStateMapping compact)return compact.occurrences(cslPort(),run,generation,revision);
+        if(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.compact.runtime.CompactRuntimeStateMapping compact)return compact.occurrences(cslPort(),run,generation,revision);
         throw new IllegalStateException("XML_RUNTIME_MAPPING_REQUIRED");
     }
     public synchronized List<org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.TaskDemandProjection.Demand> xmlTaskDemands(String run,long generation,String revision) {
         if(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping xml)return xml.taskDemands(cslPort(),run,generation,revision);
-        if(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactRuntimeStateMapping compact)return compact.taskDemands(cslPort(),run,generation,revision);
+        if(caseMapping instanceof org.tzi.use.plugins.jacamo.semantics.mapping.compact.runtime.CompactRuntimeStateMapping compact)return compact.taskDemands(cslPort(),run,generation,revision);
         throw new IllegalStateException("XML_RUNTIME_MAPPING_REQUIRED");
     }
     public void validateVerificationObservation(VerificationObservation observation,String run,long generation,String revision) {

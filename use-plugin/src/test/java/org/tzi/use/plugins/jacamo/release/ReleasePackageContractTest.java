@@ -115,8 +115,8 @@ class ReleasePackageContractTest {
             assertFalse(target.isBlank(), "every package entry needs an archive path");
             if (entry.path("generated").asBoolean()) {
                 assertTrue(Set.of("target/use-plugin-1.0.1.jar",
-                                "../jacamo-bridge-contract/target/jacamo-bridge-contract-1.0.0-SNAPSHOT.jar",
-                                "../jacamo-bridge-jacamo/target/jacamo-bridge-jacamo-1.0.0-SNAPSHOT.jar")
+                                "../use-plugin/modules/bridge-contract/target/jacamo-bridge-contract-1.0.0-SNAPSHOT.jar",
+                                "../use-plugin/modules/bridge-jacamo/target/jacamo-bridge-jacamo-1.0.0-SNAPSHOT.jar")
                         .contains(source), "generated package input must be a reactor-built JAR: " + source);
             } else {
                 assertTrue(Files.isRegularFile(root.resolve(source)), () -> "missing release source: " + source);

@@ -3,39 +3,39 @@
   "reason": "User forbids case-specific production semantics; generic XML replaces legacy case routes. Historical assertions are archived unchanged, not counted as current regression.",
   "sources": [
     {
-      "original": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/AuctionArtifactStateProbe.java",
+      "original": "use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/AuctionArtifactStateProbe.java",
       "sha256": "99d5c515898786ca26a1945167f1de1199a20d9f3eab04c3e49e103244a9611e"
     },
     {
-      "original": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/AuctionClockObservation.java",
+      "original": "use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/AuctionClockObservation.java",
       "sha256": "454faf683db14e3f76d00a5e094bc303973f41a9e699a87d3910b1a94414e958"
     },
     {
-      "original": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/AuctionSchemeObservation.java",
+      "original": "use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/AuctionSchemeObservation.java",
       "sha256": "87331b32131d1d0cf9ef3a31e75c1e863d1a9200c3a44bc44e0056379f85165d"
     },
     {
-      "original": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/AuctionStagingInstrumentation.java",
+      "original": "use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/AuctionStagingInstrumentation.java",
       "sha256": "647702b6b46e84642e79a96fbd13dfc680edd89454c76f7a3d522fcad780f249"
     },
     {
-      "original": "jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/AuctionStepObservation.java",
+      "original": "use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/AuctionStepObservation.java",
       "sha256": "5841273f9ba751e61b608a5a5030de14266388d2d17206f24409dd6854a5bd30"
     },
     {
-      "original": "jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/AuctionClockNplTest.java",
+      "original": "use-plugin/modules/bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/AuctionClockNplTest.java",
       "sha256": "1290514f86ea5bab32c1e72718c7911bf238b7196016d30c5a93162fe854f160"
     },
     {
-      "original": "jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/AuctionClockObservationTest.java",
+      "original": "use-plugin/modules/bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/AuctionClockObservationTest.java",
       "sha256": "b8f104a89d325a0829a43f753c56ba02ce226241fc995d5889e5eab45b9a3615"
     },
     {
-      "original": "jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/AuctionNplSubscriptionTest.java",
+      "original": "use-plugin/modules/bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/AuctionNplSubscriptionTest.java",
       "sha256": "b07ecdbb2dc518518e151233e90cd9b77a2c3f8f253ad13ff0743c04a0206566"
     },
     {
-      "original": "jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/AuctionStepBoundaryTest.java",
+      "original": "use-plugin/modules/bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/AuctionStepBoundaryTest.java",
       "sha256": "378c3996de1f55e67ff5477d1907d6ca2b6c12e935af4dc51be775a33882469f"
     },
     {

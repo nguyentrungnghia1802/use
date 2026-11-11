@@ -115,8 +115,8 @@ fabric.properties
 /use-gui/target
 /use-assembly/target
 /use-plugin/target
-/jacamo-bridge-contract/target
-/jacamo-bridge-jacamo/target
+/use-plugin/modules/bridge-contract/target
+/use-plugin/modules/bridge-jacamo/target
 /use-gui/lib/plugins/use-jacamo-plugin-1.0.1.jar
 /docs/archunit-results/*-current-failure-report.txt
 
@@ -241,3 +241,6 @@ use-plugin/verification/live-results-ui/
 use-plugin/verification/milestone-isolation/live-*/
 use-plugin/verification/verified-checkpoints/live-auction-*/
 use-plugin/verification/verified-checkpoints/ui-auction-*/
+
+# Plugin-owned reactor modules
+/use-plugin/modules/*/target/

@@ -39,7 +39,7 @@ public final class JaCaMoWorkbenchPanel extends JPanel {
             "D:/_CODE_BANK/Project_/vnu-sme-lab/jacamo/examples",
             "D:\\_CODE_BANK\\Project_\\vnu-sme-lab\\jacamo\\examples",
             "../jacamo/examples", "../../jacamo/examples", "jacamo/examples");
-    static final Path RUNTIME_LIBS_BROWSE_FOLDER = resolveExisting("../jacamo-bridge-jacamo/target", "../jacamo-bridge-jacamo/target", "jacamo-bridge-jacamo/target", "use/jacamo-bridge-jacamo/target");
+    static final Path RUNTIME_LIBS_BROWSE_FOLDER = resolveExisting("../use-plugin/modules/bridge-jacamo/target", "../use-plugin/modules/bridge-jacamo/target", "use-plugin/modules/bridge-jacamo/target", "use/use-plugin/modules/bridge-jacamo/target");
     /** Optional launch-time hint used by the interactive demo to open Import at its derived JCM. */
     static final String PROJECT_FILE_HINT_PROPERTY = "use.jacamo.workbench.project-file";
     /** One-shot launch flag: the generic launcher supplies the JCM once; the panel consumes it. */

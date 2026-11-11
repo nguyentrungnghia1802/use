@@ -68,7 +68,7 @@ Forensic Workbench APIs/navigation, raw journal và replay vẫn giữ nguyên.
 
 Runtime classpath tự điền từ `use.jacamo.runtime.classpath-file` nếu có override,
 nếu không thì dùng file checkout đã build tại
-`D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt`;
+`D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/target/jacamo-bridge-classpath.txt`;
 nếu máy không có đường dẫn này thì dùng mặc định do facade cung cấp từ installation.
 Giữ ô đường dẫn và nút Runtime libs để thay thủ công. Không tự tải thư viện qua mạng;
 file classpath vẫn phải tồn tại và các JAR bên trong phải hợp lệ khi khởi chạy producer.
@@ -117,7 +117,7 @@ if ($LASTEXITCODE -ne 0) { throw 'CLASSPATH_FAILED' }
   -SemanticProfile USE4GOAL_OBSERVED_V1 `
   -ObservationProfile WORLD `
   -MappingSpecificationPath "$PWD\use-plugin\examples\csl-counter\mapping.json" `
-  -RuntimeClasspathFile "$PWD\jacamo-bridge-jacamo\target\jacamo-bridge-classpath.txt" `
+  -RuntimeClasspathFile "$PWD\use-plugin\modules\bridge-jacamo\target\jacamo-bridge-classpath.txt" `
   -InteractiveGui -SkipBuild -TimeoutSeconds 1800 `
   -EvidenceDirectory "$PWD\use-plugin\target\manual-csl-counter"
 ```

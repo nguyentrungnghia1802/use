@@ -26,7 +26,7 @@ public record CompiledObservationPlan(
         Optional<GoalModel> goalModel,
         Optional<org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs> mappingInputs) {
 
-    public static final String COMPILER_VERSION = "3.1.0";
+    public static final String COMPILER_VERSION = "3.2.0";
 
     public CompiledObservationPlan(
             String planId,

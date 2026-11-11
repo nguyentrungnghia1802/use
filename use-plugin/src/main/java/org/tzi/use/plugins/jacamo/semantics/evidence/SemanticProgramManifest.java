@@ -1,5 +1,7 @@
 package org.tzi.use.plugins.jacamo.semantics.evidence;
 
+import org.tzi.use.plugins.jacamo.semantics.mapping.compact.runtime.*;
+
 import java.util.*;
 import org.jacamo.bridge.contract.*;
 import org.tzi.use.plugins.jacamo.semantics.mapping.*;
@@ -83,7 +85,7 @@ public final class SemanticProgramManifest {
         var result=new TreeMap<String,Object>(declarativeImplementation());
         for(String name:List.of("CompactMappingReader","CompactMappingSpecification","CorrespondenceValidator","SourceReference","SourceSymbol","SourceSymbolCatalog",
                 "NativeTargetCatalog","TargetReference","TargetSymbol","CslBinding","IStarBinding","ActorRuntimeBinding","BindingExplanation",
-                "ObservationPlanCompiler","ObservationCapabilityPlanner","CompiledObservationPlan","CompactNativePreparation","CompactRuntimeStateMapping","CompactTaskBindings","CompactScopeRuntime","CompactSourceCut","CompactObserverBindings","CompactObserverSchema","CompactObserverRuntime","CompactInvariantActivation","CompactValueConverters")) {
+                "ObservationPlanCompiler","ObservationCapabilityPlanner","CompiledObservationPlan","CompactNativePreparation","runtime.CompactRuntimeStateMapping","runtime.CompactTaskBindings","runtime.CompactScopeRuntime","runtime.CompactSourceCut","CompactObserverBindings","CompactObserverSchema","runtime.CompactObserverRuntime","runtime.CompactInvariantActivation","CompactValueConverters")) {
             try {compactClass(result,Class.forName("org.tzi.use.plugins.jacamo.semantics.mapping.compact."+name,false,SemanticProgramManifest.class.getClassLoader()));}
             catch(ClassNotFoundException missing){throw new IllegalArgumentException("REPLAY_COMPACT_IMPLEMENTATION_CLASS_MISSING:"+name,missing);}
         }

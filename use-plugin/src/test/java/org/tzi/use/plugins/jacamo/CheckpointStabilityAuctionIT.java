@@ -38,7 +38,7 @@ public class CheckpointStabilityAuctionIT {
   var owner=new java.util.concurrent.atomic.AtomicReference<JFrame>();var panel=new java.util.concurrent.atomic.AtomicReference<JaCaMoWorkbenchPanel>();
   var timer=new java.util.concurrent.atomic.AtomicReference<javax.swing.Timer>();var heartbeat=new CopyOnWriteArrayList<Long>();
   try {
-   facade.prepareOwnedProducer(project,new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",models.resolve("auction-mapping.xml"),models.resolve("auction.ocl"),models.resolve("auction.csl"),models.resolve("auction.istar"),false),checkout.resolve("jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt"),false);
+   facade.prepareOwnedProducer(project,new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",models.resolve("auction-mapping.xml"),models.resolve("auction.ocl"),models.resolve("auction.csl"),models.resolve("auction.istar"),false),checkout.resolve("use-plugin/modules/bridge-jacamo/target/jacamo-bridge-classpath.txt"),false);
    var system=session.system();
    SwingUtilities.invokeAndWait(()->{var view=JaCaMoWorkbenchPanel.authoredWorkflow(facade);panel.set(view);var window=new JFrame("Checkpoint stability — full Auction");owner.set(window);window.add(view);window.setSize(1250,440);window.setLocation(20,20);window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);window.setVisible(true);long[] last={System.nanoTime()};var beat=new javax.swing.Timer(25,e->{long now=System.nanoTime();heartbeat.add(TimeUnit.NANOSECONDS.toMillis(now-last[0]));last[0]=now;});timer.set(beat);beat.start();view.startRuntime();});
    // Per-Task verification deliberately adds intermediate cuts. Keep the exact

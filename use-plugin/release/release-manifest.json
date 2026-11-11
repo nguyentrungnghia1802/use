@@ -108,12 +108,12 @@
       "generated": true
     },
     {
-      "source": "../jacamo-bridge-contract/target/jacamo-bridge-contract-1.0.0-SNAPSHOT.jar",
+      "source": "../use-plugin/modules/bridge-contract/target/jacamo-bridge-contract-1.0.0-SNAPSHOT.jar",
       "path": "bridge/lib/jacamo-bridge-contract-1.0.0.jar",
       "generated": true
     },
     {
-      "source": "../jacamo-bridge-jacamo/target/jacamo-bridge-jacamo-1.0.0-SNAPSHOT.jar",
+      "source": "../use-plugin/modules/bridge-jacamo/target/jacamo-bridge-jacamo-1.0.0-SNAPSHOT.jar",
       "path": "bridge/lib/jacamo-bridge-jacamo-1.0.0.jar",
       "generated": true
     },
@@ -182,27 +182,27 @@
       "path": "licenses/ANTLR4-4.9.3.txt"
     },
     {
-      "source": "../use-jacamo-semantic-engine/src/main/resources/META-INF/licenses/use4Goal-GPL-3.0.txt",
+      "source": "../use-plugin/modules/semantic-engine/src/main/resources/META-INF/licenses/use4Goal-GPL-3.0.txt",
       "path": "licenses/use4Goal-GPL-3.0.txt"
     },
     {
-      "source": "../use-jacamo-semantic-engine/src/main/resources/META-INF/use4goal-provenance.json",
+      "source": "../use-plugin/modules/semantic-engine/src/main/resources/META-INF/use4goal-provenance.json",
       "path": "provenance/use4goal-provenance.json"
     },
     {
-      "source": "../use-jacamo-semantic-engine/provenance/README.md",
+      "source": "../use-plugin/modules/semantic-engine/provenance/README.md",
       "path": "provenance/README.md"
     },
     {
-      "source": "../use-jacamo-semantic-engine/provenance/host-compatibility-patches.md",
+      "source": "../use-plugin/modules/semantic-engine/provenance/host-compatibility-patches.md",
       "path": "provenance/host-compatibility-patches.md"
     },
     {
-      "source": "../use-jacamo-semantic-engine/provenance/P-USE-PRINT-02.md",
+      "source": "../use-plugin/modules/semantic-engine/provenance/P-USE-PRINT-02.md",
       "path": "provenance/P-USE-PRINT-02.md"
     },
     {
-      "source": "../use-jacamo-semantic-engine/provenance/patches/P-CTX-01.diff",
+      "source": "../use-plugin/modules/semantic-engine/provenance/patches/P-CTX-01.diff",
       "path": "provenance/P-CTX-01.diff"
     },
     {
@@ -330,15 +330,15 @@
       "path": "reference/auction/auction-mapping.xml"
     },
     {
-      "source": "../use-jacamo-semantic-engine/provenance/P-IADM-01.md",
+      "source": "../use-plugin/modules/semantic-engine/provenance/P-IADM-01.md",
       "path": "provenance/P-IADM-01.md"
     },
     {
-      "source": "../use-jacamo-semantic-engine/provenance/patches/P-IADM-01.diff",
+      "source": "../use-plugin/modules/semantic-engine/provenance/patches/P-IADM-01.diff",
       "path": "provenance/P-IADM-01.diff"
     },
     {
-      "source": "../use-jacamo-semantic-engine/provenance/single-owner-context-v1.md",
+      "source": "../use-plugin/modules/semantic-engine/provenance/single-owner-context-v1.md",
       "path": "provenance/single-owner-context-v1.md"
     },
     {
@@ -386,7 +386,7 @@
       "path": "licenses/use4Goal-views-GPL-3.0.txt"
     },
     {
-      "source": "../use-jacamo-semantic-engine/provenance/patches/P-IADM-02.diff",
+      "source": "../use-plugin/modules/semantic-engine/provenance/patches/P-IADM-02.diff",
       "path": "provenance/P-IADM-02.diff"
     },
     {

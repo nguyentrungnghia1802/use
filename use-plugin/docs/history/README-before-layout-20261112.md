@@ -1,0 +1,205 @@
+# USE JaCaMo Plugin 1.0.1
+
+> **Current case mapping:** use `JACAMO_DECLARATIVE_XML` and the authored five-input
+> workflow documented in `docs/project/use4goal-run.md` (Auction: `examples/auction/`).
+> Case-specific Java/profile `AUCTION_OBSERVED_V1` has been retired; old case replay
+> requires the historical binary or a fresh import/recording through declarative XML.
+> Historical commands below for that retired profile are reference only. Framework
+> native/explicit JSON profiles remain; no case-name detection or fallback is used.
+
+**Chạy CSL/iStar gốc:** [hướng dẫn USE 7.5](docs/project/use4goal-run.md),
+[ví dụ Counter](examples/csl-counter/README.md). Chọn profile
+`USE4GOAL_OBSERVED_V1` và `examples/csl-counter/mapping.json` tại Import.
+Runtime JaCaMo vẫn là process riêng qua TCP. Default native profile và old
+recording readers được giữ để tương thích.
+
+JaCaMo runs in its own JVM. The USE plugin connects through an authenticated
+loopback TCP Bridge using an endpoint, a secret file and the exact runtime
+distribution fingerprint. Import reads the official model/runtime snapshots.
+For projects launched with managed startup, Start Runtime releases reasoning
+in the existing JaCaMo process after USE has activated the model. Pause Jason
+and Resume Jason send acknowledged control requests through the same Bridge.
+Disconnect closes observation; manage the JaCaMo process with its launcher.
+
+> **Current production authority:** the active path is
+> `official JaCaMo/Jason/CArtAgO/Moise objects → typed Bridge semantic contract →
+> JacamoSpecificationModel → J/A/C/M/X rules → native USE MModel/MSystemState →
+> Session/OCL/runtime verification`. `CODE_GROUNDED_NATIVE` is the default and
+> does not load V2 mappings, V2 OCL, or legacy text generation.
+
+The exposed policy is `NativeProjectionPolicy` 2.1.0: ten generic semantic bases,
+concrete ASL/Artifact/OS/Group/Scheme subclasses, contextual role association
+classes and native player link objects. Belief instances require project-authored
+provenance, active compiled OCL demand and no authoritative Artifact/organisation
+representation. The complete Jason cut stays internal/trace; profile reload selects
+again from current facts. Platform-owned artifact types are identified by their
+verified Java provider and stay internal. Agent goals and Moise functional state
+remain native verification state; Jason execution internals remain evidence.
+Recorded replay keeps exact hash checks. Reanalysis reports profile-driven Belief
+selection differences and requires parity of every other native object and link.
+Live focus/unfocus and join/quit use exact CArtAgO endpoint identities. Complete
+observer cuts reconcile those links; the implicit platform root and its runtime
+UUID bind one Workspace object. Changed supported Moise board cuts update roles,
+commitments and functional state during live observation, with global polling
+coverage still explicitly PARTIAL. Agent participation reaches Organization via
+its contextual role and Group.
+See [current architecture](docs/project/02-system-architecture.md) and
+[projection refactor evidence](docs/project/projection-refactor-before-after.md).
+
+The Workbench retains Import, Load OCL, Start Runtime, Pause/Resume and native
+exports, and adds Stop/Restart **monitor**. Its next-Import selector can opt into
+`USE4GOAL_OBSERVED_V1` with an authored MappingRuleSet 2.0. That path uses the real
+use4Goal CslModel/GoalModel and original iStar marking/propagation with native USE
+7.5 OCL. Program/trace and semantic evidence show original raw status and quality
+separately from invocation conformance. Existing profiles remain available; the
+new profile's final release gates are tracked in `../implementation-plan.md`.
+Checkpoints freeze immutable values from the active Session system.
+Explicitly approved HARD false conditions may request Jason ExecutionControl
+pause; all constraints default REPORT_ONLY. All current Jason agents must ACK,
+followed by authoritative resync and violation confirmation. PAUSED means “Jason
+agents paused”; in-flight CArtAgO/Moise work may finish. Explicit Resume needs
+ACK/resync before LIVE. See [current workflow](docs/project/12-plugin-ui-workflow.md).
+
+> **Historical 2026-09-27 executable live-runtime closure:** the production
+> `JaCaMoBridgePlatform` now injects `BridgeAgArch`, owns the official
+> `SnapshotCoordinator` sources, and serves a non-empty authenticated runtime cut.
+> The reproducible Windows/JDK 21 helper is
+> `tools/jacamo-bridge.ps1`; its final Hello run used the canonical JCM SHA-256
+> `c81d15c9aa80c6e75ee8ead017f8daaddb1038ec9cfbc80c6a3057bde10b4101`, derived
+> distribution fingerprint
+> `a8cd26dadf45393fb4c73ffc7fc7a6f309b17a7af3a243a6a17f4712505fd6c9`, and
+> produced `756` runtime facts and `1,095` USE objects in a separate consumer JVM.
+> That historical revision used `BridgeVerificationGate`; this class is now
+> test-only and absent from the current production JAR.
+> This run is retained as the first live Hello closure. Current semantic projection
+> and three-case acceptance are recorded in `docs/agent/task.md` and the projection
+> refactor evidence linked above.
+
+> **Historical compatibility evidence:** frozen V1/V2 Ecore, mapping, OCL and
+> runtime resources remain only for explicit compatibility/regression audits. They
+> are not the semantic authority of the native path and are not modified by cleanup.
+
+> **Current closure boundary:** the native path is covered by the focused and full
+> reactor gates recorded in `docs/agent/task.md`. Original Auction plan/deadline
+> equivalence remains unsupported; no historical live-run report is treated as
+> native semantic evidence.
+
+
+Current repository state: Maven artifact and plugin descriptor version `1.0.1`.
+The historical annotated tag `v1.0.1` points to `7f77b1f4`; the native production
+path is the authority in this checkout. Historical release manifests remain
+evidence and must not be reported as a current published tag.
+
+This release makes official JaCaMo objects, exported through the neutral Bridge,
+the only production semantic authority for USE 7.5.0. Historical custom parser
+and connector implementations remain test evidence and are absent from the
+release JAR. The official JaCaMo framework executes in the producer process;
+the plugin consumes the neutral TCP Bridge and projects it through native USE APIs.
+
+## Install
+
+For the managed Windows workflow use `tools/jacamo-bridge.ps1 -InteractiveGui`
+with the desired JCM. It stages the original project, installs the supported
+Bridge-controlled official launcher and leaves original sources unchanged.
+The manual platform-only observation setup below does not by itself establish
+ExecutionControl ownership; unavailable control is explicitly capability-gated.
+
+1. Use JDK 21 and USE 7.5.0.
+2. Extract the plugin archive into the USE installation root. This places the
+   plugin JAR in `lib/plugins`; the active model is built from the official Bridge
+   snapshot through native USE APIs at import time.
+3. Add `bridge/lib/jacamo-bridge-contract-1.0.0.jar` and
+   `bridge/lib/jacamo-bridge-jacamo-1.0.0.jar` to the JaCaMo application's
+   classpath. JaCaMo/Jason/CArtAgO/Moise dependencies stay in that process and do
+   not enter the USE JVM.
+4. Create a 32-byte-or-longer random secret encoded as hexadecimal in a regular,
+   non-symlink file readable only by the two local processes. Configure the JCM's
+   official `platform:` entry with
+   `org.jacamo.bridge.adapter.JaCaMoBridgePlatform("port=7777", "secretFile=/absolute/path/bridge-secret.hex", "distributionSha256=<64-lowercase-hex>")`.
+   The platform injects `org.jacamo.bridge.adapter.BridgeAgArch` into configured
+   agents before creation; do not edit the original case solely for observation.
+5. Start USE with matching properties:
+   `-Duse.jacamo.bridge.endpoint=tcp://127.0.0.1:7777`,
+   `-Duse.jacamo.bridge.secret-file=/absolute/path/bridge-secret.hex`, and
+   `-Duse.jacamo.bridge.distribution-sha256=<same-64-lowercase-hex>`.
+6. Confirm `Plugins > JaCaMo > Status` or run `jacamo status`. Missing Bridge,
+   schema/distribution mismatch, authentication failure, or selected-project
+   mismatch fails explicitly; there is no parser fallback.
+
+The automated load smoke validates discovery, descriptor parsing, the shell command
+and both menu actions. `GuiPluginStagingIT` additionally prevents the source-tree GUI
+from loading an obsolete plugin copy. Interactive GUI execution in a separately
+installed binary distribution remains a documented manual environment check.
+
+## Workflow
+
+Open `Plugins > JaCaMo > Open Workbench...` and select the same `.jcm` entry hosted
+by the Bridge. Selection is checked by exact JCM digest and project key before the
+official snapshot can materialize a USE model. Project and Verification expose
+readiness, checkpoints, retained violations and separate synchronization/control
+states. The five primary tabs are Project, Verification, Goal View, Trace / Source
+and Diagnostics; raw runtime/replay information is secondary. Import, Connect,
+Reconnect and Resync perform an authoritative Bridge synchronization; the
+workbench never launches or reconstructs a JaCaMo application.
+
+Approved HARD false conditions freeze a VerificationSnapshot before authenticated
+pause. Capability-gated official Jason ExecutionControl requires all current
+agent-incarnation ACKs. PAUSED means **Jason agents paused**; in-flight CArtAgO and
+Moise/OrgBoard activity may finish. A separate authoritative cut classifies
+CONFIRMED / TRANSIENT_NOT_REPRODUCED / CONFIRMATION_ERROR. Explicit Resume waits
+for re-enable ACK and resync before LIVE. User OCL defaults REPORT_ONLY;
+ERROR/UNDEFINED/SKIPPED never automatically pause. No domain repair, console output
+pause, kill fallback or UI-click control is used.
+
+Goal View, native diagrams, OCL and diagnostics share the active Session system.
+Snapshots are immutable diagnostic copies with a configurable bounded eight-cut /
+16 MiB serialized tail and constant bounded failure/comparison pins. Current Moise
+1.1 goal evidence supports waiting/enabled/satisfied; impossible and unavailable
+fields stay explicitly unsupported. Source lines are shown only with real evidence.
+
+Historical `binding.json` and custom parser behavior are retained only in tests.
+Production Bridge identity is exact and never invokes fuzzy/source reconstruction.
+
+The included `examples/auction` project is the release acceptance fixture. See
+`docs/user-workflow.md`, `docs/architecture.md`, `KNOWN-LIMITATIONS.md`, and
+`compatibility.json` for the exact supported scope.
+
+The current onboarding and architecture contract are in
+`docs/project/02-system-architecture.md` and `docs/agent/task.md`.
+
+## Reproducible live Bridge evidence
+
+From the `use` repository root, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\use-plugin\tools\jacamo-bridge.ps1 `
+  -JcmPath ..\jacamo\doc\tutorials\hello-world\code\helloworld\helloworld.jcm `
+  -ObservationSeconds 15 -Headless:$false `
+  -EvidenceDirectory .\use-plugin\target\final-system-acceptance\hello-rerun
+```
+
+The generic launcher copies the selected JCM project to a temporary directory, injects only the
+official Bridge platform entry, generates a random secret, derives the runtime
+fingerprint, starts JaCaMo and a classpath-isolated USE consumer, and records
+`summary.json`, producer/consumer logs and fingerprint components. It never edits
+the source project. Use the same `-JcmPath` form for any valid `.jcm`; the selected
+project identity is checked by the official Bridge and no semantic name is inferred
+by the launcher.
+
+For a presentation that opens the configured USE GUI and keeps the derived JaCaMo
+producer alive until the GUI closes, add `-InteractiveGui -TimeoutSeconds 1800`.
+The helper prints the exact derived `.jcm` path to select in the workbench. This is
+a launch convenience only; JaCaMo remains semantic/execution authority.
+
+## Verify the download
+
+The build produces `use-jacamo-plugin-1.0.1-v2-frozen.zip.sha256` beside the archive. Compare
+the first hexadecimal field with a SHA-256 digest of the ZIP before installation.
+
+
+### Historical V1/V2 compatibility contract
+
+The V1/V2 resources and their exact freeze evidence are retained only because the
+historical test-only compatibility implementation and regression/freeze tests use them.
+They do not define native production semantics. No native caller loads those
+resources implicitly.

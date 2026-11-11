@@ -69,7 +69,7 @@ public final class AuthoredCaseVerificationAudit {
             }catch(Throwable error){return CompletableFuture.failedFuture(error);}
         };
         var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",models.resolve((String)inputs.get("mapping")),models.resolve((String)inputs.get("ocl")),models.resolve((String)inputs.get("csl")),models.resolve((String)inputs.get("istar")),false);
-        Path classpath=Path.of(System.getProperty("audit.runtime.classpath",checkout.resolve("jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt").toString()));
+        Path classpath=Path.of(System.getProperty("audit.runtime.classpath",checkout.resolve("use-plugin/modules/bridge-jacamo/target/jacamo-bridge-classpath.txt").toString()));
         var workbench=Boolean.getBoolean("audit.workbench")?new LiveCheckpointWorkbench(facade,selection,classpath,recorder,evidence):null;
         AutoCloseable presentation=workbench==null?facade.registerCheckpointPresenter(recorder):workbench;
         try {

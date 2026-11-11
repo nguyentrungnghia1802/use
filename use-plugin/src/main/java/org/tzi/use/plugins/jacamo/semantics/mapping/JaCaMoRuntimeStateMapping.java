@@ -1,5 +1,7 @@
 package org.tzi.use.plugins.jacamo.semantics.mapping;
 
+import org.tzi.use.plugins.jacamo.semantics.mapping.compact.runtime.*;
+
 import java.util.*;
 import org.jacamo.bridge.contract.*;
 import org.tzi.use.api.UseApiException;
@@ -40,7 +42,7 @@ public final class JaCaMoRuntimeStateMapping implements RuntimeStateMapping {
     /** Selection belongs to mapping infrastructure, never to the native writer. */
     public CaseRuntimeMapping caseMapping(MModel model) {
         if(program.xmlPlan()!=null)return new org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.XmlRuntimeStateMapping(program,model);
-        if(program.isCompact())return new org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactRuntimeStateMapping(program,model);
+        if(program.isCompact())return new org.tzi.use.plugins.jacamo.semantics.mapping.compact.runtime.CompactRuntimeStateMapping(program,model);
         return null;
     }
     public static boolean caseHelper(String kind){return Set.of("UPSERT_CARTAGO_WORKSPACE","UPSERT_CARTAGO_AGENT_IDENTITY","UPSERT_JASON_AGENT_STATE","DELETE_CARTAGO_AGENT_IDENTITY").contains(kind);}

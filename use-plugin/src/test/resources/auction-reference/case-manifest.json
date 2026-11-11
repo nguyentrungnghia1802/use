@@ -174,7 +174,7 @@
       "path": "provenance/use4goal-engine.json",
       "sha256": "1c1e79e3a55cd9ff3dc55f592028211a49834f7b0546d18b637646ae138c90e4",
       "format": "ENGINE_PROVENANCE",
-      "origin": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-jacamo-semantic-engine\\src\\main\\resources\\META-INF\\use4goal-provenance.json",
+      "origin": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\modules\\semantic-engine\\src\\main\\resources\\META-INF\\use4goal-provenance.json",
       "archiveSha256": "",
       "archiveEntry": ""
     },
@@ -183,7 +183,7 @@
       "path": "provenance/licenses/use4Goal-GPL-3.0.txt",
       "sha256": "230184f60bae2feaf244f10a8bac053c8ff33a183bcc365b4d8b876d2b7f4809",
       "format": "LICENSE",
-      "origin": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-jacamo-semantic-engine\\src\\main\\resources\\META-INF\\licenses\\use4Goal-GPL-3.0.txt",
+      "origin": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\modules\\semantic-engine\\src\\main\\resources\\META-INF\\licenses\\use4Goal-GPL-3.0.txt",
       "archiveSha256": "",
       "archiveEntry": ""
     },

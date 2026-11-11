@@ -111,7 +111,7 @@ final class OwnedJaCaMoRuntime implements AutoCloseable {
         String configured=System.getProperty(CLASSPATH_PROPERTY,"").trim();
         if(!configured.isEmpty())return Path.of(configured).toAbsolutePath().normalize();
         Path installed=checkout.resolve("bridge/runtime-classpath.txt");
-        return Files.isRegularFile(installed)?installed:checkout.resolve("jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt");
+        return Files.isRegularFile(installed)?installed:checkout.resolve("use-plugin/modules/bridge-jacamo/target/jacamo-bridge-classpath.txt");
     }
     private static String consolePosition() throws Exception {
         String configured=System.getProperty("use.jacamo.runtime.gui.position","").trim();

@@ -29,9 +29,9 @@ class ManagedBootstrapTest {
         Path jcm = stage.resolve("writing-paper.jcm"), secret = root.resolve("secret.hex"), stop = root.resolve("stop");
         Path control = Files.createDirectory(root.resolve("control"));
         String cp = String.join(java.io.File.pathSeparator,
-                Path.of("../jacamo-bridge-jacamo/target/test-classes").toAbsolutePath().normalize().toString(),
-                Path.of("../jacamo-bridge-jacamo/target/classes").toAbsolutePath().normalize().toString(),
-                Path.of("../jacamo-bridge-contract/target/classes").toAbsolutePath().normalize().toString(),
+                Path.of("../use-plugin/modules/bridge-jacamo/target/test-classes").toAbsolutePath().normalize().toString(),
+                Path.of("../use-plugin/modules/bridge-jacamo/target/classes").toAbsolutePath().normalize().toString(),
+                Path.of("../use-plugin/modules/bridge-contract/target/classes").toAbsolutePath().normalize().toString(),
                 System.getProperty("java.class.path"));
         String javaCommand = JavaProcessSupport.executable();
         Process fingerprint = new ProcessBuilder(javaCommand, "-cp", cp, "org.jacamo.bridge.adapter.RuntimeDistributionFingerprintMain").start();

@@ -88,26 +88,26 @@ Ngoại lệ kiểm tra bảo toàn: C:/Users/NTNghia/OneDrive/Desktop/report.md
 
 Bằng chứng mới nằm trong [target/fix-verification][EVIDENCE] (ignored build output; clean sẽ xóa). verification-report.md lịch sử giữ nguyên. Báo cáo này bổ sung kết quả sửa lỗi, không viết lại verdict/evidence của audit cũ.
 
-[S1]: D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-contract/src/main/java/org/jacamo/bridge/contract/SnapshotAdmission.java
+[S1]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-contract/src/main/java/org/jacamo/bridge/contract/SnapshotAdmission.java
 [S2]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeProjector.java
 [S3]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/bridge/BridgeMirrorStateMachine.java
 [S4]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeReplay.java
 [S5]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/ocl/ConstraintCoverageResolver.java
 [S6]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/ocl/SemanticInvariantEvaluator.java
 [S7]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeVerificationCoordinator.java
-[S8]: D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/CartagoSnapshotSource.java
+[S8]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/CartagoSnapshotSource.java
 [S9]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeOperationCheckpoints.java
 [S10]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticRuntimeVerifier.java
 [S11]: D:/_CODE_BANK/Project_/08_Thesis/use/pom.xml
-[S12]: D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplRuntimeProfile.java
-[S13]: D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplActivationCrosswalk.java
-[S14]: D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplBoardSnapshotSource.java
-[S15]: D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/JaCaMoBridgePlatform.java
+[S12]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplRuntimeProfile.java
+[S13]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplActivationCrosswalk.java
+[S14]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplBoardSnapshotSource.java
+[S15]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/JaCaMoBridgePlatform.java
 [S16]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/resources/org/tzi/use/plugins/jacamo/semantics/capabilities.json
 [S17]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/roundtrip/SourceLens.java
 [S18]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/bridge/BridgeClient.java
 [S19]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java
-[S20]: D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-contract/src/main/java/org/jacamo/bridge/contract/CanonicalJson.java
+[S20]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-contract/src/main/java/org/jacamo/bridge/contract/CanonicalJson.java
 [S21]: D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/RuntimeEventJournal.java
 [R12]: D:/_CODE_BANK/Project_/08_Thesis/use/target/fix-verification/reproduce-D01-D02.log
 [R34]: D:/_CODE_BANK/Project_/08_Thesis/use/target/fix-verification/reproduce-D03-D04.log

@@ -994,7 +994,7 @@ Các links sau trỏ tới actual files của audit hoặc source đã đọc. P
 | C-AWAIT | [C-AWAIT](C:/Users/NTNghia/AppData/Local/Temp/codex-use-jacamo-audit/cartago-v3.1/src/main/java/cartago/Artifact.java:810) |
 | C-BYTECODE | [C-BYTECODE](D:/_CODE_BANK/Project_/08_Thesis/use/target/verification-audit/cartago-artifact-bytecode.txt) |
 | CP-PLUGIN | [CP-PLUGIN](D:/_CODE_BANK/Project_/08_Thesis/use/target/verification-audit/classpath.txt) |
-| CP-ADAPTER | [CP-ADAPTER](D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/target/surefire-reports/TEST-org.jacamo.bridge.adapter.NplLiveBoardObservationTest.xml) |
+| CP-ADAPTER | [CP-ADAPTER](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/target/surefire-reports/TEST-org.jacamo.bridge.adapter.NplLiveBoardObservationTest.xml) |
 | G-MARK | [G-MARK](D:/_CODE_BANK/Project_/08_Thesis/use4Goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/GoalMarking.java:16) |
 | G-TASK | [G-TASK](D:/_CODE_BANK/Project_/08_Thesis/use4Goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/TaskMarking.java:7) |
 | S-MAPPING | [S-MAPPING](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/SemanticTransformationService.java:11) |
@@ -1009,11 +1009,11 @@ Các links sau trỏ tới actual files của audit hoặc source đã đọc. P
 | S-EVAL | [S-EVAL](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/ocl/OclEvaluationAdapter.java) |
 | S-VERIFY | [S-VERIFY](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticRuntimeVerifier.java:112) |
 | S-BIND | [S-BIND](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/istar/RequirementBindingResolver.java:16) |
-| S-CARTAGO | [S-CARTAGO](D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/CartagoSnapshotSource.java:361) |
-| S-SNAPSHOT | [S-SNAPSHOT](D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/SnapshotCoordinator.java) |
-| S-JASON | [S-JASON](D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/JasonCycleObservation.java) |
-| S-NPL | [S-NPL](D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplBoardSnapshotSource.java:43) |
-| S-NPLCROSS | [S-NPLCROSS](D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplActivationCrosswalk.java:14) |
+| S-CARTAGO | [S-CARTAGO](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/CartagoSnapshotSource.java:361) |
+| S-SNAPSHOT | [S-SNAPSHOT](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/SnapshotCoordinator.java) |
+| S-JASON | [S-JASON](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/JasonCycleObservation.java) |
+| S-NPL | [S-NPL](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplBoardSnapshotSource.java:43) |
+| S-NPLCROSS | [S-NPLCROSS](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplActivationCrosswalk.java:14) |
 | S-MIRROR | [S-MIRROR](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/bridge/BridgeMirrorStateMachine.java:40) |
 | S-REPLAY | [S-REPLAY](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeReplay.java:29) |
 | S-EXPLORER | [S-EXPLORER](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/exploration/BoundedExplorer.java:17) |
@@ -1030,10 +1030,10 @@ Fresh matrix test source files:
 - [ObserverIdentityLifecycleTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/ObserverIdentityLifecycleTest.java)
 - [SharedStateAcceptanceTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/SharedStateAcceptanceTest.java)
 - [TemporalGoalMonitorTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/TemporalGoalMonitorTest.java)
-- [SnapshotCoordinatorTest](D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/SnapshotCoordinatorTest.java)
+- [SnapshotCoordinatorTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/SnapshotCoordinatorTest.java)
 - [RuntimeVerificationCoordinatorTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/codegrounded/RuntimeVerificationCoordinatorTest.java)
 - [MentalStateProjectionTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/MentalStateProjectionTest.java)
-- [JasonStructuredObservationTest](D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/JasonStructuredObservationTest.java)
+- [JasonStructuredObservationTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/JasonStructuredObservationTest.java)
 - [CslSchemaTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/CslSchemaTest.java)
 - [OPlanSemanticsTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/OPlanSemanticsTest.java)
 - [NativeInvocationSemanticsTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeInvocationSemanticsTest.java)
@@ -1041,7 +1041,7 @@ Fresh matrix test source files:
 - [FunctionalObservationTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/FunctionalObservationTest.java)
 - [FunctionalLiveBoardTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/FunctionalLiveBoardTest.java)
 - [SemanticsProfileTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/SemanticsProfileTest.java)
-- [NplLiveBoardObservationTest](D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/NplLiveBoardObservationTest.java)
+- [NplLiveBoardObservationTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/test/java/org/jacamo/bridge/adapter/NplLiveBoardObservationTest.java)
 - [NormativeObservationTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/NormativeObservationTest.java)
 - [SourceLensTest](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/semantics/SourceLensTest.java)
 - [NativeRuntimePackagedReplayIT](D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/test/java/org/tzi/use/plugins/jacamo/codegrounded/NativeRuntimePackagedReplayIT.java)
@@ -1080,7 +1080,7 @@ Fresh matrix test source files:
 [C-AWAIT]: <C:/Users/NTNghia/AppData/Local/Temp/codex-use-jacamo-audit/cartago-v3.1/src/main/java/cartago/Artifact.java:810>
 [C-BYTECODE]: <D:/_CODE_BANK/Project_/08_Thesis/use/target/verification-audit/cartago-artifact-bytecode.txt>
 [CP-PLUGIN]: <D:/_CODE_BANK/Project_/08_Thesis/use/target/verification-audit/classpath.txt>
-[CP-ADAPTER]: <D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/target/surefire-reports/TEST-org.jacamo.bridge.adapter.NplLiveBoardObservationTest.xml>
+[CP-ADAPTER]: <D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/target/surefire-reports/TEST-org.jacamo.bridge.adapter.NplLiveBoardObservationTest.xml>
 [G-MARK]: <D:/_CODE_BANK/Project_/08_Thesis/use4Goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/GoalMarking.java:16>
 [G-TASK]: <D:/_CODE_BANK/Project_/08_Thesis/use4Goal/goal/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/TaskMarking.java:7>
 [S-MAPPING]: <D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/SemanticTransformationService.java:11>
@@ -1095,11 +1095,11 @@ Fresh matrix test source files:
 [S-EVAL]: <D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/ocl/OclEvaluationAdapter.java>
 [S-VERIFY]: <D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticRuntimeVerifier.java:112>
 [S-BIND]: <D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/istar/RequirementBindingResolver.java:16>
-[S-CARTAGO]: <D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/CartagoSnapshotSource.java:361>
-[S-SNAPSHOT]: <D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/SnapshotCoordinator.java>
-[S-JASON]: <D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/JasonCycleObservation.java>
-[S-NPL]: <D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplBoardSnapshotSource.java:43>
-[S-NPLCROSS]: <D:/_CODE_BANK/Project_/08_Thesis/use/jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplActivationCrosswalk.java:14>
+[S-CARTAGO]: <D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/CartagoSnapshotSource.java:361>
+[S-SNAPSHOT]: <D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/SnapshotCoordinator.java>
+[S-JASON]: <D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/JasonCycleObservation.java>
+[S-NPL]: <D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplBoardSnapshotSource.java:43>
+[S-NPLCROSS]: <D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/NplActivationCrosswalk.java:14>
 [S-MIRROR]: <D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/bridge/BridgeMirrorStateMachine.java:40>
 [S-REPLAY]: <D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeReplay.java:29>
 [S-EXPLORER]: <D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/exploration/BoundedExplorer.java:17>

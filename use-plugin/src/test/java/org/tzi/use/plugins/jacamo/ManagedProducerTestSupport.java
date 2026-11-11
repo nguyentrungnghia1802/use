@@ -57,8 +57,8 @@ public final class ManagedProducerTestSupport implements AutoCloseable {
                     files.getJavaFileObjectsFromPaths(javaFiles)).call()) throw new IllegalStateException("ORIGINAL_PROJECT_JAVA_COMPILE_FAILED");
         }
         String cp=String.join(java.io.File.pathSeparator,classes.toString(),
-                Path.of("../jacamo-bridge-contract/target/classes").toAbsolutePath().normalize().toString(),
-                Path.of("../jacamo-bridge-jacamo/target/classes").toAbsolutePath().normalize().toString(),
+                Path.of("../use-plugin/modules/bridge-contract/target/classes").toAbsolutePath().normalize().toString(),
+                Path.of("../use-plugin/modules/bridge-jacamo/target/classes").toAbsolutePath().normalize().toString(),
                 java.util.Arrays.stream(System.getProperty("java.class.path").split(java.util.regex.Pattern.quote(java.io.File.pathSeparator))).filter(classpathEntry).collect(java.util.stream.Collectors.joining(java.io.File.pathSeparator)));
         String javaCommand=JavaProcessSupport.executable();
         Process fingerprint=new ProcessBuilder(javaCommand,"-cp",cp,"org.jacamo.bridge.adapter.RuntimeDistributionFingerprintMain").start();

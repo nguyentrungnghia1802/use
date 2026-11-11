@@ -1,5 +1,7 @@
 package org.tzi.use.plugins.jacamo.semantics.mapping.compact;
 
+import org.tzi.use.plugins.jacamo.semantics.mapping.compact.runtime.*;
+
 import java.util.*;
 import org.jacamo.bridge.contract.*;
 import org.jacamo.bridge.contract.semantic.SourceEvidence;

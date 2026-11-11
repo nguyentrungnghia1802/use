@@ -1,5 +1,7 @@
 package org.tzi.use.plugins.jacamo.semantics.runtime;
 
+import org.tzi.use.plugins.jacamo.semantics.mapping.compact.runtime.*;
+
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.*;
@@ -95,7 +97,7 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
         requirementInventory=RequirementInventory.from(program,engine.system().model());
         identity=identity(run,generation,revision);ocl=new NativeOclBackend(engine.system().model(),program.hash(),program.profile().engine().name());
         try {
-            xmlTaskOcl=program.xmlPlan()!=null?new XmlTaskOclBindings(program,engine.system().model(),ocl):(program.isCompact()?new org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactTaskBindings(program,engine.system().model(),ocl):null);
+            xmlTaskOcl=program.xmlPlan()!=null?new XmlTaskOclBindings(program,engine.system().model(),ocl):(program.isCompact()?new org.tzi.use.plugins.jacamo.semantics.mapping.compact.runtime.CompactTaskBindings(program,engine.system().model(),ocl):null);
             xmlSteps=xmlTaskOcl==null?null:new XmlTaskCheckpoints(program,engine,xmlTaskOcl);
             xmlExpander=program.isCompact()?new OccurrenceGoalModelExpander(program.goalModel(),program.profile().engine(),OccurrenceGoalModelExpander.policies(program.compactPlan().specification().dependencyPopulations(),program.goalModel()),GoalViewRealizations.compile(program.compactPlan().specification().goalRealizations(),program.goalModel()),compactPhysicalActorViews(program)):program.xmlPlan()==null?null:new OccurrenceGoalModelExpander(program.goalModel(),program.profile().engine(),program.xmlPlan().dependencyPopulations(),program.xmlPlan().goalViews(),program.xmlPlan().physicalActorViews());
             if(program.xmlPlan()!=null) {

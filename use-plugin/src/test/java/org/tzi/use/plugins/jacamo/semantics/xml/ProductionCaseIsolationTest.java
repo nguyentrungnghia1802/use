@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ProductionCaseIsolationTest {
  @Test void allProductionMappingAndProducerSourcesHaveNoCaseConstantsOrLegacyClasses()throws Exception {
   Path root=Path.of("..").toAbsolutePath().normalize();
-  for(String tree:List.of("use-plugin/src/main/java","jacamo-bridge-jacamo/src/main/java","use-jacamo-semantic-engine/src/main/java"))try(var files=Files.walk(root.resolve(tree))){
+  for(String tree:List.of("use-plugin/src/main/java","use-plugin/modules/bridge-jacamo/src/main/java","use-plugin/modules/semantic-engine/src/main/java"))try(var files=Files.walk(root.resolve(tree))){
    for(Path path:files.filter(f->f.toString().endsWith(".java")).toList()){
     String source=Files.readString(path);
     for(String word:List.of("auction","currentWinner","P_bid_t2","sch_a1","houseBuilding","HelloWorld","CounterTeam"))assertFalse(source.toLowerCase(Locale.ROOT).contains(word.toLowerCase(Locale.ROOT)),path+" has case-specific production data: "+word);

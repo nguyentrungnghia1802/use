@@ -1,0 +1,9 @@
+org.tzi.use.plugins.jacamo.semantics.mapping.compact.runtime.CompactRuntimeStateMapping = D:\_CODE_BANK\Project_\08_Thesis\use\use-assembly\target\new\lib\plugins\use-jacamo-plugin-1.0.1.jar
+org.tzi.use.plugins.jacamo.semantics.mapping.compact.runtime.CompactTaskBindings = D:\_CODE_BANK\Project_\08_Thesis\use\use-assembly\target\new\lib\plugins\use-jacamo-plugin-1.0.1.jar
+org.jacamo.bridge.contract.JasonAgentInventory = D:\_CODE_BANK\Project_\08_Thesis\use\use-assembly\target\new\lib\plugins\use-jacamo-plugin-1.0.1.jar
+org.tzi.use.semantic.engine.runtime.Use4GoalRuntimeSessionAdapter = D:\_CODE_BANK\Project_\08_Thesis\use\use-assembly\target\new\lib\plugins\use-jacamo-plugin-1.0.1.jar
+jacamo.infra.JaCaMoLauncher = D:\_CODE_BANK\Project_\08_Thesis\use\use-assembly\target\new\bridge\runtime\jacamo-1.3.1-checkpoint-SNAPSHOT.jar
+cartago.Artifact = D:\_CODE_BANK\Project_\08_Thesis\use\use-assembly\target\new\bridge\runtime\cartago-3.1-checkpoint-SNAPSHOT.jar
+npl.NormInstance = D:\_CODE_BANK\Project_\08_Thesis\use\use-assembly\target\new\bridge\runtime\npl-0.6.1-checkpoint-SNAPSHOT.jar
+jason.asSemantics.TransitionSystem = D:\_CODE_BANK\Project_\08_Thesis\use\use-assembly\target\new\bridge\runtime\jason-interpreter-3.3.2-checkpoint-SNAPSHOT.jar
+INSTALLED_LAYOUT_LOAD_PASS compiler=3.2.0

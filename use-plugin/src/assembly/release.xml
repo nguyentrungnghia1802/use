@@ -8,7 +8,7 @@
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
-        <fileSet><directory>../jacamo-bridge-jacamo/target/producer-runtime</directory><outputDirectory>bridge/runtime</outputDirectory><includes><include>*.jar</include></includes></fileSet>
+        <fileSet><directory>../use-plugin/modules/bridge-jacamo/target/producer-runtime</directory><outputDirectory>bridge/runtime</outputDirectory><includes><include>*.jar</include></includes></fileSet>
         <fileSet><directory>examples/auction</directory><outputDirectory>examples/auction-current</outputDirectory></fileSet>
         <fileSet><directory>examples/auction-false</directory><outputDirectory>examples/auction-false</outputDirectory></fileSet>
         <fileSet><directory>src/test/resources/auction-reference/compact-v1</directory><outputDirectory>reference/auction/compact-v1</outputDirectory></fileSet>
@@ -20,8 +20,8 @@
         <file><source>tools/prepare-runtime-classpath.ps1</source><outputDirectory>tools</outputDirectory></file>
         <file><source>../../jacamo/checkpoint-dependencies/dependency-lock.json</source><outputDirectory>bridge</outputDirectory></file>
         <file><source>${project.build.directory}/${project.build.finalName}.jar</source><outputDirectory>lib/plugins</outputDirectory><destName>use-jacamo-plugin-1.0.1.jar</destName></file>
-        <file><source>../jacamo-bridge-contract/target/jacamo-bridge-contract-1.0.0-SNAPSHOT.jar</source><outputDirectory>bridge/lib</outputDirectory><destName>jacamo-bridge-contract-1.0.0.jar</destName></file>
-        <file><source>../jacamo-bridge-jacamo/target/jacamo-bridge-jacamo-1.0.0-SNAPSHOT.jar</source><outputDirectory>bridge/lib</outputDirectory><destName>jacamo-bridge-jacamo-1.0.0.jar</destName></file>
+        <file><source>../use-plugin/modules/bridge-contract/target/jacamo-bridge-contract-1.0.0-SNAPSHOT.jar</source><outputDirectory>bridge/lib</outputDirectory><destName>jacamo-bridge-contract-1.0.0.jar</destName></file>
+        <file><source>../use-plugin/modules/bridge-jacamo/target/jacamo-bridge-jacamo-1.0.0-SNAPSHOT.jar</source><outputDirectory>bridge/lib</outputDirectory><destName>jacamo-bridge-jacamo-1.0.0.jar</destName></file>
         <file><source>Core/Metamodel/version-2/jacamo_v2_complete.ecore</source><outputDirectory>Core/Metamodel/version-2</outputDirectory></file>
         <file><source>Core/Mapping/version-2/jacamo-use-mapping-v2.json</source><outputDirectory>Core/Mapping/version-2</outputDirectory></file>
         <file><source>Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json</source><outputDirectory>Core/Mapping/version-2</outputDirectory></file>
@@ -57,12 +57,12 @@
         <file><source>docs/project/semantic-compatibility-routing.md</source><outputDirectory>docs</outputDirectory><destName>semantic-compatibility-routing.md</destName></file>
         <file><source>docs/project/use4goal-observed-v1.json</source><outputDirectory>profiles</outputDirectory><destName>use4goal-observed-v1.json</destName></file>
         <file><source>licenses/ANTLR4-4.9.3.txt</source><outputDirectory>licenses</outputDirectory><destName>ANTLR4-4.9.3.txt</destName></file>
-        <file><source>../use-jacamo-semantic-engine/src/main/resources/META-INF/licenses/use4Goal-GPL-3.0.txt</source><outputDirectory>licenses</outputDirectory><destName>use4Goal-GPL-3.0.txt</destName></file>
-        <file><source>../use-jacamo-semantic-engine/src/main/resources/META-INF/use4goal-provenance.json</source><outputDirectory>provenance</outputDirectory><destName>use4goal-provenance.json</destName></file>
-        <file><source>../use-jacamo-semantic-engine/provenance/README.md</source><outputDirectory>provenance</outputDirectory><destName>README.md</destName></file>
-        <file><source>../use-jacamo-semantic-engine/provenance/host-compatibility-patches.md</source><outputDirectory>provenance</outputDirectory><destName>host-compatibility-patches.md</destName></file>
-        <file><source>../use-jacamo-semantic-engine/provenance/P-USE-PRINT-02.md</source><outputDirectory>provenance</outputDirectory><destName>P-USE-PRINT-02.md</destName></file>
-        <file><source>../use-jacamo-semantic-engine/provenance/patches/P-CTX-01.diff</source><outputDirectory>provenance</outputDirectory><destName>P-CTX-01.diff</destName></file>
+        <file><source>../use-plugin/modules/semantic-engine/src/main/resources/META-INF/licenses/use4Goal-GPL-3.0.txt</source><outputDirectory>licenses</outputDirectory><destName>use4Goal-GPL-3.0.txt</destName></file>
+        <file><source>../use-plugin/modules/semantic-engine/src/main/resources/META-INF/use4goal-provenance.json</source><outputDirectory>provenance</outputDirectory><destName>use4goal-provenance.json</destName></file>
+        <file><source>../use-plugin/modules/semantic-engine/provenance/README.md</source><outputDirectory>provenance</outputDirectory><destName>README.md</destName></file>
+        <file><source>../use-plugin/modules/semantic-engine/provenance/host-compatibility-patches.md</source><outputDirectory>provenance</outputDirectory><destName>host-compatibility-patches.md</destName></file>
+        <file><source>../use-plugin/modules/semantic-engine/provenance/P-USE-PRINT-02.md</source><outputDirectory>provenance</outputDirectory><destName>P-USE-PRINT-02.md</destName></file>
+        <file><source>../use-plugin/modules/semantic-engine/provenance/patches/P-CTX-01.diff</source><outputDirectory>provenance</outputDirectory><destName>P-CTX-01.diff</destName></file>
         <file><source>examples/csl-counter/counter.jcm</source><outputDirectory>examples/csl-counter</outputDirectory><destName>counter.jcm</destName></file>
         <file><source>examples/csl-counter/mapping.json</source><outputDirectory>examples/csl-counter</outputDirectory><destName>mapping.json</destName></file>
         <file><source>examples/csl-counter/README.md</source><outputDirectory>examples/csl-counter</outputDirectory><destName>README.md</destName></file>
@@ -111,14 +111,14 @@
         <file><source>src/test/resources/auction-reference/source-confirmed-v1/README.md</source><outputDirectory>reference/auction/source-confirmed-v1</outputDirectory></file>
         <file><source>src/main/resources/META-INF/use4goal-view-provenance.json</source><outputDirectory>provenance</outputDirectory></file>
         <file><source>src/main/resources/META-INF/licenses/use4Goal-views-GPL-3.0.txt</source><outputDirectory>licenses</outputDirectory></file>
-        <file><source>../use-jacamo-semantic-engine/provenance/patches/P-IADM-02.diff</source><outputDirectory>provenance</outputDirectory><destName>P-IADM-02.diff</destName></file>
+        <file><source>../use-plugin/modules/semantic-engine/provenance/patches/P-IADM-02.diff</source><outputDirectory>provenance</outputDirectory><destName>P-IADM-02.diff</destName></file>
         <file><source>examples/csl-counter/authored-v1/stock.csl</source><outputDirectory>examples/csl-counter/authored-v1</outputDirectory></file>
         <file><source>examples/csl-counter/authored-v1/stock.istar</source><outputDirectory>examples/csl-counter/authored-v1</outputDirectory></file>
         <file><source>examples/csl-counter/authored-v1/stock.ocl</source><outputDirectory>examples/csl-counter/authored-v1</outputDirectory></file>
         <file><source>examples/csl-counter/authored-v1/stock-mapping.xml</source><outputDirectory>examples/csl-counter/authored-v1</outputDirectory></file>
         <file><source>examples/csl-counter/authored-v1/README.md</source><outputDirectory>examples/csl-counter/authored-v1</outputDirectory></file>
-        <file><source>../use-jacamo-semantic-engine/provenance/P-IADM-01.md</source><outputDirectory>provenance</outputDirectory><destName>P-IADM-01.md</destName></file>
-        <file><source>../use-jacamo-semantic-engine/provenance/patches/P-IADM-01.diff</source><outputDirectory>provenance</outputDirectory><destName>P-IADM-01.diff</destName></file>
-        <file><source>../use-jacamo-semantic-engine/provenance/single-owner-context-v1.md</source><outputDirectory>provenance</outputDirectory><destName>single-owner-context-v1.md</destName></file>
+        <file><source>../use-plugin/modules/semantic-engine/provenance/P-IADM-01.md</source><outputDirectory>provenance</outputDirectory><destName>P-IADM-01.md</destName></file>
+        <file><source>../use-plugin/modules/semantic-engine/provenance/patches/P-IADM-01.diff</source><outputDirectory>provenance</outputDirectory><destName>P-IADM-01.diff</destName></file>
+        <file><source>../use-plugin/modules/semantic-engine/provenance/single-owner-context-v1.md</source><outputDirectory>provenance</outputDirectory><destName>single-owner-context-v1.md</destName></file>
     </files>
 </assembly>

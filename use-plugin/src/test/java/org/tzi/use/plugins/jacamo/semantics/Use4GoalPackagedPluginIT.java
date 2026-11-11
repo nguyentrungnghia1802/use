@@ -45,7 +45,7 @@ class Use4GoalPackagedPluginIT {
         }
     }
     @Test void releaseContainsOneOriginalCorePinnedAntlrAndNoHostOrLegacyBackend()throws Exception {
-        Path jar=Path.of("target/use-plugin-1.0.1.jar"),engine=Path.of("../use-jacamo-semantic-engine/target/use-jacamo-semantic-engine-7.5.0.jar");
+        Path jar=Path.of("target/use-plugin-1.0.1.jar"),engine=Path.of("../use-plugin/modules/semantic-engine/target/use-jacamo-semantic-engine-7.5.0.jar");
         try(var installed=new ZipFile(jar.toFile());var original=new ZipFile(engine.toFile())) {
             var names=installed.stream().map(ZipEntry::getName).toList();assertEquals(names.size(),new HashSet<>(names).size(),"No duplicate JAR entries");
             var expected=original.stream().filter(e->e.getName().startsWith("org/vnu/sme/goal/")&&e.getName().endsWith(".class")).map(ZipEntry::getName).collect(java.util.stream.Collectors.toSet());

@@ -16,6 +16,10 @@ Close USE before updating JARs on Windows. Backups are retained under
 installation and validates every contract and semantic-engine class against the
 reactor artifacts before replacing the plugin and bridge JARs. It also checks the
 installed result. It does not update case studies or framework runtime JARs.
+It validates packaged framework JARs against the reviewed sibling dependency
+lock and the producer build, then refreshes the installed lock. JaCaMo must also
+match its actual sibling source build. A stale manifest can be repaired only
+when those binaries already agree; a binary mismatch stops the update.
 
 A plugin-only Maven build can shade stale dependencies from the local Maven cache,
 even when current plugin classes compile. Do not deploy that JAR by copying it

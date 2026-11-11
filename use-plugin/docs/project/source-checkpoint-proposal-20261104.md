@@ -37,8 +37,8 @@ does not itself issue a source pause command.
   display groups are not the source policy and cannot authorize a release.
 
 Relevant source paths are under `use-plugin/.../codegrounded/runtime/CheckpointPolicySelection.java`,
-`jacamo-bridge-jacamo/.../adapter/JasonPlanInstrumentation.java`,
-`jacamo-bridge-jacamo/.../adapter/VerifiedCheckpointBridge.java`, and the sibling
+`use-plugin/modules/bridge-jacamo/.../adapter/JasonPlanInstrumentation.java`,
+`use-plugin/modules/bridge-jacamo/.../adapter/VerifiedCheckpointBridge.java`, and the sibling
 `jacamo/src/main/java/jacamo/checkpoint/VerifiedCheckpointCoordinator.java`.
 
 ## Recommended next design

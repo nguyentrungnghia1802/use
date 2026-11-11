@@ -38,14 +38,14 @@ Tất cả đường dẫn không có ổ đĩa tương đối với root `use/`
 | `P/` | `use-plugin/src/main/java/org/tzi/use/plugins/jacamo/` |
 | `S/` | `P/semantics/` |
 | `R/` | `P/codegrounded/runtime/` |
-| `B/` | `jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/` |
-| `C/` | `jacamo-bridge-contract/src/main/java/org/jacamo/bridge/contract/` |
+| `B/` | `use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/` |
+| `C/` | `use-plugin/modules/bridge-contract/src/main/java/org/jacamo/bridge/contract/` |
 | `G/` | `../use4Goal/goal/src/main/java/org/vnu/sme/goal/` — chỉ đọc |
 | `GR/` | `../use4Goal/goal/src/main/resources/` — chỉ đọc |
 | `GT/` | `../use4Goal/goal/src/test/java/org/vnu/sme/goal/` — chỉ đọc |
-| `E/` | **MỚI** `use-jacamo-semantic-engine/src/main/java/org/vnu/sme/goal/` — original FQCN |
-| `A/` | **MỚI** `use-jacamo-semantic-engine/src/main/java/org/tzi/use/semantic/engine/` — adapters trung lập |
-| `ET/` | **MỚI** `use-jacamo-semantic-engine/src/test/java/` |
+| `E/` | **MỚI** `use-plugin/modules/semantic-engine/src/main/java/org/vnu/sme/goal/` — original FQCN |
+| `A/` | **MỚI** `use-plugin/modules/semantic-engine/src/main/java/org/tzi/use/semantic/engine/` — adapters trung lập |
+| `ET/` | **MỚI** `use-plugin/modules/semantic-engine/src/test/java/` |
 | `PT/` | `use-plugin/src/test/java/org/tzi/use/plugins/jacamo/` |
 
 ## 2. Current system — evidence đã đối chiếu source
@@ -55,8 +55,8 @@ Tất cả đường dẫn không có ổ đĩa tương đối với root `use/`
 | ID / source thật | Method/cơ chế đã kiểm | Trạng thái và quyết định |
 |---|---|---|
 | U01 — [reactor POM](pom.xml), [plugin POM](use-plugin/pom.xml) | USE `7.5.0`, Java 21; modules contract, official adapter, assembly/core/gui/plugin; plugin `1.0.1` | EXISTING; không có module/dependency engine `goal`, không còn embedded provider |
-| U02 — [OfficialProjectAdapter](jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/OfficialProjectAdapter.java:44), [OfficialMoiseAdapter](jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/OfficialMoiseAdapter.java:64) | `adapt(JaCaMoProject,Path)`; `load()` → `OS.loadOSFromURI()`; `capture()` | KEEP official model/provenance; declaration không chứng minh runtime population |
-| U03 — [JaCaMoBridgePlatform](jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/JaCaMoBridgePlatform.java:125), [SnapshotCoordinator](jacamo-bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/SnapshotCoordinator.java:69) | `start()`, `capture(revision,maxAttempts)`, source-local cuts, events; `stop()/close()` | KEEP producer/TCP/Jason–CArtAgO–MOISE–NPL observers; không global atomic clock |
+| U02 — [OfficialProjectAdapter](use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/OfficialProjectAdapter.java:44), [OfficialMoiseAdapter](use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/OfficialMoiseAdapter.java:64) | `adapt(JaCaMoProject,Path)`; `load()` → `OS.loadOSFromURI()`; `capture()` | KEEP official model/provenance; declaration không chứng minh runtime population |
+| U03 — [JaCaMoBridgePlatform](use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/JaCaMoBridgePlatform.java:125), [SnapshotCoordinator](use-plugin/modules/bridge-jacamo/src/main/java/org/jacamo/bridge/adapter/SnapshotCoordinator.java:69) | `start()`, `capture(revision,maxAttempts)`, source-local cuts, events; `stop()/close()` | KEEP producer/TCP/Jason–CArtAgO–MOISE–NPL observers; không global atomic clock |
 | U04 — [BridgeClient](use-plugin/src/main/java/org/tzi/use/plugins/jacamo/bridge/BridgeClient.java:65) | `synchronize(Runnable beforeSnapshot)` subscribe trước snapshot; bounded buffering, watermark suppression; `control()`, `close()` | KEEP negotiation/admission/old subscription fence; không thêm semantic rule vào transport |
 | U05 — [DefaultJaCaMoFacade](use-plugin/src/main/java/org/tzi/use/plugins/jacamo/DefaultJaCaMoFacade.java:158) | `importProject()` → `synchronizeBridge()` → `buildNativeSemantic()`; Start/Pause/Resume, resync/disconnect | MODIFY chọn program/session mới; KEEP identity, activation ticket và old-owner revocation |
 | U06 — [CodeGroundedNativePipeline](use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/CodeGroundedNativePipeline.java:20) | `build(snapshot,mode[,configuration])`; `buildSemanticBundle()` kiểm source hash/graph, nhưng import production hiện gọi `build()` | ADAPT thêm explicit program path, không giả định auto-derive đã nối UI |
@@ -68,7 +68,7 @@ Tất cả đường dẫn không có ổ đĩa tương đối với root `use/`
 | U12 — [SemanticOclCompiler](use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/ocl/SemanticOclCompiler.java:15), [OclEvaluationAdapter](use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/ocl/OclEvaluationAdapter.java:14) | `predicate()`, `transitionPredicate()`, `condition()`; native Boolean type gate; `Evaluator.eval(expr,before,after,bindings)` và Value classification | KEEP/generalize sang adapter trung lập; không downgrade |
 | U13 — [OrganizationalMappingRules](use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/OrganizationalMappingRules.java:12), [SemanticTransformationService](use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/mapping/SemanticTransformationService.java:11) | `derive()` nhận domain/contracts/requirements authored; `fromOfficial()/fromEcore()` nhận config, normalize + trace | REUSE_WITH_ADAPTER; chưa có full automatic mapping; không chuyển local IR thành canonical core mới |
 | U14 — [SemanticRuntimeVerifier](use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticRuntimeVerifier.java:33), [SemanticObservationMapper](use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/runtime/SemanticObservationMapper.java:32), [RequirementBindingResolver](use-plugin/src/main/java/org/tzi/use/plugins/jacamo/semantics/istar/RequirementBindingResolver.java:16) | Local monitor + coverage/observer gates, typed runtime Port, exact player/context/self/episode binding | KEEP quality/correlation/observers, route recurrence theo engine profile |
-| U15 — [ManagedRuntimeWorkflow](use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ManagedRuntimeWorkflow.java:43), [RuntimeControlContract](jacamo-bridge-contract/src/main/java/org/jacamo/bridge/contract/RuntimeControlContract.java:16) | File waiting/request/started ACK gắn producer PID; TCP actions **STATUS/PAUSE/RESUME**, không STOP/RESTART | EXISTING external architecture. Disconnect không dừng JaCaMo; Pause chỉ Jason cycle boundary |
+| U15 — [ManagedRuntimeWorkflow](use-plugin/src/main/java/org/tzi/use/plugins/jacamo/ManagedRuntimeWorkflow.java:43), [RuntimeControlContract](use-plugin/modules/bridge-contract/src/main/java/org/jacamo/bridge/contract/RuntimeControlContract.java:16) | File waiting/request/started ACK gắn producer PID; TCP actions **STATUS/PAUSE/RESUME**, không STOP/RESTART | EXISTING external architecture. Disconnect không dừng JaCaMo; Pause chỉ Jason cycle boundary |
 | U16 — [NativeRuntimeReplay](use-plugin/src/main/java/org/tzi/use/plugins/jacamo/codegrounded/runtime/NativeRuntimeReplay.java), [PluginClassLoader](use-gui/src/main/java/org/tzi/use/runtime/util/PluginClassLoader.java:18) | Replay model/SOIL/profile/bindings; loader có **static URLClassLoader**, parent delegation, URL set qua các lần đăng ký | KEEP replay cũ theo version; đóng gói một bản engine, không mặc định isolated child-first plugin loader |
 | U17 — [JaCaMoLauncher reference](../jacamo/src/main/java/jacamo/infra/JaCaMoLauncher.java:52) | `main()` → `init/create/start`, `finish(...,stopJVM,...)`, có `System.exit` | REFERENCE_ONLY; framework chỉ chạy trong process producer. Không gọi entrypoint này trong USE |
 
@@ -151,11 +151,11 @@ Reuse mode manifest: `ORIGINAL_COPY`, `ORIGINAL_WITH_ADAPTER`, `PATCHED_WITH_PRO
 - [x] Giữ original FQCN khi hợp lý; lưu GPLv3/license/attribution từ `../use4Goal/LICENSE`. Không copy source rồi bỏ header/notice.
 - [x] Ghi generator/version/options/grammar hash cho generated parser; generate từ grammar pinned, không lấy `target` cũ làm source of truth.
 - [x] Source inventory/package expansion đóng danh sách ở Phase 1; file mới xuất hiện upstream không tự được include bằng wildcard release.
-- [x] Manifest đã tạo và packaged: `use-jacamo-semantic-engine/src/main/resources/META-INF/use4goal-provenance.json`; license/notice dưới cùng `META-INF/licenses/`; patch inventory dưới `use-jacamo-semantic-engine/provenance/`. Lượt planning không tạo; lượt implementation đã tạo, preserve attribution và verify actual archive.
+- [x] Manifest đã tạo và packaged: `use-plugin/modules/semantic-engine/src/main/resources/META-INF/use4goal-provenance.json`; license/notice dưới cùng `META-INF/licenses/`; patch inventory dưới `use-plugin/modules/semantic-engine/provenance/`. Lượt planning không tạo; lượt implementation đã tạo, preserve attribution và verify actual archive.
 
 ### 4.2. Manifest source cần migrate/tham chiếu
 
-Target `E/...` giữ suffix từ `G/...`; grammar target `use-jacamo-semantic-engine/src/main/resources/grammars/`; generated code ở `target/generated-sources/antlr4`. Không thêm `useplugin.xml` của goal vào module engine.
+Target `E/...` giữ suffix từ `G/...`; grammar target `use-plugin/modules/semantic-engine/src/main/resources/grammars/`; generated code ở `target/generated-sources/antlr4`. Không thêm `useplugin.xml` của goal vào module engine.
 
 | Source file/package | Upstream path | Target path | Reuse mode | Patch? |
 |---|---|---|---|---|
@@ -268,7 +268,7 @@ Leaf temporal records là history authority; propagation là derived aggregate. 
 ## 6. Module/API thiết kế — tất cả mục ADD là MỚI
 
 ```text
-use-jacamo-semantic-engine/
+use-plugin/modules/semantic-engine/
   pom.xml                            (parent USE7.5, JDK21, ANTLR4)
   src/main/java/org/vnu/sme/goal/...  (selected original sources theo manifest)
   src/main/java/org/tzi/use/semantic/engine/
@@ -450,7 +450,7 @@ Các path viết tắt mở rộng theo mục 1; không có action DELETE cho se
 | File/Class | Current role | Future role | Action | Phase |
 |---|---|---|---|---|
 | `pom.xml` | Reactor USE7.5 | Add engine module/dependency management | MODIFY | 2–3 |
-| `use-jacamo-semantic-engine/pom.xml` | Chưa có | Selected engine artifact, host provided | ADD | 2–3 |
+| `use-plugin/modules/semantic-engine/pom.xml` | Chưa có | Selected engine artifact, host provided | ADD | 2–3 |
 | `E/dsl/csl/{ast,mm,parser}` + grammar | Chưa có | Original canonical CSL | ADD | 2–4 |
 | `E/dsl/istar/{ast,mm,parser}` + grammar | Chưa có | Original canonical iStar subset | ADD | 6 |
 | `E/verify/conformance/semantics/` selected 7 files | Chưa có | Original marking/propagation | ADD | 7 |
@@ -724,7 +724,7 @@ Root/plugin POM, engine upstream manifest mục 4; `use-assembly/pom.xml`; `use-
 
 ## Files/classes to add
 
-`use-jacamo-semantic-engine/pom.xml`, `E/...` original sources theo manifest (CSL/iStar/marking/context), grammar resources, provenance/license, initial `ET` harness.
+`use-plugin/modules/semantic-engine/pom.xml`, `E/...` original sources theo manifest (CSL/iStar/marking/context), grammar resources, provenance/license, initial `ET` harness.
 
 ## Files/classes to modify
 
@@ -950,7 +950,7 @@ Giữ original parser APIs; new facade additive, old CslSchema/profile route cò
 
 ## Status
 
-DONE — 28 engine tests pass, gồm 23 frontend tests; 18 full AST/M1/diagnostic parity fixtures so với pinned original parser được generate/compile độc lập + 2 actual upstream fixtures có hash. API-built model validator/version admission tested; exact original model và source diagnostics preserved; native OCL typecheck deferred explicitly. A/B/C pass. Crosswalk `use-jacamo-semantic-engine/provenance/csl-feature-crosswalk.md`; evidence `use-plugin/verification/semantic-migration/phase-4/{acceptance.json,test-suites.json,frontend-test.log,normalized-parity/}`. Existing production route unchanged; wiring regression Phase2 remains applicable. Test formatting assumption failure retained; no original semantic source patch.
+DONE — 28 engine tests pass, gồm 23 frontend tests; 18 full AST/M1/diagnostic parity fixtures so với pinned original parser được generate/compile độc lập + 2 actual upstream fixtures có hash. API-built model validator/version admission tested; exact original model và source diagnostics preserved; native OCL typecheck deferred explicitly. A/B/C pass. Crosswalk `use-plugin/modules/semantic-engine/provenance/csl-feature-crosswalk.md`; evidence `use-plugin/verification/semantic-migration/phase-4/{acceptance.json,test-suites.json,frontend-test.log,normalized-parity/}`. Existing production route unchanged; wiring regression Phase2 remains applicable. Test formatting assumption failure retained; no original semantic source patch.
 
 <!-- PHASES_0_4_END -->
 

@@ -24,7 +24,7 @@ class InstalledAuthoredPluginIT {
         Path work=Files.createTempDirectory(Path.of("target"),"cold-authored-"+mode+"-").toAbsolutePath();
         Path install=Use4GoalPackagedPluginIT.install(work),driver=Use4GoalPackagedPluginIT.driver(work,InstalledAuthoredMain.class);
         Path evidence=Files.createTempDirectory(Files.createDirectories(Path.of("verification/authored-models/P09-cold-installed")),mode+"-").toAbsolutePath();
-        Path framework=Path.of("../jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt").toRealPath();
+        Path framework=Path.of("../use-plugin/modules/bridge-jacamo/target/jacamo-bridge-classpath.txt").toRealPath();
         var command=List.of(PackagedProjectProducer.java(),"-cp",install.resolve("lib/use-gui.jar")+java.io.File.pathSeparator+driver,InstalledAuthoredMain.class.getName(),install.toString(),mode,framework.toString(),evidence.toString());
         var process=new ProcessBuilder(command).directory(install.toFile()).redirectErrorStream(true).redirectOutput(evidence.resolve("consumer.log").toFile()).start();
         boolean finished=process.waitFor(440,TimeUnit.SECONDS);if(!finished){process.descendants().forEach(ProcessHandle::destroy);process.destroy();if(!process.waitFor(10,TimeUnit.SECONDS))process.destroyForcibly();}

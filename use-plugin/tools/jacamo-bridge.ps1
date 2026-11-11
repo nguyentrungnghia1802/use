@@ -260,14 +260,14 @@ try {
         } else {
             Invoke-MavenBuild @("-B", "-pl", "use-plugin", "-am", "-Dmaven.test.skip=true", "-Dmaven.antrun.skip=true", "package")
         }
-        Invoke-MavenBuild @("-B", "-pl", "jacamo-bridge-jacamo", "-am", "dependency:build-classpath",
+        Invoke-MavenBuild @("-B", "-pl", ":jacamo-bridge-jacamo", "-am", "dependency:build-classpath",
             "-Dmdep.outputFile=target/jacamo-bridge-classpath.txt", "-Dmdep.includeScope=runtime")
     }
 
     $bridgeClasspathFile = if (-not [string]::IsNullOrWhiteSpace($RuntimeClasspathFile)) { [IO.Path]::GetFullPath($RuntimeClasspathFile) } elseif ($installedLayout -and (Test-Path -LiteralPath (Join-Path $useRoot 'bridge/dependency-lock.json'))) {
         & (Join-Path $useRoot 'tools/prepare-runtime-classpath.ps1')
         Join-Path $useRoot 'bridge/runtime-classpath.txt'
-    } else { Join-Path $useRoot "jacamo-bridge-jacamo\target\jacamo-bridge-classpath.txt" }
+    } else { Join-Path $useRoot "use-plugin\modules\bridge-jacamo\target\jacamo-bridge-classpath.txt" }
     if (-not (Test-Path -LiteralPath $bridgeClasspathFile -PathType Leaf)) {
         throw "BRIDGE_CLASSPATH_MISSING:$bridgeClasspathFile"
     }
@@ -279,8 +279,8 @@ try {
             $_ -notmatch '[\\/]org[\\/]tzi[\\/]use[\\/]' -and $_ -notmatch 'jacamo-bridge-(contract|jacamo)'
         }))
     }
-    $contractRuntime = if ($installedLayout) { Join-Path $useRoot "bridge\lib\jacamo-bridge-contract-1.0.0.jar" } else { Join-Path $useRoot "jacamo-bridge-contract\target\classes" }
-    $adapterRuntime = if ($installedLayout) { Join-Path $useRoot "bridge\lib\jacamo-bridge-jacamo-1.0.0.jar" } else { Join-Path $useRoot "jacamo-bridge-jacamo\target\classes" }
+    $contractRuntime = if ($installedLayout) { Join-Path $useRoot "bridge\lib\jacamo-bridge-contract-1.0.0.jar" } else { Join-Path $useRoot "use-plugin\modules\bridge-contract\target\classes" }
+    $adapterRuntime = if ($installedLayout) { Join-Path $useRoot "bridge\lib\jacamo-bridge-jacamo-1.0.0.jar" } else { Join-Path $useRoot "use-plugin\modules\bridge-jacamo\target\classes" }
     $producerClasspath = [string]::Join([IO.Path]::PathSeparator, @(
         $contractRuntime,
         $adapterRuntime,

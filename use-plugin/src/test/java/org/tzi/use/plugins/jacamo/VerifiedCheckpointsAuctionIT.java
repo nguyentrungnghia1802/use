@@ -39,7 +39,7 @@ public class VerifiedCheckpointsAuctionIT {
         var observed=new LinkedHashMap<String,Object>();int reviews=0,failures=0,automatic=0;String previousToken="";boolean lastHeld=false,reconnected=false,sawStartT2=false;
         var recordings=new ArrayList<Path>();
         try {
-            facade.prepareOwnedProducer(original,selection,checkout.resolve("jacamo-bridge-jacamo/target/jacamo-bridge-classpath.txt"));
+            facade.prepareOwnedProducer(original,selection,checkout.resolve("use-plugin/modules/bridge-jacamo/target/jacamo-bridge-classpath.txt"));
             assertNotNull(session.system());facade.startRuntime();
             long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(240);long lastActivity=System.nanoTime();
             while(System.nanoTime()<end) {
