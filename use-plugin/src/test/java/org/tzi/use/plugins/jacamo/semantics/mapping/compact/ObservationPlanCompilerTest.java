@@ -114,7 +114,7 @@ class ObservationPlanCompilerTest {
 
         // Check evidence summary
         var summary = plan.evidenceSummary();
-        assertEquals("3.0.0", summary.get("compilerVersion"));
+        assertEquals("3.1.0", summary.get("compilerVersion"));
         assertEquals("auction-test", summary.get("planId"));
     }
 

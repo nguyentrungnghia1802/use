@@ -92,6 +92,10 @@ class CompactRepairRegressionTest {
         var two=new PhysicalCutFact.ArtifactInstance("parcel","env.Parcel","/a_b","run","life",Map.of(),Map.of());
         assertNotEquals(RuntimeInstanceLinker.artifactObjectName("Parcel",one),RuntimeInstanceLinker.artifactObjectName("Parcel",two));
         assertThrows(IllegalArgumentException.class,()->RuntimeInstanceLinker.artifactObjectName("Parcel",new PhysicalCutFact.ArtifactInstance("parcel","env.Parcel","/a",Map.of(),Map.of())));
+        var cut=new PhysicalCutFact("cut",1,List.of(one,two),List.of(),List.of(),List.of());
+        assertThrows(IllegalArgumentException.class,()->cut.findArtifactByClass("env.Parcel"));
+        assertThrows(IllegalArgumentException.class,()->cut.findArtifactByName("parcel"));
+        assertEquals(2,cut.findArtifactsByClass("env.Parcel").size());
     }
     @Test void rollbackRestoresDeletedIdentitiesBothEndpointsLinksAndAttributeChanges() throws Exception {
         var system=system();var cls=system.model().getClass("Parcel");
@@ -180,6 +184,44 @@ class CompactRepairRegressionTest {
         var current=disposal("run",a.id());
         engine.applyMappingCut(cut(fixture,List.of(b),Completeness.COMPLETE),"run",1,List.of(current),current);
         assertNull(engine.objectForSemanticId(a.id().canonical()));assertSame(second,engine.objectForSemanticId(b.id().canonical()));
+    }
+    @Test void artifactViewsUseEveryPhysicalInstanceWithoutInventingAPlayerOrTaskDemand() throws Exception {
+        var original=fixture();
+        var istar=temp.resolve("delivery.istar");Files.writeString(istar,"istar DeliveryGoals { role Courier { goal Delivered : Achieve condition {[ self.status = 'one' ]} } }");
+        var xml=temp.resolve("mapping.xml");Files.writeString(xml,"""
+          <mapping id="physical-view" xmlns="urn:use:jacamo-mapping:3" version="3.0">
+            <csl><map source="artifact:env.Parcel" target="Parcel"/><map source="artifact:env.Parcel/property:status" target="Parcel.status"/></csl>
+            <istar><map source="artifact:env.Parcel" target="Courier"/></istar>
+            <runtime><actorRuntime actor="Courier" activationPolicy="PROJECT_EXECUTION_VIEW" episodePolicy="STATIC_LIFETIME" self="Parcel"/>
+              <verify target="Courier.Delivered" scope="artifact:env.Parcel"/></runtime>
+          </mapping>
+          """);
+        var program=new GenericMappingEngine().map(original.source(),MappingInputs.read(temp.resolve("delivery.jcm"),xml,null,temp.resolve("delivery.csl"),istar));
+        var built=new org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNativePipeline().buildCanonicalProgram(original.source(),org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.AUTO,program);
+        var engine=new NativeRuntimeMutationEngine(built.nativeResult().state().system(),built.nativeResult().state().semanticObjectIndex(),new CodeGroundedRuntimeRuleRegistry(),program);
+        var f=new Fixture(program,engine,original.source());
+        engine.applyMappingCut(cut(f,List.of(),Completeness.COMPLETE),"run",1,List.of());
+        assertEquals(List.of(),engine.xmlOccurrences("run",1,"revision"));
+        assertEquals(List.of(),engine.xmlTaskDemands("run",1,"revision"));
+        var one=artifact("/main/shared","life-one","one");var two=artifact("/main/shared","life-two","two");
+        // Both artifacts really share the same workspace. Do not emit duplicate
+        // workspace facts to manufacture a second execution context.
+        var raw=cut(f,List.of(one,two),Completeness.COMPLETE);
+        var facts=new ArrayList<RuntimeFact>();facts.add(one.workspace());facts.add(one.fact());facts.add(one.property());
+        var secondValues=new HashMap<String,Object>(two.fact().values());secondValues.put("workspaceSemanticId",one.workspace().values().get("semanticId"));
+        facts.add(new RuntimeFact(two.fact().id(),two.fact().kind(),secondValues,List.of(),two.fact().projectionStatus(),two.fact().completeness(),List.of()));facts.add(two.property());
+        var shared=new RuntimeSnapshot(raw.snapshotId(),raw.modelRevision(),raw.captureStartedAt(),raw.captureEndedAt(),raw.startWatermarks(),raw.endWatermarks(),1,facts,raw.sourceCompleteness(),raw.stateFingerprint(),raw.captureMetadata());
+        engine.applyMappingCut(shared,"run",1,List.of());
+        var scopes=engine.xmlOccurrences("run",1,"revision");assertEquals(2,scopes.size());
+        assertEquals(2,scopes.stream().map(s->s.anchor()).distinct().count());
+        assertTrue(scopes.stream().noneMatch(s->s.complete()),"Transport completeness does not establish inventory closure");
+        for(var scope:scopes) {
+            assertEquals(Set.of(scope.anchor()),new HashSet<>(scope.members().getFirst().selves().values()));
+            var view=org.tzi.use.plugins.jacamo.semantics.runtime.ExecutionConstraintScope.capture(program,engine,scope);
+            assertEquals(1,CanonicalJson.object(view.get("entities")).size());
+        }
+        assertEquals(List.of(),engine.xmlOccurrences("other-run",1,"revision"));
+        assertEquals(List.of(),engine.xmlTaskDemands("run",1,"revision"));
     }
     private static RuntimeEvent disposal(String run,BridgeEntityId artifact) {
         return new RuntimeEvent("disposal",run,1,"revision","cartago","cartago",1,Instant.EPOCH,RuntimeEventKind.DISPOSED,RuntimeFactKind.ARTIFACT,

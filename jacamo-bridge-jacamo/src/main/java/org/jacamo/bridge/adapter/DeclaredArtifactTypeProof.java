@@ -66,9 +66,10 @@ final class DeclaredArtifactTypeProof {
                     declaration.fidelity(),declaration.capabilityStatus(),evidence,declaration.diagnostics());
         }catch(Exception|LinkageError unavailable){return declaration;}
     }
+
     record Binary(URL resource,byte[] bytes) { }
-    /** Bind bytes to the actual code provider and reject shadow resources.
-     * No URL/network fallback, global cache, initialization or retained ClassLoader. */
+    /** Bind bytes to the actual provider; never infer observable declarations
+     * from string constants or unparsed instruction bytes. */
     static Binary readBinary(Class<?> type)throws Exception {
         return readBinary(type,Thread.currentThread().getContextClassLoader());
     }

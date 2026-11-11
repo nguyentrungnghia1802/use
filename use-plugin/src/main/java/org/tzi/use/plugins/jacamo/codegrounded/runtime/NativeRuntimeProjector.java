@@ -104,6 +104,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
         installCaptureScope(pipeline);
     }
     private void installCaptureScope(CodeGroundedNativePipeline.CanonicalBuildResult pipeline) {
+        if(pipeline.program().isCompact())expectedCaptureScope=pipeline.program().compactPlan().captureScope();
         if(pipeline.xmlPreparation()!=null&&pipeline.xmlPreparation().preflight().get("captureScope") instanceof Map<?,?> scope)
             expectedCaptureScope=ObservationCaptureScope.fromMap(CanonicalJson.object(scope));
     }
@@ -121,8 +122,8 @@ public final class NativeRuntimeProjector implements AutoCloseable {
             throw new IllegalArgumentException("NATIVE_RUNTIME_IDENTITY_REQUIRED");
         this.sessionId = session; this.generation = generation; this.modelRevision = revision;
         mutations = new NativeRuntimeMutationEngine(system, index, registry,program);
-        xmlCartagoKinds=program!=null&&program.xmlPlan()!=null?org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.queryCartagoKinds(program.xmlPlan().inputs().specification()):java.util.Set.of(RuntimeFactKind.values());
-        xmlCartagoPopulationKinds=program!=null&&program.xmlPlan()!=null?org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerCartagoKinds(program.xmlPlan().inputs().specification()):java.util.Set.of(RuntimeFactKind.values());
+        xmlCartagoKinds=program!=null&&program.isCompact()?program.compactPlan().cartagoKinds():program!=null&&program.xmlPlan()!=null?org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.queryCartagoKinds(program.xmlPlan().inputs().specification()):java.util.Set.of(RuntimeFactKind.values());
+        xmlCartagoPopulationKinds=program!=null&&program.isCompact()?program.compactPlan().cartagoKinds():program!=null&&program.xmlPlan()!=null?org.tzi.use.plugins.jacamo.semantics.mapping.xml.runtime.RuntimeFactSources.producerCartagoKinds(program.xmlPlan().inputs().specification()):java.util.Set.of(RuntimeFactKind.values());
         coordinator = new RuntimeVerificationCoordinator(mutations, session, generation, revision,
                 runtimeDirectory==null?RuntimeVerificationCoordinator.createEphemeralDirectory(RuntimeVerificationCoordinator.defaultRuntimeRoot()):runtimeDirectory,
                 512, journalBytes, true,compressed);
@@ -168,7 +169,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
             try { SnapshotAdmission.require(snapshot,sameEpoch?sourceWatermarks:Map.of()); }
             catch(ContractException invalid) {throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_SNAPSHOT_CUT_REJECTED:"+invalid.getMessage(),invalid);}
             if(snapshot.facts().stream().map(f->f.id().canonical()).distinct().count()!=snapshot.facts().size())throw new NativeRuntimeProtocolException("SNAPSHOT_FACT_ID_COLLISION");
-            if(sameEpoch&&mutations.xmlCase())SourceClockCut.validateContinuation(sourceClockProofs,snapshot,session,nextGeneration);
+            if(sameEpoch&&mutations.declarativeMapping())SourceClockCut.validateContinuation(sourceClockProofs,snapshot,session,nextGeneration);
             if(!(mutations.cslProfile()||mutations.canonicalMappingConfigured()) || !sessionId.equals(session) || generation!=nextGeneration)mutations.resetToBaseline();
             var baseline=mutations.savepoint();
             mutations.prepareSnapshot(snapshot);
@@ -202,7 +203,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
             if (!sameEpoch) { sourceWatermarks.clear(); ledger = new EventLedger(8192); }
             aliases.clear(); evidence.clear(); trace.clear();
             snapshot.facts().forEach(fact -> evidence.put(fact.id().canonical(), fact));
-            if(mutations.xmlCase())for(var fact:snapshot.facts())if(fact.values().containsKey(VerificationObservation.KEY)&&SourceClock.qualified(VerificationObservation.require(fact,snapshot,session,nextGeneration)))
+            if(mutations.declarativeMapping())for(var fact:snapshot.facts())if(fact.values().containsKey(VerificationObservation.KEY)&&SourceClock.qualified(VerificationObservation.require(fact,snapshot,session,nextGeneration)))
                 sourceClockProofs.put(fact.id().canonical(),fact);
             snapshot.endWatermarks().forEach((source, watermark) -> sourceWatermarks.put(source, watermark.sequence()));
             int ordinal = 0;
@@ -224,7 +225,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
                 scopedEvent=NativeCaptureScopeGuard.event(event,expectedCaptureScope,selectiveCaptureActive);
                 if(org.jacamo.bridge.contract.VerificationObservation.present(event))try {var observation=org.jacamo.bridge.contract.VerificationObservation.require(event);mutations.validateVerificationObservation(observation,event.sessionId(),event.generation(),event.modelRevision());}
                 catch(org.jacamo.bridge.contract.ContractException invalid){throw new NativeRuntimeProtocolException(invalid.getMessage(),invalid);}
-                if(mutations.xmlCase())SourceClockCut.validateContinuation(sourceClockProofs,event);
+                if(mutations.declarativeMapping())SourceClockCut.validateContinuation(sourceClockProofs,event);
                 if (event.projectionStatus() == ProjectionStatus.MATERIALIZED_FAITHFULLY && event.completeness() != Completeness.COMPLETE)
                     throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_AUTHORITATIVE_EVENT_INCOMPLETE");
                 if (event.kind() == RuntimeEventKind.GAP || event.kind() == RuntimeEventKind.MODEL_REVISION_CHANGED)
@@ -254,7 +255,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
                     return new RuntimeVerificationCoordinator.Mutation<>(false,false);
                 }
                 boolean xmlMappingRequired=false;
-                if(mutations.xmlCase()) {
+                if(mutations.declarativeMapping()) {
                     var advanced=RuntimeObservationCut.advance(evidence,event);
                     if(CartagoSourceCut.KIND.equals(event.after().get("normalizedEventKind")))
                         coordinator.observedCartagoPopulation(CartagoSourceCut.require(event),xmlCartagoPopulationKinds);
@@ -268,7 +269,7 @@ public final class NativeRuntimeProjector implements AutoCloseable {
                     resyncRequired = true;
                     throw new NativeRuntimeProtocolException("NATIVE_RUNTIME_MUTATION_REJECTED:" + result.diagnostic());
                 }
-                var xmlCut=mutations.xmlCase()&&xmlMappingRequired?RuntimeObservationCut.eventCut(evidence,sourceWatermarks,coordinator.admittedSourceCoverage(),event,xmlCartagoKinds):null;
+                var xmlCut=mutations.declarativeMapping()&&xmlMappingRequired?RuntimeObservationCut.eventCut(evidence,sourceWatermarks,coordinator.admittedSourceCoverage(),event,xmlCartagoKinds):null;
                 var caseApplied=xmlCut!=null?mutations.applyMappingCut(xmlCut,sessionId,generation,List.of(),event):List.<NativeRuntimeMutationEngine.ApplyResult>of();
                 if(!kind.equals("EVENT") || event.subsystem().equals("cartago"))coordinator.operationCheckpoint(event,xmlCut);
                 coordinator.observedSource(event);

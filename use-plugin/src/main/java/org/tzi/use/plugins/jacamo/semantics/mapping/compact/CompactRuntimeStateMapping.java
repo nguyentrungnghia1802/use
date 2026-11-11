@@ -19,6 +19,8 @@ public final class CompactRuntimeStateMapping implements CaseRuntimeMapping {
     private final String revision;
     private record FieldDecoder(ObservationCapabilityRequest request,ArtifactFieldCutDecoder decoder) { }
     private final Map<String,FieldDecoder> fields;
+    private final CompactScopeRuntime sourceScopes;
+    private final CompactObserverRuntime observers;
     public CompactRuntimeStateMapping(SemanticProgram program,MModel model) {
         this.program=Objects.requireNonNull(program);this.model=Objects.requireNonNull(model);
         if(!program.isCompact())throw new IllegalArgumentException("COMPACT_PROGRAM_REQUIRED");
@@ -32,10 +34,15 @@ public final class CompactRuntimeStateMapping implements CaseRuntimeMapping {
                 throw new IllegalArgumentException("COMPACT_DUPLICATE_FIELD_CAPABILITY:"+key);
         }
         fields=Map.copyOf(decoders);
+        sourceScopes=new CompactScopeRuntime(program,model);
+        observers=new CompactObserverRuntime(program);
     }
     @Override public void validateObservation(VerificationObservation observation,String run,long generation,String revision) {
         program.assertUnchanged();
         if(run==null||run.isBlank()||generation<0||!this.revision.equals(revision))throw new IllegalArgumentException("COMPACT_OBSERVATION_EPOCH_REQUIRED");
+        if(observation.kind()==VerificationObservation.Kind.CLOCK)for(var request:program.compactPlan().capabilityRequests())
+            if(request.provider().equals("npl.source-clock.v1")&&request.parameters().get("hash") instanceof String hash)
+                org.tzi.use.plugins.jacamo.semantics.observer.SourceClock.decode(observation,run,generation,revision,hash);
     }
     @Override public List<Outcome> applyCut(Port port,String run,long generation,RuntimeSnapshot cut,List<RuntimeEvent> prefix,RuntimeEvent event) throws UseApiException {
         program.assertUnchanged();Objects.requireNonNull(cut);
@@ -95,6 +102,7 @@ public final class CompactRuntimeStateMapping implements CaseRuntimeMapping {
                     &&binding.sourceSymbol().qualifiedName().equals(text(fact.values(),"artifactTypeJavaClassName"))) {
                 String physical=fact.id().canonical();
                 var workspace=workspaces.get(text(fact.values(),"workspaceSemanticId"));
+                if(workspace==null)throw new IllegalArgumentException("COMPACT_ARTIFACT_WORKSPACE_EVIDENCE_REQUIRED:"+physical);
                 var aliases=CartagoPhysicalReference.aliases(fact,workspace);
                 String sourceAlias=text(fact.values(),"semanticId");
                 String identity="compact:"+program.hash()+":"+target+":"+run+":"+generation+":"+physical;
@@ -128,6 +136,8 @@ public final class CompactRuntimeStateMapping implements CaseRuntimeMapping {
                                 value=org.tzi.use.plugins.jacamo.semantics.csl.ScalarValueCodec.decode(attr.type().toString(),vs,ts);
                                 quality=value.isUndefined()?"COMPACT_SOURCE_UNDEFINED":"";
                                 slot=property.id().canonical();
+                            } else if(converter.equals(CompactValueConverters.NUMBER_TO_REAL)&&values instanceof List<?> vs&&types instanceof List<?> ts) {
+                                value=CompactValueConverters.real(vs,ts);quality="";slot=property.id().canonical();
                             } else if(converter.equals("JASON_ATOM_TO_STRING/1.0")) {
                                 var candidates=decoded.values().stream().filter(d->d.quality()==Completeness.COMPLETE)
                                         .map(d->CanonicalJson.object(d.values().get("rawProperties")).get(ref.propertyName())).filter(Objects::nonNull).toList();
@@ -183,6 +193,10 @@ public final class CompactRuntimeStateMapping implements CaseRuntimeMapping {
                 throw new IllegalArgumentException("COMPACT_DISPOSAL_IDENTITY_REQUIRED");
             disposed=event.entityId().canonical();
         }
+        if(event==null&&completeInventory(cut,null)) {
+            closed=true;
+            retained=cut.facts().stream().filter(f->f.kind()==RuntimeFactKind.ARTIFACT).map(f->f.id().canonical()).collect(java.util.stream.Collectors.toSet());
+        }
         if(closed||!disposed.isBlank()) {
             for(var object:List.copyOf(port.objects()))if(ownsRemoval(port,object)&&port.metadata(object,"compact:kind").equals("ARTIFACT")&&port.metadata(object,"compact:epoch").equals(run+":"+generation)
                     &&(closed&&!retained.contains(port.metadata(object,"compact:physical"))||!disposed.isBlank()&&disposed.equals(port.metadata(object,"compact:physical")))) {
@@ -197,6 +211,12 @@ public final class CompactRuntimeStateMapping implements CaseRuntimeMapping {
                 String id=port.metadata(object,"semanticId");port.delete(id);outcome.add(new Outcome(false,"COMPACT-WORKSPACE-DISPOSAL",id,null,"SOURCE_INVENTORY_REMOVAL"));
             }
         }
+        sourceScopes.apply(port,cut,run,generation);
+        observers.apply(port,cut,run,generation,completeInventory(cut,event));
+        inventories(port,cut,event,run,generation);
+        for(var scope:CompactScopeRuntime.scopes(port,program.hash(),run+":"+generation)) {
+            var anchor=port.find(scope.anchor());if(anchor!=null)outcome.add(new Outcome(true,"COMPACT-SOURCE-SCOPE",port.metadata(anchor,"semanticId"),anchor,"QUALIFIED_SOURCE_SCOPE_AND_DEMAND"));
+        }
         return List.copyOf(outcome);
     }
     /** Occurrences require source-qualified actor/scope/commitment evidence.
@@ -204,6 +224,8 @@ public final class CompactRuntimeStateMapping implements CaseRuntimeMapping {
     public List<OccurrenceProjection.Scope> occurrences(Port port,String run,long generation,String revision){
         CompactNativePreparation.requireSupportedRuntime(program);if(!this.revision.equals(revision))throw new IllegalArgumentException("COMPACT_OCCURRENCE_REVISION_MISMATCH");
         var scopes=new ArrayList<OccurrenceProjection.Scope>();
+        scopes.addAll(CompactScopeRuntime.scopes(port,program.hash(),run+":"+generation));
+
         for(var context:port.objects())if(ownsRemoval(port,context)&&port.metadata(context,"compact:kind").equals("WORKSPACE_CONTEXT")&&port.metadata(context,"compact:epoch").equals(run+":"+generation)) {
             String source=port.metadata(context,"compact:sourceRef"),id=port.metadata(context,"semanticId");
             var members=new ArrayList<OccurrenceProjection.Member>();
@@ -218,15 +240,40 @@ public final class CompactRuntimeStateMapping implements CaseRuntimeMapping {
                 members.add(new OccurrenceProjection.Member(actor,actor,instance,id,"",id,id,selves));
             }
             if(members.isEmpty())continue;
-            var issues="COMPLETE".equals(port.metadata(context,"compact:inventory"))?List.<String>of():List.of("COMPACT_WORKSPACE_INVENTORY_UNPROVEN");
+            var issues="COMPLETE".equals(port.metadata(context,"compact:inventory"))&&"COMPLETE".equals(port.metadata(context,"compact:quality"))
+                    ?List.<String>of():List.of("COMPACT_WORKSPACE_INVENTORY_UNPROVEN");
             String topology=org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(List.of(program.hash(),id,org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(members)));
             scopes.add(new OccurrenceProjection.Scope(id,source,id,id,topology,port.metadata(context,"compact:cut"),members,issues,
                     Map.of("workspace",port.metadata(context,"compact:workspace")),Map.of()));
         }
+
+        for(var binding:program.compactPlan().istarBindings())if(binding.kind()==IStarBinding.BindingKind.ACTOR_MAPPING&&binding.sourceRef() instanceof SourceReference.ArtifactRef) {
+            String actor=binding.targetSymbol().name();
+            var targets=program.compactPlan().cslBindings().stream().filter(t->!t.isAttribute()&&t.sourceRef().raw().equals(binding.sourceRef().raw())).toList();
+            if(targets.size()!=1)throw new IllegalStateException("COMPACT_ARTIFACT_VIEW_NOT_UNIQUE:"+actor);
+            for(var object:port.objects())if(ownsRemoval(port,object)&&port.metadata(object,"compact:kind").equals("ARTIFACT")
+                    &&port.metadata(object,"compact:epoch").equals(run+":"+generation)&&object.cls().name().equals(targets.getFirst().targetRef().qualifier())
+                    &&scopes.stream().noneMatch(s->s.anchor().equals(port.metadata(object,"semanticId"))&&s.members().stream().anyMatch(m->m.actor().equals(actor)))) {
+                String id=port.metadata(object,"semanticId");var selves=new TreeMap<String,String>();
+                for(var element:program.goalBindings().elements().values())if(element.actorId().equals(actor)&&!element.derived()&&!element.selfDeclaration().isBlank()) {
+                    if(!object.cls().name().equals(element.selfDeclaration()))throw new IllegalStateException("COMPACT_ARTIFACT_SELF_TYPE_MISMATCH:"+element.elementId());
+                    selves.put(element.elementId(),id);
+                }
+                String instance="artifact_"+org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(List.of(actor,id));
+                var member=new OccurrenceProjection.Member(actor,actor,instance,id,"",id,id,selves);
+                var issues="COMPLETE".equals(port.metadata(object,"compact:inventory"))&&"COMPLETE".equals(port.metadata(object,"compact:quality"))
+                        ?List.<String>of():List.of("COMPACT_ARTIFACT_INVENTORY_UNPROVEN");
+                String scopeId="compact:scope:"+org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.hash(List.of(program.hash(),run,generation,actor,id));
+                scopes.add(new OccurrenceProjection.Scope(scopeId,binding.sourceRef().raw(),id,id,id,port.metadata(object,"compact:cut"),List.of(member),issues,
+                        Map.of("workspace",port.metadata(object,"compact:workspace")),Map.of()));
+            }
+        }
         return List.copyOf(scopes);
     }
     public List<TaskDemandProjection.Demand> taskDemands(Port port,String run,long generation,String revision){
-        CompactNativePreparation.requireSupportedRuntime(program);return List.of();
+        CompactNativePreparation.requireSupportedRuntime(program);
+        if(!this.revision.equals(revision))throw new IllegalArgumentException("COMPACT_TASK_DEMAND_REVISION_MISMATCH");
+        return CompactScopeRuntime.demands(port,program.hash(),run+":"+generation);
     }
     @Override public boolean ownsRemoval(Port port,MObject object){return program.hash().equals(port.metadata(object,"compact:program"));}
     @Override public String rawInputRuleId(){return "COMPACT-SOURCE-CUT";}
@@ -246,11 +293,38 @@ public final class CompactRuntimeStateMapping implements CaseRuntimeMapping {
         }
         var metadata=cut.captureMetadata();
         if(!"PER_SOURCE_WATERMARK_AND_TOPOLOGY_VALIDATED".equals(metadata.get("cutPolicy"))
+                ||!cut.startWatermarks().containsKey("cartago")||!cut.endWatermarks().containsKey("cartago")
                 ||!Objects.equals(cut.startWatermarks().get("cartago"),cut.endWatermarks().get("cartago")))return false;
         Object sources=metadata.get("sourceEvidence");
         if(!(sources instanceof Map<?,?> evidence)||!(evidence.get("cartago") instanceof Map<?,?> cartago))return false;
         return matchingCapture(CanonicalJson.object(cartago))
                 &&"OFFICIAL_CONTROLLER_ENUMERATION_THEN_SELECTED_ARTIFACT_INFO_AND_VALUES".equals(cartago.get("inventoryAcquisition"));
+    }
+    private void inventories(Port port,RuntimeSnapshot cut,RuntimeEvent event,String run,long generation)throws UseApiException {
+        boolean physical=completeInventory(cut,event),agents=JasonAgentInventory.complete(cut,run);
+        boolean groups=MoisePopulationClosure.complete(cut,RuntimeFactKind.GROUP_BOARD,run),schemes=MoisePopulationClosure.complete(cut,RuntimeFactKind.SCHEME_BOARD,run);
+        var types=new TreeMap<String,Boolean>();types.put("AtomicAgent",agents&&physical);types.put("WorkspaceObservation",physical);
+        for(var binding:program.compactPlan().cslBindings())if(!binding.isAttribute()) {
+            boolean proven=switch(binding.sourceRef()){case SourceReference.ArtifactRef a->physical;case SourceReference.WorkspaceRef w->physical;case SourceReference.AgentRef a->agents;case SourceReference.MoiseGroupRef g->groups;case SourceReference.MoiseRoleRef r->groups;case SourceReference.MoiseSchemeRef s->schemes;default->false;};
+            types.put(binding.targetRef().qualifier(),proven);
+        }
+        for(var view:program.compactPlan().specification().observerViews())types.put(view.name(),view.population().equals("NPL_GOAL_OBLIGATIONS/1.0")?schemes&&NplPopulationCut.closed(cut,"ora4mas.nopl.SchemeBoard"):SourceReference.parse(view.source()) instanceof SourceReference.ArtifactRef?physical:schemes);
+        // Reserved M0 helper bases are compiler-owned, not authored source
+        // populations. The typed writer never targets an unbound helper base.
+        // Its direct population is therefore closed only when the native cut
+        // actually contains no direct instance; descendants keep their own proofs.
+        for(String helper:org.tzi.use.semantic.engine.use75.M0ExtensionSpec.HELPER_TYPES)
+            if(!types.containsKey(helper)&&model.getClass(helper)!=null)
+                types.put(helper,port.objects().stream().noneMatch(o->o.cls().name().equals(helper)));
+        for(var workspace:cut.facts())if(workspace.kind()==RuntimeFactKind.WORKSPACE&&workspace.id().authority().equals("cartago")&&CompactSourceCut.faithful(workspace)) {
+            String identity=text(workspace.values(),"semanticId");var ledger=port.upsert(identity,"WorkspaceObservation",text(workspace.values(),"name"));
+            port.alias(workspace.id().canonical(),ledger);port.metadata(ledger,"compact:program",program.hash());port.metadata(ledger,"compact:epoch",run+":"+generation);
+            port.metadata(ledger,"compact:kind","INVENTORY");port.metadata(ledger,"compact:cut",cut.snapshotId());port.metadata(ledger,"compact:workspace",workspace.id().canonical());
+            port.metadata(ledger,"compact:quality",physical?"COMPLETE":"UNAVAILABLE");
+            for(var type:types.entrySet())port.metadata(ledger,"compact:population:"+type.getKey(),type.getValue()?"COMPLETE":"UNPROVEN");
+        }
+        for(var object:port.objects())if(program.hash().equals(port.metadata(object,"compact:program"))&&types.containsKey(object.cls().name()))
+            port.metadata(object,"compact:inventory",Boolean.TRUE.equals(types.get(object.cls().name()))?"COMPLETE":"UNPROVEN");
     }
     private boolean matchingCapture(Map<String,Object> metadata) {
         var scope=program.compactPlan().captureScope();

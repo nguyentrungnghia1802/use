@@ -324,6 +324,7 @@ public final class GenericMappingEngine {
     }
     private static String resolveSourceNodeId(NormalizedSourceModel source, SourceReference ref,
             SemanticBindingIndex.Kind targetKind, Map<String,String> meta) {
+        if(ref instanceof SourceReference.AgentIdentityRef identity)return resolveSourceNodeId(source,new SourceReference.AgentRef(identity.agentOrProgram(),"agent:"+identity.agentOrProgram()),targetKind,meta);
         String type=switch(ref) {
             case SourceReference.ArtifactRef r -> r.className();
             case SourceReference.ArtifactPropertyRef r -> r.className();

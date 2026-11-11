@@ -16,14 +16,19 @@ public record CompactMappingSpecification(
         List<DependencyPopulation> dependencyPopulations,
         List<GoalRealization> goalRealizations,
         List<VerificationRequirement> verificationRequirements,
+        List<ObserverView> observerViews,
         Milestones milestones,
         Location location) {
 
     public static final String NAMESPACE = "urn:use:jacamo-mapping:3";
     public static final String VERSION = "3.0";
     public CompactMappingSpecification(String id,String sha256,List<Correspondence> csl,List<Correspondence> istar,List<ActorRuntime> actors,List<Requirement> requirements,
+            List<DependencyPopulation> populations,List<GoalRealization> realizations,List<VerificationRequirement> verifications,Milestones milestones,Location location) {
+        this(id,sha256,csl,istar,actors,requirements,populations,realizations,verifications,List.of(),milestones,location);
+    }
+    public CompactMappingSpecification(String id,String sha256,List<Correspondence> csl,List<Correspondence> istar,List<ActorRuntime> actors,List<Requirement> requirements,
             List<DependencyPopulation> populations,List<GoalRealization> realizations,Milestones milestones,Location location) {
-        this(id,sha256,csl,istar,actors,requirements,populations,realizations,List.of(),milestones,location);
+        this(id,sha256,csl,istar,actors,requirements,populations,realizations,List.of(),List.of(),milestones,location);
     }
 
     public static final Set<String> VALID_ACTIVATION_POLICIES = Set.of(
@@ -79,7 +84,27 @@ public record CompactMappingSpecification(
         dependencyPopulations = List.copyOf(dependencyPopulations == null ? List.of() : dependencyPopulations);
         goalRealizations = List.copyOf(goalRealizations == null ? List.of() : goalRealizations);
         verificationRequirements=List.copyOf(verificationRequirements==null?List.of():verificationRequirements);
+        observerViews = List.copyOf(observerViews == null ? List.of() : observerViews);
         Objects.requireNonNull(location, "location");
+    }
+
+    public record ObserverView(
+            String id,
+            String name,
+            String category,
+            String keyFields,
+            String source,
+            String population,
+            List<ObserverField> fields,
+            Location location) {
+        public ObserverView {
+            source=Objects.requireNonNullElse(source,"");
+            population=Objects.requireNonNullElse(population,"SOURCE_INSTANCE/1.0");
+            fields = List.copyOf(fields == null ? List.of() : fields);
+        }
+        public ObserverView(String id,String name,String category,String keyFields,List<ObserverField> fields,Location location){this(id,name,category,keyFields,"","SOURCE_INSTANCE/1.0",fields,location);}
+        public ObserverView(String id,String name,String category,String keyFields,String source,List<ObserverField> fields,Location location){this(id,name,category,keyFields,source,"SOURCE_INSTANCE/1.0",fields,location);}
+        public record ObserverField(String name, String type, String origin, Location location) {}
     }
 
     public record Location(String sourceName, int line, int column) {

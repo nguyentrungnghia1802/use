@@ -1,0 +1,193 @@
+{
+  "version": "COMPACT_COMPLETION_RECEIPT/1.0",
+  "level": "SERVICE_TCP_NOT_MANUAL_DESKTOP",
+  "sourceProject": "D:/_CODE_BANK/Project_/vnu-sme-lab/jacamo/examples/auction/auction.jcm",
+  "recording": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\target\\jacamo-runtime\\run-10981839181189593425",
+  "automaticReleases": 26,
+  "manualAcknowledgements": 0,
+  "terminalApprovals": [
+    {
+      "ordinal": 2174,
+      "action": "APPROVE",
+      "identity": {
+        "barrierEpoch": 23,
+        "executionScope": [
+          "source:beid:v1:moise/organisation/scheme-board/aorg/sch_a1/d1219f88-70cc-4ebe-b5e4-3013cec84fb2%3A6f429aa7-5b32-4abc-9fb2-572ae280054f"
+        ],
+        "generation": 1,
+        "policyHash": "bc8d7023bb1a19571101a9f17f87f95c54ff59ce36e7e7f124125db308872eb6",
+        "producerHash": "1511d1d386d1fe1036b6d2f67404adb41e30e6cba2c13fe9f24e0c3d80b27cee",
+        "requestHash": "e0458ebc4de9db21b3771c2ad91695e21bc74952ab64f2a24e7e62a857722c03",
+        "revision": "3c6eedd2ae14449a30ad67b39d900c41fdcb5f575c41e37fae925245dd26c523",
+        "run": "20261112-021203-076-60cf4d7e",
+        "sequence": 23,
+        "session": "d1219f88-70cc-4ebe-b5e4-3013cec84fb2",
+        "token": "a5074b16-c142-4223-a3eb-ba05c0ed6501"
+      },
+      "checks": {
+        "NATIVE:AuctionMonitor::BidEvidence": {
+          "applicability": "APPLICABLE",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "truth": "PASS"
+        },
+        "NATIVE:AuctionMonitor::SchemeOrder": {
+          "applicability": "APPLICABLE",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "truth": "PASS"
+        },
+        "NATIVE:auctionGroup::AuctioneerPopulation": {
+          "applicability": "APPLICABLE",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "truth": "PASS"
+        },
+        "NATIVE:auctionGroup::ParticipantPopulation": {
+          "applicability": "APPLICABLE",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "truth": "PASS"
+        },
+        "native.applicable": {
+          "applicability": "APPLICABLE",
+          "diagnostic": "APPLICABLE_NATIVE_INVENTORY_PASSED",
+          "truth": "PASS"
+        },
+        "native.settled:source:beid:v1:moise/organisation/scheme-board/aorg/sch_a1/d1219f88-70cc-4ebe-b5e4-3013cec84fb2%3A6f429aa7-5b32-4abc-9fb2-572ae280054f": {
+          "applicability": "APPLICABLE",
+          "diagnostic": "SETTLED_SELECTED_NATIVE_ROOT_FULFILLED",
+          "truth": "PASS"
+        }
+      },
+      "resultHash": "6b1fb3024b5b5a6c003d764cd79dee577a46fd4ea46894d5c95a18d00117f0fe",
+      "nativeOutcomes": [
+        {
+          "constraintId": "NATIVE:AuctionMonitor::BidEvidence",
+          "contextClass": "AuctionMonitor",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "expression": "(self.bidDoneBy->forAll(a : String | self.actualBidBy->includes(a)) and ((self.bidSatisfiedAt >= 0) implies (self.adminBidOverride or self.bidCommittedBy->exists(a : String | (self.bidDoneBy->includes(a) and self.actualBidBy->includes(a))))))",
+          "outcome": "PASS"
+        },
+        {
+          "constraintId": "NATIVE:AuctionMonitor::SchemeOrder",
+          "contextClass": "AuctionMonitor",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "expression": "(((((self.bidEnabledAt >= 0) implies ((self.startSatisfiedAt >= 0) and (self.startSatisfiedAt <= self.bidEnabledAt))) and ((self.bidSatisfiedAt >= 0) implies ((self.bidEnabledAt >= 0) and (self.bidEnabledAt <= self.bidSatisfiedAt)))) and ((self.decideEnabledAt >= 0) implies ((self.bidSatisfiedAt >= 0) and (self.bidSatisfiedAt <= self.decideEnabledAt)))) and ((self.decideSatisfiedAt >= 0) implies ((self.decideEnabledAt >= 0) and (self.decideEnabledAt <= self.decideSatisfiedAt))))",
+          "outcome": "PASS"
+        },
+        {
+          "constraintId": "NATIVE:OrgContext::CslV4RoleCompatibility",
+          "contextClass": "OrgContext",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "expression": "self.roles->forAll(r1 : RoleOccurrence, r2 : RoleOccurrence | ((((r1 = r2) or (r1.player <> r2.player)) or (r1.oclIsKindOf(auctioneer) and r2.oclIsKindOf(auctioneer))) or (r1.oclIsKindOf(participant) and r2.oclIsKindOf(participant))))",
+          "outcome": "PASS"
+        },
+        {
+          "constraintId": "NATIVE:auctionGroup::AuctioneerPopulation",
+          "contextClass": "auctionGroup",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "expression": "(self.auctioneer->size = 1)",
+          "outcome": "PASS"
+        },
+        {
+          "constraintId": "NATIVE:auctionGroup::ParticipantPopulation",
+          "contextClass": "auctionGroup",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "expression": "(self.participant->size <= 300)",
+          "outcome": "PASS"
+        }
+      ]
+    },
+    {
+      "ordinal": 2279,
+      "action": "APPROVE",
+      "identity": {
+        "barrierEpoch": 26,
+        "executionScope": [
+          "source:beid:v1:moise/organisation/scheme-board/aorg/sch_a2/d1219f88-70cc-4ebe-b5e4-3013cec84fb2%3Accd8cf32-0c27-467e-be3f-ad420510843c"
+        ],
+        "generation": 1,
+        "policyHash": "bc8d7023bb1a19571101a9f17f87f95c54ff59ce36e7e7f124125db308872eb6",
+        "producerHash": "d82b96dbddc5ff849230bc93beca1adcf9c1c595d8feeb040f117c27e993aa7b",
+        "requestHash": "c92e2f1fb3c2a8e1dd62b646089167208852f0991e9fdb5473fdd5946645cef8",
+        "revision": "3c6eedd2ae14449a30ad67b39d900c41fdcb5f575c41e37fae925245dd26c523",
+        "run": "20261112-021203-076-60cf4d7e",
+        "sequence": 26,
+        "session": "d1219f88-70cc-4ebe-b5e4-3013cec84fb2",
+        "token": "ecd25c62-7abe-4a5c-bc78-35875af3a0a5"
+      },
+      "checks": {
+        "NATIVE:AuctionMonitor::BidEvidence": {
+          "applicability": "APPLICABLE",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "truth": "PASS"
+        },
+        "NATIVE:AuctionMonitor::SchemeOrder": {
+          "applicability": "APPLICABLE",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "truth": "PASS"
+        },
+        "NATIVE:auctionGroup::AuctioneerPopulation": {
+          "applicability": "APPLICABLE",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "truth": "PASS"
+        },
+        "NATIVE:auctionGroup::ParticipantPopulation": {
+          "applicability": "APPLICABLE",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "truth": "PASS"
+        },
+        "native.applicable": {
+          "applicability": "APPLICABLE",
+          "diagnostic": "APPLICABLE_NATIVE_INVENTORY_PASSED",
+          "truth": "PASS"
+        },
+        "native.settled:source:beid:v1:moise/organisation/scheme-board/aorg/sch_a2/d1219f88-70cc-4ebe-b5e4-3013cec84fb2%3Accd8cf32-0c27-467e-be3f-ad420510843c": {
+          "applicability": "APPLICABLE",
+          "diagnostic": "SETTLED_SELECTED_NATIVE_ROOT_FULFILLED",
+          "truth": "PASS"
+        }
+      },
+      "resultHash": "0c3c15a965333303303bc4189697ad02998c19931bcd8ec87a9efa3cbfe820c2",
+      "nativeOutcomes": [
+        {
+          "constraintId": "NATIVE:AuctionMonitor::BidEvidence",
+          "contextClass": "AuctionMonitor",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "expression": "(self.bidDoneBy->forAll(a : String | self.actualBidBy->includes(a)) and ((self.bidSatisfiedAt >= 0) implies (self.adminBidOverride or self.bidCommittedBy->exists(a : String | (self.bidDoneBy->includes(a) and self.actualBidBy->includes(a))))))",
+          "outcome": "PASS"
+        },
+        {
+          "constraintId": "NATIVE:AuctionMonitor::SchemeOrder",
+          "contextClass": "AuctionMonitor",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "expression": "(((((self.bidEnabledAt >= 0) implies ((self.startSatisfiedAt >= 0) and (self.startSatisfiedAt <= self.bidEnabledAt))) and ((self.bidSatisfiedAt >= 0) implies ((self.bidEnabledAt >= 0) and (self.bidEnabledAt <= self.bidSatisfiedAt)))) and ((self.decideEnabledAt >= 0) implies ((self.bidSatisfiedAt >= 0) and (self.bidSatisfiedAt <= self.decideEnabledAt)))) and ((self.decideSatisfiedAt >= 0) implies ((self.decideEnabledAt >= 0) and (self.decideEnabledAt <= self.decideSatisfiedAt))))",
+          "outcome": "PASS"
+        },
+        {
+          "constraintId": "NATIVE:OrgContext::CslV4RoleCompatibility",
+          "contextClass": "OrgContext",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "expression": "self.roles->forAll(r1 : RoleOccurrence, r2 : RoleOccurrence | ((((r1 = r2) or (r1.player <> r2.player)) or (r1.oclIsKindOf(auctioneer) and r2.oclIsKindOf(auctioneer))) or (r1.oclIsKindOf(participant) and r2.oclIsKindOf(participant))))",
+          "outcome": "PASS"
+        },
+        {
+          "constraintId": "NATIVE:auctionGroup::AuctioneerPopulation",
+          "contextClass": "auctionGroup",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "expression": "(self.auctioneer->size = 1)",
+          "outcome": "PASS"
+        },
+        {
+          "constraintId": "NATIVE:auctionGroup::ParticipantPopulation",
+          "contextClass": "auctionGroup",
+          "diagnostic": "QUANTIFIED_NATIVE_INVARIANT;POPULATION_COMPLETE",
+          "expression": "(self.participant->size <= 300)",
+          "outcome": "PASS"
+        }
+      ]
+    }
+  ],
+  "logs": {
+    "main-assignment.log": "e2aa6689a994e483f474ce7062e5e0bf6f3b62c598a71b64bfbedbc8e99b3230",
+    "terminal-acceptance.log": "f8deae5838a40270e235faee019a785c4e0dd8b8a87a4157d296cca8b53dc122",
+    "population-acceptance.log": "a97c64cfef38ce244f61d9d0192efb91ec5ff6143f8c902cdfe5003d179494a7"
+  }
+}

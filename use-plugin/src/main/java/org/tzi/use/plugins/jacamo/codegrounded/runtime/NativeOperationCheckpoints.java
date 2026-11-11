@@ -49,8 +49,8 @@ final class NativeOperationCheckpoints {
     }
     String eligibleKind(RuntimeEvent event){return operationReceiver(event)!=null?kind(event):"EVENT";}
     private org.tzi.use.uml.sys.MObject operationReceiver(RuntimeEvent event) {
-        if(engine.xmlCase()) {
-            // Raw XML M0 rules deliberately expose no unverified framework
+        if(engine.declarativeMapping()) {
+            // Declarative M0 rules deliberately expose no unverified framework
             // alias. Resolve the admitted physical envelope identity instead;
             // ownership still requires its complete scope and incarnation.
             var identity=event.entityId();if(identity==null)return null;
@@ -177,6 +177,7 @@ final class NativeOperationCheckpoints {
         }
     }
     private boolean artifactOwner(org.tzi.use.uml.sys.MObject object,BridgeEntityId identity) {
+        if(engine.canonicalMappingConfigured()&&engine.canonicalProgram().isCompact())return identity.canonical().equals(engine.metadata(object,"compact:physical"))&&identity.incarnation().equals(artifactIncarnation(object));
         if(!engine.xmlCase())return engine.metadata(object,"uuid").equals(identity.incarnation());
         return identity.canonical().equals(engine.metadata(object,"xml:m0:identity"))
                 &&identity.incarnation().equals(artifactIncarnation(object));
@@ -184,6 +185,13 @@ final class NativeOperationCheckpoints {
     /** Generic M0 owns an exact physical BridgeEntityId; legacy UUID metadata is
      * not its contract. An alias alone cannot redirect invocation ownership. */
     private String artifactIncarnation(org.tzi.use.uml.sys.MObject object) {
+        if(engine.canonicalMappingConfigured()&&engine.canonicalProgram().isCompact()) {
+            if(!engine.canonicalProgramHash().equals(engine.metadata(object,"compact:program")))return "";
+            try {
+                var identity=BridgeEntityId.parse(engine.metadata(object,"compact:physical"));
+                return identity.authority().equals("cartago")&&identity.dimension().equals("environment")&&identity.kind().equals("artifact")&&engine.objectForSemanticId(identity.canonical())==object?identity.incarnation():"";
+            }catch(IllegalArgumentException unavailable){return "";}
+        }
         if(!engine.xmlCase())return engine.metadata(object,"uuid");
         if(!engine.canonicalProgramHash().equals(engine.metadata(object,"xml:m0:program")))return "";
         try {

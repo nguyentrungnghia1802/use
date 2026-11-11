@@ -76,6 +76,15 @@ class OccurrenceGoalModelExpanderTest {
         var missing=new ArrayList<>(members);missing.removeIf(p->p.sourceActor().equals("Skills")&&p.player().equals("B"));
         assertThrows(IllegalArgumentException.class,()->expander.expand(missing,"MissingPlayer"));
     }
+    @Test void sourceBootstrapDoesNotInstantiateAnActorBeforeItsSourceExists() {
+        var expander=new OccurrenceGoalModelExpander(source(),EngineSemanticsProfile.DERIVED_AND_RESOURCE_V1,Map.of("shipment",OccurrenceGoalModelExpander.Quantifier.ANY));
+        var providers=cast().stream().filter(p->p.sourceActor().equals("Carrier")).toList();
+        assertThrows(IllegalArgumentException.class,()->expander.expand(providers,"Unqualified"));
+        var initial=expander.expand(providers,"SourceBootstrap",Set.of("ship"),true);
+        assertEquals(2,initial.cast().size());assertTrue(initial.model().getDependencies().isEmpty());
+        assertTrue(initial.trace().values().stream().noneMatch(t->t.actor().equals("Dispatch")));
+        assertEquals(2,expander.expand(cast(),"BoundDomain").model().getDependencies().size());
+    }
     static EngineInputs input(Use4GoalRuntimeSessionAdapter engine,OccurrenceGoalModelExpander.Expansion expanded,Set<String> complete,boolean known) {
         var tasks=new TreeMap<String,EngineInputs.TaskInput>();var goals=new TreeMap<String,EngineInputs.GoalInput>();var resources=new HashMap<EngineInputs.ResourceKey,EngineInputs.ResourceInput>();
         for(var occurrence:engine.topology().occurrences().values()) {

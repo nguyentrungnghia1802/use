@@ -48,7 +48,11 @@ class CompactWorkflowIntegrationTest {
                     role auctioneer {
                         goal do_auction : Achieve
                         task bid > do_auction
+                            pre {[ step.enabled ]}
+                            post {[ step.succeeded ]}
                         task close_auction > do_auction
+                            pre {[ step.enabled ]}
+                            post {[ step.succeeded ]}
                     }
                 }
                 """;
@@ -67,7 +71,8 @@ class CompactWorkflowIntegrationTest {
                     <map source="asl:src/agt/auctioneer.asl/plan:do_auction/step:close_auction[1..2]" target="auctioneer.close_auction"/>
                   </istar>
                   <runtime>
-                    <actorRuntime actor="auctioneer" activationPolicy="EXPLICIT_ENACTMENT" episodePolicy="STATIC_LIFETIME"/>
+                    <actorRuntime actor="auctioneer" activationPolicy="EXPLICIT_ENACTMENT" episodePolicy="STATIC_LIFETIME" self="Auction"/>
+                    <verify target="auctioneer.do_auction"/>
                   </runtime>
                 </mapping>
                 """;
@@ -101,7 +106,7 @@ class CompactWorkflowIntegrationTest {
                         meta("prog-1", "JASON_AGENT_PROGRAM", "jason.asl"),
                         "ag-1",
                         "src/agt/auctioneer.asl",
-                        "asl-hash",
+                        "a".repeat(64),
                         new JasonSemanticContract.PlanLibrarySemantic(
                                 meta("lib-1", "JASON_PLAN_LIBRARY", "jason.lib"),
                                 List.of(new JasonSemanticContract.PlanSemantic(

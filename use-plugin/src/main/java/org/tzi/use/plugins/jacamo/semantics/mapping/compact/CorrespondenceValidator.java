@@ -47,7 +47,7 @@ public final class CorrespondenceValidator {
                 if(!selectedTargets.add("CSL:"+tSymbol.qualifiedName()))diagnostics.add(new Diagnostic("AMBIGUOUS_TARGET_BINDING",c.target(),c.location()));
                 boolean compatible=switch(sSymbol.kind()) {
                     case ARTIFACT -> tSymbol.kind()==TargetSymbol.TargetKind.CSL_ENTITY;
-                    case ARTIFACT_PROPERTY,ARTIFACT_PROPERTY_SELECTION,ARTIFACT_FIELD,ARTIFACT_IDENTITY,WORKSPACE_IDENTITY -> tSymbol.kind()==TargetSymbol.TargetKind.CSL_ATTRIBUTE;
+                    case ARTIFACT_PROPERTY,ARTIFACT_PROPERTY_SELECTION,ARTIFACT_FIELD,ARTIFACT_IDENTITY,WORKSPACE_IDENTITY,AGENT_IDENTITY -> tSymbol.kind()==TargetSymbol.TargetKind.CSL_ATTRIBUTE;
                     case MOISE_GROUP,PROJECT,WORKSPACE,ORGANIZATION -> tSymbol.kind()==TargetSymbol.TargetKind.CSL_GROUP;
                     case MOISE_ROLE -> tSymbol.kind()==TargetSymbol.TargetKind.CSL_ROLE;
                     case MOISE_SCHEME -> tSymbol.kind()==TargetSymbol.TargetKind.CSL_GROUP&&"SCHEME_EXECUTION_VIEW/1.0".equals(c.attributes().get("contextAbstraction"));
@@ -55,12 +55,23 @@ public final class CorrespondenceValidator {
                     default -> false;
                 };
                 if(!compatible)diagnostics.add(new Diagnostic("UNSUPPORTED_SOURCE_TARGET_KIND",c.source()+" -> "+c.target(),c.location()));
-                if((sSymbol.kind()==SourceReference.Kind.ARTIFACT_IDENTITY||sSymbol.kind()==SourceReference.Kind.WORKSPACE_IDENTITY)
+                String converter=c.attributes().getOrDefault("converter","");
+                if(!converter.isBlank()&&(!(sRef instanceof SourceReference.ArtifactPropertyRef)
+                        ||!converter.equals("JASON_ATOM_TO_STRING/1.0")&&!converter.equals(CompactValueConverters.NUMBER_TO_REAL)
+                        ||converter.equals("JASON_ATOM_TO_STRING/1.0")&&!"String".equals(tSymbol.declaredType())
+                        ||converter.equals(CompactValueConverters.NUMBER_TO_REAL)&&!"Real".equals(tSymbol.declaredType())))
+                    diagnostics.add(new Diagnostic("PROPERTY_CONVERTER_SOURCE_OR_TARGET_UNSUPPORTED",converter,c.location()));
+                if((sSymbol.kind()==SourceReference.Kind.ARTIFACT_IDENTITY||sSymbol.kind()==SourceReference.Kind.WORKSPACE_IDENTITY||sSymbol.kind()==SourceReference.Kind.AGENT_IDENTITY)
                         &&!"String".equals(tSymbol.declaredType()))diagnostics.add(new Diagnostic("IDENTITY_ATTRIBUTE_MUST_BE_STRING",c.target(),c.location()));
                 if(sRef instanceof SourceReference.WorkspaceIdentityRef identity) {
                     var owners=spec.cslMappings().stream().filter(m->m.target().equals(tRef.qualifier())).toList();
                     if(owners.size()!=1||!(SourceReference.parse(owners.getFirst().source()) instanceof SourceReference.WorkspaceRef owner)||!owner.name().equals(identity.name()))
                         diagnostics.add(new Diagnostic("WORKSPACE_IDENTITY_OWNER_MISMATCH",c.source()+" -> "+c.target(),c.location()));
+                }
+                if(sRef instanceof SourceReference.AgentIdentityRef identity) {
+                    var owners=spec.cslMappings().stream().filter(m->m.target().equals(tRef.qualifier())).toList();
+                    if(owners.size()!=1||!(SourceReference.parse(owners.getFirst().source()) instanceof SourceReference.AgentRef owner)||!owner.agentOrProgram().equals(identity.agentOrProgram()))
+                        diagnostics.add(new Diagnostic("AGENT_IDENTITY_OWNER_MISMATCH",c.source()+" -> "+c.target(),c.location()));
                 }
                 if(sSymbol.kind()==SourceReference.Kind.ARTIFACT_PROPERTY||sSymbol.kind()==SourceReference.Kind.ARTIFACT_PROPERTY_SELECTION||sSymbol.kind()==SourceReference.Kind.ARTIFACT_FIELD||sSymbol.kind()==SourceReference.Kind.ARTIFACT_IDENTITY) {
                     var ownerBindings=spec.cslMappings().stream().filter(m->m.target().equals(tRef.qualifier())).toList();

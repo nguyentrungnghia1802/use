@@ -35,7 +35,7 @@ public final class InvariantActivation {
         }
         bindings=List.copyOf(result);
     }
-    private static String key(MClassInvariant invariant){return "xml:invariant:activation:"+SemanticJson.hash(invariant.qualifiedName());}
+    public static String key(MClassInvariant invariant){return "xml:invariant:activation:"+SemanticJson.hash(invariant.qualifiedName());}
     public void apply(Port port,String epoch,String cut,Map<String,RuntimeTables.Result> tables) {
         for(var binding:bindings) {
             var table=tables.get(binding.node().attr("tableRef"));
@@ -63,7 +63,7 @@ public final class InvariantActivation {
         try {
             var proof=new TreeMap<>(CanonicalJson.object(CanonicalJson.decode(raw.getBytes(StandardCharsets.UTF_8))));var hash=proof.remove("hash");
             if(!SemanticJson.hash(proof).equals(hash)||!POLICY.equals(proof.get("policy"))||!engine.canonicalProgramHash().equals(proof.get("program"))
-                    ||!object.name().equals(proof.get("context"))||!engine.metadata(object,"xml:m0:epoch").equals(proof.get("epoch")))return "ERROR:INVARIANT_ACTIVATION_PROOF_INVALID";
+                    ||!object.name().equals(proof.get("context"))||!engine.metadata(object,invariant.getAnnotationValue(ANNOTATION,"epochKey").isBlank()?"xml:m0:epoch":invariant.getAnnotationValue(ANNOTATION,"epochKey")).equals(proof.get("epoch")))return "ERROR:INVARIANT_ACTIVATION_PROOF_INVALID";
             return "";
         }catch(RuntimeException invalid){return "ERROR:INVARIANT_ACTIVATION_PROOF_INVALID";}
     }

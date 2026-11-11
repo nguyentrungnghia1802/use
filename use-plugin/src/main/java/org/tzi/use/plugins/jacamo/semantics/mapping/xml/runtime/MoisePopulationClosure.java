@@ -5,13 +5,16 @@ import org.jacamo.bridge.contract.*;
 
 /** Current physical board inventory, not continuity of intermediate MOISE events.
  * No native object count, display name or omitted board may supply closure. */
-final class MoisePopulationClosure {
+public final class MoisePopulationClosure {
     static final String POLICY="CARTAGO_BOARD_INVENTORY_V1",PROOF="moise-population-inventory";
     private static final String ARTIFACT="cartago.Artifact",ARTIFACT_HASH="67830177f2cb450876ac3b43aa90741cbc0b72079f5fcdc8320ff2f11b17c012";
     private MoisePopulationClosure(){ }
-    static boolean complete(RuntimeSnapshot cut,RuntimeFactKind kind,String run) {
+    public static String supportedClassHash(RuntimeFactKind kind) {
+        return switch(kind){case GROUP_BOARD->"b2adb4931af77396503d792f2682f123c10e9db852caaba01a4a088e852c490d";case SCHEME_BOARD->"79f28443c5701d5b424de5d952db81f17274a7d3c170c2fc2f9ab6dbb4628ba6";default->throw new IllegalArgumentException("MOISE_POPULATION_KIND_UNSUPPORTED");};
+    }
+    public static boolean complete(RuntimeSnapshot cut,RuntimeFactKind kind,String run) {
         String base=switch(kind){case GROUP_BOARD->"ora4mas.nopl.GroupBoard";case SCHEME_BOARD->"ora4mas.nopl.SchemeBoard";default->throw new IllegalArgumentException("MOISE_POPULATION_KIND_UNSUPPORTED");};
-        String expected=kind==RuntimeFactKind.GROUP_BOARD?"b2adb4931af77396503d792f2682f123c10e9db852caaba01a4a088e852c490d":"79f28443c5701d5b424de5d952db81f17274a7d3c170c2fc2f9ab6dbb4628ba6";
+        String expected=supportedClassHash(kind);
         if(cut.sourceCompleteness().get("cartago")!=Completeness.COMPLETE||!stable(cut,"cartago")||!CartagoSourceCut.kinds(cut).contains(RuntimeFactKind.ARTIFACT))return false;
         var authorities=cut.sourceCompleteness().keySet().stream().filter(s->s.startsWith("moise:")).toList();
         if(authorities.isEmpty()||authorities.stream().anyMatch(s->cut.sourceCompleteness().get(s)==Completeness.UNAVAILABLE||!stable(cut,s)))return false;

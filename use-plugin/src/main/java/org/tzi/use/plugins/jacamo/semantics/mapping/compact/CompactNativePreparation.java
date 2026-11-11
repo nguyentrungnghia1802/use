@@ -23,6 +23,9 @@ public final class CompactNativePreparation {
         var api=new UseModelApi(binding.model());
         try {
             new CslScopeModelAdapter().prepare(api,binding);
+            if(program.compactPlan().observerSchema().isPresent() && binding.model().getAnnotation(CompactObserverSchema.ANNOTATION) == null) {
+                program.compactPlan().observerSchema().get().install(api,binding);
+            }
             new CanonicalUseBindingAdapter().install(program,binding,trace);
             var inputs=program.compactPlan().mappingInputs().orElseThrow(()->new IllegalArgumentException("COMPACT_OWNED_INPUTS_REQUIRED"));
             var authored=ModelNativeContracts.read(inputs);
@@ -33,6 +36,7 @@ public final class CompactNativePreparation {
             authored.clauses().forEach(c->expected.put(c.name(),c.context()));
             var prepared=new AuthoredOclSpecificationLoader().compile(authored,binding,authored.sourceHash(),expected);
             prepared.install(api);
+            new CompactInvariantActivation(program,binding.model(),true);
             var intentional=intentional(program,binding.model());
             requireSupportedRuntime(program);
             org.tzi.use.plugins.jacamo.semantics.runtime.RequirementInventory.from(program,binding.model());
@@ -41,24 +45,39 @@ public final class CompactNativePreparation {
     }
     /** Runtime support is explicit; unsupported source families fail before MODEL_READY. */
     public static void requireSupportedRuntime(SemanticProgram program) {
-        boolean supported=program.compactPlan().specification().goalRealizations().isEmpty()&&program.compactPlan().specification().dependencyPopulations().isEmpty()
-                &&program.goalModel().getDependencies().isEmpty()
-                &&program.goalBindings().elements().values().stream().noneMatch(e->program.goalModel().findElement(e.elementId()).orElse(null) instanceof Task)
-                &&program.compactPlan().istarBindings().stream().filter(b->b.kind()==IStarBinding.BindingKind.ACTOR_MAPPING).allMatch(b->b.sourceRef() instanceof SourceReference.WorkspaceRef)
-                &&program.compactPlan().cslBindings().stream().allMatch(b->b.sourceRef() instanceof SourceReference.WorkspaceRef||b.sourceRef() instanceof SourceReference.WorkspaceIdentityRef
-                    ||b.sourceRef() instanceof SourceReference.ArtifactRef||b.sourceRef() instanceof SourceReference.ArtifactPropertyRef||b.sourceRef() instanceof SourceReference.ArtifactFieldRef||b.sourceRef() instanceof SourceReference.ArtifactIdentityRef);
-        if(!supported)throw new IllegalArgumentException("COMPACT_SOURCE_QUALIFIED_SCOPE_AND_TASK_INTEGRATION_REQUIRED");
-        for(var actor:program.goalBindings().actors().values())if(!actor.activationPolicy().equals("PROJECT_EXECUTION_VIEW"))
-            throw new IllegalArgumentException("COMPACT_WORKSPACE_CONTEXT_ACTIVATION_POLICY_REQUIRED:"+actor.actorId());
-        for(var actor:program.goalBindings().actors().values())if(!actor.episodePolicy().equals("STATIC_LIFETIME"))
-            throw new IllegalArgumentException("COMPACT_WORKSPACE_EPISODE_POLICY_UNSUPPORTED:"+actor.actorId());
-        for(var actor:program.compactPlan().istarBindings())if(actor.kind()==IStarBinding.BindingKind.ACTOR_MAPPING) {
-            var contexts=program.compactPlan().cslBindings().stream().filter(b->b.sourceRef() instanceof SourceReference.WorkspaceRef
-                    &&b.sourceRef().raw().equals(actor.sourceRef().raw())).toList();
-            if(contexts.size()!=1)throw new IllegalArgumentException("COMPACT_WORKSPACE_CONTEXT_VIEW_NOT_UNIQUE:"+actor.targetSymbol().name());
-            for(var element:program.goalBindings().elements().values())if(element.actorId().equals(actor.targetSymbol().name())&&!element.selfDeclaration().isBlank()
-                    &&!element.selfDeclaration().equals(contexts.getFirst().targetRef().qualifier()))
-                throw new IllegalArgumentException("COMPACT_WORKSPACE_SELF_BINDING_UNSUPPORTED:"+element.elementId());
+        var plan=program.compactPlan();var spec=plan.specification();
+        if(!spec.observerViews().isEmpty())new CompactObserverSchema(spec.observerViews(),spec.sha256());
+        for(var task:program.goalModel().getActors().stream().flatMap(a->a.elements().stream()).filter(Task.class::isInstance).toList())
+            if(plan.istarBindings().stream().filter(b->b.kind()==IStarBinding.BindingKind.TASK_MAPPING&&b.targetSymbol().name().equals(task.id())).count()!=1)
+                throw new IllegalArgumentException("COMPACT_TASK_EXACT_SOURCE_MAPPING_REQUIRED:"+task.id());
+        org.tzi.use.plugins.jacamo.semantics.runtime.GoalViewRealizations.compile(spec.goalRealizations(),program.goalModel());
+        org.tzi.use.plugins.jacamo.semantics.runtime.OccurrenceGoalModelExpander.policies(spec.dependencyPopulations(),program.goalModel());
+        for(var binding:plan.cslBindings())if(!(binding.sourceRef() instanceof SourceReference.WorkspaceRef
+                ||binding.sourceRef() instanceof SourceReference.WorkspaceIdentityRef||binding.sourceRef() instanceof SourceReference.ArtifactRef
+                ||binding.sourceRef() instanceof SourceReference.ArtifactIdentityRef||binding.sourceRef() instanceof SourceReference.ArtifactPropertyRef
+                ||binding.sourceRef() instanceof SourceReference.ArtifactFieldRef||binding.sourceRef() instanceof SourceReference.AgentRef
+                ||binding.sourceRef() instanceof SourceReference.AgentIdentityRef||binding.sourceRef() instanceof SourceReference.MoiseGroupRef
+                ||binding.sourceRef() instanceof SourceReference.MoiseRoleRef||binding.sourceRef() instanceof SourceReference.MoiseSchemeRef))
+            throw new IllegalArgumentException("COMPACT_SOURCE_FAMILY_UNSUPPORTED:"+binding.sourceRef().raw());
+        for(var actor:plan.istarBindings())if(actor.kind()==IStarBinding.BindingKind.ACTOR_MAPPING) {
+            var policy=program.goalBindings().actors().get(actor.targetSymbol().name());
+            if(spec.actorRuntimes().stream().noneMatch(a->a.actor().equals(policy.actorId())))throw new IllegalArgumentException("COMPACT_SOURCE_QUALIFIED_SCOPE_AND_TASK_INTEGRATION_REQUIRED:"+policy.actorId());
+            if("MODEL_ONLY_CAPABILITY_ROLE".equals(policy.activationPolicy())) {
+                if(program.goalBindings().elements().values().stream().anyMatch(e->e.actorId().equals(policy.actorId())&&program.goalModel().findElement(e.elementId()).orElse(null) instanceof Task))
+                    throw new IllegalArgumentException("COMPACT_DEFINITION_ONLY_ACTOR_CANNOT_EXECUTE:"+policy.actorId());
+                continue;
+            }
+            if(!(actor.sourceRef() instanceof SourceReference.WorkspaceRef||actor.sourceRef() instanceof SourceReference.ArtifactRef
+                    ||actor.sourceRef() instanceof SourceReference.AgentRef||actor.sourceRef() instanceof SourceReference.MoiseRoleRef))
+                throw new IllegalArgumentException("COMPACT_ACTOR_SOURCE_FAMILY_UNSUPPORTED:"+actor.sourceRef().raw());
+            if(actor.sourceRef() instanceof SourceReference.WorkspaceRef||actor.sourceRef() instanceof SourceReference.ArtifactRef&&"PROJECT_EXECUTION_VIEW".equals(policy.activationPolicy())) {
+                if(!"PROJECT_EXECUTION_VIEW".equals(policy.activationPolicy()))throw new IllegalArgumentException("COMPACT_CONTEXT_VIEW_ACTIVATION_POLICY_REQUIRED:"+policy.actorId());
+                if(!"STATIC_LIFETIME".equals(policy.episodePolicy()))throw new IllegalArgumentException("COMPACT_WORKSPACE_EPISODE_POLICY_UNSUPPORTED:"+policy.actorId());
+                var contexts=plan.cslBindings().stream().filter(c->!c.isAttribute()&&c.sourceRef().raw().equals(actor.sourceRef().raw())).toList();
+                if(contexts.size()!=1)throw new IllegalArgumentException("COMPACT_CONTEXT_VIEW_NOT_UNIQUE:"+policy.actorId());
+                for(var element:program.goalBindings().elements().values())if(element.actorId().equals(policy.actorId())&&!element.selfDeclaration().isBlank()
+                        &&!element.selfDeclaration().equals(contexts.getFirst().targetRef().qualifier()))throw new IllegalArgumentException("COMPACT_CONTEXT_SELF_BINDING_UNSUPPORTED:"+element.elementId());
+            }
         }
     }
     /** Compiles the original Goal/Task slots; runtime evaluation remains native-session owned. */

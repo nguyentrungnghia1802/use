@@ -40,7 +40,7 @@ public final class ArtifactFieldObservation implements ObservationCapabilityRegi
         var properties=new TreeMap<String,String>();
         var declared=request.parameters().getOrDefault("properties",Map.of());
         for(var entry:CanonicalJson.object(declared).entrySet()) {
-            if(!entry.getKey().matches("[A-Za-z_][A-Za-z0-9_]*")||!(entry.getValue() instanceof String type)||!Set.of("STRING","BOOLEAN","JAVA_INTEGER","IEEE754_BINARY64","IEEE754_BINARY32","JASON_ATOM").contains(type))throw new IllegalArgumentException("ARTIFACT_PROPERTY_TYPE_UNSUPPORTED");
+            if(!entry.getKey().matches("[A-Za-z_][A-Za-z0-9_]*")||!(entry.getValue() instanceof String type)||!Set.of("STRING","BOOLEAN","JAVA_INTEGER","IEEE754_BINARY64","IEEE754_BINARY32","JASON_ATOM","JAVA_SCALAR_NUMBER").contains(type))throw new IllegalArgumentException("ARTIFACT_PROPERTY_TYPE_UNSUPPORTED");
             properties.put(entry.getKey(),type);
         }
         if(properties.size()>64)throw new IllegalArgumentException("ARTIFACT_PROPERTY_CAPACITY");propertyTypes=Map.copyOf(properties);
@@ -115,6 +115,7 @@ public final class ArtifactFieldObservation implements ObservationCapabilityRegi
                     boolean matches=switch(entry.getValue()) {
                         case "STRING","BOOLEAN"->entry.getValue().equals(observed.get("kind"));
                         case "JASON_ATOM"->observed.containsKey("atomName");
+                        case "JAVA_SCALAR_NUMBER"->"NUMBER".equals(observed.get("kind"))&&Set.of("JAVA_INTEGER","IEEE754_BINARY64","IEEE754_BINARY32").contains(observed.get("encoding"));
                         default->entry.getValue().equals(observed.get("encoding"));
                     };
                     if(!matches)throw new IllegalStateException("OBSERVABLE_TYPE_UNSUPPORTED:"+entry.getKey());

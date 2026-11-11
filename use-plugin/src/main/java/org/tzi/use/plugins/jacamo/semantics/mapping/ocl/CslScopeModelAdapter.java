@@ -23,8 +23,12 @@ public class CslScopeModelAdapter {
     public Use75ModelBinding compile(CslModel source,ObserverSchema observers) {
         return new Use75CslModelBackend().compile(source,M0ExtensionSpec.observedPlayers(),(api,binding)->{prepare(api,binding);observers.install(api,binding);});
     }
+    public Use75ModelBinding compile(CslModel source,org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactObserverSchema observers) {
+        return new Use75CslModelBackend().compile(source,M0ExtensionSpec.observedPlayers(),(api,binding)->{prepare(api,binding);observers.install(api,binding);});
+    }
     public void prepare(UseModelApi api, Use75ModelBinding binding) throws UseApiException {
         if (api.getModel() != binding.model() || !binding.extension().players()) throw new IllegalArgumentException("CSL_SCOPE_PREPARATION_MODEL_MISMATCH");
+        if (api.getModel().getAssociation(CONTEXT_SCOPES) != null) return;
         // Declaration scope is observed membership, never physical ownership or disposal cascade.
         api.createAssociation(CONTEXT_SCOPES, "OrgContext", "cslScopeParent", "0..1", 0, "OrgContext", "cslNestedContexts", "*", 0);
         api.createAssociation(ENTITY_SCOPES, "OrgContext", "cslEntityScope", "0..1", 0, "DomainEntity", "cslScopedEntities", "*", 0);

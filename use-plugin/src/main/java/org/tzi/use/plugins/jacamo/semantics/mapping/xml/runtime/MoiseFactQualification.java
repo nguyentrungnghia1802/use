@@ -8,16 +8,16 @@ import org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson;
 import org.tzi.use.plugins.jacamo.semantics.observer.FunctionalObservation;
 
 /** Frozen official MOISE definition and public board cut qualification. Does not infer goal truth/time. */
-final class MoiseFactQualification {
+public final class MoiseFactQualification {
     private final ModelSnapshot source;
     private final Map<String,List<String>> originalShapes=new HashMap<>();
     private final Map<String,MoiseSemanticContract.OrganizationSemantic> checkedDefinitions=new LinkedHashMap<>();
-    MoiseFactQualification(ModelSnapshot source){
+    public MoiseFactQualification(ModelSnapshot source){
         this.source=Objects.requireNonNull(source);
         for(var definition:source.semanticContract().moiseOrganizations())originalShapes.computeIfAbsent(definition.metadata().semanticId(),k->new ArrayList<>())
             .add(SemanticJson.hash(shape(SemanticContractCodec.organizationToTree(definition))));
     }
-    void require(RuntimeFact fact,String run) {
+    public void require(RuntimeFact fact,String run) {
         if(!Set.of(RuntimeFactKind.GROUP_BOARD,RuntimeFactKind.SCHEME_BOARD).contains(fact.kind()))return;
         var data=fact.values();String expectedKind=fact.kind()==RuntimeFactKind.GROUP_BOARD?"group-board":"scheme-board";
         if(!fact.id().dimension().equals("organisation")||!fact.id().kind().equals(expectedKind)||!fact.id().incarnation().startsWith(run+":"))throw invalid("BOARD_EPOCH_OR_KIND_MISMATCH");

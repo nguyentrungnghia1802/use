@@ -49,7 +49,7 @@ class CaseStudyFilesTest {
         var input=CaseStudyFiles.read(folder.resolve("hello.mrv"));
         assertEquals(folder.resolve("hello.csl"),input.csl());
         assertEquals(folder.resolve("hello.istar"),input.istar());
-        assertEquals(folder.resolve("hello-mapping.xml"),input.mapping());
+        assertEquals(folder.resolve("hello-compact-mapping.xml"),input.mapping());
         assertEquals(folder.resolve("hello.ocl"),input.ocl());
     }
 

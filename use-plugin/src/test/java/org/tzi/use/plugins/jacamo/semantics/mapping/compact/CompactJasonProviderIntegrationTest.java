@@ -22,11 +22,11 @@ class CompactJasonProviderIntegrationTest {
         var project=Files.writeString(temp.resolve("dispatch.jcm"),"mas dispatch { agent first : worker.asl agent second : worker.asl }\n");
         var source=new OfficialProjectAdapter().adapt(new OfficialProjectLoader().load(project),project);
         var csl=new CslFrontend().compile("csl v4.0 Dispatch { entity Package { attribute status : String; } }","state.csl").requireModel();
-        var goals=new IStarFrontend().compile("istar Delivery { role Courier { goal Delivered : Achieve task Move pre {[ step.enabled ]} post {[ step.succeeded ]} } }","goals.istar").requireModel();
+        var goals=new IStarFrontend().compile("istar Delivery { role Courier { goal Delivered : Achieve task trace_delivery pre {[ step.enabled ]} post {[ step.succeeded ]} } }","goals.istar").requireModel();
         var spec=CompactMappingReader.read("""
             <mapping xmlns="urn:use:jacamo-mapping:3" version="3.0" id="source-test">
               <istar><map source="agent:src/agt/worker.asl" target="Courier"/>
-                <map source="asl:src/agt/worker.asl/plan:work/step:move[1..2]" target="Courier.Move"/></istar>
+                <map source="asl:src/agt/worker.asl/plan:work/step:move[1..2]" target="Courier.trace_delivery"/></istar>
             </mapping>
             ""","mapping.xml");
         var plan=ObservationPlanCompiler.compile(spec,SourceSymbolCatalog.fromSnapshot(source.semanticContract()),NativeTargetCatalog.fromModels(csl,goals));
@@ -52,9 +52,10 @@ class CompactJasonProviderIntegrationTest {
         for(var player:decoded.stream().map(s->s.agent()).distinct().toList()) {
             var steps=decoded.stream().filter(s->s.agent().equals(player)).toList();
             assertEquals(3,steps.stream().map(s->s.task()).distinct().count());
-            assertEquals(2,steps.stream().filter(s->s.task().equals("Move")).count());
-            assertEquals(Set.of("ENABLED","SUCCEEDED"),new HashSet<>(steps.stream().filter(s->s.task().equals("Move")).map(s->s.phase()).toList()));
-            assertEquals(4,steps.stream().filter(s->s.task().startsWith("trace_")).count());
+            assertEquals(2,steps.stream().filter(s->s.task().equals("trace_delivery")).count());
+            assertEquals(Set.of("ENABLED","SUCCEEDED"),new HashSet<>(steps.stream().filter(s->s.task().equals("trace_delivery")).map(s->s.phase()).toList()));
+            assertFalse(plan.unmappedTraceSteps().contains("trace_delivery"));
+            assertEquals(4,steps.stream().filter(s->plan.unmappedTraceSteps().contains(s.task())).count());
         }
     }
 }

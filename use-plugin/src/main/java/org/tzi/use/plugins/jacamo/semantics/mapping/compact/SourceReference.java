@@ -24,6 +24,7 @@ public sealed interface SourceReference {
         MOISE_SCHEME,
         MOISE_GOAL,
         AGENT,
+        AGENT_IDENTITY,
         ASL_GOAL,
         ASL_PLAN_STEP
     }
@@ -74,6 +75,9 @@ public sealed interface SourceReference {
 
     record AgentRef(String agentOrProgram, String raw) implements SourceReference {
         @Override public Kind kind() { return Kind.AGENT; }
+    }
+    record AgentIdentityRef(String agentOrProgram,String field,String raw) implements SourceReference {
+        @Override public Kind kind(){return Kind.AGENT_IDENTITY;}
     }
 
     record AslGoalRef(String aslPath, String goalTrigger, String raw) implements SourceReference {
@@ -164,6 +168,12 @@ public sealed interface SourceReference {
 
         if (trimmed.startsWith("agent:")) {
             String name = trimmed.substring("agent:".length());
+            int member=name.lastIndexOf("/identity:");
+            if(member>=0) {
+                String field=name.substring(member+"/identity:".length());
+                if(member==0||!Set.of("name","runtimeId").contains(field))throw new IllegalArgumentException("AGENT_IDENTITY_MEMBER_UNSUPPORTED:"+field);
+                return new AgentIdentityRef(name.substring(0,member),field,trimmed);
+            }
             if (name.isBlank()) throw new IllegalArgumentException("INVALID_AGENT_REFERENCE:" + trimmed);
             return new AgentRef(name, trimmed);
         }

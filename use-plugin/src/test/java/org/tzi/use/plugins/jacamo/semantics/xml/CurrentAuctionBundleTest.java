@@ -21,7 +21,8 @@ class CurrentAuctionBundleTest {
  }
 
  @Test void intentionalAuthoringRefreshRepinsBytesWithoutRelaxingFrozenChecksumValidation(@org.junit.jupiter.api.io.TempDir Path temporary)throws Exception {
-   for(String file:List.of("auction.csl","auction.istar","auction.ocl","auction-mapping.xml","auction.mrv"))Files.copy(Path.of("examples/auction").resolve(file),temporary.resolve(file));
+   for(String file:List.of("auction.csl","auction.istar","auction.ocl","auction-mapping.xml"))Files.copy(Path.of("examples/auction").resolve(file),temporary.resolve(file));
+   Files.writeString(temporary.resolve("auction.mrv"), "csl = auction.csl\nistar = auction.istar\nxml = auction-mapping.xml\nocl = auction.ocl\n");
    Path csl=temporary.resolve("auction.csl"),xml=temporary.resolve("auction-mapping.xml"),project=Path.of("examples/auction/auction.jcm");
    Files.writeString(csl,Files.readString(csl)+"\n// Deliberate authoring revision.\n");
    var error=assertThrows(IllegalArgumentException.class,()->MappingInputs.read(project,xml,temporary.resolve("auction.ocl"),csl,temporary.resolve("auction.istar"),false));
@@ -62,7 +63,7 @@ class CurrentAuctionBundleTest {
   Path root=Path.of("examples/auction"),reference=Path.of("src/test/resources/auction-reference/authored-v1");
   // Native USE persists diagram layouts beside inputs. They are runtime output,
   // not another authored model or a reason to delete a user's saved layout.
-  try(var entries=Files.list(root)){assertEquals(Set.of("README.md","auction.jcm","build.gradle","src","auction.csl","auction.istar","auction-mapping.xml","auction.ocl"),new HashSet<>(entries.map(p->p.getFileName().toString()).filter(n->!n.endsWith(".mrv")).toList()));}
+  try(var entries=Files.list(root)){assertEquals(Set.of("README.md","auction.jcm","build.gradle","src","auction.csl","auction.istar","auction-mapping.xml","auction.ocl"),new HashSet<>(entries.map(p->p.getFileName().toString()).filter(n->!n.endsWith(".mrv")&&!n.equals("auction-compact-mapping.xml")).toList()));}
   var contracts=org.tzi.use.plugins.jacamo.semantics.mapping.ocl.ModelNativeContracts.blocks(Files.readAllBytes(root.resolve("auction.csl")));assertEquals(1,contracts.size());
   assertTrue(org.tzi.use.plugins.jacamo.semantics.mapping.ocl.ModelNativeContracts.blocks(Files.readAllBytes(root.resolve("auction.istar"))).getFirst().contains("SchemeOrder"));
   var source=GenericMappingEngineTest.official(root.resolve("auction.jcm"));

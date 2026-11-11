@@ -24,7 +24,7 @@ public final class ArtifactFieldCutDecoder {
         type=text(request.parameters(),"class");field=text(request.parameters(),"field");javaType=text(request.parameters(),"type");
         properties=CanonicalJson.object(request.parameters().getOrDefault("properties",Map.of()));
         if(!field.matches("[A-Za-z_][A-Za-z0-9_]*")||!Set.of("java.lang.String","int","long","boolean","double","java.lang.Integer","java.lang.Long","java.lang.Boolean","java.lang.Double").contains(javaType))throw new IllegalArgumentException("FIELD_CUT_REQUEST_UNSUPPORTED");
-        for(var value:properties.values())if(!(value instanceof String tag)||!Set.of("STRING","BOOLEAN","JAVA_INTEGER","IEEE754_BINARY64","IEEE754_BINARY32","JASON_ATOM").contains(tag))throw new IllegalArgumentException("FIELD_CUT_PROPERTY_TYPE_UNSUPPORTED");
+        for(var value:properties.values())if(!(value instanceof String tag)||!Set.of("STRING","BOOLEAN","JAVA_INTEGER","IEEE754_BINARY64","IEEE754_BINARY32","JASON_ATOM","JAVA_SCALAR_NUMBER").contains(tag))throw new IllegalArgumentException("FIELD_CUT_PROPERTY_TYPE_UNSUPPORTED");
         var proofs=new LinkedHashSet<Proof>();
         for(var ref:SourceArtifactTypeReferences.fromActions(source))if(ref.javaClass().equals(type))proofs.add(proof(ref.classProof()));
         for(var declaration:source.semanticContract().artifactDeclarations())if(declaration.javaClass().equals(type))for(var evidence:declaration.metadata().evidence())
@@ -76,6 +76,7 @@ public final class ArtifactFieldCutDecoder {
                     case "STRING","BOOLEAN"->tag.equals(value.get("kind"));
                     case "JAVA_INTEGER","IEEE754_BINARY64","IEEE754_BINARY32"->"NUMBER".equals(value.get("kind"))&&tag.equals(value.get("encoding"));
                     case "JASON_ATOM"->"JASON_TERM".equals(value.get("kind"));
+                    case "JAVA_SCALAR_NUMBER"->"NUMBER".equals(value.get("kind"))&&Set.of("JAVA_INTEGER","IEEE754_BINARY64","IEEE754_BINARY32").contains(value.get("encoding"));
                     default->false;
                 };
                 if(!match)throw invalid("FIELD_CUT_PROPERTY_TYPE_MISMATCH:"+property.getKey());

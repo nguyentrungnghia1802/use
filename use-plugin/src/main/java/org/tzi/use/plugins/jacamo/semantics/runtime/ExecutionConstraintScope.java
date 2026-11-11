@@ -78,16 +78,20 @@ public final class ExecutionConstraintScope {
  }
  private static Map<String,Object> compactCapture(SemanticProgram program,NativeRuntimeMutationEngine engine,OccurrenceProjection.Scope scope) {
   var anchor=engine.objectForSemanticId(scope.anchor());var owners=new TreeMap<String,Object>();var entities=new TreeMap<String,Object>();
+  boolean domainBound=anchor!=null&&program.cslModel().findEntity(anchor.cls().name()).isPresent();
+    var exact=new HashSet<String>(scope.resources().values());exact.add(scope.anchor());exact.add(scope.context());
+    scope.members().forEach(m->{exact.addAll(m.selves().values());exact.add(m.context());exact.add(m.role());exact.add(m.player());});
   String workspace=anchor==null?"":engine.metadata(anchor,"compact:workspace"),epoch=anchor==null?"":engine.metadata(anchor,"compact:epoch");
   for(var object:engine.system().state().allObjects())if(program.hash().equals(engine.metadata(object,"compact:program"))
-      &&!workspace.isBlank()&&workspace.equals(engine.metadata(object,"compact:workspace"))&&epoch.equals(engine.metadata(object,"compact:epoch"))) {
+      &&!workspace.isBlank()&&workspace.equals(engine.metadata(object,"compact:workspace"))&&epoch.equals(engine.metadata(object,"compact:epoch"))
+        &&(!domainBound||exact.contains(engine.metadata(object,"semanticId"))||scope.bindings().containsValue(engine.metadata(object,"compact:source-owner")))) {
    owners.put(object.name(),Map.of("type",object.cls().name(),"source",engine.metadata(object,"semanticId")));
    if(program.cslModel().findEntity(object.cls().name()).isPresent()) {
     var attributes=new TreeMap<String,Object>();object.state(engine.system().state()).attributeValueMap().forEach((a,v)->attributes.put(a.name(),v.toString()));
     entities.put(object.cls().name()+":"+object.name(),Map.of("identity",engine.metadata(object,"semanticId"),"attributes",attributes));
    }
   }
-  return Map.of("domainBound",false,"version","BOUND_EXECUTION_VIEW/2.0","entities",entities,"owners",owners,"participation",List.of(),
+  return Map.of("domainBound",domainBound,"version","BOUND_EXECUTION_VIEW/2.0","entities",entities,"owners",owners,"participation",List.of(),
       "bindings",scope.bindings(),"definition",scope.definition(),"complete",scope.complete()&&anchor!=null,"unavailable",scope.unavailable());
  }
  public static List<SemanticInvariantEvaluator.Prepared> prepare(ExternalOclConstraintService.PreparedEvaluation nativeChecks,Map<String,Object> view){

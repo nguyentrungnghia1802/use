@@ -20,6 +20,16 @@ class DeclaredArtifactTypeProofTest {
         private int counter;
         static String shared;
     }
+    public static class MisleadingPropertyNames extends cartago.Artifact {
+        void textOnly() { String name="defineObsProperty"; String property="invented"; }
+        void init() { defineObsProperty("actual",1); }
+    }
+    @Test void bytecodeStringsAndUnparsedCallsCannotCertifyObservableProperties() {
+        var result=DeclaredArtifactTypeProof.attach(declaration(),MisleadingPropertyNames.class.getName());
+        assertTrue(result.evidence().stream().anyMatch(e->e.diagnostics().contains("DECLARED_CARTAGO_ARTIFACT_APPLICATION_CLASS")));
+        assertTrue(result.evidence().stream().flatMap(e->e.diagnostics().stream()).noneMatch(d->d.startsWith("PROPERTY:")||d.startsWith("PROPERTY_SIGNATURE:")||d.contains("ARTIFACT_PROPERTY")));
+        assertEquals(0,initializations.get());
+    }
     @Test void copiesTypedDeclaredFieldSchemaWithoutInitializingOrReadingAnInstance() {
         var result=DeclaredArtifactTypeProof.attach(declaration(),FieldArtifact.class.getName());
         assertEquals(0,initializations.get());

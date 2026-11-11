@@ -102,6 +102,12 @@ public final class ConstraintCoverageResolver {
                 }
             }
 
+            if(engine.canonicalMappingConfigured()&&engine.canonicalProgram().isCompact()&&read.attribute().getAnnotation(org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactObserverSchema.ANNOTATION)!=null) {
+                for(var object:candidates) {
+                    if(!engine.canonicalProgramHash().equals(engine.metadata(object,"compact:program"))||!"COMPLETE".equals(engine.metadata(object,"compact:quality"))||!"COMPLETE".equals(engine.metadata(object,"compact:field-quality:"+read.attribute().name())))return "COMPACT_OBSERVER_FIELD_UNAVAILABLE:"+read.attribute().name();
+                    if(!org.tzi.use.plugins.jacamo.semantics.runtime.CanonicalObservationMappingBindings.valueHash(object.state(engine.system().state()).attributeValue(read.attribute())).equals(engine.metadata(object,"compact:field-hash:"+read.attribute().name())))return "ERROR:COMPACT_OBSERVER_VALUE_DIFFERS_FROM_ACCEPTED_SOURCE";
+                }
+            }
             var attribute=read.attribute();if(attribute.isDerived())continue;
             String annotation=attribute.getAnnotation(org.tzi.use.semantic.engine.use75.Use75CslModelBackend.ATTRIBUTE)!=null?org.tzi.use.semantic.engine.use75.Use75CslModelBackend.ATTRIBUTE:"CslAttribute";
             if(attribute.getAnnotation(annotation)==null)continue;
@@ -201,22 +207,15 @@ public final class ConstraintCoverageResolver {
         return true;
     }
     private static boolean compactPopulationComplete(org.tzi.use.uml.mm.MClassifier cls,Map<String,Completeness> sources,NativeRuntimeMutationEngine engine) {
-        if(sources.get("cartago")!=Completeness.COMPLETE)return false;
         var program=engine.canonicalProgram();
-        var mapped=program.compactPlan().cslBindings().stream().filter(b->!b.isAttribute()
-                &&(b.sourceRef() instanceof org.tzi.use.plugins.jacamo.semantics.mapping.compact.SourceReference.ArtifactRef
-                    ||b.sourceRef() instanceof org.tzi.use.plugins.jacamo.semantics.mapping.compact.SourceReference.WorkspaceRef))
-                .map(b->b.targetRef().qualifier()).collect(java.util.stream.Collectors.toSet());
-        // No authority is implied for unmapped types or a mixed superclass universe.
-        if(!mapped.contains(cls.name()))return false;
-        if(engine.system().model().classes().stream().anyMatch(c->c.isSubClassifierOf(cls)&&!c.equals(cls)&&!c.isAbstract()&&!mapped.contains(c.name())))return false;
-        var contexts=engine.system().state().allObjects().stream().filter(o->program.hash().equals(engine.metadata(o,"compact:program"))
-                &&"WORKSPACE_CONTEXT".equals(engine.metadata(o,"compact:kind"))).toList();
-        if(contexts.isEmpty()||contexts.stream().anyMatch(o->!"COMPLETE".equals(engine.metadata(o,"compact:inventory"))))return false;
-        var cuts=contexts.stream().map(o->engine.metadata(o,"compact:cut")).distinct().toList();
-        if(cuts.size()!=1||cuts.getFirst().isBlank())return false;
+        var ledgers=engine.system().state().allObjects().stream().filter(o->program.hash().equals(engine.metadata(o,"compact:program"))&&"INVENTORY".equals(engine.metadata(o,"compact:kind"))).toList();
+        if(ledgers.isEmpty()||ledgers.stream().map(o->engine.metadata(o,"compact:cut")+"|"+engine.metadata(o,"compact:epoch")).distinct().count()!=1)return false;
+        var concrete=engine.system().model().classes().stream().filter(c->c.isSubClassifierOf(cls)&&!c.isAbstract()).toList();
+        if(concrete.isEmpty())return false;
+        for(var type:concrete)if(ledgers.stream().anyMatch(o->!"COMPLETE".equals(engine.metadata(o,"compact:population:"+type.name()))))return false;
+        String cut=engine.metadata(ledgers.getFirst(),"compact:cut");
         return engine.system().state().allObjects().stream().filter(o->o.cls().isSubClassifierOf(cls)).allMatch(o->program.hash().equals(engine.metadata(o,"compact:program"))
-                &&"COMPLETE".equals(engine.metadata(o,"compact:inventory"))&&"COMPLETE".equals(engine.metadata(o,"compact:quality"))&&cuts.getFirst().equals(engine.metadata(o,"compact:cut")));
+                &&"COMPLETE".equals(engine.metadata(o,"compact:inventory"))&&"COMPLETE".equals(engine.metadata(o,"compact:quality"))&&cut.equals(engine.metadata(o,"compact:cut")));
     }
     /** Source-derived current inventory certificates do not upgrade polling history. */
     private static boolean xmlInventoryComplete(org.tzi.use.uml.mm.MClassifier cls,NativeRuntimeMutationEngine engine) {

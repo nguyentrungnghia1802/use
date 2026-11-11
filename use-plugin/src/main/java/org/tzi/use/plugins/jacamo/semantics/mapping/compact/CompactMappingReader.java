@@ -118,6 +118,7 @@ public final class CompactMappingReader {
         private final List<CompactMappingSpecification.DependencyPopulation> dependencyPopulations = new ArrayList<>();
         private final List<CompactMappingSpecification.GoalRealization> goalRealizations = new ArrayList<>();
         private final List<CompactMappingSpecification.VerificationRequirement> verifications=new ArrayList<>();
+        private final List<CompactMappingSpecification.ObserverView> observerViews = new ArrayList<>();
         private CompactMappingSpecification.Milestones milestones;
         private CompactMappingSpecification.Location rootLocation;
 
@@ -126,12 +127,13 @@ public final class CompactMappingReader {
         private final Set<String> sections = new HashSet<>(), actors = new HashSet<>(), requirementIds = new HashSet<>();
         private static final Set<String> REQUIREMENT_PARAMETERS=Set.of("sourceRef","class","field","type","organization","scheme","operations","policy","anchor","source","target");
 
-        private String currentSection = null; // "csl", "istar", "runtime"
+        private String currentSection = null; // "csl", "istar", "runtime", "observers"
         private BuildingRequirement currentRequirement = null;
+        private BuildingObserverView currentObserverView = null;
 
         private static final Set<String> ALLOWED_ROOT_ATTRS = Set.of("id", "version");
         private static final Set<String> ALLOWED_MAP_ATTRS = Set.of(
-                "source", "target", "quantifier", "scope", "role", "context", "policy",
+                "source", "target", "activateInvariant", "activationRole", "invariantActivationPolicy", "quantifier", "scope", "role", "context", "policy",
                 "scheme", "variables", "artifactVariable", "artifactClass", "schemeVariable",
                 "allowMissingArtifactAtEntry", "inputs", "actionReceipts", "enactsRoles", "contextAbstraction",
                 "converter", "traceOnly", "self"
@@ -219,7 +221,8 @@ public final class CompactMappingReader {
                     case "csl" -> currentSection = "csl";
                     case "istar" -> currentSection = "istar";
                     case "runtime" -> currentSection = "runtime";
-                    default -> throw new SAXException(currentLocation().error("UNKNOWN_ROOT_CHILD: '<" + elemName + ">'. Only <csl>, <istar>, <runtime> allowed."));
+                    case "observers" -> currentSection = "observers";
+                    default -> throw new SAXException(currentLocation().error("UNKNOWN_ROOT_CHILD: '<" + elemName + ">'. Only <csl>, <istar>, <runtime>, <observers> allowed."));
                 }
                 return;
             }
@@ -238,6 +241,17 @@ public final class CompactMappingReader {
                     parseCorrespondence(attributes, loc, istarMappings, seenIstarPairs, "istar");
                 } else if ("runtime".equals(currentSection)) {
                     parseRuntimeChild(elemName, attributes, loc);
+                } else if ("observers".equals(currentSection)) {
+                    if (!"view".equals(elemName)) {
+                        throw new SAXException(loc.error("OBSERVERS_ONLY_ACCEPTS_VIEW: '<" + elemName + ">'"));
+                    }
+                    requireAllowedAttributes(attributes, Set.of("id", "name", "category", "keyFields", "source", "population"), elemName, loc);
+                    currentObserverView = new BuildingObserverView(
+                            attributes.getValue("id"),
+                            attributes.getValue("name"),
+                            attributes.getValue("category"),
+                            attributes.getValue("keyFields"),attributes.getValue("source"),attributes.getValue("population"),
+                            loc);
                 } else {
                     throw new SAXException(loc.error("UNEXPECTED_ELEMENT_IN_SECTION: " + currentSection + " / " + elemName));
                 }
@@ -260,6 +274,19 @@ public final class CompactMappingReader {
                 throw new SAXException(currentLocation().error("UNKNOWN_REQUIREMENT_CHILD: '<" + elemName + ">'"));
             }
 
+            if (currentDepth == 4 && "observers".equals(currentSection) && currentObserverView != null) {
+                if (!"field".equals(elemName)) {
+                    throw new SAXException(currentLocation().error("VIEW_ONLY_ACCEPTS_FIELD: '<" + elemName + ">'"));
+                }
+                requireAllowedAttributes(attributes, Set.of("name", "type", "origin"), elemName, currentLocation());
+                currentObserverView.fields.add(new CompactMappingSpecification.ObserverView.ObserverField(
+                        attributes.getValue("name"),
+                        attributes.getValue("type"),
+                        attributes.getValue("origin"),
+                        currentLocation()));
+                return;
+            }
+
             throw new SAXException(currentLocation().error("UNEXPECTED_NESTED_ELEMENT: '<" + elemName + ">' at depth " + currentDepth));
         }
 
@@ -277,6 +304,9 @@ public final class CompactMappingReader {
             } else if (currentDepth == 3 && currentRequirement != null) {
                 requirements.add(currentRequirement.build());
                 currentRequirement = null;
+            } else if (currentDepth == 3 && currentObserverView != null) {
+                observerViews.add(currentObserverView.build());
+                currentObserverView = null;
             }
             currentDepth--;
         }
@@ -438,9 +468,30 @@ public final class CompactMappingReader {
                     dependencyPopulations,
                     goalRealizations,
                     verifications,
+                    observerViews,
                     milestones,
                     rootLocation
             );
+        }
+    }
+
+    private static class BuildingObserverView {
+        final String id, name, category, keyFields, source, population;
+        final CompactMappingSpecification.Location location;
+        final List<CompactMappingSpecification.ObserverView.ObserverField> fields = new ArrayList<>();
+
+        BuildingObserverView(String id, String name, String category, String keyFields, String source, String population, CompactMappingSpecification.Location location) {
+            this.id = id;
+            this.name = name;
+            this.category = category;
+            this.keyFields = keyFields;
+            this.source = source;
+            this.population = population;
+            this.location = location;
+        }
+
+        CompactMappingSpecification.ObserverView build() {
+            return new CompactMappingSpecification.ObserverView(id, name, category, keyFields, source, population, fields, location);
         }
     }
 

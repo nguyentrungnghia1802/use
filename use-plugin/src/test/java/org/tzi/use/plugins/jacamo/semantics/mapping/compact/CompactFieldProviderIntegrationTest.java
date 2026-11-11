@@ -28,6 +28,7 @@ class CompactFieldProviderIntegrationTest {
               entity Stock { attribute p : Integer required mutable;
                 attribute ready : Boolean required mutable;
                 attribute weight : Real required mutable;
+                attribute signal : String required mutable;
                 attribute token : String required mutable; }
             }
             """);
@@ -39,11 +40,12 @@ class CompactFieldProviderIntegrationTest {
               <map source="artifact:%s/property:p" target="Stock.p" policy="OBSERVED_PROPERTY/1.0"/>
               <map source="artifact:%s/property:ready" target="Stock.ready" policy="OBSERVED_PROPERTY/1.0"/>
               <map source="artifact:%s/property:weight" target="Stock.weight" policy="OBSERVED_PROPERTY/1.0"/>
+              <map source="artifact:%s/property:signal" target="Stock.signal" policy="OBSERVED_PROPERTY/1.0" converter="JASON_ATOM_TO_STRING/1.0"/>
               <map source="artifact:%s/field:token" target="Stock.token"/>
               </csl><istar><map source="workspace:*" target="Observer"/></istar><runtime>
               <actorRuntime actor="Observer" activationPolicy="PROJECT_EXECUTION_VIEW" episodePolicy="STATIC_LIFETIME" self="Run"/>
               <verify target="Observer.Seen"/></runtime></mapping>
-            """.formatted(type,type,type,type,type));
+            """.formatted(type,type,type,type,type,type));
         var program=new GenericMappingEngine().map(source,MappingInputs.read(project,xml,null,csl,istar));
         var request=program.compactPlan().capabilityRequests().stream().filter(r->r.provider().equals(ArtifactFieldObservation.PROVIDER)).findFirst().orElseThrow();
         var built=new CodeGroundedNativePipeline().buildCanonicalProgram(source,NativeProjectionMode.AUTO,program);
@@ -70,6 +72,7 @@ class CompactFieldProviderIntegrationTest {
             assertEquals(new StringValue("changed"),object.state(engine.system().state()).attributeValue("token"));
             assertEquals(IntegerValue.valueOf(2),object.state(engine.system().state()).attributeValue("p"));
             assertEquals(new RealValue(Double.MAX_VALUE),object.state(engine.system().state()).attributeValue("weight"));
+            assertEquals(new StringValue("ready"),object.state(engine.system().state()).attributeValue("signal"));
             engine.applyMappingCut(cut,"run",1,List.of());
             assertSame(object,engine.objectForSemanticId(artifact.id().canonical()));
             assertTrue(object.state(engine.system().state()).attributeValue("token").isUndefined(),"An earlier receipt cannot supply the next cut's missing field evidence");

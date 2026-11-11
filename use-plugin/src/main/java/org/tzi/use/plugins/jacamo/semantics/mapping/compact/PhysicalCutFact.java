@@ -137,11 +137,15 @@ public record PhysicalCutFact(
     }
 
     public Optional<ArtifactInstance> findArtifactByClass(String className) {
-        return findArtifactsByClass(className).stream().findFirst();
+        return unique(findArtifactsByClass(className),"class:"+className);
     }
 
     public Optional<ArtifactInstance> findArtifactByName(String name) {
-        return artifacts.stream().filter(a -> a.name().equals(name)).findFirst();
+        return unique(artifacts.stream().filter(a -> a.name().equals(name)).toList(),"name:"+name);
+    }
+    private static Optional<ArtifactInstance> unique(List<ArtifactInstance> matches,String selector) {
+        if(matches.size()>1)throw new IllegalArgumentException("COMPACT_PHYSICAL_SELECTION_AMBIGUOUS:"+selector);
+        return matches.isEmpty()?Optional.empty():Optional.of(matches.getFirst());
     }
 }
 

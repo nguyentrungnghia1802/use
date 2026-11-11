@@ -1,5 +1,5 @@
 # Auction case study system specification (.mrv)
 csl = auction.csl
 istar = auction.istar
-xml = auction-mapping.xml
+xml = auction-compact-mapping.xml
 ocl = auction.ocl

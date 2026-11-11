@@ -1141,7 +1141,10 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 projector.coordinator().read(()->{
                     if(!ownsRuntime()||cut==null||cut.result()==null)throw new IllegalStateException("CHECKPOINT_AUDIT_NATIVE_OWNER_UNAVAILABLE");
                     var current=projector.coordinator().verificationSnapshot();
-                    var payload=Map.<String,Object>of("checkpointAudit",event,"checkpointAuditHash",org.jacamo.bridge.contract.VerifiedCheckpointProtocol.hash(event),"reviewedNativeResultHash",cut.result().resultHash(),"acceptedStateCommands",current.image().soil());
+                    var payload=new java.util.LinkedHashMap<String,Object>();
+                    payload.put("checkpointAudit",event);payload.put("checkpointAuditHash",org.jacamo.bridge.contract.VerifiedCheckpointProtocol.hash(event));payload.put("reviewedNativeResultHash",cut.result().resultHash());
+                    if(current.image()!=null)payload.put("acceptedStateCommands",current.image().soil());
+                    else payload.put("acceptedStateUnavailable","NATIVE_EVALUATION_FAILED");
                     if(!projector.coordinator().journal().append("CHECKPOINT_AUDIT",payload,current.result()))throw new IllegalStateException("CHECKPOINT_NATIVE_AUDIT_PERSISTENCE_FAILED");
                     if(Set.of("EVALUATED","VERIFICATION_UNAVAILABLE","ACKNOWLEDGEMENT_REQUESTED").contains(event.get("kind")))checkpointNativeHistory.putIfAbsent(cut.result().resultHash(),cut.result());
                     if(event.get("receipt") instanceof Map<?,?> receipt&&Boolean.TRUE.equals(receipt.get("released")))owner.reviewedCheckpointOrdinal=capturedPrefixEnd;

@@ -56,6 +56,8 @@ public final class Use4GoalRuntimeSessionAdapter implements AutoCloseable {
     }
     public EngineSemanticsProfile profile(){return profile;}
     public EngineTopologyPolicy topologyPolicy(){return topologyPolicy;}
+    /** Read-only admission result for the actual expanded graph. */
+    public boolean isDerivedOccurrence(String id){requireOpen();assertDefinitions();return derived.contains(id);}
     public GoalModelInstanceTopology topology(){requireOpen();assertDefinitions();return topology;}
     public synchronized EngineCheckpoint checkpoint(){requireOpen();return new EngineCheckpoint(token,epoch,definitionIdentity,castRevision,boundary,goals,tasks,qualities,keys);}
     /** New neutral adapter seam, not an upstream API. A topology rebuild may keep

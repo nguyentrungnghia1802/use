@@ -95,9 +95,9 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
         requirementInventory=RequirementInventory.from(program,engine.system().model());
         identity=identity(run,generation,revision);ocl=new NativeOclBackend(engine.system().model(),program.hash(),program.profile().engine().name());
         try {
-            xmlTaskOcl=program.xmlPlan()==null?null:new XmlTaskOclBindings(program,engine.system().model(),ocl);
+            xmlTaskOcl=program.xmlPlan()!=null?new XmlTaskOclBindings(program,engine.system().model(),ocl):(program.isCompact()?new org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactTaskBindings(program,engine.system().model(),ocl):null);
             xmlSteps=xmlTaskOcl==null?null:new XmlTaskCheckpoints(program,engine,xmlTaskOcl);
-            xmlExpander=program.isCompact()?new OccurrenceGoalModelExpander(program.goalModel(),program.profile().engine(),Map.of()):program.xmlPlan()==null?null:new OccurrenceGoalModelExpander(program.goalModel(),program.profile().engine(),program.xmlPlan().dependencyPopulations(),program.xmlPlan().goalViews(),program.xmlPlan().physicalActorViews());
+            xmlExpander=program.isCompact()?new OccurrenceGoalModelExpander(program.goalModel(),program.profile().engine(),OccurrenceGoalModelExpander.policies(program.compactPlan().specification().dependencyPopulations(),program.goalModel()),GoalViewRealizations.compile(program.compactPlan().specification().goalRealizations(),program.goalModel()),compactPhysicalActorViews(program)):program.xmlPlan()==null?null:new OccurrenceGoalModelExpander(program.goalModel(),program.profile().engine(),program.xmlPlan().dependencyPopulations(),program.xmlPlan().goalViews(),program.xmlPlan().physicalActorViews());
             if(program.xmlPlan()!=null) {
                 for(var bound:new org.tzi.use.plugins.jacamo.semantics.mapping.ocl.XmlIntentionalOclBindings().compile(program,engine.system().model()).contracts())
                     if(bound.specification().kind()==OclContractSpec.Kind.GOAL)conditions.put(bound.elementId(),ocl.compile(bound.specification()));
@@ -183,14 +183,15 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
         var demands=nativeEngine.xmlTaskDemands(identity.run(),identity.generation(),identity.revision());
         for(var scope:nativeEngine.xmlOccurrences(identity.run(),identity.generation(),identity.revision())) {
             var members=scope.members().stream().map(m->new OccurrenceGoalModelExpander.Player(m.actor(),m.actorType(),m.instance(),m.player(),m.role(),m.interval())).toList();
-            var scopeLeaves=scopeLeaves(scope.definition());
+            boolean bootstrap=program.isCompact()&&Boolean.TRUE.equals(scope.bindings().get("sourceBootstrap"));
+            var scopeLeaves=bootstrap?((List<?>)scope.bindings().get("sourceLeaves")).stream().map(String.class::cast).collect(java.util.stream.Collectors.toSet()):scopeLeaves(scope.definition());
             String executionName=program.goalModel().getName()+"_Execution_"+SemanticJson.hash(scope.id()).substring(0,24);
             OccurrenceGoalModelExpander.Expansion expansion=null;
             if(scope.complete()) {
-                var key=List.<Object>of(members,executionName,scopeLeaves==null?Set.of():scopeLeaves);
+                var key=List.<Object>of(members,executionName,scopeLeaves==null?Set.of():scopeLeaves,bootstrap);
                 expansion=xmlExpansionCache.get(key);
                 if(expansion==null) {
-                    expansion=expander.expand(members,executionName,scopeLeaves);
+                    expansion=expander.expand(members,executionName,scopeLeaves,bootstrap);
                     if(xmlExpansionCache.size()<128)xmlExpansionCache.putIfAbsent(key,expansion);
                 }
             }
@@ -205,7 +206,7 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
                     var historical=marker==null?xmlSteps.historicalMarker(scope.id(),member.player(),member.role(),member.interval(),trace.source()):marker;
                     String demandIdentity=demand!=null&&demand.quality()==Completeness.COMPLETE?demand.episode():historical==null?"UNAVAILABLE":historical.demand();
                     if(historical!=null&&!historical.demand().equals(demandIdentity))historical=null;
-                    var taskResources=scopeLeaves==null?scope.resources():taskNeededResources(trace.source(),scope.resources());
+                    var taskResources=program.isCompact()||scopeLeaves!=null?taskNeededResources(trace.source(),scope.resources()):scope.resources();
                     // Missing current evidence defers the original recurrence; it does
                     // not start a new historical episode. This identity is never fed
                     // into xmlTaskInput as a certificate. Known activation, role,
@@ -226,7 +227,8 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
                 if(reason.isBlank())reason=coverage.unavailableSelf(expression.expression(),nativeEngine,self,sources,lost);
                 reads.put(trace.expanded(),new GoalRead(trace.expanded(),expression,variables,reason));
             }
-            var cast=new JaCaMoOccurrenceBindingAdapter.ContextCast(scope.id(),scope.revision(),expansion==null?List.of():expansion.cast(),actors,selves,scope.unavailable());
+            String topologyRevision=program.isCompact()&&expansion!=null?SemanticJson.hash(List.of(scope.revision(),expansion.hash())):scope.revision();
+            var cast=new JaCaMoOccurrenceBindingAdapter.ContextCast(scope.id(),topologyRevision,expansion==null?List.of():expansion.cast(),actors,selves,scope.unavailable());
             var view=ExecutionConstraintScope.capture(program,nativeEngine,scope);
             result.add(new PreparedCast(cast,reads,scope.complete(),scope,expansion,taskReads,view,ExecutionConstraintScope.prepare(nativeChecks,view)));
         }
@@ -235,6 +237,7 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
         if(program.isCompact()) {
             var actors=program.compactPlan().istarBindings().stream().filter(b->b.kind()==org.tzi.use.plugins.jacamo.semantics.mapping.compact.IStarBinding.BindingKind.ACTOR_MAPPING&&b.sourceRef().raw().equals(definitionId))
                     .map(b->b.targetSymbol().name()).collect(java.util.stream.Collectors.toSet());
+            if(actors.isEmpty())return null;
             return program.goalModel().getActors().stream().filter(a->actors.contains(a.name())).flatMap(a->a.elements().stream()).map(IntentionalElement::id).collect(java.util.stream.Collectors.toSet());
         }
         var scopes=program.xmlPlan().inputs().specification().root().child("runtime").children("occurrences").stream().flatMap(o->o.children("scope").stream()).toList();
@@ -246,6 +249,16 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
         var result=new TreeMap<String,String>();
         for(var actor:program.goalModel().getActors())for(var needed:actor.neededBys())if(needed.task().equals(sourceTask)&&resources.containsKey(needed.resource()))result.put(needed.resource(),resources.get(needed.resource()));
         return Map.copyOf(result);
+    }
+    private static Set<String> compactPhysicalActorViews(SemanticProgram program) {
+        var set=new TreeSet<String>();
+        for(var actor:program.compactPlan().specification().actorRuntimes()) {
+            if("AGENT_ENACTMENT".equals(actor.activationPolicy())
+                    ||"true".equalsIgnoreCase(actor.attributes().get("physicalActorView"))) {
+                set.add(actor.actor());
+            }
+        }
+        return Set.copyOf(set);
     }
     public CompletableFuture<Evaluation> submit(Cut cut) {
         requireOpen();var future=new CompletableFuture<Evaluation>();
@@ -299,7 +312,7 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
                 total+=owned.engine().topology().occurrences().size();if(total>program.profile().engine().maxOccurrences())throw new IllegalStateException("ENGINE_TOTAL_OCCURRENCE_CAPACITY");
                 var goals=new TreeMap<String,EngineInputs.GoalInput>();var tasks=new TreeMap<String,EngineInputs.TaskInput>();var resources=new HashMap<EngineInputs.ResourceKey,EngineInputs.ResourceInput>();var statusQuality=new TreeMap<String,String>();var episodes=episodes(owned.engine(),prepared);
                 for(var occurrence:owned.engine().topology().occurrences().values()) {
-                    var template=program.goalBindings().elements().get(prepared.sourceElement(occurrence.sourceElementId()));if(template==null||template.derived())continue;
+                    var template=program.goalBindings().elements().get(prepared.sourceElement(occurrence.sourceElementId()));if(template==null||template.derived()||owned.engine().isDerivedOccurrence(occurrence.occurrenceId()))continue;
                     String id=occurrence.occurrenceId(),episode=episodes.get(id);var key=new EngineOccurrenceKey(occurrence.sourceElementId(),occurrence.stack(),episode);
                     boolean exact=!cut.lost()&&prepared.exact();
                     if(cut.lost()||discontinuous)gaps.add(key);
@@ -315,7 +328,7 @@ public final class RuntimeEngineSessionOwner implements AutoCloseable {
                             goals.put(id,new EngineInputs.GoalInput(episode,activation(owned.engine(),id,exact),null));
                             statusQuality.put(id,"UNAVAILABLE:GOAL_SOURCE_OR_AUTHORED_CONDITION_REQUIRED");continue;
                         }
-                        if(program.xmlPlan()!=null) {
+                        if(program.xmlPlan()!=null||program.isCompact()) {
                             var taskRead=prepared.xmlTasks().get(occurrence.sourceElementId());var tuple=xmlTaskInput(taskRead,exact,cut.lost());
                             Boolean required=!exact||taskRead==null||taskRead.demand()==null||taskRead.demand().quality()!=Completeness.COMPLETE?null:taskRead.demand().required();
                             tasks.put(id,new EngineInputs.TaskInput(episode,required,tuple[0],tuple[1]));statusQuality.put(id,gaps.contains(key)?"HISTORY_GAP":Boolean.FALSE.equals(required)?"false".equals(taskRead.demand().witness().get("assigned"))?"SOURCE_NOT_ASSIGNED":"INACTIVE_SOURCE_DEMAND":tuple[0]!=null&&tuple[1]!=null&&exact?"KNOWN":xmlTaskOcl.tasks().contains(template.elementId())?"XML_TASK_TUPLE_UNAVAILABLE:"+xmlTaskUnavailable(taskRead,exact,cut.lost()):"UNSUPPORTED:XML_TASK_OBSERVATION_BINDING_REQUIRED");

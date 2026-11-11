@@ -21,9 +21,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class CompactWorkspaceNativeIntegrationTest {
     @TempDir Path temp;
     private record Fixture(SemanticProgram program,NativeRuntimeMutationEngine engine) { }
-    private Fixture fixture() throws Exception {
+    private Fixture fixture() throws Exception {return fixture(false);}
+    private Fixture fixture(boolean unbound) throws Exception {
         var project=temp.resolve("dispatch.jcm");Files.writeString(project,"mas dispatch {}");
-        var csl=temp.resolve("state.csl");Files.writeString(csl,"csl v4.0 Dispatch { orgContext WorkArea { attribute path : String required; } }");
+        var csl=temp.resolve("state.csl");Files.writeString(csl,"csl v4.0 Dispatch { orgContext WorkArea { attribute path : String required; } "+(unbound?"orgContext Unobserved {}":"")+" }");
         var istar=temp.resolve("goals.istar");Files.writeString(istar,"""
             istar DispatchGoals { role Supervisor {
               goal Opened : Achieve condition {[ self.path = '/north' ]}
@@ -96,6 +97,13 @@ class CompactWorkspaceNativeIntegrationTest {
         assertEquals(List.of("Opened"),RequirementInventory.targetsForContext(inventory,Map.of("scopeDefinition","workspace:*")));
         assertSame(system,engine.system());
     }
+    @Test void reservedHelperClosureDoesNotCertifyAnUnmappedAuthoredPopulation()throws Exception {
+        var coverage=new org.tzi.use.plugins.jacamo.semantics.ocl.ConstraintCoverageResolver();
+        var bound=fixture();bound.engine().applyMappingCut(cut(bound,true),"run",1,List.of());
+        assertTrue(coverage.populationComplete(bound.engine().system().model().getClass("OrgContext"),Map.of("cartago",Completeness.COMPLETE),bound.engine()));
+        var unbound=fixture(true);unbound.engine().applyMappingCut(cut(unbound,true),"run",1,List.of());
+        assertFalse(coverage.populationComplete(unbound.engine().system().model().getClass("OrgContext"),Map.of("cartago",Completeness.COMPLETE),unbound.engine()),"An unmapped authored context remains unproven even when empty");
+    }
     @Test void transportCompletenessWithoutInventoryProofCannotAdvanceOrClaimPass() throws Exception {
         var f=fixture();var engine=f.engine();engine.applyMappingCut(cut(f,false),"run",1,List.of());
         assertTrue(engine.xmlOccurrences("run",1,"revision").stream().noneMatch(s->s.complete()));
@@ -105,6 +113,15 @@ class CompactWorkspaceNativeIntegrationTest {
             var core=CanonicalJson.object(result.evidence().observation().get("originalEngine"));
             for(var raw:(List<?>)core.get("contexts"))assertEquals("UNAVAILABLE",CanonicalJson.object(raw).get("quality"));
             assertTrue(result.evidence().constraints().stream().noneMatch(r->r.kind().equals("GOAL_CONDITION")&&r.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.PASS));
+        }
+    }
+    @Test void missingOrChangedWatermarksCannotProveInventoryClosure() throws Exception {
+        var f=fixture();var base=cut(f,true);
+        for(var marks:List.of(Map.<String,SourceWatermark>of(),Map.of("cartago",new SourceWatermark("cartago",3)))) {
+            var changed=new RuntimeSnapshot(base.snapshotId(),base.modelRevision(),base.captureStartedAt(),base.captureEndedAt(),base.startWatermarks(),marks,
+                    base.validationAttempts(),base.facts(),base.sourceCompleteness(),base.stateFingerprint(),base.captureMetadata());
+            f.engine().applyMappingCut(changed,"run",1,List.of());
+            assertTrue(f.engine().xmlOccurrences("run",1,"revision").stream().noneMatch(s->s.complete()));
         }
     }
     @Test void compactReplayRebuildsOnlyFrozenNativeInputsAndRejectsIdentityTampering() throws Exception {

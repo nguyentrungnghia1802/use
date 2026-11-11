@@ -17,4 +17,6 @@ public final class PinnedRuntimeClassProfiles {
     /** Explicit source patch lineage: never trust a self-declared binary hash. */
     public static boolean matchesNplBinary(String requested,Object actual){return requested!=null&&(requested.equals(actual)||requested.equals("956818edfe9aeff7c4fde35bf1dd276cd71e1da62daf77a2a15ab08f87903332")&&actual instanceof String value&&value.equals(patched.getProperty("npl.jar")));}
     private PinnedRuntimeClassProfiles(){ }
+    /** Versioned NPL observer contract, including the reviewed patched lineage. */
+    public static String nplObservationContractHash(){return "956818edfe9aeff7c4fde35bf1dd276cd71e1da62daf77a2a15ab08f87903332";}
 }

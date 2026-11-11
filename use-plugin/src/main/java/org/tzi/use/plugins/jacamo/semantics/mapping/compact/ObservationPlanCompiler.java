@@ -53,27 +53,6 @@ public final class ObservationPlanCompiler {
         Map<String, List<Map<String, Object>>> aslPlanStepsToObserve = new LinkedHashMap<>();
         boolean hasMoiseSchemes = false;
 
-        // Collect all mapped artifact classes and entity-to-artifact mappings
-        Set<String> mappedArtifactClasses = new LinkedHashSet<>();
-        Map<String, String> entityToArtifactClass = new LinkedHashMap<>();
-        for (CompactMappingSpecification.Correspondence c : spec.cslMappings()) {
-            SourceReference sRef = SourceReference.parse(c.source());
-            TargetReference tRef = TargetReference.parse(c.target());
-            if (sRef instanceof SourceReference.ArtifactRef ar) {
-                mappedArtifactClasses.add(ar.className());
-                entityToArtifactClass.put(tRef.qualifier(), ar.className());
-            } else if (sRef instanceof SourceReference.ArtifactPropertyRef pr) {
-                mappedArtifactClasses.add(pr.className());
-                entityToArtifactClass.putIfAbsent(tRef.qualifier(), pr.className());
-            } else if (sRef instanceof SourceReference.ArtifactFieldRef fr) {
-                mappedArtifactClasses.add(fr.className());
-                entityToArtifactClass.putIfAbsent(tRef.qualifier(), fr.className());
-            } else if (sRef instanceof SourceReference.ArtifactOpRef or) {
-                mappedArtifactClasses.add(or.className());
-                entityToArtifactClass.putIfAbsent(tRef.qualifier(), or.className());
-            }
-        }
-
         // 2. Compile CSL correspondences
         for (CompactMappingSpecification.Correspondence c : spec.cslMappings()) {
             SourceReference sRef = SourceReference.parse(c.source());
@@ -98,7 +77,7 @@ public final class ObservationPlanCompiler {
                     frameworkRule = "CSL_ATTRIBUTE_FROM_PROPERTY";
                     evidenceReq = "CArtAgO live observable property value";
                 }
-                case ARTIFACT_IDENTITY,WORKSPACE_IDENTITY -> {
+                case ARTIFACT_IDENTITY,WORKSPACE_IDENTITY,AGENT_IDENTITY -> {
                     bKind=CslBinding.BindingKind.ATTRIBUTE_MAPPING;conv=CslBinding.TypeConversion.TO_STRING;
                     frameworkRule="CSL_ATTRIBUTE_FROM_PHYSICAL_IDENTITY";evidenceReq="Qualified actual artifact/workspace identity";
                 }
@@ -204,6 +183,7 @@ public final class ObservationPlanCompiler {
                 }
             }
 
+            if(tSymbol.kind()==TargetSymbol.TargetKind.ISTAR_RESOURCE)bKind=IStarBinding.BindingKind.RESOURCE_MAPPING;
             istarBindings.add(new IStarBinding(sRef, tRef, sSymbol, tSymbol, bKind, stepRange));
             explanations.add(new BindingExplanation(c.source(), c.target(), frameworkRule, evidenceReq));
         }
@@ -242,35 +222,6 @@ public final class ObservationPlanCompiler {
                 targetCatalog.cslModel(),
                 targetCatalog.goalModel()
         );
-    }
-
-    private static String resolveStepArtifactClass(
-            CompactMappingSpecification.Correspondence c,
-            TargetSymbol tSymbol,
-            CompactMappingSpecification spec,
-            Set<String> mappedArtifactClasses,
-            Map<String, String> entityToArtifactClass) {
-        if (!c.attributes().getOrDefault("scope", "").isBlank()) {
-            String sc = c.attributes().get("scope").trim();
-            if (entityToArtifactClass.containsKey(sc)) {
-                return entityToArtifactClass.get(sc);
-            }
-            if (mappedArtifactClasses.contains(sc)) {
-                return sc;
-            }
-            var candidates = mappedArtifactClasses.stream().filter(ac -> ac.endsWith("." + sc)).toList();
-            if (candidates.size() == 1) return candidates.getFirst();
-            throw c.location().error("STEP_ARTIFACT_SCOPE_NOT_FOUND_OR_AMBIGUOUS:" + sc);
-        }
-        if (mappedArtifactClasses.size() == 1) {
-            return mappedArtifactClasses.iterator().next();
-        }
-        if (mappedArtifactClasses.size() > 1) {
-            throw new IllegalArgumentException(
-                    "AMBIGUOUS_STEP_ARTIFACT_SCOPE: multiple artifact classes mapped " + mappedArtifactClasses
-                            + "; specify scope on step mapping '" + c.source() + " -> " + c.target() + "'");
-        }
-        return "";
     }
 
     private static CslBinding.TypeConversion inferTypeConversion(String declaredType) {

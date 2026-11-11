@@ -39,10 +39,11 @@ public final class XmlTaskCheckpoints {
     public Image savepoint(){return new Image(active,latest,historical,seen,prepared,epoch);}
     public void restore(Image image){active.clear();active.putAll(image.active());latest.clear();latest.putAll(image.latest());historical.clear();historical.putAll(image.historical());seen.clear();seen.addAll(image.seen());prepared=image.prepared();epoch=image.epoch();}
     public void clear(){active.clear();latest.clear();historical.clear();seen.clear();prepared=List.of();epoch=null;}
-    public void retireUnavailable(){if(epoch==null)return;var scopes=engine.xmlOccurrences(epoch.run(),epoch.generation(),epoch.revision());var demands=engine.xmlTaskDemands(epoch.run(),epoch.generation(),epoch.revision());active.values().removeIf(e->!retainPending(e.marker(),scopes,demands));historical.values().removeIf(m->!retainPending(m,scopes,demands));latest.values().removeIf(m->!currentRole(m,scopes));}
+    public void retireUnavailable(){if(epoch==null)return;var scopes=engine.xmlOccurrences(epoch.run(),epoch.generation(),epoch.revision());var demands=engine.xmlTaskDemands(epoch.run(),epoch.generation(),epoch.revision());active.values().removeIf(e->!retainPending(e.marker(),scopes,demands));historical.values().removeIf(m->!retainPending(m,scopes,demands));latest.values().removeIf(m->!currentRole(m,scopes)||!retainPending(m,scopes,demands));requalify(scopes,demands);}
     public List<NativeInvocationEvaluation.Work> drain(){var result=prepared;prepared=List.of();return result;}
     public static String key(String scope,String player,String role,String interval,String task){return SemanticJson.hash(List.of(scope,player,role,interval,task));}
     private static String key(Marker marker){return key(marker.scope(),marker.player(),marker.role(),marker.interval(),marker.task());}
+    /** Retained identity is not a certificate: callers still require a current complete cast, demand and native PRE/POST evidence. */
     public Marker marker(String scope,String player,String role,String interval,String task){return latest.get(key(scope,player,role,interval,task));}
     /** Historical source identity only. It must never supply a current PRE/POST
      * tuple; current demand quality and marker() remain the authority gates. */
@@ -60,7 +61,7 @@ public final class XmlTaskCheckpoints {
         if(lost){clear();unavailable(step,"COVERAGE_LOST");return;}
         var scopes=engine.xmlOccurrences(next.run(),next.generation(),next.revision());var demands=engine.xmlTaskDemands(next.run(),next.generation(),next.revision());
         if(step.phase().equals("ENABLED")&&seen.contains(step.invocation())){active.remove(step.invocation());latest.values().removeIf(m->m.invocation().equals(step.invocation()));unavailable(step,"DUPLICATE_TASK_ENTRY_INVALIDATED");return;}
-        active.values().removeIf(e->!retainPending(e.marker(),scopes,demands));historical.values().removeIf(m->!retainPending(m,scopes,demands));latest.values().removeIf(m->!currentRole(m,scopes));
+        active.values().removeIf(e->!retainPending(e.marker(),scopes,demands));historical.values().removeIf(m->!retainPending(m,scopes,demands));latest.values().removeIf(m->!currentRole(m,scopes)||!retainPending(m,scopes,demands));requalify(scopes,demands);
         var candidates=new ArrayList<Candidate>();
         for(var scope:scopes)if(scope.complete()&&bindings.references(step.task(),scope,step,engine,step.phase().equals("ENABLED")))for(var member:scope.members())
             if(member.actor().equals(program.goalBindings().elements().get(step.task()).actorId())&&engine.objectForSemanticId(step.agent())==engine.objectForSemanticId(member.player())) {
@@ -117,6 +118,20 @@ public final class XmlTaskCheckpoints {
             if(oldVal!=null&&"".equals(nextVal)&&!second.phase().equals("FAILED"))return false;
         }
         var oldResources=CanonicalJson.object(old.get("resources"));var nextResources=CanonicalJson.object(current.get("resources"));return oldResources.entrySet().stream().allMatch(e->Objects.equals(nextResources.get(e.getKey()),e.getValue()));
+    }
+    /** Restore a retained selection only after its original scope, role, demand
+     * episode and task-specific references are again proven at the current cut.
+     * This creates no PRE/POST result or certificate and never repairs a failed task. */
+    private void requalify(List<OccurrenceProjection.Scope> scopes,List<TaskDemandProjection.Demand> demands) {
+        for(var marker:historical.values()) {
+            if(latest.containsKey(key(marker))||marker.certificate().isBlank()||!currentRole(marker,scopes)||!bindings.currentInterval(engine,marker.player(),marker.role(),marker.interval()))continue;
+            var scope=scopes.stream().filter(s->s.id().equals(marker.scope())&&s.complete()).findFirst().orElseThrow();
+            var member=scope.members().stream().filter(m->m.actor().equals(marker.actor())&&m.player().equals(marker.player())&&m.role().equals(marker.role())&&m.interval().equals(marker.interval())).findFirst().orElseThrow();
+            var demand=demands.stream().filter(d->d.scope().equals(marker.scope())&&d.target().equals(marker.task())&&d.player().equals(marker.player())&&d.role().equals(marker.role())&&d.roleInterval().equals(marker.interval())).toList();
+            if(demand.size()!=1||demand.getFirst().quality()!=Completeness.COMPLETE||!Boolean.TRUE.equals(demand.getFirst().required())||!marker.demand().equals(demand.getFirst().episode()))continue;
+            String refs=new String(CanonicalJson.encode(bindings.referenceIdentity(scope,member,marker.task())),java.nio.charset.StandardCharsets.UTF_8);
+            if(marker.references().equals(refs))latest.put(key(marker),marker);
+        }
     }
     private boolean currentRole(Marker marker,List<OccurrenceProjection.Scope> scopes){return scopes.stream().anyMatch(s->s.complete()&&s.id().equals(marker.scope())&&s.members().stream().anyMatch(m->m.player().equals(marker.player())&&m.role().equals(marker.role())&&m.interval().equals(marker.interval())&&sameViewReferences(marker,s,m)));}
     private boolean sameViewReferences(Marker marker,OccurrenceProjection.Scope scope,OccurrenceProjection.Member performer) {

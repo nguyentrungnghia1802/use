@@ -218,6 +218,14 @@ public final class SourceSymbolCatalog {
                 throw new IllegalArgumentException("SOURCE_FIELD_INTERFACE_INVALID:"+fqcn);
             register(new SourceSymbol(SourceReference.Kind.ARTIFACT_FIELD,fqcn+"/"+name,fqcn,name,type,ev.sourceDigest(),ev.sourceUri()));
         }
+        if(ev.diagnostics().contains("SOURCE_ACTION_CARTAGO_ARTIFACT_PROPERTY") || ev.diagnostics().contains("DECLARED_CARTAGO_ARTIFACT_PROPERTY")) {
+            for (String diagnostic : ev.diagnostics()) {
+                if (diagnostic.startsWith("PROPERTY_NAME:")) {
+                    String propName = diagnostic.substring("PROPERTY_NAME:".length());
+                    register(SourceSymbol.property(fqcn, propName));
+                }
+            }
+        }
         for (String diagnostic : ev.diagnostics()) if (diagnostic.startsWith("SIGNATURE:")) {
             Object value = org.jacamo.bridge.contract.CanonicalJson.decode(diagnostic.substring(10).getBytes(java.nio.charset.StandardCharsets.UTF_8));
             if (!(value instanceof List<?> signature) || signature.size() != 4 || !fqcn.equals(signature.get(0))
@@ -328,6 +336,10 @@ public final class SourceSymbolCatalog {
     public SourceSymbol resolve(SourceReference ref) {
         Objects.requireNonNull(ref, "ref");
         switch (ref) {
+            case SourceReference.AgentIdentityRef identity -> {
+                var owner=resolve(new SourceReference.AgentRef(identity.agentOrProgram(),"agent:"+identity.agentOrProgram()));
+                return new SourceSymbol(SourceReference.Kind.AGENT_IDENTITY,owner.qualifiedName()+"/identity:"+identity.field(),owner.qualifiedName(),identity.field(),"JASON_PHYSICAL_AGENT_IDENTITY/1.0",owner.sourceDigest(),owner.sourcePosition());
+            }
             case SourceReference.ProjectRef r -> {return requiredNamed(SourceReference.Kind.PROJECT,r.name());}
             case SourceReference.WorkspaceRef r -> {return requiredNamed(SourceReference.Kind.WORKSPACE,r.name());}
             case SourceReference.WorkspaceIdentityRef r -> {

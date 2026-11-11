@@ -71,6 +71,10 @@ public record SourceSymbol(
                 aslPath, goalTrigger, goalTrigger, null, null);
     }
 
+    public static SourceSymbol workspace(String name) {
+        return new SourceSymbol(SourceReference.Kind.WORKSPACE, name, null, name, name, null, null);
+    }
+
     public static SourceSymbol aslPlanStep(String aslPath, String planTrigger, String stepName, int firstIndex, int afterIndex) {
         return new SourceSymbol(SourceReference.Kind.ASL_PLAN_STEP,
                 aslPath + "/" + planTrigger + "/" + stepName + "[" + firstIndex + ".." + afterIndex + "]",

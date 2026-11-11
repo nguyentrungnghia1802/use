@@ -1,6 +1,13 @@
 package org.tzi.use.plugins.jacamo.semantics.mapping.compact;
 
 import org.junit.jupiter.api.Test;
+import org.jacamo.bridge.adapter.OfficialProjectAdapter;
+import org.jacamo.bridge.adapter.OfficialProjectLoader;
+import org.jacamo.bridge.contract.ModelSnapshot;
+import org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNativePipeline;
+import org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode;
+import org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericMappingEngine;
+import org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingInputs;
 import org.tzi.use.semantic.engine.frontend.CslFrontend;
 import org.tzi.use.semantic.engine.frontend.IStarFrontend;
 import org.vnu.sme.goal.dsl.csl.mm.CslModel;
@@ -44,7 +51,7 @@ class CaseExamplesMigrationAndGenericityTest {
     }
 
     @Test
-    void compilesAuctionCaseModelsAndCompactPlanWithoutCaseBranching() throws IOException {
+    void compilesAuctionCaseModelsAndCompactPlanWithoutCaseBranching() throws Exception {
         Path cslPath = EXAMPLES_DIR.resolve("auction/auction.csl");
         Path istarPath = EXAMPLES_DIR.resolve("auction/auction.istar");
         Path xmlPath = EXAMPLES_DIR.resolve("auction/auction-compact-mapping.xml");
@@ -53,33 +60,24 @@ class CaseExamplesMigrationAndGenericityTest {
         GoalModel goalModel = new IStarFrontend().compile(Files.readString(istarPath), "auction.istar", org.tzi.use.semantic.engine.api.EngineSemanticsProfile.ROLE_SPECIALIZATION_V1).requireModel();
         NativeTargetCatalog targetCatalog = NativeTargetCatalog.fromModels(cslModel, goalModel);
 
-        SourceSymbolCatalog sourceCatalog = new SourceSymbolCatalog();
-        sourceCatalog.register(SourceSymbol.artifact("auction_env.AuctionArtifact", "hash-1"));
-        sourceCatalog.register(SourceSymbol.property("auction_env.AuctionArtifact", "winner"));
-        sourceCatalog.register(SourceSymbol.field("auction_env.AuctionArtifact", "currentWinner"));
-        sourceCatalog.register(SourceSymbol.property("auction_env.AuctionArtifact", "task"));
-        sourceCatalog.register(SourceSymbol.property("auction_env.AuctionArtifact", "running"));
-        sourceCatalog.register(SourceSymbol.property("auction_env.AuctionArtifact", "best_bid"));
-        sourceCatalog.register(SourceSymbol.moiseGroup("auction", "auctionGroup"));
-        sourceCatalog.register(SourceSymbol.moiseRole("auction", "auctioneer"));
-        sourceCatalog.register(SourceSymbol.moiseRole("auction", "participant"));
-        sourceCatalog.register(SourceSymbol.agent("auction_capabilities"));
-        sourceCatalog.registerPlan("src/agt/auction_capabilities.asl", "+!do_auction", "do_auction", 10);
+        SourceSymbolCatalog sourceCatalog = SourceSymbolCatalog.fromSnapshot(official(EXAMPLES_DIR.resolve("auction/auction.jcm")).semanticContract());
 
         CompactMappingSpecification spec = CompactMappingReader.read(xmlPath);
         CompiledObservationPlan plan = ObservationPlanCompiler.compile(spec, sourceCatalog, targetCatalog);
 
         assertNotNull(plan);
-        assertEquals(9, plan.cslBindings().size());
-        assertEquals(6, plan.istarBindings().size());
-        assertEquals(3, plan.actorBindings().size());
+        assertEquals(13, plan.cslBindings().size());
+        var field=plan.capabilityRequests().stream().filter(r->r.provider().equals("cartago.artifact-field.v1")).findFirst().orElseThrow();
+        assertEquals("JASON_ATOM",org.jacamo.bridge.contract.CanonicalJson.object(field.parameters().get("properties")).get("winner"));
+        assertEquals(14, plan.istarBindings().size());
+        assertEquals(4, plan.actorBindings().size());
         assertTrue(plan.capabilityDemands().stream().anyMatch(d -> d.id().equals("cartago.artifact-field.v1")));
         assertTrue(plan.capabilityDemands().stream().anyMatch(d -> d.id().equals("jason.plan-boundaries.v1")));
         assertTrue(plan.capabilityDemands().stream().anyMatch(d -> d.id().equals("moise.scheme-lifecycle.v1")));
     }
 
     @Test
-    void compilesHelloWorldCaseModelsAndCompactPlanGenerically() throws IOException {
+    void compilesHelloWorldCaseModelsAndCompactPlanGenerically() throws Exception {
         Path cslPath = EXAMPLES_DIR.resolve("hello-world/hello.csl");
         Path istarPath = EXAMPLES_DIR.resolve("hello-world/hello.istar");
         Path xmlPath = EXAMPLES_DIR.resolve("hello-world/hello-compact-mapping.xml");
@@ -88,24 +86,21 @@ class CaseExamplesMigrationAndGenericityTest {
         GoalModel goalModel = new IStarFrontend().compile(Files.readString(istarPath), "hello.istar", org.tzi.use.semantic.engine.api.EngineSemanticsProfile.ROLE_SPECIALIZATION_V1).requireModel();
         NativeTargetCatalog targetCatalog = NativeTargetCatalog.fromModels(cslModel, goalModel);
 
-        SourceSymbolCatalog sourceCatalog = new SourceSymbolCatalog();
-        sourceCatalog.register(SourceSymbol.artifact("display.GUIConsole", "hash-gui"));
-        sourceCatalog.register(SourceSymbol.property("display.GUIConsole", "numMsg"));
-        sourceCatalog.register(SourceSymbol.agent("GreetingObserver"));
-        sourceCatalog.registerPlan("src/agt/hello.asl", "+!printMsg", "printMsg", 3);
+        SourceSymbolCatalog sourceCatalog = SourceSymbolCatalog.fromSnapshot(official(EXAMPLES_DIR.resolve("hello-world/helloworld.jcm")).semanticContract());
 
         CompactMappingSpecification spec = CompactMappingReader.read(xmlPath);
         CompiledObservationPlan plan = ObservationPlanCompiler.compile(spec, sourceCatalog, targetCatalog);
 
         assertNotNull(plan);
-        assertEquals(2, plan.cslBindings().size());
-        assertEquals(2, plan.istarBindings().size());
+        assertEquals(6, plan.cslBindings().size());
+        assertFalse(plan.checkpointRules().isEmpty());
+        assertEquals(1, plan.istarBindings().size());
         assertEquals(1, plan.actorBindings().size());
         assertFalse(plan.fingerprint().isBlank());
     }
 
     @Test
-    void compilesHouseBuildingCaseModelsAndCompactPlanGenerically() throws IOException {
+    void compilesHouseBuildingCaseModelsAndCompactPlanGenerically() throws Exception {
         Path cslPath = EXAMPLES_DIR.resolve("house-building/house.csl");
         Path istarPath = EXAMPLES_DIR.resolve("house-building/house.istar");
         Path xmlPath = EXAMPLES_DIR.resolve("house-building/house-compact-mapping.xml");
@@ -114,20 +109,14 @@ class CaseExamplesMigrationAndGenericityTest {
         GoalModel goalModel = new IStarFrontend().compile(Files.readString(istarPath), "house.istar", org.tzi.use.semantic.engine.api.EngineSemanticsProfile.ROLE_SPECIALIZATION_V1).requireModel();
         NativeTargetCatalog targetCatalog = NativeTargetCatalog.fromModels(cslModel, goalModel);
 
-        SourceSymbolCatalog sourceCatalog = new SourceSymbolCatalog();
-        sourceCatalog.register(SourceSymbol.artifact("tools.AuctionArt", "hash-art"));
-        sourceCatalog.register(SourceSymbol.property("tools.AuctionArt", "task"));
-        sourceCatalog.register(SourceSymbol.property("tools.AuctionArt", "currentBid"));
-        sourceCatalog.register(SourceSymbol.property("tools.AuctionArt", "currentWinner"));
-        sourceCatalog.register(SourceSymbol.agent("ConstructionObserver"));
-        sourceCatalog.registerPlan("src/agt/giacomo.asl", "+!start", "start", 5);
+        SourceSymbolCatalog sourceCatalog = SourceSymbolCatalog.fromSnapshot(official(EXAMPLES_DIR.resolve("house-building/house-building.jcm")).semanticContract());
 
         CompactMappingSpecification spec = CompactMappingReader.read(xmlPath);
         CompiledObservationPlan plan = ObservationPlanCompiler.compile(spec, sourceCatalog, targetCatalog);
 
         assertNotNull(plan);
-        assertEquals(4, plan.cslBindings().size());
-        assertEquals(2, plan.istarBindings().size());
+        assertEquals(9, plan.cslBindings().size());
+        assertEquals(1, plan.istarBindings().size());
         assertEquals(1, plan.actorBindings().size());
         assertFalse(plan.fingerprint().isBlank());
     }
@@ -168,5 +157,57 @@ class CaseExamplesMigrationAndGenericityTest {
         assertEquals("poison-proof", plan.specification().id());
         assertEquals(2, plan.cslBindings().size());
         assertEquals(2, plan.istarBindings().size());
+    }
+
+    private static ModelSnapshot official(Path jcm) throws Exception {
+        return new OfficialProjectAdapter().adapt(new OfficialProjectLoader().load(jcm), jcm);
+    }
+
+    @Test
+    void buildsCanonicalProgramForAuctionCompact() throws Exception {
+        Path root = EXAMPLES_DIR.resolve("auction");
+        var source = official(root.resolve("auction.jcm"));
+        var inputs = MappingInputs.read(root.resolve("auction.jcm"), root.resolve("auction-compact-mapping.xml"), root.resolve("auction.ocl"), root.resolve("auction.csl"), root.resolve("auction.istar"), false);
+        var program = new GenericMappingEngine().map(source, inputs);
+        assertTrue(program.isCompact());
+        var built = new CodeGroundedNativePipeline().buildCanonicalProgram(source, NativeProjectionMode.AUTO, program);
+        assertNotNull(built.nativeResult().state().system());
+        assertNotNull(built.nativeResult().state().system().model().getClass("Auction"));
+    }
+
+    @Test
+    void buildsCanonicalProgramForAuctionFalseCompact() throws Exception {
+        Path root = EXAMPLES_DIR.resolve("auction-false");
+        var source = official(root.resolve("auction.jcm"));
+        var inputs = MappingInputs.read(root.resolve("auction.jcm"), root.resolve("auction-compact-mapping.xml"), root.resolve("auction.ocl"), root.resolve("auction.csl"), root.resolve("auction.istar"), false);
+        var program = new GenericMappingEngine().map(source, inputs);
+        assertTrue(program.isCompact());
+        var built = new CodeGroundedNativePipeline().buildCanonicalProgram(source, NativeProjectionMode.AUTO, program);
+        assertNotNull(built.nativeResult().state().system());
+        assertNotNull(built.nativeResult().state().system().model().getClass("Auction"));
+    }
+
+    @Test
+    void buildsCanonicalProgramForHelloWorldCompact() throws Exception {
+        Path root = EXAMPLES_DIR.resolve("hello-world");
+        var source = official(root.resolve("helloworld.jcm"));
+        var inputs = MappingInputs.read(root.resolve("helloworld.jcm"), root.resolve("hello-compact-mapping.xml"), root.resolve("hello.ocl"), root.resolve("hello.csl"), root.resolve("hello.istar"), false);
+        var program = new GenericMappingEngine().map(source, inputs);
+        assertTrue(program.isCompact());
+        var built = new CodeGroundedNativePipeline().buildCanonicalProgram(source, NativeProjectionMode.AUTO, program);
+        assertNotNull(built.nativeResult().state().system());
+        assertNotNull(built.nativeResult().state().system().model().getClass("Console"));
+    }
+
+    @Test
+    void buildsCanonicalProgramForHouseBuildingCompact() throws Exception {
+        Path root = EXAMPLES_DIR.resolve("house-building");
+        var source = official(root.resolve("house-building.jcm"));
+        var inputs = MappingInputs.read(root.resolve("house-building.jcm"), root.resolve("house-compact-mapping.xml"), root.resolve("house.ocl"), root.resolve("house.csl"), root.resolve("house.istar"), false);
+        var program = new GenericMappingEngine().map(source, inputs);
+        assertTrue(program.isCompact());
+        var built = new CodeGroundedNativePipeline().buildCanonicalProgram(source, NativeProjectionMode.AUTO, program);
+        assertNotNull(built.nativeResult().state().system());
+        assertNotNull(built.nativeResult().state().system().model().getClass("ProcurementAuction"));
     }
 }

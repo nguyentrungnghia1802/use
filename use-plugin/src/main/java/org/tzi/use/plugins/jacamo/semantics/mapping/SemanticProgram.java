@@ -56,6 +56,7 @@ public final class SemanticProgram {
     public List<MappingRuleSet.Contract> contracts(){return rules.contracts();}public SemanticBindingIndex bindings(){return bindings;}public TraceComplement complement(){return complement;}
     public GoalRuntimeBindingPlan goalBindings(){return goalBindings;}
     public org.tzi.use.plugins.jacamo.semantics.mapping.xml.GenericBindingPlan xmlPlan(){return xmlPlan;}
+    public Object casePlan(){return null;}
     public org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompiledObservationPlan compactPlan(){return compactPlan;}
     public boolean isCompact(){return compactPlan!=null;}
     public List<MappingDiagnostic> diagnostics(){return diagnostics;}public String hash(){return hash;}public void assertUnchanged(){goals.assertUnchanged();if(!cslHash.equals(CslModelFingerprint.of(csl)))throw new IllegalStateException("CANONICAL_CSL_MODEL_MUTATED_AFTER_OWNERSHIP");}

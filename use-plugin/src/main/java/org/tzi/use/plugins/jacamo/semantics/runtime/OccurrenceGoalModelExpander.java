@@ -44,14 +44,28 @@ public final class OccurrenceGoalModelExpander {
         }
         return Collections.unmodifiableMap(result);
     }
+    public static Map<String,Quantifier> policies(List<org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactMappingSpecification.DependencyPopulation> list,GoalModel model) {
+        var result=new TreeMap<String,Quantifier>();
+        for(var node:list) {
+            if(model.getDependencies().stream().noneMatch(d->d.dependum().id().equals(node.target())))throw node.location().error("DEPENDENCY_POPULATION_TARGET_UNRESOLVED");
+            Quantifier policy;try{policy=Quantifier.valueOf(node.quantifier());}catch(IllegalArgumentException bad){throw node.location().error("DEPENDENCY_QUANTIFIER_UNSUPPORTED");}
+            if(result.putIfAbsent(node.target(),policy)!=null)throw node.location().error("DEPENDENCY_QUANTIFIER_DUPLICATE");
+        }
+        return Collections.unmodifiableMap(result);
+    }
     private void assertUnchanged(){if(!canonicalHash.equals(OwnedGoalModel.fingerprint(source)))throw new IllegalStateException("OCCURRENCE_SOURCE_MODEL_MUTATED");}
     public Expansion expand(List<Player> members,String executionName) {
         return expand(members,executionName,null);
     }
     public Expansion expand(List<Player> members,String executionName,Set<String> scopeLeaves) {
+        return expand(members,executionName,scopeLeaves,false);
+    }
+    /** Before a domain exists, expand only source-observed invocation plans and
+     * relations whose actual actors are admitted. Missing future actors are not fabricated. */
+    public Expansion expand(List<Player> members,String executionName,Set<String> scopeLeaves,boolean sourceBootstrap) {
         assertUnchanged();if(members.isEmpty()||members.size()>4096||executionName==null||!executionName.matches("[A-Za-z_][A-Za-z0-9_]*"))throw new IllegalArgumentException("OCCURRENCE_CAST_OR_MODEL_NAME_INVALID");
         if(members.stream().map(Player::actorType).distinct().count()!=members.size()||members.stream().map(Player::instance).distinct().count()!=members.size())throw new IllegalArgumentException("OCCURRENCE_ACTOR_OR_INSTANCE_AMBIGUOUS");
-        Set<String> included=scopeLeaves==null?null:includedElements(scopeLeaves);
+        Set<String> included=scopeLeaves==null?null:includedElements(scopeLeaves,sourceBootstrap?members.stream().map(Player::sourceActor).collect(java.util.stream.Collectors.toSet()):null);
         for(var member:members) {
             var actor=source.findActor(member.sourceActor()).orElseThrow(()->new IllegalArgumentException("OCCURRENCE_SOURCE_ACTOR_UNRESOLVED"));
             if(profile.roleSpecialization()&&RoleSpecialization.definitionOnly(source,actor))throw new IllegalArgumentException("MODEL_ONLY_ROLE_MUST_NOT_HAVE_RUNTIME_CAST");
@@ -164,16 +178,17 @@ public final class OccurrenceGoalModelExpander {
         String hash=SemanticJson.hash(List.of(VERSION,canonicalHash,policies,SemanticJson.tree(views),physicalViews.stream().sorted().toList(),owned.hash(),SemanticJson.tree(cast),SemanticJson.tree(traces)));
         return new Expansion(owned,cast,traces,hash);
     }
-    private Set<String> includedElements(Set<String> scopeLeaves) {
+    private Set<String> includedElements(Set<String> scopeLeaves,Set<String> availableActors) {
         var included=new LinkedHashSet<>(scopeLeaves);boolean changed=true;
         while(changed) {
             changed=false;
             for(var actor:source.getActors()) {
+                if(availableActors!=null&&!availableActors.contains(actor.name()))continue;
                 for(var refinement:actor.refinements())if(GoalViewRealizations.children(refinement).stream().anyMatch(included::contains)&&included.add(refinement.parent()))changed=true;
                 for(var needed:actor.neededBys())if(included.contains(needed.task())&&included.add(needed.resource()))changed=true;
             }
-            for(var view:views.values())if(included.contains(view.source())&&included.add(view.target()))changed=true;
-            for(var dependency:source.getDependencies())if(included.contains(dependency.dependeeElmt())) {
+            for(var view:views.values())if((availableActors==null||availableActors.contains(source.ownerOf(view.target()).orElseThrow()))&&included.contains(view.source())&&included.add(view.target()))changed=true;
+            for(var dependency:source.getDependencies())if((availableActors==null||availableActors.contains(dependency.depender())&&availableActors.contains(dependency.dependee()))&&included.contains(dependency.dependeeElmt())) {
                 if(included.add(dependency.dependerElmt()))changed=true;
                 if(included.add(dependency.dependum().id()))changed=true;
             }

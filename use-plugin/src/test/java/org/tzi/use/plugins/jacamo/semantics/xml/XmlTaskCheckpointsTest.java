@@ -134,6 +134,19 @@ class XmlTaskCheckpointsTest {
             assertTrue(rows.stream().anyMatch(r->r.kind().equals("TASK_POST")&&r.verdict()==org.tzi.use.plugins.jacamo.semantics.evidence.SemanticVerdict.PASS),rows.toString());
         }
     }
+    @Test void qualifiedSameEpisodeRestoresSelectionWithoutCreatingAnotherCertificate()throws Exception {
+        try(var f=new Fixture()) {
+            f.observe(0,1);f.checkpoints.drain();f.set(2);f.observe(1,2);f.checkpoints.drain();
+            var original=f.checkpoints.savepoint().latest();assertFalse(original.isEmpty());
+            var n=f.data.nativeFixture();var port=n.nativeFixture().port();
+            port.metadata(n.domain(),"xml:m0:quality","INCOMPLETE");f.checkpoints.retireUnavailable();
+            assertTrue(f.checkpoints.savepoint().latest().isEmpty());assertTrue(f.checkpoints.drain().isEmpty());
+            port.metadata(n.domain(),"xml:m0:quality","COMPLETE");f.checkpoints.retireUnavailable();
+            assertEquals(original,f.checkpoints.savepoint().latest());assertTrue(f.checkpoints.drain().isEmpty());
+            f.helper.apply(f.data,f.helper.rows(f.data,Completeness.COMPLETE,true,"new-demand"));f.checkpoints.retireUnavailable();
+            assertTrue(f.checkpoints.savepoint().latest().isEmpty(),"A new demand cannot inherit the former selection");
+        }
+    }
     @Test void actualRoleReincarnationDuringAnUnqualifiedCutStillRetiresPendingPre()throws Exception {
         try(var f=new Fixture()) {
             f.observe(0,1);f.checkpoints.drain();var n=f.data.nativeFixture();var port=n.nativeFixture().port();

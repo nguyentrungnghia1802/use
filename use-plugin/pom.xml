@@ -195,6 +195,8 @@
                         <configuration>
                             <sources>
                                 <source>examples/auction/src/env</source>
+                                <source>examples/hello-world/src/env</source>
+                                <source>examples/house-building/src/env</source>
                             </sources>
                         </configuration>
                     </execution>

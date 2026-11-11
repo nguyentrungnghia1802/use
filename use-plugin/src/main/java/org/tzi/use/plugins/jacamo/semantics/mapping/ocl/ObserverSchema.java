@@ -54,6 +54,7 @@ public final class ObserverSchema {
         }
         valueTypes=Collections.unmodifiableMap(tuples);
     }
+
     public Map<String,String> classViews(){return classViews;}
     public String referenceAssociation(String viewId,String fieldName) {
         var view=requireView(viewId);var field=view.children("field").stream().filter(f->f.attr("name").equals(fieldName)&&classViews.containsValue(f.attr("type"))).findFirst().orElseThrow();
