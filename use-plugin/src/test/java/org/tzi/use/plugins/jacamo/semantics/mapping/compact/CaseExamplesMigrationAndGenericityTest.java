@@ -163,6 +163,19 @@ class CaseExamplesMigrationAndGenericityTest {
         return new OfficialProjectAdapter().adapt(new OfficialProjectLoader().load(jcm), jcm);
     }
 
+    /** The workbench encodes this exact facade map while refreshing after Import. */
+    private static void assertProgramEvidenceIsCanonicalJson(CodeGroundedNativePipeline.CanonicalBuildResult built) throws Exception {
+        var method=org.tzi.use.plugins.jacamo.DefaultJaCaMoFacade.class.getDeclaredMethod("programEvidence",CodeGroundedNativePipeline.CanonicalBuildResult.class,String.class);
+        method.setAccessible(true);
+        var evidence=org.jacamo.bridge.contract.CanonicalJson.object(method.invoke(null,built,""));
+        byte[] json=assertDoesNotThrow(()->org.jacamo.bridge.contract.CanonicalJson.encode(evidence));
+        var restored=org.jacamo.bridge.contract.CanonicalJson.object(org.jacamo.bridge.contract.CanonicalJson.decode(json));
+        var expected=built.program().compactPlan().capabilityDemands().stream().map(org.jacamo.bridge.contract.ObservationCapabilityRequest::evidence).toList();
+        assertFalse(expected.isEmpty());
+        assertEquals(expected,restored.get("compactCapabilityDemands"),"All request identities, provider selections, flags and parameters must survive JSON encoding");
+        assertEquals(built.program().hash(),restored.get("programHash"));
+    }
+
     @Test
     void buildsCanonicalProgramForAuctionCompact() throws Exception {
         Path root = EXAMPLES_DIR.resolve("auction");
@@ -172,6 +185,7 @@ class CaseExamplesMigrationAndGenericityTest {
         assertTrue(program.isCompact());
         var built = new CodeGroundedNativePipeline().buildCanonicalProgram(source, NativeProjectionMode.AUTO, program);
         assertNotNull(built.nativeResult().state().system());
+        assertProgramEvidenceIsCanonicalJson(built);
         assertNotNull(built.nativeResult().state().system().model().getClass("Auction"));
     }
 
@@ -184,6 +198,7 @@ class CaseExamplesMigrationAndGenericityTest {
         assertTrue(program.isCompact());
         var built = new CodeGroundedNativePipeline().buildCanonicalProgram(source, NativeProjectionMode.AUTO, program);
         assertNotNull(built.nativeResult().state().system());
+        assertProgramEvidenceIsCanonicalJson(built);
         assertNotNull(built.nativeResult().state().system().model().getClass("Auction"));
     }
 
@@ -196,6 +211,7 @@ class CaseExamplesMigrationAndGenericityTest {
         assertTrue(program.isCompact());
         var built = new CodeGroundedNativePipeline().buildCanonicalProgram(source, NativeProjectionMode.AUTO, program);
         assertNotNull(built.nativeResult().state().system());
+        assertProgramEvidenceIsCanonicalJson(built);
         assertNotNull(built.nativeResult().state().system().model().getClass("Console"));
     }
 
@@ -208,6 +224,7 @@ class CaseExamplesMigrationAndGenericityTest {
         assertTrue(program.isCompact());
         var built = new CodeGroundedNativePipeline().buildCanonicalProgram(source, NativeProjectionMode.AUTO, program);
         assertNotNull(built.nativeResult().state().system());
+        assertProgramEvidenceIsCanonicalJson(built);
         assertNotNull(built.nativeResult().state().system().model().getClass("ProcurementAuction"));
     }
 }

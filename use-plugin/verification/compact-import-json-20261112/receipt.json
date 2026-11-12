@@ -1,0 +1,12 @@
+{
+  "scope": "COMPACT_IMPORT_PROGRAM_EVIDENCE_JSON",
+  "testLogSha256": "351ed5a75440553211d4f2aa3ca23c565c27f9969c692b624264b34b252977ee",
+  "tests": [
+    "[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.057 s -- in org.tzi.use.plugins.jacamo.semantics.mapping.compact.CaseExamplesMigrationAndGenericityTest",
+    "[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0"
+  ],
+  "installedPluginSha256": "1160639bb3cf3502b5e3090fddde385b8be66e3cbcca0446df6902bc4e18a9b4",
+  "facadeClassMatchesReactor": true,
+  "liveMasRun": false,
+  "manualDesktopRun": false
+}

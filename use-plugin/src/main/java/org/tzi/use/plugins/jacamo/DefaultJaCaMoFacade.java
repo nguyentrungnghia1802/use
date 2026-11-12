@@ -265,7 +265,7 @@ public final class DefaultJaCaMoFacade implements JaCaMoFacade, AutoCloseable {
                 "goalHash",program.goalHash(),"validators","original CSL/iStar; native USE OCL", "diagnostics",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(program.diagnostics()),
                 "traceBindings",org.tzi.use.plugins.jacamo.semantics.evidence.SemanticJson.tree(program.bindings().bindings())));
         if(program.xmlPlan()!=null){evidence.put("declarativeProgram",program.xmlPlan().evidence());if(canonical.xmlPreparation()!=null)evidence.put("bindingPreflight",canonical.xmlPreparation().preflight());}
-        if(program.compactPlan()!=null){evidence.put("compactPlanFingerprint",program.compactPlan().fingerprint());evidence.put("compactCapabilityDemands",program.compactPlan().capabilityDemands());}
+        if(program.compactPlan()!=null){evidence.put("compactPlanFingerprint",program.compactPlan().fingerprint());evidence.put("compactCapabilityDemands",program.compactPlan().capabilityDemands().stream().map(org.jacamo.bridge.contract.ObservationCapabilityRequest::evidence).toList());}
         return java.util.Collections.unmodifiableMap(evidence);
     }
 

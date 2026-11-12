@@ -17,7 +17,8 @@ class CompactCurrentAuctionIT {
    facade.verifiedCheckpointMode(true);
    try {
     facade.prepareOwnedProducer(project,new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",inputs.resolve("auction-compact-mapping.xml"),inputs.resolve("auction.ocl"),inputs.resolve("auction.csl"),inputs.resolve("auction.istar"),false),null,false);
-    assertEquals("MODEL_READY",facade.workflowStatus().state());facade.startRuntime();
+    assertEquals("MODEL_READY",facade.workflowStatus().state());
+    assertDoesNotThrow(()->CanonicalJson.encode(facade.semanticProgramEvidence()),"Workbench program evidence must be JSON-compatible before Start");facade.startRuntime();
     var projector=OwnedProducerRuntimeIT.projector(facade);long until=System.nanoTime()+TimeUnit.SECONDS.toNanos(100);boolean finished=false;
     while(System.nanoTime()<until) {
      var view=facade.verifiedCheckpointState();
