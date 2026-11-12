@@ -97,7 +97,7 @@ class Use4GoalPackagedPluginIT {
         Path install=Files.createDirectory(work.resolve("install"));String full=System.getProperty("use.packaged.hostArchive","");
         if(!full.isBlank()) {
             extract(Path.of(full),install);try(var children=Files.list(install)){install=children.filter(p->Files.isDirectory(p.resolve("lib"))).findFirst().orElseThrow();}
-        } else {extract(Path.of("target/use-jacamo-plugin-1.0.1-v2-frozen.zip"),install);Files.copy(Path.of("../use-gui/target/use-gui.jar"),install.resolve("lib/use-gui.jar"));}
+        } else {extract(Path.of("target/use-jacamo-plugin-1.0.1-release.zip"),install);Files.copy(Path.of("../use-gui/target/use-gui.jar"),install.resolve("lib/use-gui.jar"));}
         assertArrayEquals(Files.readAllBytes(Path.of("target/use-plugin-1.0.1.jar")),Files.readAllBytes(install.resolve("lib/plugins/use-jacamo-plugin-1.0.1.jar")),"Stale full distribution plugin");return install;
     }
     private static Path driver(Path work)throws Exception {return driver(work,InstalledEngineMain.class);}

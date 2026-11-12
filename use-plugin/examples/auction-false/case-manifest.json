@@ -4,17 +4,17 @@
   "modelMode": "AUTHORED",
   "inputs": {
     "jcm": "auction.jcm",
-    "mapping": "auction-mapping.xml",
+    "mapping": "auction-compact-mapping.xml",
     "csl": "auction.csl",
     "istar": "auction.istar",
     "ocl": "auction.ocl"
   },
   "sha256": {
     "auction.jcm": "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb",
-    "auction-mapping.xml": "58c843d4e62f4e95ba88d96af66ba2d3d8f3386bd8aa000498511101f83ab6e7",
-    "auction.csl": "0b63df2e539ccc0af965cba1d42b40167545601fe69fbcfc775f98d75a79cff8",
-    "auction.istar": "ec98189dbdecd123b9eb862f5ce714e0fa3e7cd6b636e093fc032945217b784e",
-    "auction.ocl": "16837702e057006d2083142a32f3a9791a1d2b86523115e2ede2a30e33902141"
+    "auction.csl": "395a5621b1e59a84c6fbc29d8705f8ce0d13110a07c73a8134736160abb7f0c7",
+    "auction.istar": "8ce7d1a980ca90396a9fafac59261fb3d3cd090a76bd92d81ce51b744f012aa3",
+    "auction.ocl": "1acc17db74a662ffcfc370b70ee233cd45a6c4e339c35c50487b1abf8ffbe5fe",
+    "auction-compact-mapping.xml": "034f3e7a92d9b8ef31c54ed40d24853b62d914783ff0936781365371e304d911"
   },
   "fault": {
     "id": "MISSING_RUNNING_FALSE_IN_STOP",

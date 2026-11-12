@@ -13,7 +13,7 @@ class AuthoredAuctionResultsIT {
   byte[] source=Files.readAllBytes(project);var session=new Session();long pid=0;
   try(var facade=new DefaultJaCaMoFacade(checkout,session)){
    try{
-    var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",inputs.resolve("auction-mapping.xml"),inputs.resolve("auction.ocl"),inputs.resolve("auction.csl"),inputs.resolve("auction.istar"),false);
+    var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",inputs.resolve("auction-compact-mapping.xml"),inputs.resolve("auction.ocl"),inputs.resolve("auction.csl"),inputs.resolve("auction.istar"),false);
     facade.prepareOwnedProducer(project,selection,null,false);pid=facade.ownedProducerStatus().pid();var system=session.system();assertNotEquals(ProcessHandle.current().pid(),pid);
     var definitions=new LiveGoalSummary(facade.semanticModels().goals());int expected=definitions.rows(List.of()).size();assertTrue(expected>0);
     var view=new java.util.concurrent.atomic.AtomicReference<ObservedConformancePanel>();SwingUtilities.invokeAndWait(()->view.set(ObservedConformancePanel.liveResults(facade.semanticModels().goals())));

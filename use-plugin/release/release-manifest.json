@@ -2,7 +2,7 @@
   "schemaVersion": "1.0.0",
   "releaseVersion": "1.0.1",
   "gitTag": null,
-  "artifact": "use-jacamo-plugin-1.0.1-v2-frozen.zip",
+  "artifact": "use-jacamo-plugin-1.0.1-release.zip",
   "compatibility": {
     "use": "7.5.0",
     "pluginDescriptor": "1.0.1",
@@ -16,7 +16,7 @@
   },
   "integrity": {
     "packageAlgorithm": "SHA-256",
-    "sidecar": "use-jacamo-plugin-1.0.1-v2-frozen.zip.sha256",
+    "sidecar": "use-jacamo-plugin-1.0.1-release.zip.sha256",
     "contentPolicy": "ReleasePackageIT compares every ZIP entry byte-for-byte with its declared source"
   },
   "limitations": [
@@ -29,18 +29,6 @@
     {
       "source": "CHANGELOG.md",
       "path": "CHANGELOG.md"
-    },
-    {
-      "source": "Core/Mapping/version-2/jacamo-use-mapping-v2.json",
-      "path": "Core/Mapping/version-2/jacamo-use-mapping-v2.json"
-    },
-    {
-      "source": "Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json",
-      "path": "Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json"
-    },
-    {
-      "source": "Core/Metamodel/version-2/jacamo_v2_complete.ecore",
-      "path": "Core/Metamodel/version-2/jacamo_v2_complete.ecore"
     },
     {
       "source": "KNOWN-LIMITATIONS.md",
@@ -410,8 +398,8 @@
       "path": "examples/csl-counter/authored-v1/README.md"
     },
     {
-      "source": "examples/auction/auction-mapping.xml",
-      "path": "examples/auction-current/auction-mapping.xml"
+      "source": "examples/auction/auction-compact-mapping.xml",
+      "path": "examples/auction-current/auction-compact-mapping.xml"
     },
     {
       "source": "examples/auction/auction.csl",
@@ -448,6 +436,18 @@
     {
       "source": "examples/auction/README.md",
       "path": "examples/auction-current/README.md"
+    },
+    {
+      "source": "docs/project/verified-checkpoints.md",
+      "path": "docs/verified-checkpoints.md"
+    },
+    {
+      "source": "tools/prepare-runtime-classpath.ps1",
+      "path": "tools/prepare-runtime-classpath.ps1"
+    },
+    {
+      "source": "../../jacamo/checkpoint-dependencies/dependency-lock.json",
+      "path": "bridge/dependency-lock.json"
     }
   ],
   "releaseStatus": "frozen-candidate-not-tagged",
@@ -503,5 +503,31 @@
     "acceptance": "SELECTED_OBSERVED_REQUIREMENTS_WITH_QUALITY_GATES",
     "modelInputMode": "AUTHORED",
     "referencePath": "reference/auction"
-  }
+  },
+  "packageTrees": [
+    {
+      "source": "modules/bridge-jacamo/target/producer-runtime",
+      "path": "bridge/runtime"
+    },
+    {
+      "source": "examples/auction",
+      "path": "examples/auction-current"
+    },
+    {
+      "source": "examples/auction-false",
+      "path": "examples/auction-false"
+    },
+    {
+      "source": "examples/hello-world",
+      "path": "examples/hello-world"
+    },
+    {
+      "source": "examples/house-building",
+      "path": "examples/house-building"
+    },
+    {
+      "source": "src/test/resources/auction-reference/compact-v1",
+      "path": "reference/auction/compact-v1"
+    }
+  ]
 }

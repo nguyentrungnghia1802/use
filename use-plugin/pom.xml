@@ -299,8 +299,6 @@
                         <goals><goal>run</goal></goals>
                         <configuration>
                             <target>
-                                <copy file="${project.build.directory}/use-jacamo-plugin-${project.version}-release.zip"
-                                      tofile="${project.build.directory}/use-jacamo-plugin-${project.version}-v2-frozen.zip" overwrite="true"/>
                                 <mkdir dir="${project.basedir}/../use-gui/lib/plugins"/>
 
                                 <copy file="${project.build.directory}/${project.build.finalName}.jar"
@@ -315,7 +313,7 @@
                         <goals><goal>run</goal></goals>
                         <configuration>
                             <target>
-                                <checksum file="${project.build.directory}/use-jacamo-plugin-${project.version}-v2-frozen.zip"
+                                <checksum file="${project.build.directory}/use-jacamo-plugin-${project.version}-release.zip"
                                           algorithm="SHA-256" fileext=".sha256" format="MD5SUM"/>
                             </target>
                         </configuration>

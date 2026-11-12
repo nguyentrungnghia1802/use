@@ -29,7 +29,7 @@ class SemanticPackagedReplayIT {
             Path bundle=Files.createDirectory(directory.resolve("bundle"));new NativeRuntimeReplay().exportBundle(projector,built.export().useText(),bundle);
             assertTrue(Files.isRegularFile(bundle.resolve("mapping.json")));
             Path plugins=Files.createDirectories(directory.resolve("install/lib/plugins"));Path jar=plugins.resolve("use-jacamo-plugin-1.0.1.jar");
-            try(var zip=new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-v2-frozen.zip").toFile());var input=zip.getInputStream(zip.getEntry("lib/plugins/use-jacamo-plugin-1.0.1.jar"))){Files.copy(input,jar);}
+            try(var zip=new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-release.zip").toFile());var input=zip.getInputStream(zip.getEntry("lib/plugins/use-jacamo-plugin-1.0.1.jar"))){Files.copy(input,jar);}
             String javaName=System.getProperty("os.name").startsWith("Windows")?"java.exe":"java";
             String classpath=root.resolve("../use-gui/target/use-gui.jar").toRealPath()+java.io.File.pathSeparator+root.resolve("target/test-classes");Path output=directory.resolve("installed-semantic-replay.log");
             var process=new ProcessBuilder(Path.of(System.getProperty("java.home"),"bin",javaName).toString(),"-cp",classpath,NativeRuntimeReplaySmokeMain.class.getName(),plugins.toString(),jar.toString(),bundle.toString(),expected.stateHash(),expected.resultHash(),"semantic").directory(root.toFile()).redirectErrorStream(true).redirectOutput(output.toFile()).start();

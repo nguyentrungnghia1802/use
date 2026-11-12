@@ -34,7 +34,7 @@ public class VerifiedCheckpointsAuctionIT {
     static void run(Path evidence)throws Exception {
         Path checkout=Path.of("..").toRealPath();Path original=checkout.getParent().resolve("jacamo/examples/auction/auction.jcm");
         var hashes=sourceHashes(original.getParent());Path models=Path.of("examples/auction").toRealPath();
-        var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",models.resolve("auction-mapping.xml"),models.resolve("auction.ocl"),models.resolve("auction.csl"),models.resolve("auction.istar"),false);
+        var selection=new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",models.resolve("auction-compact-mapping.xml"),models.resolve("auction.ocl"),models.resolve("auction.csl"),models.resolve("auction.istar"),false);
         var session=new Session();var facade=new DefaultJaCaMoFacade(checkout,session);facade.verifiedCheckpointMode(true);facade.nextJournalBudgetBytes(536870912);
         var observed=new LinkedHashMap<String,Object>();int reviews=0,failures=0,automatic=0;String previousToken="";boolean lastHeld=false,reconnected=false,sawStartT2=false;
         var recordings=new ArrayList<Path>();

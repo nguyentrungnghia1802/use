@@ -12,7 +12,7 @@ Continue reviews the active held checkpoint without changing its verdict.
 - [Compact runtime and semantic boundaries](docs/project/compact-runtime.md)
 - [Build and refresh the runnable installation](tools/RUNNABLE-PACKAGE.md)
 - [Verified checkpoint protocol](docs/project/verified-checkpoints.md)
-- [Current executable acceptance](verification/compact-completion-20261112/STATUS.md)
+- [Cleanup scope and validation](docs/project/current-cleanup.md)
 
 ## Directory guide
 
@@ -27,8 +27,8 @@ Continue reviews the active held checkpoint without changing its verdict.
 | `Core` | Theory/reference diagrams and source metamodel material. |
 | `tools` | Stable public build, model-maintenance and verification entry points. |
 | `release`, `licenses` | Distribution description and license notices. |
-| `docs` | Current architecture, operational guidance and clearly labeled history. |
-| `verification`, `evidence` | Preserved receipts, recordings and historical evidence; not runtime inputs. |
+| `docs` | Architecture and operational guidance. |
+| `verification`, `evidence` | Disposable run output; not runtime inputs. |
 | `target` | Generated build artifacts and owned runtime work. |
 
 Run Maven from the USE repository root; the command remains `-pl use-plugin -am`.
@@ -36,6 +36,6 @@ Module artifact IDs and the installed `bin/start_use.bat` path are unchanged.
 No source case is inferred from a directory name, and the compact workflow has no
 legacy XML fallback. Unsupported evidence remains unknown or fails admission.
 
-The previous README is preserved as a
-[historical snapshot](docs/history/README-before-layout-20261112.md). Its retired
-profiles, commands and acceptance claims are not current operating instructions.
+The active examples select only their compact XML through `.mrv`. Legacy XML in
+isolated test fixtures supports regression checks and is not an active-example
+fallback. Old run output and package backups are disposable.

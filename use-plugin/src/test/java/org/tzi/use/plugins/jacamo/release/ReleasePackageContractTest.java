@@ -32,9 +32,6 @@ class ReleasePackageContractTest {
     }
     private static final Set<String> REQUIRED_ENTRIES = Set.of(
             "CHANGELOG.md",
-            "Core/Mapping/version-2/jacamo-use-mapping-v2.json",
-            "Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json",
-            "Core/Metamodel/version-2/jacamo_v2_complete.ecore",
             "KNOWN-LIMITATIONS.md",
             "LICENSE",
             "licenses/APACHE-2.0.txt",
@@ -131,9 +128,12 @@ class ReleasePackageContractTest {
         required.addAll(Set.of("examples/csl-counter/authored-v1/stock.csl","examples/csl-counter/authored-v1/stock.istar","examples/csl-counter/authored-v1/stock.ocl","examples/csl-counter/authored-v1/stock-mapping.xml","examples/csl-counter/authored-v1/README.md"));
         // The explicit confirmation profile ships separately; strict authored oracles stay unchanged.
         required.addAll(Set.of("reference/auction/source-confirmed-v1/auction-mapping.xml","reference/auction/source-confirmed-v1/auction_confirmed.ocl","reference/auction/source-confirmed-v1/README.md"));
-        for(String file:java.util.List.of("README.md","auction.jcm","auction.csl","auction.istar","auction-mapping.xml","auction.ocl","build.gradle","src/agt/auction_capabilities.asl","src/org/auction-os.xml","src/env/auction_env/AuctionArtifact.java"))required.add("examples/auction-current/"+file);
+        for(String file:java.util.List.of("README.md","auction.jcm","auction.csl","auction.istar","auction-compact-mapping.xml","auction.ocl","build.gradle","src/agt/auction_capabilities.asl","src/org/auction-os.xml","src/env/auction_env/AuctionArtifact.java"))required.add("examples/auction-current/"+file);
+        required.addAll(Set.of("docs/verified-checkpoints.md","tools/prepare-runtime-classpath.ps1","bridge/dependency-lock.json"));
         assertEquals(required, declared);
-        assertTrue(manifest.path("packageTrees").isMissingNode());
+        var trees=new java.util.TreeMap<String,String>();
+        for(var tree:manifest.path("packageTrees"))assertTrue(trees.put(tree.path("path").asText(),tree.path("source").asText())==null);
+        assertEquals(java.util.Map.of("bridge/runtime","modules/bridge-jacamo/target/producer-runtime","examples/auction-current","examples/auction","examples/auction-false","examples/auction-false","examples/hello-world","examples/hello-world","examples/house-building","examples/house-building","reference/auction/compact-v1","src/test/resources/auction-reference/compact-v1"),trees);
         assertEquals("authenticated-loopback-tcp",manifest.path("runtimeArchitecture").path("transport").asText());
         assertEquals("independent-jacamo-jvm",manifest.path("runtimeArchitecture").path("producer").asText());
     }

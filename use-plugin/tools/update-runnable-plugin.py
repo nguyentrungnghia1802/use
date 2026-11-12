@@ -84,6 +84,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--install', type=Path)
     parser.add_argument('--check-only', action='store_true')
+    parser.add_argument('--no-backup', action='store_true', help='Replace validated files without saving old binaries')
     parser.add_argument('--plugin', type=Path, help='Alternative shaded JAR to validate')
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[2]
@@ -116,7 +117,7 @@ def main():
         target = install / relative
         if target.is_file() and digest(target) == digest(source):
             continue
-        if target.is_file():
+        if target.is_file() and not args.no_backup:
             saved = backup / relative
             saved.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(target, saved)
@@ -127,7 +128,7 @@ def main():
             raise RuntimeError('STAGED_ARTIFACT_MISMATCH:' + relative)
         os.replace(staged, target)
     installed_counts = validate(install / files[0][1], [install / files[1][1], engine])
-    print(json.dumps({'validatedClasses': installed_counts, 'backup': str(backup),
+    print(json.dumps({'validatedClasses': installed_counts, 'backup': None if args.no_backup else str(backup),
                       'files': {relative: digest(install / relative) for _, relative in files}}, indent=2))
 
 

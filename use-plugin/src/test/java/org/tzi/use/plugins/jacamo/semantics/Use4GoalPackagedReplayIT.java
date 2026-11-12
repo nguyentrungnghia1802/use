@@ -20,7 +20,7 @@ class Use4GoalPackagedReplayIT {
             new NativeRuntimeReplay().exportBundle(fixture.projector,fixture.built.nativeResult().export().useText(),bundle);
         }
         Path install=Files.createDirectory(work.resolve("install"));
-        try(var zip=new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-v2-frozen.zip").toFile())) {
+        try(var zip=new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-release.zip").toFile())) {
             var entry=zip.getEntry("lib/plugins/use-jacamo-plugin-1.0.1.jar");assertNotNull(entry);
             Path destination=install.resolve(entry.getName());Files.createDirectories(destination.getParent());
             try(var input=zip.getInputStream(entry)){Files.copy(input,destination);}

@@ -16,7 +16,7 @@ class BoundExecutionViewsTest {
   var core=CanonicalJson.object(evidence.get("originalEngine"));var profile=EngineSemanticsProfile.valueOf(core.get("engineProfile").toString());
   var goals=new IStarFrontend().compile(Files.readString(Path.of("examples/auction/auction.istar")),"current",profile).requireModel();
   var csl=new CslFrontend().compile(Files.readString(Path.of("examples/auction/auction.csl")),"current").requireModel();
-  var policies=OccurrenceGoalModelExpander.policies(new org.tzi.use.plugins.jacamo.semantics.mapping.xml.MappingXmlReader().parse(Files.readAllBytes(Path.of("examples/auction/auction-mapping.xml")),"case mapping"),goals);
+  var policies=OccurrenceGoalModelExpander.policies(org.tzi.use.plugins.jacamo.semantics.mapping.compact.CompactMappingReader.read(Path.of("examples/auction/auction-compact-mapping.xml")).dependencyPopulations(),goals);
   var rows=new ArrayList<Evaluation>();
   for(Object raw:(List<?>)core.get("contexts")){
    var context=CanonicalJson.object(raw);

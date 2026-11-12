@@ -30,7 +30,7 @@ class NativeRuntimePackagedReplayIT {
         Path install = Files.createDirectory(directory.resolve("install"));
         Path plugins = Files.createDirectories(install.resolve("lib/plugins"));
         Path pluginJar = plugins.resolve("use-jacamo-plugin-1.0.1.jar");
-        try (var zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-v2-frozen.zip").toFile());
+        try (var zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-release.zip").toFile());
              var input = zip.getInputStream(zip.getEntry("lib/plugins/use-jacamo-plugin-1.0.1.jar"))) {
             Files.copy(input, pluginJar);
         }

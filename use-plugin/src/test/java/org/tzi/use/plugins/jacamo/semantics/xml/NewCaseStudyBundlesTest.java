@@ -27,25 +27,32 @@ class NewCaseStudyBundlesTest {
                 assertEquals(file.get("upstreamSha256"),sha(resolveUpstream((String)file.get("upstream"))),"Reference source must remain unchanged");
                 if(!file.get("localSha256").equals(file.get("upstreamSha256")))assertFalse(((List<?>)file.get("patches")).isEmpty());
             }
-            var input=MappingInputs.read(root.resolve((String)manifest.get("jcm")),root.resolve(prefix+"-mapping.xml"),root.resolve(prefix+".ocl"),root.resolve(prefix+".csl"),root.resolve(prefix+".istar"));
-            assertFalse(SourceSelections.execute(input).isEmpty());
-            assertTrue(input.specification().root().child("requirements").children("capability").stream()
-                    .anyMatch(n->n.attr("provider").equals("cartago.operation-history.v1")&&n.attr("operations").contains(name.equals("hello-world")?"printMsg":"bid")),"Authored pre/post operations must be selected in the production producer");
-            var loader=new AuthoredModelLoader();var csl=loader.csl(input);var goals=loader.goals(input);
-            assertEquals(1,csl.model().entities().size());
-            assertEquals(name.equals("hello-world")?2:15,goals.model().getActors().getFirst().elements().size());
-            var model=new CslScopeModelAdapter().compile(csl.model(),XmlNativePreparation.observerSchema(input.specification())).model();
+            var input=MappingInputs.read(root.resolve((String)manifest.get("jcm")),root.resolve(prefix+"-compact-mapping.xml"),root.resolve(prefix+".ocl"),root.resolve(prefix+".csl"),root.resolve(prefix+".istar"));
+            var source=GenericMappingEngineTest.official(root.resolve((String)manifest.get("jcm")));
+            var program=new GenericMappingEngine().map(source,input);
+            assertEquals(1,program.cslModel().entities().size());
+            assertEquals(name.equals("hello-world")?2:15,program.goalModel().getActors().getFirst().elements().size());
+            var built=new org.tzi.use.plugins.jacamo.codegrounded.CodeGroundedNativePipeline().buildCanonicalProgram(source,org.tzi.use.plugins.jacamo.codegrounded.use.NativeProjectionMode.AUTO,program);
+            var model=built.nativeResult().state().system().model();
             assertNotNull(model.getClass(name.equals("hello-world")?"Console":"ProcurementAuction"));
+            assertFalse(program.compactPlan().capabilityDemands().isEmpty(),"Exact runtime evidence must be demanded before admission");
             assertNotNull(new AuthoredOclSpecificationLoader().parse(input.ocl().bytes(),"authored"));
             if(name.equals("house-building"))assertNotNull(model.getClass("BuildProgress"));
             var restored=MappingInputs.fromFrozen(input.xml().bytes(),input.ocl().bytes(),input.sources(),"offline");
-            assertEquals(csl.fingerprint(),loader.csl(restored).fingerprint());
+            assertEquals(org.tzi.use.semantic.engine.api.CslModelFingerprint.of(program.cslModel()),org.tzi.use.semantic.engine.api.CslModelFingerprint.of(new GenericMappingEngine().map(source,restored).cslModel()));
         }
     }
-    @Test void alteredAuthoredModelIsRejectedRatherThanSilentlyUsedWithAnotherMapping() throws Exception {
-        Path root=Path.of("examples/hello-world"),changed=Files.writeString(temporary.resolve("other.csl"),Files.readString(root.resolve("hello.csl"))+"\n//different bytes\n");
-        var error=assertThrows(IllegalArgumentException.class,()->MappingInputs.read(root.resolve("helloworld.jcm"),root.resolve("hello-mapping.xml"),root.resolve("hello.ocl"),changed,root.resolve("hello.istar")));
-        assertTrue(error.getMessage().contains("AUTHORED_MODEL_CHECKSUM_MISMATCH"));
+    @Test void changedAuthoredModelGetsNewIdentityWithoutAlteringFrozenInputs() throws Exception {
+        Path root=Path.of("examples/hello-world");
+        Path changed=Files.writeString(temporary.resolve("hello.csl"),Files.readString(root.resolve("hello.csl")));
+        var input=MappingInputs.read(root.resolve("helloworld.jcm"),root.resolve("hello-compact-mapping.xml"),root.resolve("hello.ocl"),changed,root.resolve("hello.istar"));
+        var program=new GenericMappingEngine().map(GenericMappingEngineTest.official(root.resolve("helloworld.jcm")),input);
+        program.assertUnchanged();
+        Files.writeString(changed,Files.readString(changed)+"\n//different bytes\n");
+        program.assertUnchanged();
+        var revised=MappingInputs.read(root.resolve("helloworld.jcm"),root.resolve("hello-compact-mapping.xml"),root.resolve("hello.ocl"),changed,root.resolve("hello.istar"));
+        assertNotEquals(input.require(MappingInputs.AUTHORED_CSL).sha256(),revised.require(MappingInputs.AUTHORED_CSL).sha256());
+        assertNotEquals(program.hash(),new GenericMappingEngine().map(GenericMappingEngineTest.official(root.resolve("helloworld.jcm")),revised).hash());
     }
     @Test void helloMaintenanceUsesEquivalentDirectIteratorFormWithoutChangingWorkspaceScope()throws Exception {
         Path root=Path.of("examples/hello-world");var csl=org.vnu.sme.goal.dsl.csl.parser.CslCompiler.compile(Files.readString(root.resolve("hello.csl"))).model();

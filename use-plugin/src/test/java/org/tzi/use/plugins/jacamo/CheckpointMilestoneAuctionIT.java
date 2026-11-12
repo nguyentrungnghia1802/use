@@ -27,7 +27,7 @@ public class CheckpointMilestoneAuctionIT {
         var original=VerifiedCheckpointsAuctionIT.sourceHashes(project.getParent());var session=new Session();var facade=new DefaultJaCaMoFacade(checkout,session);facade.verifiedCheckpointMode(true);facade.nextJournalBudgetBytes(536870912L);
         var frame=new java.util.concurrent.atomic.AtomicReference<JFrame>();var panel=new java.util.concurrent.atomic.AtomicReference<JaCaMoWorkbenchPanel>();
         try {
-            facade.prepareOwnedProducer(project,new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",models.resolve("auction-mapping.xml"),models.resolve("auction.ocl"),models.resolve("auction.csl"),models.resolve("auction.istar"),false),null,false);
+            facade.prepareOwnedProducer(project,new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",models.resolve("auction-compact-mapping.xml"),models.resolve("auction.ocl"),models.resolve("auction.csl"),models.resolve("auction.istar"),false),null,false);
             var system=session.system();
             SwingUtilities.invokeAndWait(()->{
                 var view=JaCaMoWorkbenchPanel.authoredWorkflow(facade);panel.set(view);var window=new JFrame("Checkpoint milestone isolation — Auction regression");frame.set(window);

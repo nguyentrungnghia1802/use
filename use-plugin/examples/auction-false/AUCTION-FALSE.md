@@ -11,7 +11,7 @@ Mở `use-assembly/target/new/bin/start_use.bat`, chọn Plugins → JaCaMo → 
 verification. Prepare + Import năm file cùng thư mục này:
 
 1. Project: `auction.jcm`.
-2. Mapping: `auction-mapping.xml` — profile JACAMO_DECLARATIVE_XML, AUTHORED.
+2. Mapping: `auction-compact-mapping.xml` — profile JACAMO_DECLARATIVE_XML, AUTHORED.
 3. CSL: `auction.csl`.
 4. iStar: `auction.istar`.
 5. OCL: `auction.ocl`.

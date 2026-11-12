@@ -39,7 +39,7 @@ class ReleasePackageIT {
         Path root = Path.of(".").toRealPath();
         Path hostJar = root.resolve("../use-gui/target/use-gui.jar").toRealPath();
         Path install = Files.createTempDirectory(root.resolve("target"), "release-install-");
-        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-v2-frozen.zip").toFile())) {
+        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-release.zip").toFile())) {
             for (var entry : java.util.Collections.list(zip.entries())) {
                 if (entry.isDirectory()) continue;
                 if (!entry.getName().startsWith("Core/")
@@ -77,7 +77,7 @@ class ReleasePackageIT {
         Path root = Path.of(".").toRealPath();
         Path pluginDirectory = root.resolve("target/release-plugin-smoke");
         Files.createDirectories(pluginDirectory);
-        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-v2-frozen.zip").toFile());
+        try (ZipFile zip = new ZipFile(root.resolve("target/use-jacamo-plugin-1.0.1-release.zip").toFile());
              InputStream input = zip.getInputStream(zip.getEntry("lib/plugins/use-jacamo-plugin-1.0.1.jar"))) {
             Files.copy(input, pluginDirectory.resolve("use-jacamo-plugin-1.0.1.jar"),
                     java.nio.file.StandardCopyOption.REPLACE_EXISTING);
@@ -91,8 +91,8 @@ class ReleasePackageIT {
     @Test
     void builtReleaseMatchesManifestAndPublishedChecksum() throws Exception {
         Path root = Path.of(".").toRealPath();
-        Path archive = root.resolve("target/use-jacamo-plugin-1.0.1-v2-frozen.zip");
-        Path checksum = root.resolve("target/use-jacamo-plugin-1.0.1-v2-frozen.zip.sha256");
+        Path archive = root.resolve("target/use-jacamo-plugin-1.0.1-release.zip");
+        Path checksum = root.resolve("target/use-jacamo-plugin-1.0.1-release.zip.sha256");
         assertTrue(Files.isRegularFile(archive), "release ZIP must be built in package phase");
         assertTrue(Files.isRegularFile(checksum), "release ZIP must have a SHA-256 sidecar");
 

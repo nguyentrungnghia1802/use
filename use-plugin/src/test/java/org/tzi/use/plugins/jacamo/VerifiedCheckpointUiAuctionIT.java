@@ -36,7 +36,7 @@ public class VerifiedCheckpointUiAuctionIT {
         var frame=new java.util.concurrent.atomic.AtomicReference<JFrame>();var panel=new java.util.concurrent.atomic.AtomicReference<JaCaMoWorkbenchPanel>();
         var heartbeat=new java.util.concurrent.atomic.AtomicReference<javax.swing.Timer>();var delays=new CopyOnWriteArrayList<Long>();
         try {
-            facade.prepareOwnedProducer(source,new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",models.resolve("auction-mapping.xml"),models.resolve("auction.ocl"),models.resolve("auction.csl"),models.resolve("auction.istar"),false),null,false);
+            facade.prepareOwnedProducer(source,new JaCaMoFacade.ImportSelection("JACAMO_DECLARATIVE_XML",models.resolve("auction-compact-mapping.xml"),models.resolve("auction.ocl"),models.resolve("auction.csl"),models.resolve("auction.istar"),false),null,false);
             var nativeSystem=session.system();
             SwingUtilities.invokeAndWait(()->{
                 var view=JaCaMoWorkbenchPanel.authoredWorkflow(facade);panel.set(view);

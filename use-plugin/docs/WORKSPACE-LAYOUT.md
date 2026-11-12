@@ -68,7 +68,9 @@ and implementation class identities invalidate incompatible compiled caches.
 
 Build outputs stay in each module's `target/`. The runnable distribution remains
 `use-assembly/target/new`; installed launchers and runtime paths do not follow the
-source module moves. Existing backups are retained when refreshing its JARs.
+source module moves. Pass `--no-backup` to the validated updater when old binary
+backups are not wanted. Existing backups and historical run directories are
+disposable; see `project/current-cleanup.md` for the current removal limitation.
 
 Historical workspace `build-log/` and `failure-reports/` moved into
 `work/history/layout-20261112/`. The accidental nested

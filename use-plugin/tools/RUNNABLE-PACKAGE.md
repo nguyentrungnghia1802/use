@@ -5,13 +5,14 @@ Run from the USE repository root. Build the plugin **with its reactor dependenci
 ```powershell
 mvn.cmd -o -B -pl use-plugin -am package -DskipTests -Dassembly.skipAssembly=true -Dmaven.antrun.skip=true
 python use-plugin/tools/update-runnable-plugin.py --check-only
-python use-plugin/tools/update-runnable-plugin.py
+python use-plugin/tools/update-runnable-plugin.py --no-backup
 ```
 
 Run the focused tests appropriate to the change before delivery. The skipTests
 example is only a packaging command, not a substitute for those tests.
 
-Close USE before updating JARs on Windows. Backups are retained under
+Close USE before updating JARs on Windows. `--no-backup` does not create binary
+backups. Without that option, backups are retained under
 `use-assembly/target/new/work/package-backups`. The tool requires an existing
 installation and validates every contract and semantic-engine class against the
 reactor artifacts before replacing the plugin and bridge JARs. It also checks the

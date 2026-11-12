@@ -34,12 +34,12 @@ class EnactmentMappingTest {
     }
     @Test void misspelledOrDuplicateRoleAndWrongContextAbstractionAreRejected()throws Exception {
         Path root=Path.of("examples/auction");var source=GenericMappingEngineTest.official(root.resolve("auction.jcm"));
-        String original=Files.readString(root.resolve("auction-mapping.xml"));
-        for(var bad:Map.of("value=\"auctioneer participant\"","value=\"auctioneer MissingRole\"","value=\"auctioneer participant\" ","value=\"auctioneer auctioneer\"","SINGLE_AGENT_CONTEXT/1.0","PROJECT_EXECUTION_VIEW/1.0").entrySet()){
+        String original=Files.readString(root.resolve("auction-compact-mapping.xml"));
+        for(var bad:Map.of("enactsRoles=\"auctioneer participant\"","enactsRoles=\"auctioneer MissingRole\"","enactsRoles=\"auctioneer participant\" ","enactsRoles=\"auctioneer auctioneer\"","SINGLE_AGENT_CONTEXT/1.0","PROJECT_EXECUTION_VIEW/1.0").entrySet()){
             Path xml=temp.resolve("invalid.xml");Files.writeString(xml,original.replace(bad.getKey().trim(),bad.getValue()));
-            var program=new GenericMappingEngine().map(source,MappingInputs.read(root.resolve("auction.jcm"),xml,root.resolve("auction.ocl"),root.resolve("auction.csl"),root.resolve("auction.istar"),false));
-            var error=assertThrows(IllegalArgumentException.class,()->new CodeGroundedNativePipeline().buildCanonicalProgram(source,NativeProjectionMode.AUTO,program));
-            assertTrue(error.getMessage().contains("ENACTMENT_"),error.toString());
+            var error=assertThrows(IllegalArgumentException.class,()->{var program=new GenericMappingEngine().map(source,MappingInputs.read(root.resolve("auction.jcm"),xml,root.resolve("auction.ocl"),root.resolve("auction.csl"),root.resolve("auction.istar"),false));
+            new CodeGroundedNativePipeline().buildCanonicalProgram(source,NativeProjectionMode.AUTO,program);});
+            assertTrue(error.getMessage().contains(bad.getKey().equals("SINGLE_AGENT_CONTEXT/1.0")?"UNSUPPORTED_SOURCE_TARGET_KIND":"ENACTMENT_"),error.toString());
         }
     }
 }

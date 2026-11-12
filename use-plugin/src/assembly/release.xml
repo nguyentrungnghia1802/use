@@ -22,9 +22,6 @@
         <file><source>${project.build.directory}/${project.build.finalName}.jar</source><outputDirectory>lib/plugins</outputDirectory><destName>use-jacamo-plugin-1.0.1.jar</destName></file>
         <file><source>../use-plugin/modules/bridge-contract/target/jacamo-bridge-contract-1.0.0-SNAPSHOT.jar</source><outputDirectory>bridge/lib</outputDirectory><destName>jacamo-bridge-contract-1.0.0.jar</destName></file>
         <file><source>../use-plugin/modules/bridge-jacamo/target/jacamo-bridge-jacamo-1.0.0-SNAPSHOT.jar</source><outputDirectory>bridge/lib</outputDirectory><destName>jacamo-bridge-jacamo-1.0.0.jar</destName></file>
-        <file><source>Core/Metamodel/version-2/jacamo_v2_complete.ecore</source><outputDirectory>Core/Metamodel/version-2</outputDirectory></file>
-        <file><source>Core/Mapping/version-2/jacamo-use-mapping-v2.json</source><outputDirectory>Core/Mapping/version-2</outputDirectory></file>
-        <file><source>Core/Mapping/version-2/jacamo-use-mapping-v2.schema.json</source><outputDirectory>Core/Mapping/version-2</outputDirectory></file>
         <file><source>src/main/resources/org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v2.json</source><outputDirectory>profiles</outputDirectory></file>
         <file><source>src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2.ocl</source><outputDirectory>ocl</outputDirectory></file>
         <file><source>src/main/resources/org/tzi/use/plugins/jacamo/ocl/jacamo-core-v2-manifest.json</source><outputDirectory>ocl</outputDirectory></file>
@@ -100,11 +97,6 @@
         <file><source>src/test/resources/auction-reference/authored-v1/auction-mapping.xml</source><outputDirectory>reference/auction/authored-v1</outputDirectory></file>
         <file><source>src/test/resources/auction-reference/authored-v1/provenance.json</source><outputDirectory>reference/auction/authored-v1</outputDirectory></file>
         <file><source>src/test/resources/auction-reference/authored-v1/README.md</source><outputDirectory>reference/auction/authored-v1</outputDirectory></file>
-        <file><source>src/test/resources/auction-reference/authored-v1/references/auction_istar_success_only_v2.istar</source><outputDirectory>reference/auction/authored-v1/references</outputDirectory></file>
-        <file><source>src/test/resources/auction-reference/authored-v1/references/auction-mapping-success-only-v2.xml</source><outputDirectory>reference/auction/authored-v1/references</outputDirectory></file>
-        <file><source>src/test/resources/auction-reference/authored-v1/references/auction-mapping-full-observers.xml</source><outputDirectory>reference/auction/authored-v1/references</outputDirectory></file>
-        <file><source>src/test/resources/auction-reference/authored-v1/references/auction-mapping-strict-v1.xml</source><outputDirectory>reference/auction/authored-v1/references</outputDirectory></file>
-        <file><source>src/test/resources/auction-reference/authored-v1/references/auction_constraints_strict_v1.ocl</source><outputDirectory>reference/auction/authored-v1/references</outputDirectory></file>
 
         <file><source>src/test/resources/auction-reference/source-confirmed-v1/auction-mapping.xml</source><outputDirectory>reference/auction/source-confirmed-v1</outputDirectory></file>
         <file><source>src/test/resources/auction-reference/source-confirmed-v1/auction_confirmed.ocl</source><outputDirectory>reference/auction/source-confirmed-v1</outputDirectory></file>
