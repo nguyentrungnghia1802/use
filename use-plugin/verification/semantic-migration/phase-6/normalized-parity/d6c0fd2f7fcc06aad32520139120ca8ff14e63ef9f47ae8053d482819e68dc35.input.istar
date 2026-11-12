@@ -1,1 +1,0 @@
-istar OrModel { role R { goal parent goal a > or parent goal b > or parent } }

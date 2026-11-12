@@ -1,1 +1,0 @@
-istar ActorMetadata { role Base {} role Child { Child is-a Base } agent Person { Person participates-in Child } }

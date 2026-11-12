@@ -1,9 +1,0 @@
-{
-  "status": "PASS",
-  "productionInputs": 2035,
-  "engineImportsNoPluginOrFramework": true,
-  "noEngineMSystemConstructor": true,
-  "noEngineSystemExit": true,
-  "legacyCslRuntimeExcluded": true,
-  "scope": "Source boundary checks only; live identity/OCL/original calls and lifecycle require executable integration receipts"
-}

@@ -1,1 +1,0 @@
-istar Invalid { role R { task t pre {[ true ]} pre {[ false ]} } }

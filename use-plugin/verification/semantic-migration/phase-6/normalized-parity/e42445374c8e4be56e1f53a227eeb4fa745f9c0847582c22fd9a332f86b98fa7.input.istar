@@ -1,1 +1,0 @@
-istar Invalid { role R { goal g condition {[ true ]} condition {[ false ]} } }

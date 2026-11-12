@@ -1,3 +1,0 @@
-false
-null
-[semantic: element 'g' declares more than one 'condition' OCL contract; each typed contract slot has multiplicity 0..1]

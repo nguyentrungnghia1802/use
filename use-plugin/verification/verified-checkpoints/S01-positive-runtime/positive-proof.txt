@@ -1,7 +1,0 @@
-requestedSequence=17
-frozen=Proof[run=source-boundary-probe, epoch=1, sequence=18, sourceMillis=1793438770656, admissionClosed=true, clockFrozen=true, active={}, pending=0, completed={cartago.environment.init=1, npl.state-transitions=17, jason.local-cycle.reasoningCycle=14, cartago.environment.startSession=2, cartago.workspace.serveOperation=18, source-notification=8}]
-wallHoldMillis=2500
-heldCycles=[2, 2]
-actualNplDeadlineFrozen=true
-actualJasonWaitFrozen=true
-newOperationsAndSessionsHeld=true

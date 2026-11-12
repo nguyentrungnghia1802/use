@@ -1,7 +1,0 @@
-{
-  "status": "PASS",
-  "powershell5ViaCmd": true,
-  "validBytesAccepted": true,
-  "corruptedBytesRejected": true,
-  "productionRuntimeModified": false
-}
