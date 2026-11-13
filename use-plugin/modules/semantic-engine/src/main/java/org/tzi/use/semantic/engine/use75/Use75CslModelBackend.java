@@ -52,8 +52,8 @@ public final class Use75CslModelBackend {
         try {
             api.getModel().addAnnotation(new MElementAnnotation(PROFILE, Map.of("profile", EngineSemanticsProfile.USE4GOAL_OBSERVED_V1.name(),
                     "version", source.version(), "players", Boolean.toString(extension.players()),
-                    "compatibility", Boolean.toString(extension.enforceRoleCompatibility()))));
-            if (extension.players()) installHelpers(api);
+                    "compatibility", Boolean.toString(extension.enforceRoleCompatibility()),"unifiedOrgCtx",Boolean.toString(extension.unifiedOrgCtx()))));
+            if (extension.players()) installHelpers(api,extension);
             for (var enumeration : source.enums()) api.createEnumeration(enumeration.name(), enumeration.literals());
             for (var datatype : source.namedDataTypes()) api.createDataType(datatype.sourceName(), false);
             for (var declaration : classifiers.values()) {
@@ -91,6 +91,7 @@ public final class Use75CslModelBackend {
                         "placement64", encode(compatibility.groupName()), "semantics", "SYMMETRIC_SAME_PLAYER_CONTEXT_M0")));
             }
             var binding = new Use75ModelBinding(source, api.getModel(), extension, classifiers, owners, attributes, ends);
+            if(extension.unifiedOrgCtx())UnifiedOrgCtxSemantics.prepare(api,binding);
             preparation.prepare(api, binding);
             for (var invariant : source.invariants()) api.createInvariant(invariant.name(), invariant.contextType(), invariant.expression(), false);
             if (extension.enforceRoleCompatibility()) installCompatibility(api, source);
@@ -120,13 +121,15 @@ public final class Use75CslModelBackend {
             throw new EngineAdmissionException(List.of(EngineDiagnostic.error(EngineDiagnostic.Stage.MODEL_VALIDATION,
                     "CSL_NONCANONICAL_GENERALIZATION_METADATA", source.name(), "Classifier parents and generalization list disagree")));
     }
-    private static void installHelpers(UseModelApi api) throws UseApiException {
+    private static void installHelpers(UseModelApi api,M0ExtensionSpec extension) throws UseApiException {
         for (String helper : M0ExtensionSpec.HELPER_TYPES.stream().sorted().toList()) {
+            if(extension.unifiedOrgCtx()&&helper.equals("AtomicAgent"))continue;
             var cls = api.createClass(helper, !Set.of("AtomicAgent", "WorkspaceObservation").contains(helper));
             cls.addAnnotation(new MElementAnnotation(HELPER, Map.of("id64", encode("helper:" + helper), "kind", "M0_EXTENSION")));
         }
-        api.createGeneralization("AtomicAgent", "RuntimePlayer"); api.createGeneralization("OrgContext", "RuntimePlayer");
-        api.createAssociation("Plays", "RuntimePlayer", "player", "1", 0, "RoleOccurrence", "enactedRoles", "*", 0);
+        if(!extension.unifiedOrgCtx())api.createGeneralization("AtomicAgent", "RuntimePlayer");
+        api.createGeneralization("OrgContext", "RuntimePlayer");
+        api.createAssociation("Plays",extension.unifiedOrgCtx()?"OrgContext":"RuntimePlayer", "player", "1", 0, "RoleOccurrence", "enactedRoles", "*", 0);
         api.createAssociation("InContext", "OrgContext", "orgContext", "1", 0, "RoleOccurrence", "roles", "*", 0);
     }
     private static void installCompatibility(UseModelApi api, CslModel source) throws UseApiException {

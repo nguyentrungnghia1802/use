@@ -1,0 +1,68 @@
+--- a/src/main/java/org/vnu/sme/goal/dsl/iscn/goalmodelinstance/parser/GoalModelInstanceTranslator.java
++++ b/src/main/java/org/vnu/sme/goal/dsl/iscn/goalmodelinstance/parser/GoalModelInstanceTranslator.java
+@@ -13,6 +13,7 @@
+ import org.vnu.sme.goal.verify.conformance.semantics.QualityStatus;
+ import org.vnu.sme.goal.dsl.istar.mm.Actor;
+ import org.vnu.sme.goal.dsl.istar.mm.Agent;
++import org.vnu.sme.goal.dsl.istar.mm.GenericActor;
+ import org.vnu.sme.goal.dsl.istar.mm.AndRefinement;
+ import org.vnu.sme.goal.dsl.istar.mm.Contribution;
+ import org.vnu.sme.goal.dsl.istar.mm.Dependency;
+@@ -360,7 +361,10 @@
+                 String actorId = actorInstanceId(actorType, e.getKey());
+                 ActorBucket bucket = bucket(actorId);
+                 Actor sourceActor = actors.get(actorType);
+-                Actor actor = sourceActor instanceof Role
++                Actor actor = sourceActor instanceof GenericActor
++                        ? new GenericActor(actorId, new ArrayList<>(bucket.elements.values()), bucket.refinements,
++                                bucket.contributions, List.of(), List.of(), List.of())
++                        : sourceActor instanceof Role
+                         ? new Role(actorId, new ArrayList<>(bucket.elements.values()), bucket.refinements,
+                                 bucket.contributions, List.of(), List.of(), List.of())
+                         : new Agent(actorId, new ArrayList<>(bucket.elements.values()), bucket.refinements,
+--- a/src/main/java/org/vnu/sme/goal/dsl/istar/mm/Actor.java
++++ b/src/main/java/org/vnu/sme/goal/dsl/istar/mm/Actor.java
+@@ -2,8 +2,8 @@
+ 
+ import java.util.List;
+ 
+-/** iStar 2.0 Actor is abstract — only {@link Agent} and {@link Role} are concrete. */
+-public sealed interface Actor permits Agent, Role {
++/** Actor supertype; GenericActor is the project's explicit unspecified-specialization extension. */
++public sealed interface Actor permits Agent, Role, GenericActor {
+ 
+     String name();
+     List<IntentionalElement> elements();
+--- a/src/main/java/org/vnu/sme/goal/dsl/istar/parser/IStarModelFactory.java
++++ b/src/main/java/org/vnu/sme/goal/dsl/istar/parser/IStarModelFactory.java
+@@ -104,6 +104,8 @@
+                     neededBys, assocs);
+             case "agent" -> new Agent(cs.id(), elements, refinements, contributions, qualifications,
+                     neededBys, assocs);
++            case "actor" -> new GenericActor(cs.id(), elements, refinements, contributions, qualifications,
++                    neededBys, assocs);
+             default -> throw new IllegalArgumentException("Unknown actor kind: " + cs.kind());
+         };
+     }
+--- a/src/main/resources/grammars/IStar.g4
++++ b/src/main/resources/grammars/IStar.g4
+@@ -15,8 +15,8 @@
+ //  (or, forall, pick, make/help/hurt/break, qualifies, needed-by)
+ //  requires its keyword — see docs/model/istar.ecore.
+ //
+-//  Actor is abstract — only Role and Agent are concrete, both generalizing
+-//  to Actor.
++//  Actor is abstract; project extension P-ACTOR-01 adds a concrete GenericActor
++//  spelled 'actor', alongside Role and Agent.
+ //
+ //  istar ModelName {
+ //    role|agent ActorName {
+@@ -84,7 +84,7 @@
+ 
+ actorDef : actorKind IDENT stringLit? '{' actorBody* '}' ;
+ 
+-actorKind : 'role' | 'agent' ;
++actorKind : 'role' | 'agent' | 'actor' ;
+ 
+ actorBody
+     : 'goal'     IDENT goalType? descProperty? rel* goalCondition* activationClause? # bodyGoal

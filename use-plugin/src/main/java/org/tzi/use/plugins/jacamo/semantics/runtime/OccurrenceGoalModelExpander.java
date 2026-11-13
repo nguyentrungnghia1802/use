@@ -153,7 +153,7 @@ public final class OccurrenceGoalModelExpander {
                 }
             }
             if(!original.contributions().isEmpty()||!original.qualifications().isEmpty())throw new IllegalArgumentException("OCCURRENCE_EXPANSION_RELATION_UNSUPPORTED");
-            Actor actor=original instanceof Role?new Role(player.actorType(),elements,refinements,List.of(),List.of(),resources,associations):new Agent(player.actorType(),elements,refinements,List.of(),List.of(),resources,associations);
+            Actor actor=original instanceof GenericActor?new GenericActor(player.actorType(),elements,refinements,List.of(),List.of(),resources,associations):original instanceof Role?new Role(player.actorType(),elements,refinements,List.of(),List.of(),resources,associations):new Agent(player.actorType(),elements,refinements,List.of(),List.of(),resources,associations);
             actors.put(player.actorType(),actor);cast.add(new ScenarioInstance(player.instance(),player.actorType()));
         }
         var expanded=new GoalModel(executionName);actors.values().forEach(expanded::addActor);

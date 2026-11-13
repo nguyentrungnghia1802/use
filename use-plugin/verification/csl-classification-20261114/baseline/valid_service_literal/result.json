@@ -1,0 +1,34 @@
+{
+  "case": "valid_service_literal",
+  "groundTruth": "valid",
+  "faultActivatedIndependently": false,
+  "classification": "CONTROL_FAILED",
+  "checkpoints": 43,
+  "exitCode": 0,
+  "decisions": {
+    "APPROVE": 43
+  },
+  "completedAuctions": 0,
+  "failedInvariants": [],
+  "violatedGoals": [],
+  "firstHoldSequence": null,
+  "expectedBlockedProbe": "",
+  "continuationProbeObserved": false,
+  "sourceOracle": {
+    "instrumented": true,
+    "bidCalls": 0,
+    "validNonImprovingCalls": 0,
+    "incorrectBidUpdates": 0,
+    "negativeBidCalls": 0,
+    "startCalls": 0,
+    "startReturnedStopped": 0,
+    "wrongServiceCalls": 0,
+    "stopCalls": 0,
+    "wrongWinnerCalls": 0,
+    "runningWithoutAuctioneerFocus": 0,
+    "nextPlanProbes": {},
+    "maximumArtifactCount": 2,
+    "missingRequiredProperties": 0
+  },
+  "wallSeconds": 9.696
+}

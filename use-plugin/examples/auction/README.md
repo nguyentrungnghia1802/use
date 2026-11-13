@@ -1,5 +1,13 @@
 # Auction
 
+New attribute-only state workflow: run
+`bash use-plugin/tools/run-state-only.sh` from the `use` repository.
+Its eight attribute correspondences, organizational CSL and source-independent iStar model are in
+[`state-only/`](state-only/README.md). Use `--counter` for a deterministic
+violation demonstration. This workflow opens its own native CSL/iStar window.
+
+## Existing compact Workbench workflow
+
 Select `auction.jcm` as the JaCaMo project and `auction.mrv` as the system model.
 The specification selects `auction.csl`, `auction.istar`,
 `auction-compact-mapping.xml` and `auction.ocl`.

@@ -1,0 +1,82 @@
+{
+  "checkerAssessment": "FAIL_KNOWN_COUNTEREXAMPLES",
+  "frozenInputsUnchanged": true,
+  "confirmedFaultCases": 8,
+  "detectedFaultCases": 3,
+  "missedFaultCases": 5,
+  "cases": [
+    {
+      "case": "original",
+      "exampleFaultConfirmed": null,
+      "observed": "BASELINE_WITHIN_OBSERVED_SCOPE",
+      "checkerTestPassed": null
+    },
+    {
+      "case": "valid_non_improving_bid",
+      "exampleFaultConfirmed": null,
+      "observed": "NO_FALSE_ALARM",
+      "checkerTestPassed": true
+    },
+    {
+      "case": "valid_service_literal",
+      "exampleFaultConfirmed": null,
+      "observed": "NO_FALSE_ALARM",
+      "checkerTestPassed": true
+    },
+    {
+      "case": "negative_bid",
+      "exampleFaultConfirmed": true,
+      "observed": "DETECTED_AND_BLOCKED",
+      "checkerTestPassed": true
+    },
+    {
+      "case": "increasing_best_bid",
+      "exampleFaultConfirmed": true,
+      "observed": "DETECTED_AND_BLOCKED",
+      "checkerTestPassed": true
+    },
+    {
+      "case": "missing_focus",
+      "exampleFaultConfirmed": true,
+      "observed": "DETECTED_AND_BLOCKED",
+      "checkerTestPassed": true
+    },
+    {
+      "case": "start_keeps_stopped",
+      "exampleFaultConfirmed": true,
+      "observed": "MISSED_VIOLATION",
+      "checkerTestPassed": false
+    },
+    {
+      "case": "missing_artifact",
+      "exampleFaultConfirmed": true,
+      "observed": "MISSED_VIOLATION",
+      "checkerTestPassed": false
+    },
+    {
+      "case": "wrong_service",
+      "exampleFaultConfirmed": true,
+      "observed": "MISSED_VIOLATION",
+      "checkerTestPassed": false
+    },
+    {
+      "case": "wrong_winner",
+      "exampleFaultConfirmed": true,
+      "observed": "MISSED_VIOLATION",
+      "checkerTestPassed": false
+    },
+    {
+      "case": "wrong_eligible_winner",
+      "exampleFaultConfirmed": true,
+      "observed": "MISSED_VIOLATION",
+      "checkerTestPassed": false
+    },
+    {
+      "case": "missing_property",
+      "exampleFaultConfirmed": null,
+      "observed": "UNVERIFIED_AND_BLOCKED",
+      "checkerTestPassed": true
+    }
+  ],
+  "interpretation": "Finite fault-injection evidence, not a universal correctness proof. Original baseline has no independent all-properties oracle."
+}

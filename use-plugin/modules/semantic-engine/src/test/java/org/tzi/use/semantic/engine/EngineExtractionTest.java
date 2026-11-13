@@ -46,6 +46,9 @@ class EngineExtractionTest {
                 } else if(upstream.endsWith("/GoalModelValidator.java")||upstream.endsWith("/IStarCompiler.java")) {
                     verifyAdmissionPatchScope(target.getFileName().toString(),expected,actual);
                     assertTrue(manifest.contains(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(actual))),"Unrecorded P-IADM-01 target hash");
+                } else if(List.of("Actor.java","IStarModelFactory.java","IStar.g4").contains(target.getFileName().toString())) {
+                    assertEquals(new String(expected,StandardCharsets.UTF_8).replace("\r\n","\n"),reverseGenericActorPatch(target.getFileName().toString(),new String(actual,StandardCharsets.UTF_8).replace("\r\n","\n")),"Unregistered change outside P-ACTOR-01: "+upstream);
+                    assertTrue(manifest.contains(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(actual))),"Unrecorded P-ACTOR-01 target hash");
                 } else assertArrayEquals(expected,actual,upstream);
                 String hash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(expected));
                 assertTrue(manifest.contains(hash), "Unrecorded source hash: " + upstream);
@@ -102,11 +105,24 @@ class EngineExtractionTest {
     }
     static void verifyContextPatchScope(byte[] original,byte[] patched) {
         String expected=new String(original,StandardCharsets.UTF_8).replace("\r\n","\n");
-        String actual=new String(patched,StandardCharsets.UTF_8).replace("\r\n","\n");
+        String actual=reverseGenericActorPatch("GoalModelInstanceTranslator.java",new String(patched,StandardCharsets.UTF_8).replace("\r\n","\n"));
         int start=actual.indexOf("    /** P-CTX-01: structured, in-memory topology seam.");
         int end=actual.indexOf("    public static GoalModelInstanceEvaluation evaluate(",start);
         assertTrue(start>=0&&end>start,"Missing registered P-CTX-01 seam");
         assertEquals(expected,actual.substring(0,start)+actual.substring(end),"Original algorithms changed outside P-CTX-01");
+    }
+    // Invert only the exact registered type/syntax additions. Unrelated upstream bytes stay pinned.
+    static String reverseGenericActorPatch(String name,String source) {
+        return switch(name) {
+            case "Actor.java" -> source.replace("/** Actor supertype; GenericActor is the project's explicit unspecified-specialization extension. */","/** iStar 2.0 Actor is abstract — only {@link Agent} and {@link Role} are concrete. */")
+                    .replace("permits Agent, Role, GenericActor","permits Agent, Role");
+            case "IStar.g4" -> source.replace("//  Actor is abstract; project extension P-ACTOR-01 adds a concrete GenericActor\n//  spelled 'actor', alongside Role and Agent.","//  Actor is abstract — only Role and Agent are concrete, both generalizing\n//  to Actor.")
+                    .replace("actorKind : 'role' | 'agent' | 'actor' ;","actorKind : 'role' | 'agent' ;");
+            case "IStarModelFactory.java" -> source.replace("            case \"actor\" -> new GenericActor(cs.id(), elements, refinements, contributions, qualifications,\n                    neededBys, assocs);\n","");
+            case "GoalModelInstanceTranslator.java" -> source.replace("import org.vnu.sme.goal.dsl.istar.mm.GenericActor;\n","")
+                    .replace("                Actor actor = sourceActor instanceof GenericActor\n                        ? new GenericActor(actorId, new ArrayList<>(bucket.elements.values()), bucket.refinements,\n                                bucket.contributions, List.of(), List.of(), List.of())\n                        : sourceActor instanceof Role","                Actor actor = sourceActor instanceof Role");
+            default -> throw new IllegalArgumentException(name);
+        };
     }
     @Test void provenanceRejectsAnUnapprovedPrivateAlgorithmChange() throws Exception {
         Path target=ROOT.resolve("src/main/java/org/vnu/sme/goal/dsl/iscn/goalmodelinstance/parser/GoalModelInstanceTranslator.java");

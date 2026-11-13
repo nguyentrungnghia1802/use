@@ -1,0 +1,579 @@
+{
+  "request": {
+    "agent": "bob",
+    "outcome": "SUCCEEDED",
+    "plan": "file:src/agt/auction_capabilities.asl:54:8:+oblUnfulfilled(obligation(Ag,_6,done(Sch,bid,Ag),_7))[artifact_id(AId)]",
+    "run": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929",
+    "snapshot": {
+      "artifacts": [
+        {
+          "identity": "3f1dd1c4-405d-4ee5-94a9-18ceffbd30bb",
+          "javaClass": "auction_env.AuctionArtifact",
+          "name": "a1",
+          "properties": {
+            "best_bid": 10.5693681286004,
+            "running": false,
+            "task": "flight_ticket(paris,athens,date(15,12,2015))",
+            "winner": "giacomo"
+          },
+          "workspace": "/main/aorg"
+        },
+        {
+          "identity": "00a967ca-0cce-46dc-9ab4-d49290470920",
+          "javaClass": "auction_env.AuctionArtifact",
+          "name": "a2",
+          "properties": {
+            "best_bid": 25.283367574849414,
+            "running": false,
+            "task": "flight_ticket(athens,paris,date(18,12,2015))",
+            "winner": "alice"
+          },
+          "workspace": "/main/aorg"
+        }
+      ],
+      "complete": true,
+      "enactments": [
+        {
+          "context": "e156b8aa-b9cf-467e-9620-fd1d3d18ab81",
+          "player": "5f3cc107-5fe0-428d-a487-99415861c115",
+          "role": "participant"
+        },
+        {
+          "context": "e156b8aa-b9cf-467e-9620-fd1d3d18ab81",
+          "player": "539946a1-9653-4cc3-94d6-625d2bfa46e9",
+          "role": "auctioneer"
+        },
+        {
+          "context": "e156b8aa-b9cf-467e-9620-fd1d3d18ab81",
+          "player": "466a4a8e-157a-4978-afd0-cdb0037155d2",
+          "role": "participant"
+        },
+        {
+          "context": "e156b8aa-b9cf-467e-9620-fd1d3d18ab81",
+          "player": "7ca2e248-b665-4700-a1d5-8858f1290132",
+          "role": "participant"
+        },
+        {
+          "context": "e156b8aa-b9cf-467e-9620-fd1d3d18ab81",
+          "player": "b447a8b0-8a11-447d-b7ed-cd3523e16627",
+          "role": "participant"
+        }
+      ],
+      "nodes": [
+        {
+          "identity": "539946a1-9653-4cc3-94d6-625d2bfa46e9",
+          "kind": "agent",
+          "name": "bob",
+          "parent": "",
+          "properties": {},
+          "type": "auction_capabilities",
+          "workspace": ""
+        },
+        {
+          "identity": "5f3cc107-5fe0-428d-a487-99415861c115",
+          "kind": "agent",
+          "name": "alice",
+          "parent": "",
+          "properties": {},
+          "type": "auction_capabilities",
+          "workspace": ""
+        },
+        {
+          "identity": "7ca2e248-b665-4700-a1d5-8858f1290132",
+          "kind": "agent",
+          "name": "giacomo",
+          "parent": "",
+          "properties": {},
+          "type": "auction_capabilities",
+          "workspace": ""
+        },
+        {
+          "identity": "b447a8b0-8a11-447d-b7ed-cd3523e16627",
+          "kind": "agent",
+          "name": "maria",
+          "parent": "",
+          "properties": {},
+          "type": "auction_capabilities",
+          "workspace": ""
+        },
+        {
+          "identity": "466a4a8e-157a-4978-afd0-cdb0037155d2",
+          "kind": "agent",
+          "name": "francois",
+          "parent": "",
+          "properties": {},
+          "type": "auction_capabilities",
+          "workspace": ""
+        },
+        {
+          "identity": "2ff1bceb-89fd-4163-83c8-c6a62996d1c6",
+          "kind": "organization",
+          "name": "aorg",
+          "parent": "",
+          "properties": {},
+          "type": "auction",
+          "workspace": "/main/aorg"
+        },
+        {
+          "identity": "e156b8aa-b9cf-467e-9620-fd1d3d18ab81",
+          "kind": "group",
+          "name": "agrp",
+          "parent": "2ff1bceb-89fd-4163-83c8-c6a62996d1c6",
+          "properties": {
+            "wellFormed": true
+          },
+          "type": "auctionGroup",
+          "workspace": "/main/aorg"
+        }
+      ],
+      "run": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929",
+      "sequence": 127
+    },
+    "token": "57b5672b-9ac6-4917-900b-0f51835fee69",
+    "version": "CSL_STATE_SYNC/1.0"
+  },
+  "response": {
+    "decision": "APPROVE",
+    "diagnostic": "",
+    "requestHash": "acb40056464f2b65569b3b2e2b8015add611eeac77557fe09acea08de4331708",
+    "result": {
+      "checks": [
+        {
+          "context": "state_d2961079185d63acc9d03adb",
+          "diagnostic": "",
+          "expression": "(self.best_bid >= 0)",
+          "id": "Auction::ValidBid",
+          "kind": "CSL_INVARIANT",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_3bf1890b7ce8c0b47883c38c",
+          "diagnostic": "",
+          "expression": "self.roles->forAll(r1 : RoleOccurrence, r2 : RoleOccurrence | ((((r1 = r2) or (r1.player <> r2.player)) or (r1.oclIsKindOf(auctioneer) and r2.oclIsKindOf(auctioneer))) or (r1.oclIsKindOf(participant) and r2.oclIsKindOf(participant))))",
+          "id": "OrgContext::CslV4RoleCompatibility",
+          "kind": "CSL_INVARIANT",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_e82cbffc7ec6e1069ea700d7",
+          "diagnostic": "",
+          "expression": "(self.best_bid >= 0)",
+          "id": "Auction::ValidBid",
+          "kind": "CSL_INVARIANT",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_729bfbf13243668917bb46f0",
+          "diagnostic": "",
+          "expression": "self.roles->forAll(r1 : RoleOccurrence, r2 : RoleOccurrence | ((((r1 = r2) or (r1.player <> r2.player)) or (r1.oclIsKindOf(auctioneer) and r2.oclIsKindOf(auctioneer))) or (r1.oclIsKindOf(participant) and r2.oclIsKindOf(participant))))",
+          "id": "OrgContext::CslV4RoleCompatibility",
+          "kind": "CSL_INVARIANT",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_e23db78ba086c5b79b504765",
+          "diagnostic": "",
+          "expression": "self.roles->forAll(r1 : RoleOccurrence, r2 : RoleOccurrence | ((((r1 = r2) or (r1.player <> r2.player)) or (r1.oclIsKindOf(auctioneer) and r2.oclIsKindOf(auctioneer))) or (r1.oclIsKindOf(participant) and r2.oclIsKindOf(participant))))",
+          "id": "OrgContext::CslV4RoleCompatibility",
+          "kind": "CSL_INVARIANT",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_39a9a317acb8d3b22fae9dfa",
+          "diagnostic": "",
+          "expression": "self.roles->forAll(r1 : RoleOccurrence, r2 : RoleOccurrence | ((((r1 = r2) or (r1.player <> r2.player)) or (r1.oclIsKindOf(auctioneer) and r2.oclIsKindOf(auctioneer))) or (r1.oclIsKindOf(participant) and r2.oclIsKindOf(participant))))",
+          "id": "OrgContext::CslV4RoleCompatibility",
+          "kind": "CSL_INVARIANT",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_d8f841c8199b5c57934ed2a4",
+          "diagnostic": "",
+          "expression": "self.roles->forAll(r1 : RoleOccurrence, r2 : RoleOccurrence | ((((r1 = r2) or (r1.player <> r2.player)) or (r1.oclIsKindOf(auctioneer) and r2.oclIsKindOf(auctioneer))) or (r1.oclIsKindOf(participant) and r2.oclIsKindOf(participant))))",
+          "id": "OrgContext::CslV4RoleCompatibility",
+          "kind": "CSL_INVARIANT",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_04b608eea94ca612cbe99025",
+          "diagnostic": "",
+          "expression": "self.roles->forAll(r1 : RoleOccurrence, r2 : RoleOccurrence | ((((r1 = r2) or (r1.player <> r2.player)) or (r1.oclIsKindOf(auctioneer) and r2.oclIsKindOf(auctioneer))) or (r1.oclIsKindOf(participant) and r2.oclIsKindOf(participant))))",
+          "id": "OrgContext::CslV4RoleCompatibility",
+          "kind": "CSL_INVARIANT",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_b68906d71fb4e58ab7ac8dbe",
+          "diagnostic": "",
+          "expression": "self.roles->forAll(r1 : RoleOccurrence, r2 : RoleOccurrence | ((((r1 = r2) or (r1.player <> r2.player)) or (r1.oclIsKindOf(auctioneer) and r2.oclIsKindOf(auctioneer))) or (r1.oclIsKindOf(participant) and r2.oclIsKindOf(participant))))",
+          "id": "OrgContext::CslV4RoleCompatibility",
+          "kind": "CSL_INVARIANT",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_b68906d71fb4e58ab7ac8dbe",
+          "diagnostic": "",
+          "expression": "((self.auctioneer->size <= 1) and (self.cslScopedEntities->notEmpty implies (self.auctioneer->size = 1)))",
+          "id": "auctionGroup::AuctioneerPopulation",
+          "kind": "CSL_INVARIANT",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_b68906d71fb4e58ab7ac8dbe",
+          "diagnostic": "",
+          "expression": "(self.participant->size <= 300)",
+          "id": "auctionGroup::ParticipantPopulation",
+          "kind": "CSL_INVARIANT",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_d2961079185d63acc9d03adb",
+          "diagnostic": "",
+          "expression": "self.cslEntityScope.oclAsType(auctionGroup).auctioneer->size() = 1 and\n            self.cslEntityScope.oclAsType(auctionGroup).participant->size() <= 300",
+          "id": "RolesConsistent",
+          "kind": "GOAL",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_d2961079185d63acc9d03adb",
+          "diagnostic": "",
+          "expression": "self.best_bid >= 0",
+          "id": "SafeBid",
+          "kind": "GOAL",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_d2961079185d63acc9d03adb",
+          "diagnostic": "",
+          "expression": "true",
+          "id": "AuctionOpened",
+          "kind": "TASK_PRE",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_d2961079185d63acc9d03adb",
+          "diagnostic": "",
+          "expression": "self.running",
+          "id": "AuctionOpened",
+          "kind": "TASK_POST",
+          "verdict": "FAIL"
+        },
+        {
+          "context": "state_d2961079185d63acc9d03adb",
+          "diagnostic": "",
+          "expression": "true",
+          "id": "BidRecorded",
+          "kind": "TASK_PRE",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_d2961079185d63acc9d03adb",
+          "diagnostic": "",
+          "expression": "self.best_bid < 1.7976931348623157E308",
+          "id": "BidRecorded",
+          "kind": "TASK_POST",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_d2961079185d63acc9d03adb",
+          "diagnostic": "",
+          "expression": "true",
+          "id": "WinnerPublished",
+          "kind": "TASK_PRE",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_d2961079185d63acc9d03adb",
+          "diagnostic": "",
+          "expression": "not self.running and self.winner <> 'no_winner'",
+          "id": "WinnerPublished",
+          "kind": "TASK_POST",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_e82cbffc7ec6e1069ea700d7",
+          "diagnostic": "",
+          "expression": "self.cslEntityScope.oclAsType(auctionGroup).auctioneer->size() = 1 and\n            self.cslEntityScope.oclAsType(auctionGroup).participant->size() <= 300",
+          "id": "RolesConsistent",
+          "kind": "GOAL",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_e82cbffc7ec6e1069ea700d7",
+          "diagnostic": "",
+          "expression": "self.best_bid >= 0",
+          "id": "SafeBid",
+          "kind": "GOAL",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_e82cbffc7ec6e1069ea700d7",
+          "diagnostic": "",
+          "expression": "true",
+          "id": "AuctionOpened",
+          "kind": "TASK_PRE",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_e82cbffc7ec6e1069ea700d7",
+          "diagnostic": "",
+          "expression": "self.running",
+          "id": "AuctionOpened",
+          "kind": "TASK_POST",
+          "verdict": "FAIL"
+        },
+        {
+          "context": "state_e82cbffc7ec6e1069ea700d7",
+          "diagnostic": "",
+          "expression": "true",
+          "id": "BidRecorded",
+          "kind": "TASK_PRE",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_e82cbffc7ec6e1069ea700d7",
+          "diagnostic": "",
+          "expression": "self.best_bid < 1.7976931348623157E308",
+          "id": "BidRecorded",
+          "kind": "TASK_POST",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_e82cbffc7ec6e1069ea700d7",
+          "diagnostic": "",
+          "expression": "true",
+          "id": "WinnerPublished",
+          "kind": "TASK_PRE",
+          "verdict": "PASS"
+        },
+        {
+          "context": "state_e82cbffc7ec6e1069ea700d7",
+          "diagnostic": "",
+          "expression": "not self.running and self.winner <> 'no_winner'",
+          "id": "WinnerPublished",
+          "kind": "TASK_POST",
+          "verdict": "PASS"
+        }
+      ],
+      "decision": "APPROVE",
+      "elements": [
+        {
+          "actor": "Auction",
+          "context": "state_d2961079185d63acc9d03adb",
+          "element": "RolesConsistent",
+          "status": "FULFILLED"
+        },
+        {
+          "actor": "Auction",
+          "context": "state_d2961079185d63acc9d03adb",
+          "element": "SafeBid",
+          "status": "FULFILLED"
+        },
+        {
+          "actor": "Auction",
+          "context": "state_d2961079185d63acc9d03adb",
+          "element": "AuctionCompleted",
+          "status": "FULFILLED"
+        },
+        {
+          "actor": "Auction",
+          "context": "state_d2961079185d63acc9d03adb",
+          "element": "AuctionOpened",
+          "status": "FULFILLED"
+        },
+        {
+          "actor": "Auction",
+          "context": "state_d2961079185d63acc9d03adb",
+          "element": "BidRecorded",
+          "status": "FULFILLED"
+        },
+        {
+          "actor": "Auction",
+          "context": "state_d2961079185d63acc9d03adb",
+          "element": "WinnerPublished",
+          "status": "FULFILLED"
+        },
+        {
+          "actor": "Auction",
+          "context": "state_e82cbffc7ec6e1069ea700d7",
+          "element": "RolesConsistent",
+          "status": "FULFILLED"
+        },
+        {
+          "actor": "Auction",
+          "context": "state_e82cbffc7ec6e1069ea700d7",
+          "element": "SafeBid",
+          "status": "FULFILLED"
+        },
+        {
+          "actor": "Auction",
+          "context": "state_e82cbffc7ec6e1069ea700d7",
+          "element": "AuctionCompleted",
+          "status": "FULFILLED"
+        },
+        {
+          "actor": "Auction",
+          "context": "state_e82cbffc7ec6e1069ea700d7",
+          "element": "AuctionOpened",
+          "status": "FULFILLED"
+        },
+        {
+          "actor": "Auction",
+          "context": "state_e82cbffc7ec6e1069ea700d7",
+          "element": "BidRecorded",
+          "status": "FULFILLED"
+        },
+        {
+          "actor": "Auction",
+          "context": "state_e82cbffc7ec6e1069ea700d7",
+          "element": "WinnerPublished",
+          "status": "FULFILLED"
+        }
+      ],
+      "sequence": 127,
+      "state": [
+        {
+          "best_bid": "25.283367574849414",
+          "id": "'a2'",
+          "object": "state_d2961079185d63acc9d03adb",
+          "relations": "CslEntityScopes:[state_b68906d71fb4e58ab7ac8dbe, state_d2961079185d63acc9d03adb]",
+          "running": "false",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:00a967ca-0cce-46dc-9ab4-d49290470920:Auction",
+          "task": "'flight_ticket(athens,paris,date(18,12,2015))'",
+          "type": "Auction",
+          "winner": "'alice'"
+        },
+        {
+          "name": "'aorg'",
+          "object": "state_3bf1890b7ce8c0b47883c38c",
+          "relations": "CslContextScopes:[state_3bf1890b7ce8c0b47883c38c, state_b68906d71fb4e58ab7ac8dbe]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:2ff1bceb-89fd-4163-83c8-c6a62996d1c6:AuctionOrg",
+          "type": "AuctionOrg"
+        },
+        {
+          "best_bid": "10.5693681286004",
+          "id": "'a1'",
+          "object": "state_e82cbffc7ec6e1069ea700d7",
+          "relations": "CslEntityScopes:[state_b68906d71fb4e58ab7ac8dbe, state_e82cbffc7ec6e1069ea700d7]",
+          "running": "false",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:3f1dd1c4-405d-4ee5-94a9-18ceffbd30bb:Auction",
+          "task": "'flight_ticket(paris,athens,date(15,12,2015))'",
+          "type": "Auction",
+          "winner": "'giacomo'"
+        },
+        {
+          "name": "'francois'",
+          "object": "state_62062fbf233ff7257e8b9626",
+          "relations": "CslAgentContexts:[state_729bfbf13243668917bb46f0, state_62062fbf233ff7257e8b9626]; Plays:[state_62062fbf233ff7257e8b9626, state_cd8be48a26f231d9a387c5b6]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:466a4a8e-157a-4978-afd0-cdb0037155d2:AtomicAgent",
+          "type": "AtomicAgent"
+        },
+        {
+          "name": "'francois'",
+          "object": "state_729bfbf13243668917bb46f0",
+          "relations": "CslAgentContexts:[state_729bfbf13243668917bb46f0, state_62062fbf233ff7257e8b9626]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:466a4a8e-157a-4978-afd0-cdb0037155d2:auction_capabilities",
+          "type": "auction_capabilities"
+        },
+        {
+          "name": "'bob'",
+          "object": "state_b669ede7f91120585e2eca45",
+          "relations": "CslAgentContexts:[state_e23db78ba086c5b79b504765, state_b669ede7f91120585e2eca45]; Plays:[state_b669ede7f91120585e2eca45, state_d96154e465feddb61fe0bb97]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:539946a1-9653-4cc3-94d6-625d2bfa46e9:AtomicAgent",
+          "type": "AtomicAgent"
+        },
+        {
+          "name": "'bob'",
+          "object": "state_e23db78ba086c5b79b504765",
+          "relations": "CslAgentContexts:[state_e23db78ba086c5b79b504765, state_b669ede7f91120585e2eca45]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:539946a1-9653-4cc3-94d6-625d2bfa46e9:auction_capabilities",
+          "type": "auction_capabilities"
+        },
+        {
+          "name": "'alice'",
+          "object": "state_c7ffb244555103ecd6dc35ec",
+          "relations": "CslAgentContexts:[state_39a9a317acb8d3b22fae9dfa, state_c7ffb244555103ecd6dc35ec]; Plays:[state_c7ffb244555103ecd6dc35ec, state_2cb045047b87836b1f292593]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:5f3cc107-5fe0-428d-a487-99415861c115:AtomicAgent",
+          "type": "AtomicAgent"
+        },
+        {
+          "name": "'alice'",
+          "object": "state_39a9a317acb8d3b22fae9dfa",
+          "relations": "CslAgentContexts:[state_39a9a317acb8d3b22fae9dfa, state_c7ffb244555103ecd6dc35ec]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:5f3cc107-5fe0-428d-a487-99415861c115:auction_capabilities",
+          "type": "auction_capabilities"
+        },
+        {
+          "name": "'giacomo'",
+          "object": "state_0852627663da74dc7eb6cd5e",
+          "relations": "CslAgentContexts:[state_d8f841c8199b5c57934ed2a4, state_0852627663da74dc7eb6cd5e]; Plays:[state_0852627663da74dc7eb6cd5e, state_b55a140cff9d45c518d9f122]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:7ca2e248-b665-4700-a1d5-8858f1290132:AtomicAgent",
+          "type": "AtomicAgent"
+        },
+        {
+          "name": "'giacomo'",
+          "object": "state_d8f841c8199b5c57934ed2a4",
+          "relations": "CslAgentContexts:[state_d8f841c8199b5c57934ed2a4, state_0852627663da74dc7eb6cd5e]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:7ca2e248-b665-4700-a1d5-8858f1290132:auction_capabilities",
+          "type": "auction_capabilities"
+        },
+        {
+          "name": "'maria'",
+          "object": "state_5b7984682376e9356715bb49",
+          "relations": "CslAgentContexts:[state_04b608eea94ca612cbe99025, state_5b7984682376e9356715bb49]; Plays:[state_5b7984682376e9356715bb49, state_37e2411422f73e6cfff2f2e0]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:b447a8b0-8a11-447d-b7ed-cd3523e16627:AtomicAgent",
+          "type": "AtomicAgent"
+        },
+        {
+          "name": "'maria'",
+          "object": "state_04b608eea94ca612cbe99025",
+          "relations": "CslAgentContexts:[state_04b608eea94ca612cbe99025, state_5b7984682376e9356715bb49]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:b447a8b0-8a11-447d-b7ed-cd3523e16627:auction_capabilities",
+          "type": "auction_capabilities"
+        },
+        {
+          "object": "state_cd8be48a26f231d9a387c5b6",
+          "relations": "InContext:[state_b68906d71fb4e58ab7ac8dbe, state_cd8be48a26f231d9a387c5b6]; Plays:[state_62062fbf233ff7257e8b9626, state_cd8be48a26f231d9a387c5b6]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:e156b8aa-b9cf-467e-9620-fd1d3d18ab81:466a4a8e-157a-4978-afd0-cdb0037155d2:participant",
+          "type": "participant"
+        },
+        {
+          "object": "state_d96154e465feddb61fe0bb97",
+          "relations": "InContext:[state_b68906d71fb4e58ab7ac8dbe, state_d96154e465feddb61fe0bb97]; Plays:[state_b669ede7f91120585e2eca45, state_d96154e465feddb61fe0bb97]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:e156b8aa-b9cf-467e-9620-fd1d3d18ab81:539946a1-9653-4cc3-94d6-625d2bfa46e9:auctioneer",
+          "type": "auctioneer"
+        },
+        {
+          "object": "state_2cb045047b87836b1f292593",
+          "relations": "InContext:[state_b68906d71fb4e58ab7ac8dbe, state_2cb045047b87836b1f292593]; Plays:[state_c7ffb244555103ecd6dc35ec, state_2cb045047b87836b1f292593]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:e156b8aa-b9cf-467e-9620-fd1d3d18ab81:5f3cc107-5fe0-428d-a487-99415861c115:participant",
+          "type": "participant"
+        },
+        {
+          "object": "state_b55a140cff9d45c518d9f122",
+          "relations": "InContext:[state_b68906d71fb4e58ab7ac8dbe, state_b55a140cff9d45c518d9f122]; Plays:[state_0852627663da74dc7eb6cd5e, state_b55a140cff9d45c518d9f122]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:e156b8aa-b9cf-467e-9620-fd1d3d18ab81:7ca2e248-b665-4700-a1d5-8858f1290132:participant",
+          "type": "participant"
+        },
+        {
+          "auctioneer": "Set{state_d96154e465feddb61fe0bb97}",
+          "name": "'agrp'",
+          "object": "state_b68906d71fb4e58ab7ac8dbe",
+          "participant": "Set{state_2cb045047b87836b1f292593,state_37e2411422f73e6cfff2f2e0,state_b55a140cff9d45c518d9f122,state_cd8be48a26f231d9a387c5b6}",
+          "relations": "CslContextScopes:[state_3bf1890b7ce8c0b47883c38c, state_b68906d71fb4e58ab7ac8dbe]; CslEntityScopes:[state_b68906d71fb4e58ab7ac8dbe, state_d2961079185d63acc9d03adb]; CslEntityScopes:[state_b68906d71fb4e58ab7ac8dbe, state_e82cbffc7ec6e1069ea700d7]; InContext:[state_b68906d71fb4e58ab7ac8dbe, state_2cb045047b87836b1f292593]; InContext:[state_b68906d71fb4e58ab7ac8dbe, state_37e2411422f73e6cfff2f2e0]; InContext:[state_b68906d71fb4e58ab7ac8dbe, state_b55a140cff9d45c518d9f122]; InContext:[state_b68906d71fb4e58ab7ac8dbe, state_cd8be48a26f231d9a387c5b6]; InContext:[state_b68906d71fb4e58ab7ac8dbe, state_d96154e465feddb61fe0bb97]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:e156b8aa-b9cf-467e-9620-fd1d3d18ab81:auctionGroup",
+          "type": "auctionGroup"
+        },
+        {
+          "object": "state_37e2411422f73e6cfff2f2e0",
+          "relations": "InContext:[state_b68906d71fb4e58ab7ac8dbe, state_37e2411422f73e6cfff2f2e0]; Plays:[state_5b7984682376e9356715bb49, state_37e2411422f73e6cfff2f2e0]",
+          "sourceIdentity": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929:e156b8aa-b9cf-467e-9620-fd1d3d18ab81:b447a8b0-8a11-447d-b7ed-cd3523e16627:participant",
+          "type": "participant"
+        }
+      ]
+    },
+    "run": "b87b0fbb-87e4-4efe-857a-9ab64bf1f929",
+    "token": "57b5672b-9ac6-4917-900b-0f51835fee69",
+    "version": "CSL_STATE_SYNC/1.0"
+  }
+}

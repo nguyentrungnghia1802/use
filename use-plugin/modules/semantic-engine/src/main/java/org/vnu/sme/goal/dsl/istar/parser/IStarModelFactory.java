@@ -104,6 +104,8 @@ public final class IStarModelFactory {
                     neededBys, assocs);
             case "agent" -> new Agent(cs.id(), elements, refinements, contributions, qualifications,
                     neededBys, assocs);
+            case "actor" -> new GenericActor(cs.id(), elements, refinements, contributions, qualifications,
+                    neededBys, assocs);
             default -> throw new IllegalArgumentException("Unknown actor kind: " + cs.kind());
         };
     }

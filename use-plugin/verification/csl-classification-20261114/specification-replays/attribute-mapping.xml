@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping xmlns="urn:use:jacamo-state-mapping:1">
+    <attribute source="organization:auction/identity:name" target="AuctionOrg.name"/>
+    <attribute source="group:auctionGroup/identity:name" target="auctionGroup.name"/>
+    <attribute source="agent:auction_capabilities/identity:name" target="auction_capabilities.name"/>
+    <attribute source="artifact:auction_env.AuctionArtifact/identity:name" target="Auction.id"/>
+    <attribute source="artifact:auction_env.AuctionArtifact/property:running" target="Auction.running"/>
+    <attribute source="artifact:auction_env.AuctionArtifact/property:task" target="Auction.task"/>
+    <attribute source="artifact:auction_env.AuctionArtifact/property:best_bid" target="Auction.best_bid"/>
+    <attribute source="artifact:auction_env.AuctionArtifact/property:winner" target="Auction.winner"/>
+</mapping>

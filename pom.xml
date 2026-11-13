@@ -14,6 +14,7 @@
         <module>use-assembly</module>
         <module>use-core</module>
         <module>use-plugin/modules/semantic-engine</module>
+        <module>use-plugin/modules/state-verification</module>
         <module>use-gui</module>
         <module>use-plugin</module>
     </modules>

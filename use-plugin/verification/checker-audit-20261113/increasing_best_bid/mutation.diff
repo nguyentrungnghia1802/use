@@ -1,0 +1,98 @@
+--- original/auction.jcm
++++ increasing_best_bid/auction.jcm
+@@ -14,17 +14,12 @@
+ 
+ 
+     agent alice   : auction_capabilities.asl
+-    agent maria   : auction_capabilities.asl
+-    agent francois: auction_capabilities.asl
+-    agent giacomo : auction_capabilities.asl
++
+ 
+     organisation aorg : auction-os.xml {
+         group agrp : auctionGroup {
+             players: bob      auctioneer
+                      alice    participant
+-                     maria    participant
+-                     francois participant
+-                     giacomo  participant
+ 
+             //debug: inspector_gui(on)
+         }
+--- original/src/agt/auction_capabilities.asl
++++ increasing_best_bid/src/agt/auction_capabilities.asl
+@@ -16,13 +16,15 @@
+ 
+ /* plans for organisational goals */
+ 
+-+!start[scheme(Sch)]                        // plan for the goal start defined in the scheme
+-   <- ?goalArgument(Sch,auction,"Id",Id);   // retrieve auction Id and service description S
+++!start[scheme(Sch)]
++   <- !verification_start(Sch); !verification_after_start.
+++!verification_start(Sch) <- ?goalArgument(Sch,auction,"Id",Id);
+       ?goalArgument(Sch,auction,"Service",S);
+-      .print("Start scheme ",Sch," for ",S);
+-      makeArtifact(Id, "auction_env.AuctionArtifact", [], ArtId); // create the auction artifact
++      makeArtifact(Id,"auction_env.AuctionArtifact",[],ArtId);
+       focus(ArtId);
+       start(S)[artifact_id(ArtId)].
+++!verification_after_start <- verification_oracle.mark("after_start").
++
+ 
+ +!decide[scheme(Sch)]
+    <- ?goalArgument(Sch,auction,"Id",Id);
+@@ -31,15 +33,13 @@
+ 
+ +!bid[scheme(Sch)]
+    <- ?goalArgument(Sch,auction,"Id",Id);
+-      lookupArtifact(Id,AId);
+-      focus(AId); //focusWhenAvailable(Id);
+-      if (math.random  < 0.9) {              // bid in 80% of the cases
+-        .wait(math.random * 2000 + 500);     // to simulate some "decision" reasoning
+-        bid(math.random * 100 + 10)[artifact_id(AId)];
+-      } else {
+-        .print("The following error in console is normal, it is due to the fail while bidding.");
+-        .fail;                               // fail otherwise
+-      }.
++      lookupArtifact(Id,AId); focus(AId);
++      !verification_one_bid(AId,10); !verification_after_bid_1;
++      !verification_one_bid(AId,20); !verification_after_bid_2.
+++!verification_one_bid(AId,V) <- bid(V)[artifact_id(AId)].
+++!verification_after_bid_1 <- verification_oracle.mark("after_bid_1").
+++!verification_after_bid_2 <- verification_oracle.mark("after_bid_2").
++
+ 
+ +winner(W) : .my_name(W) <- .print("I Won!").
+ 
+--- original/src/env/auction_env/AuctionArtifact.java
++++ increasing_best_bid/src/env/auction_env/AuctionArtifact.java
+@@ -21,6 +21,7 @@
+ 
+         getObsProperty("running").updateValue(true);
+         getObsProperty("task").updateValue(task);
++        System.out.println("VERIFICATION_ORACLE START running="+getObsProperty("running").booleanValue()+" expected="+task+" actual="+getObsProperty("task").stringValue());
+     }
+ 
+     @OPERATION public void stop()  {
+@@ -29,6 +30,7 @@
+ 
+         getObsProperty("running").updateValue(false);
+         getObsProperty("winner").updateValue(new Atom(currentWinner));
++        System.out.println("VERIFICATION_ORACLE STOP expected="+currentWinner+" actual="+getObsProperty("winner").getValue());
+     }
+ 
+     @OPERATION public void bid(double bidValue) {
+@@ -36,10 +38,12 @@
+             failed("You can not bid for this auction, it is not running!");
+ 
+         ObsProperty opCurrentValue  = getObsProperty("best_bid");
+-        if (bidValue < opCurrentValue.doubleValue()) {  // the bid is better than the previous
++        double verificationPrevious=opCurrentValue.doubleValue();
++        if (true) {  // the bid is better than the previous
+             opCurrentValue.updateValue(bidValue);
+             currentWinner = getCurrentOpAgentId().getAgentName(); // the name of the agent doing this operation
+         }
++        System.out.println("VERIFICATION_ORACLE BID previous="+verificationPrevious+" input="+bidValue+" actual="+opCurrentValue.doubleValue());
+         System.out.println("Received bid "+bidValue+" from "+getCurrentOpAgentId().getAgentName()+" for "+getObsProperty("task").stringValue());
+     }
+ }

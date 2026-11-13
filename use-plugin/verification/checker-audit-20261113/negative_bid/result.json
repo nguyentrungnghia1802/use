@@ -1,0 +1,44 @@
+{
+  "case": "negative_bid",
+  "groundTruth": "fault",
+  "faultActivatedIndependently": true,
+  "classification": "DETECTED_AND_BLOCKED",
+  "checkpoints": 46,
+  "exitCode": 0,
+  "decisions": {
+    "APPROVE": 45,
+    "HOLD_FAILURE": 1
+  },
+  "completedAuctions": 0,
+  "failedInvariants": [
+    [
+      "Auction::ValidBid",
+      "CSL_INVARIANT"
+    ]
+  ],
+  "violatedGoals": [
+    "SafeBid"
+  ],
+  "firstHoldSequence": 46,
+  "expectedBlockedProbe": "after_bid_1",
+  "continuationProbeObserved": false,
+  "sourceOracle": {
+    "bidCalls": 2,
+    "validNonImprovingCalls": 0,
+    "incorrectBidUpdates": 0,
+    "negativeBidCalls": 2,
+    "startCalls": 2,
+    "startReturnedStopped": 0,
+    "wrongServiceCalls": 0,
+    "stopCalls": 0,
+    "wrongWinnerCalls": 0,
+    "runningWithoutAuctioneerFocus": 0,
+    "nextPlanProbes": {
+      "after_start": 2
+    },
+    "maximumArtifactCount": 2,
+    "missingRequiredProperties": 0,
+    "instrumented": true
+  },
+  "wallSeconds": 9.615
+}

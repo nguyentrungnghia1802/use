@@ -17,6 +17,7 @@ public final class EngineInstallationGuard {
             "org.vnu.sme.goal.dsl.istar.mm.GoalModelValidator","org.vnu.sme.goal.dsl.istar.mm.GoalModelValidationPolicy",
             "org.tzi.use.semantic.engine.api.EngineSemanticsProfile","org.tzi.use.semantic.engine.runtime.RuntimeModelAdmission",
             "org.tzi.use.semantic.engine.api.RoleSpecialization",
+            "org.vnu.sme.goal.dsl.istar.mm.GenericActor",
             "org.vnu.sme.goal.verify.conformance.semantics.GoalMarking",
             "org.vnu.sme.goal.verify.conformance.semantics.TaskMarking",
             "org.vnu.sme.goal.verify.conformance.semantics.IStarMarking",
@@ -24,7 +25,7 @@ public final class EngineInstallationGuard {
             "org.vnu.sme.goal.dsl.iscn.goalmodelinstance.parser.GoalModelInstanceTranslator");
     private static final Map<String,String> GRAMMARS=Map.of(
             "grammars/CSL.g4","5bca5c44933f2619eeac837279e09a995a293383ebe3795d058d7e5319d3d224",
-            "grammars/IStar.g4","177eabd15e56c644c98bfa4e7a6f2b2e0e18b67bdfe68ac01d872a13ea72d503");
+            "grammars/IStar.g4","bfd399aab1e8a37edd2e40107730152212ced98bda4f2483dd473ff773b42f7c");
     private EngineInstallationGuard() { }
     public static Map<String,String> verify(){return verify(EngineInstallationGuard.class.getClassLoader());}
     /** Also supports an explicitly selected deployment resolver. */

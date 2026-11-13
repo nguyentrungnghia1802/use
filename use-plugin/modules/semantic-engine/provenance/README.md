@@ -7,6 +7,10 @@ CSL/IStar parsers are regenerated using ANTLR 4.9.3; upstream target directories
 are never copied. See the manifest for the compatibility-only native evaluator
 closure, which is not the production OCL backend.
 
+The explicit [`P-ACTOR-01`](P-ACTOR-01.md) extension adds generic intentional
+actors. Its exact source diff and patched hashes are recorded separately;
+original Goal/Task recurrence and existing Agent/Role behavior remain pinned.
+
 `inventory_upstream.py --verify --self-test` checks the read-only reference and
 extraction. `--extract` refuses to overwrite a differing target. The pinned
 test-only archive is independent of the sibling checkout and excluded from

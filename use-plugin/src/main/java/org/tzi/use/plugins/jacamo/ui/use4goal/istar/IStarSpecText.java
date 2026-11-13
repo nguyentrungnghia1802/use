@@ -39,7 +39,7 @@ public final class IStarSpecText {
         sb.append("=".repeat(("Specification of \"" + model.getName() + "\"").length())).append("\n\n");
 
         for (Actor actor : model.getActors()) {
-            String kind = (actor instanceof Agent) ? "agent" : "role";
+            String kind = actor instanceof Agent ? "agent" : actor instanceof org.vnu.sme.goal.dsl.istar.mm.Role ? "role" : "actor";
             sb.append("Actor ").append(label(actorLabels, actor.name())).append(" (").append(kind).append(")\n");
 
             for (IntentionalElement e : actor.elements()) {

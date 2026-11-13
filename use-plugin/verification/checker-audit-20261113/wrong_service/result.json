@@ -1,0 +1,38 @@
+{
+  "case": "wrong_service",
+  "groundTruth": "fault",
+  "faultActivatedIndependently": true,
+  "classification": "MISSED_VIOLATION",
+  "checkpoints": 70,
+  "exitCode": 0,
+  "decisions": {
+    "APPROVE": 70
+  },
+  "completedAuctions": 2,
+  "failedInvariants": [],
+  "violatedGoals": [],
+  "firstHoldSequence": null,
+  "expectedBlockedProbe": "after_start",
+  "continuationProbeObserved": true,
+  "sourceOracle": {
+    "bidCalls": 4,
+    "validNonImprovingCalls": 2,
+    "incorrectBidUpdates": 0,
+    "negativeBidCalls": 0,
+    "startCalls": 2,
+    "startReturnedStopped": 0,
+    "wrongServiceCalls": 2,
+    "stopCalls": 2,
+    "wrongWinnerCalls": 0,
+    "runningWithoutAuctioneerFocus": 0,
+    "nextPlanProbes": {
+      "after_start": 2,
+      "after_bid_1": 2,
+      "after_bid_2": 2
+    },
+    "maximumArtifactCount": 2,
+    "missingRequiredProperties": 0,
+    "instrumented": true
+  },
+  "wallSeconds": 9.865
+}

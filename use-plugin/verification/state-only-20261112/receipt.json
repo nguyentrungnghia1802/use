@@ -1,0 +1,131 @@
+{
+  "date": "2026-11-12",
+  "mode": "CSL_STATE_ONLY/1.0",
+  "source": "actual JaCaMo subprocess / authenticated local TCP / native USE MSystem and native iStar engine",
+  "mappingAttributeCount": 5,
+  "testSuites": [
+    {
+      "name": "org.tzi.use.state.CslStateVerifierTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "org.tzi.use.state.StateLiveTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "org.tzi.use.state.StateWireTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "auction": {
+    "work": "/tmp/use-csl-state-1794479716298",
+    "checkpoints": 129,
+    "decisions": [
+      "APPROVE"
+    ],
+    "state": [
+      {
+        "best_bid": "23.038161256842496",
+        "id": "'a2'",
+        "object": "state_056b125d2a5d98b00b347306",
+        "running": "false",
+        "sourceIdentity": "d6cecc09-98e5-4e01-a9f9-4bcce8b604a0:29929da7-5858-49ba-8ee8-f788b576db24:Auction",
+        "task": "'flight_ticket(athens,paris,date(18,12,2015))'",
+        "type": "Auction",
+        "winner": "'alice'"
+      },
+      {
+        "best_bid": "14.629558614564555",
+        "id": "'a1'",
+        "object": "state_04c39981a4a0150aff7b7b20",
+        "running": "false",
+        "sourceIdentity": "d6cecc09-98e5-4e01-a9f9-4bcce8b604a0:3133cecf-0aa1-47de-83df-9a360df60e47:Auction",
+        "task": "'flight_ticket(paris,athens,date(15,12,2015))'",
+        "type": "Auction",
+        "winner": "'alice'"
+      }
+    ],
+    "markings": [
+      {
+        "actor": "Auction",
+        "context": "state_056b125d2a5d98b00b347306",
+        "element": "SafeBid",
+        "status": "FULFILLED"
+      },
+      {
+        "actor": "Auction",
+        "context": "state_056b125d2a5d98b00b347306",
+        "element": "AuctionCompleted",
+        "status": "FULFILLED"
+      },
+      {
+        "actor": "Auction",
+        "context": "state_056b125d2a5d98b00b347306",
+        "element": "AuctionOpened",
+        "status": "FULFILLED"
+      },
+      {
+        "actor": "Auction",
+        "context": "state_056b125d2a5d98b00b347306",
+        "element": "BidRecorded",
+        "status": "FULFILLED"
+      },
+      {
+        "actor": "Auction",
+        "context": "state_056b125d2a5d98b00b347306",
+        "element": "WinnerPublished",
+        "status": "FULFILLED"
+      },
+      {
+        "actor": "Auction",
+        "context": "state_04c39981a4a0150aff7b7b20",
+        "element": "SafeBid",
+        "status": "FULFILLED"
+      },
+      {
+        "actor": "Auction",
+        "context": "state_04c39981a4a0150aff7b7b20",
+        "element": "AuctionCompleted",
+        "status": "FULFILLED"
+      },
+      {
+        "actor": "Auction",
+        "context": "state_04c39981a4a0150aff7b7b20",
+        "element": "AuctionOpened",
+        "status": "FULFILLED"
+      },
+      {
+        "actor": "Auction",
+        "context": "state_04c39981a4a0150aff7b7b20",
+        "element": "BidRecorded",
+        "status": "FULFILLED"
+      },
+      {
+        "actor": "Auction",
+        "context": "state_04c39981a4a0150aff7b7b20",
+        "element": "WinnerPublished",
+        "status": "FULFILLED"
+      }
+    ],
+    "sourceFailuresApprovedFromState": [
+      89
+    ]
+  },
+  "inputSha256": {
+    "use-plugin/examples/auction/state-only/attribute-mapping.xml": "bacb0d96e4cf50e0eebe215f0c51d8f32119a8eec4f2786c471d533687de968a",
+    "use-plugin/examples/auction/state-only/auction.csl": "dba51cd625bf2bf2dab4d7f81e903ba2c2614dfe56f1bfc5fe83b7a7cca48efa",
+    "use-plugin/examples/auction/state-only/auction.istar": "9b54363f2bd1ac8b9dae4b62a8cfed5dd859f6b4a1762f478c706070b26caad7",
+    "use-plugin/examples/auction/auction.jcm": "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb",
+    "use-plugin/examples/auction/src/agt/auction_capabilities.asl": "31679b13210114b211dad862ad86af352cc9003ac9527ea7268e3a1d0f9cfe1b",
+    "use-plugin/examples/auction/src/env/auction_env/AuctionArtifact.java": "34036fc220274853e39f93682cdb22c350fe6a06739669860f2a66afe606ff4b"
+  }
+}

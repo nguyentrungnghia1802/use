@@ -1,0 +1,401 @@
+{
+  "workDirectory": "/tmp/use-csl-state-1794499730574",
+  "declaredDependencies": 3,
+  "declaredParticipations": 2,
+  "checkpoints": 124,
+  "decisions": {
+    "APPROVE": 124
+  },
+  "initialSnapshot": {
+    "artifactCount": 0,
+    "istarElements": 0,
+    "decision": "APPROVE"
+  },
+  "observerCounts": {
+    "a1": 5,
+    "a2": 5
+  },
+  "finalStatuses": [
+    {
+      "actor": "AuctionGroup",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "RolesConsistent",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "AuctionGroup",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "SafeBid",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "AuctionGroup",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "BidNeverIncreases",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "AuctionGroup",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "AuctionCompleted",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "AuctionGroup",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "O_start",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "AuctionGroup",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "O_bid",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "AuctionGroup",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "O_decide",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "auction_capabilities.start",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "Auctioneer",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "Auctioneer.start",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "CreateAuctionArtifact",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "FocusAuctionArtifact",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "StartAuction",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "auction_capabilities.bid",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "Participant",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "Participant.bid",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "FocusForBid",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "ObserveBid",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "auction_capabilities.decide",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "Auctioneer",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "Auctioneer.decide",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_4ccd2c3d7a17d0eae84d8fcc",
+      "element": "StopAuction",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "AuctionGroup",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "RolesConsistent",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "AuctionGroup",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "SafeBid",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "AuctionGroup",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "BidNeverIncreases",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "AuctionGroup",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "AuctionCompleted",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "AuctionGroup",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "O_start",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "AuctionGroup",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "O_bid",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "AuctionGroup",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "O_decide",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "auction_capabilities.start",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "Auctioneer",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "Auctioneer.start",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "CreateAuctionArtifact",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "FocusAuctionArtifact",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "StartAuction",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "auction_capabilities.bid",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "Participant",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "Participant.bid",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "FocusForBid",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "ObserveBid",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "auction_capabilities.decide",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "Auctioneer",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "Auctioneer.decide",
+      "status": "FULFILLED"
+    },
+    {
+      "actor": "auction_capabilities",
+      "context": "state_3c7452ed94c644063b9291b7",
+      "element": "StopAuction",
+      "status": "FULFILLED"
+    }
+  ],
+  "testSuites": [
+    {
+      "module": "semantic-engine",
+      "tests": 108,
+      "suites": [
+        {
+          "name": "org.tzi.use.semantic.engine.CslFrontendParityTest",
+          "tests": "23",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.semantic.engine.DerivedDependeePolicyTest",
+          "tests": "5",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.semantic.engine.EngineExtractionTest",
+          "tests": "5",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.semantic.engine.EngineInstallationGuardTest",
+          "tests": "3",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.semantic.engine.GenericActorTest",
+          "tests": "1",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.semantic.engine.HostCompatibilityTest",
+          "tests": "2",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.semantic.engine.IStarFrontendParityTest",
+          "tests": "30",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.semantic.engine.NativeOclBackendTest",
+          "tests": "7",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.semantic.engine.OriginalRuntimeSessionTest",
+          "tests": "15",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.semantic.engine.ParticipationGoalViewsTest",
+          "tests": "3",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.semantic.engine.RoleSpecializationPolicyTest",
+          "tests": "3",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.semantic.engine.SingleOwnerContextTopologyTest",
+          "tests": "3",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.semantic.engine.Use75CslBackendTest",
+          "tests": "8",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        }
+      ]
+    },
+    {
+      "module": "state-verification",
+      "tests": 17,
+      "suites": [
+        {
+          "name": "org.tzi.use.state.AuctionIStarStateTest",
+          "tests": "5",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.state.CslOrganizationStateTest",
+          "tests": "3",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.state.CslStateVerifierTest",
+          "tests": "7",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.state.StateLiveTest",
+          "tests": "1",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        },
+        {
+          "name": "org.tzi.use.state.StateWireTest",
+          "tests": "1",
+          "failures": "0",
+          "errors": "0",
+          "skipped": "0"
+        }
+      ]
+    }
+  ],
+  "sha256": {
+    "use-plugin/examples/auction/state-only/auction.istar": "c8e87fa3dcb9cfa44e5c608400a375ec15e1e171dd9ea474591d2f0f60de2c13",
+    "use-plugin/examples/auction/state-only/auction.csl": "51e2336f9f15292e37e2345528ffc8918aa1e8dec44b517551958a7206263e07",
+    "use-plugin/examples/auction/state-only/attribute-mapping.xml": "3bc38ba17d93ecb15cc1780fb95c57d7633b124402cd64625921e7676dd534ca",
+    "use-plugin/examples/auction/src/agt/auction_capabilities.asl": "31679b13210114b211dad862ad86af352cc9003ac9527ea7268e3a1d0f9cfe1b",
+    "use-plugin/examples/auction/src/env/auction_env/AuctionArtifact.java": "34036fc220274853e39f93682cdb22c350fe6a06739669860f2a66afe606ff4b"
+  },
+  "remainingLimits": [
+    "No expected request context before artifact creation",
+    "Scheme Service/Id and mission commitments not observed",
+    "Non-improving bids cannot be distinguished from no bid by state alone",
+    "Private currentWinner and individual participant bid receipts not observed"
+  ]
+}

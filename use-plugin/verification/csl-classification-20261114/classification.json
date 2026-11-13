@@ -1,0 +1,161 @@
+{
+  "taxonomy": {
+    "1": "Method/runtime projection, observation, anchoring or completion semantics must change",
+    "2": "A specification change over existing observations suffices for this bounded property"
+  },
+  "notClaimed": "Universal correctness of CSL, iStar, mapping or the full Auction example",
+  "profileImplemented": "CSL_ORGCTX_UNIFIED_V1",
+  "liveCases": 12,
+  "semanticFaultCases": [
+    {
+      "case": "negative_bid",
+      "sourceFaultIndependentlyConfirmed": true,
+      "observedClassification": "DETECTED_AND_BLOCKED",
+      "missedPropertyCauseGroup": null,
+      "cause": "Detected: existing invariant and Maintain condition"
+    },
+    {
+      "case": "increasing_best_bid",
+      "sourceFaultIndependentlyConfirmed": true,
+      "observedClassification": "DETECTED_AND_BLOCKED",
+      "missedPropertyCauseGroup": null,
+      "cause": "Detected: existing transition Maintain condition"
+    },
+    {
+      "case": "missing_focus",
+      "sourceFaultIndependentlyConfirmed": true,
+      "observedClassification": "DETECTED_AND_BLOCKED",
+      "missedPropertyCauseGroup": null,
+      "cause": "Detected: existing CSL focus invariant"
+    },
+    {
+      "case": "start_keeps_stopped",
+      "sourceFaultIndependentlyConfirmed": true,
+      "observedClassification": "MISSED_VIOLATION",
+      "missedPropertyCauseGroup": 1,
+      "cause": "Missing completion milestone: false state can be legitimate intermediate progress"
+    },
+    {
+      "case": "missing_artifact",
+      "sourceFaultIndependentlyConfirmed": true,
+      "observedClassification": "MISSED_VIOLATION",
+      "missedPropertyCauseGroup": 1,
+      "cause": "No expected request anchor: no Artifact means no iStar graph"
+    },
+    {
+      "case": "wrong_service",
+      "sourceFaultIndependentlyConfirmed": true,
+      "observedClassification": "MISSED_VIOLATION",
+      "missedPropertyCauseGroup": 1,
+      "cause": "Expected Service not observed in the current source-to-CSL pipeline"
+    },
+    {
+      "case": "wrong_winner",
+      "sourceFaultIndependentlyConfirmed": true,
+      "observedClassification": "MISSED_VIOLATION",
+      "missedPropertyCauseGroup": 2,
+      "cause": "Necessary winner eligibility constraint missing; classification assumes fixed participant cohort and only proves eligibility"
+    },
+    {
+      "case": "wrong_eligible_winner",
+      "sourceFaultIndependentlyConfirmed": true,
+      "observedClassification": "MISSED_VIOLATION",
+      "missedPropertyCauseGroup": 1,
+      "cause": "Exact winning bidder cannot be inferred from current price and winner fields alone"
+    }
+  ],
+  "currentCheckerAssessment": {
+    "checkerAssessment": "FAIL_KNOWN_COUNTEREXAMPLES",
+    "frozenInputsUnchanged": true,
+    "confirmedFaultCases": 8,
+    "detectedFaultCases": 3,
+    "missedFaultCases": 5,
+    "cases": [
+      {
+        "case": "original",
+        "exampleFaultConfirmed": null,
+        "observed": "BASELINE_WITHIN_OBSERVED_SCOPE",
+        "checkerTestPassed": null
+      },
+      {
+        "case": "valid_non_improving_bid",
+        "exampleFaultConfirmed": null,
+        "observed": "NO_FALSE_ALARM",
+        "checkerTestPassed": true
+      },
+      {
+        "case": "valid_service_literal",
+        "exampleFaultConfirmed": null,
+        "observed": "NO_FALSE_ALARM",
+        "checkerTestPassed": true
+      },
+      {
+        "case": "negative_bid",
+        "exampleFaultConfirmed": true,
+        "observed": "DETECTED_AND_BLOCKED",
+        "checkerTestPassed": true
+      },
+      {
+        "case": "increasing_best_bid",
+        "exampleFaultConfirmed": true,
+        "observed": "DETECTED_AND_BLOCKED",
+        "checkerTestPassed": true
+      },
+      {
+        "case": "missing_focus",
+        "exampleFaultConfirmed": true,
+        "observed": "DETECTED_AND_BLOCKED",
+        "checkerTestPassed": true
+      },
+      {
+        "case": "start_keeps_stopped",
+        "exampleFaultConfirmed": true,
+        "observed": "MISSED_VIOLATION",
+        "checkerTestPassed": false
+      },
+      {
+        "case": "missing_artifact",
+        "exampleFaultConfirmed": true,
+        "observed": "MISSED_VIOLATION",
+        "checkerTestPassed": false
+      },
+      {
+        "case": "wrong_service",
+        "exampleFaultConfirmed": true,
+        "observed": "MISSED_VIOLATION",
+        "checkerTestPassed": false
+      },
+      {
+        "case": "wrong_winner",
+        "exampleFaultConfirmed": true,
+        "observed": "MISSED_VIOLATION",
+        "checkerTestPassed": false
+      },
+      {
+        "case": "wrong_eligible_winner",
+        "exampleFaultConfirmed": true,
+        "observed": "MISSED_VIOLATION",
+        "checkerTestPassed": false
+      },
+      {
+        "case": "missing_property",
+        "exampleFaultConfirmed": null,
+        "observed": "UNVERIFIED_AND_BLOCKED",
+        "checkerTestPassed": true
+      }
+    ],
+    "interpretation": "Finite fault-injection evidence, not a universal correctness proof. Original baseline has no independent all-properties oracle."
+  },
+  "specificationReplayCount": 17,
+  "diagnosticControlsPassed": true,
+  "specificationOnlyControls": [
+    "Remove CSL focus invariant",
+    "Remove iStar monotonic-bid condition",
+    "Typo in mapping property name"
+  ],
+  "counterfactualFixtureOnlyObservations": [
+    "expectedService",
+    "best_bidder"
+  ],
+  "liveProducerHasThoseObservations": false
+}

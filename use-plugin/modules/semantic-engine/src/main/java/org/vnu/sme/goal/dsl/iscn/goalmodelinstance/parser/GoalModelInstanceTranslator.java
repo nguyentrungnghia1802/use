@@ -13,6 +13,7 @@ import org.vnu.sme.goal.verify.conformance.semantics.IStarPropagation;
 import org.vnu.sme.goal.verify.conformance.semantics.QualityStatus;
 import org.vnu.sme.goal.dsl.istar.mm.Actor;
 import org.vnu.sme.goal.dsl.istar.mm.Agent;
+import org.vnu.sme.goal.dsl.istar.mm.GenericActor;
 import org.vnu.sme.goal.dsl.istar.mm.AndRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Contribution;
 import org.vnu.sme.goal.dsl.istar.mm.Dependency;
@@ -360,7 +361,10 @@ public final class GoalModelInstanceTranslator {
                 String actorId = actorInstanceId(actorType, e.getKey());
                 ActorBucket bucket = bucket(actorId);
                 Actor sourceActor = actors.get(actorType);
-                Actor actor = sourceActor instanceof Role
+                Actor actor = sourceActor instanceof GenericActor
+                        ? new GenericActor(actorId, new ArrayList<>(bucket.elements.values()), bucket.refinements,
+                                bucket.contributions, List.of(), List.of(), List.of())
+                        : sourceActor instanceof Role
                         ? new Role(actorId, new ArrayList<>(bucket.elements.values()), bucket.refinements,
                                 bucket.contributions, List.of(), List.of(), List.of())
                         : new Agent(actorId, new ArrayList<>(bucket.elements.values()), bucket.refinements,

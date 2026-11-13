@@ -15,8 +15,8 @@ grammar IStar;
 //  (or, forall, pick, make/help/hurt/break, qualifies, needed-by)
 //  requires its keyword — see docs/model/istar.ecore.
 //
-//  Actor is abstract — only Role and Agent are concrete, both generalizing
-//  to Actor.
+//  Actor is abstract; project extension P-ACTOR-01 adds a concrete GenericActor
+//  spelled 'actor', alongside Role and Agent.
 //
 //  istar ModelName {
 //    role|agent ActorName {
@@ -84,7 +84,7 @@ modelStatement
 
 actorDef : actorKind IDENT stringLit? '{' actorBody* '}' ;
 
-actorKind : 'role' | 'agent' ;
+actorKind : 'role' | 'agent' | 'actor' ;
 
 actorBody
     : 'goal'     IDENT goalType? descProperty? rel* goalCondition* activationClause? # bodyGoal

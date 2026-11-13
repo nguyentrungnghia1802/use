@@ -35,6 +35,16 @@ public final class IStarFrontend {
     public Result validate(GoalModel model,String name) {
         return validate(model,name,EngineSemanticsProfile.USE4GOAL_OBSERVED_V1);
     }
+    /** Explicit scoped-name extension. The default compiler retains pinned global-ID behavior. */
+    public Result compileScoped(String source,String name,EngineSemanticsProfile profile) {
+        var admission=new IStarCapabilityAdmission().scan(source,name);
+        if(!admission.diagnostics().isEmpty())return new Result(null,null,admission.diagnostics(),admission.findings(),profile);
+        var ast=IStarBuildingVisitor.build(admission.tree());
+        try {
+            var model=IStarModelFactory.build(ScopedElementNames.qualify(ast));
+            return new Result(ast,model,validate(model,name,profile).diagnostics(),admission.findings(),profile);
+        }catch(IllegalArgumentException error){return new Result(ast,null,List.of(EngineDiagnostic.error(Stage.MODEL_VALIDATION,"SCOPED_ISTAR_NAME_ERROR",name,error.getMessage())),admission.findings(),profile);}
+    }
     public Result validate(GoalModel model,String name,EngineSemanticsProfile profile) {
         return new Result(null,model,OwnedGoalModel.validateDefinition(model,name,profile),List.of(),profile);
     }

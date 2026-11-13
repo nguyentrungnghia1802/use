@@ -1,0 +1,34 @@
+{
+  "case": "original",
+  "groundTruth": "baseline",
+  "faultActivatedIndependently": false,
+  "classification": "BASELINE_WITHIN_OBSERVED_SCOPE",
+  "checkpoints": 129,
+  "exitCode": 0,
+  "decisions": {
+    "APPROVE": 129
+  },
+  "completedAuctions": 2,
+  "failedInvariants": [],
+  "violatedGoals": [],
+  "firstHoldSequence": null,
+  "expectedBlockedProbe": "",
+  "continuationProbeObserved": false,
+  "sourceOracle": {
+    "instrumented": false,
+    "bidCalls": 0,
+    "validNonImprovingCalls": 0,
+    "incorrectBidUpdates": 0,
+    "negativeBidCalls": 0,
+    "startCalls": 0,
+    "startReturnedStopped": 0,
+    "wrongServiceCalls": 0,
+    "stopCalls": 0,
+    "wrongWinnerCalls": 0,
+    "runningWithoutAuctioneerFocus": 0,
+    "nextPlanProbes": {},
+    "maximumArtifactCount": 2,
+    "missingRequiredProperties": 0
+  },
+  "wallSeconds": 19.761
+}

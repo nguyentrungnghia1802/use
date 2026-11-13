@@ -41,7 +41,7 @@ final class SingleOwnerContextTopology {
             var qualifications=actor.qualifications().stream().map(q->new Qualification(ids.get(q.quality()),ids.get(q.element()))).toList();
             var needed=actor.neededBys().stream().map(n->new NeededBy(ids.get(n.resource()),ids.get(n.task()))).toList();
             var associations=actor.associations().stream().map(a->new Association(owner,a.kind(),actors.get(a.target()))).toList();
-            Actor actual=actor instanceof Role?new Role(owner,elements,refinements,contributions,qualifications,needed,associations):new Agent(owner,elements,refinements,contributions,qualifications,needed,associations);
+            Actor actual=actor instanceof GenericActor?new GenericActor(owner,elements,refinements,contributions,qualifications,needed,associations):actor instanceof Role?new Role(owner,elements,refinements,contributions,qualifications,needed,associations):new Agent(owner,elements,refinements,contributions,qualifications,needed,associations);
             model.addActor(actual);actorSources.put(owner,actor);actorLabels.put(owner,actor.name()+" ["+instance.name()+"]");
         }
         for(var dependency:source.getDependencies())model.addDependency(new Dependency(actors.get(dependency.depender()),ids.get(dependency.dependerElmt()),copy(dependency.dependum(),dependency.dependum().id()+"__"+instances.get(dependency.depender()).name()+"__"+instances.get(dependency.dependee()).name()),actors.get(dependency.dependee()),ids.get(dependency.dependeeElmt())));

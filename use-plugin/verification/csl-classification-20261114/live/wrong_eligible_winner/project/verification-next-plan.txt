@@ -1,0 +1,10 @@
+after_start	bob	1794591321280
+after_start	bob	1794591321301
+after_bid_1	maria	1794591322428
+after_bid_1	alice	1794591322451
+after_bid_2	maria	1794591322470
+after_bid_2	alice	1794591322526
+after_bid_1	maria	1794591322527
+after_bid_1	alice	1794591322554
+after_bid_2	maria	1794591322661
+after_bid_2	alice	1794591322661

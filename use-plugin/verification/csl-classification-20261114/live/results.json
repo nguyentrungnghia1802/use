@@ -1,0 +1,458 @@
+[
+  {
+    "case": "original",
+    "groundTruth": "baseline",
+    "faultActivatedIndependently": false,
+    "classification": "BASELINE_WITHIN_OBSERVED_SCOPE",
+    "checkpoints": 123,
+    "exitCode": 0,
+    "decisions": {
+      "APPROVE": 123
+    },
+    "completedAuctions": 2,
+    "failedInvariants": [],
+    "violatedGoals": [],
+    "firstHoldSequence": null,
+    "expectedBlockedProbe": "",
+    "continuationProbeObserved": false,
+    "sourceOracle": {
+      "instrumented": false,
+      "bidCalls": 0,
+      "validNonImprovingCalls": 0,
+      "incorrectBidUpdates": 0,
+      "negativeBidCalls": 0,
+      "startCalls": 0,
+      "startReturnedStopped": 0,
+      "wrongServiceCalls": 0,
+      "stopCalls": 0,
+      "wrongWinnerCalls": 0,
+      "runningWithoutAuctioneerFocus": 0,
+      "nextPlanProbes": {},
+      "maximumArtifactCount": 2,
+      "missingRequiredProperties": 0
+    },
+    "wallSeconds": 19.801
+  },
+  {
+    "case": "valid_non_improving_bid",
+    "groundTruth": "valid",
+    "faultActivatedIndependently": false,
+    "classification": "NO_FALSE_ALARM",
+    "checkpoints": 69,
+    "exitCode": 0,
+    "decisions": {
+      "APPROVE": 69
+    },
+    "completedAuctions": 2,
+    "failedInvariants": [],
+    "violatedGoals": [],
+    "firstHoldSequence": null,
+    "expectedBlockedProbe": "",
+    "continuationProbeObserved": false,
+    "sourceOracle": {
+      "instrumented": true,
+      "bidCalls": 4,
+      "validNonImprovingCalls": 2,
+      "incorrectBidUpdates": 0,
+      "negativeBidCalls": 0,
+      "startCalls": 2,
+      "startReturnedStopped": 0,
+      "wrongServiceCalls": 0,
+      "stopCalls": 2,
+      "wrongWinnerCalls": 0,
+      "runningWithoutAuctioneerFocus": 0,
+      "nextPlanProbes": {
+        "after_start": 2,
+        "after_bid_1": 2,
+        "after_bid_2": 2
+      },
+      "maximumArtifactCount": 2,
+      "missingRequiredProperties": 0
+    },
+    "wallSeconds": 9.651
+  },
+  {
+    "case": "valid_service_literal",
+    "groundTruth": "valid",
+    "faultActivatedIndependently": false,
+    "classification": "NO_FALSE_ALARM",
+    "checkpoints": 69,
+    "exitCode": 0,
+    "decisions": {
+      "APPROVE": 69
+    },
+    "completedAuctions": 2,
+    "failedInvariants": [],
+    "violatedGoals": [],
+    "firstHoldSequence": null,
+    "expectedBlockedProbe": "",
+    "continuationProbeObserved": false,
+    "sourceOracle": {
+      "instrumented": true,
+      "bidCalls": 4,
+      "validNonImprovingCalls": 2,
+      "incorrectBidUpdates": 0,
+      "negativeBidCalls": 0,
+      "startCalls": 2,
+      "startReturnedStopped": 0,
+      "wrongServiceCalls": 0,
+      "stopCalls": 2,
+      "wrongWinnerCalls": 0,
+      "runningWithoutAuctioneerFocus": 0,
+      "nextPlanProbes": {
+        "after_start": 2,
+        "after_bid_1": 2,
+        "after_bid_2": 2
+      },
+      "maximumArtifactCount": 2,
+      "missingRequiredProperties": 0
+    },
+    "wallSeconds": 10.058
+  },
+  {
+    "case": "negative_bid",
+    "groundTruth": "fault",
+    "faultActivatedIndependently": true,
+    "classification": "DETECTED_AND_BLOCKED",
+    "checkpoints": 46,
+    "exitCode": 0,
+    "decisions": {
+      "APPROVE": 45,
+      "HOLD_FAILURE": 1
+    },
+    "completedAuctions": 0,
+    "failedInvariants": [
+      [
+        "Auction::ValidBid",
+        "CSL_INVARIANT"
+      ]
+    ],
+    "violatedGoals": [
+      "SafeBid"
+    ],
+    "firstHoldSequence": 46,
+    "expectedBlockedProbe": "after_bid_1",
+    "continuationProbeObserved": false,
+    "sourceOracle": {
+      "instrumented": true,
+      "bidCalls": 2,
+      "validNonImprovingCalls": 0,
+      "incorrectBidUpdates": 0,
+      "negativeBidCalls": 2,
+      "startCalls": 2,
+      "startReturnedStopped": 0,
+      "wrongServiceCalls": 0,
+      "stopCalls": 0,
+      "wrongWinnerCalls": 0,
+      "runningWithoutAuctioneerFocus": 0,
+      "nextPlanProbes": {
+        "after_start": 2
+      },
+      "maximumArtifactCount": 2,
+      "missingRequiredProperties": 0
+    },
+    "wallSeconds": 9.705
+  },
+  {
+    "case": "increasing_best_bid",
+    "groundTruth": "fault",
+    "faultActivatedIndependently": true,
+    "classification": "DETECTED_AND_BLOCKED",
+    "checkpoints": 50,
+    "exitCode": 0,
+    "decisions": {
+      "APPROVE": 49,
+      "HOLD_FAILURE": 1
+    },
+    "completedAuctions": 0,
+    "failedInvariants": [],
+    "violatedGoals": [
+      "BidNeverIncreases"
+    ],
+    "firstHoldSequence": 50,
+    "expectedBlockedProbe": "after_bid_2",
+    "continuationProbeObserved": false,
+    "sourceOracle": {
+      "instrumented": true,
+      "bidCalls": 4,
+      "validNonImprovingCalls": 0,
+      "incorrectBidUpdates": 2,
+      "negativeBidCalls": 0,
+      "startCalls": 2,
+      "startReturnedStopped": 0,
+      "wrongServiceCalls": 0,
+      "stopCalls": 0,
+      "wrongWinnerCalls": 0,
+      "runningWithoutAuctioneerFocus": 0,
+      "nextPlanProbes": {
+        "after_start": 2,
+        "after_bid_1": 2
+      },
+      "maximumArtifactCount": 2,
+      "missingRequiredProperties": 0
+    },
+    "wallSeconds": 9.704
+  },
+  {
+    "case": "missing_focus",
+    "groundTruth": "fault",
+    "faultActivatedIndependently": true,
+    "classification": "DETECTED_AND_BLOCKED",
+    "checkpoints": 36,
+    "exitCode": 0,
+    "decisions": {
+      "APPROVE": 35,
+      "HOLD_FAILURE": 1
+    },
+    "completedAuctions": 0,
+    "failedInvariants": [
+      [
+        "Auction::RunningAuctionIsObserved",
+        "CSL_INVARIANT"
+      ]
+    ],
+    "violatedGoals": [],
+    "firstHoldSequence": 36,
+    "expectedBlockedProbe": "after_start",
+    "continuationProbeObserved": false,
+    "sourceOracle": {
+      "instrumented": true,
+      "bidCalls": 0,
+      "validNonImprovingCalls": 0,
+      "incorrectBidUpdates": 0,
+      "negativeBidCalls": 0,
+      "startCalls": 2,
+      "startReturnedStopped": 0,
+      "wrongServiceCalls": 0,
+      "stopCalls": 0,
+      "wrongWinnerCalls": 0,
+      "runningWithoutAuctioneerFocus": 2,
+      "nextPlanProbes": {},
+      "maximumArtifactCount": 2,
+      "missingRequiredProperties": 0
+    },
+    "wallSeconds": 9.7
+  },
+  {
+    "case": "start_keeps_stopped",
+    "groundTruth": "fault",
+    "faultActivatedIndependently": true,
+    "classification": "MISSED_VIOLATION",
+    "checkpoints": 53,
+    "exitCode": 0,
+    "decisions": {
+      "APPROVE": 53
+    },
+    "completedAuctions": 0,
+    "failedInvariants": [],
+    "violatedGoals": [],
+    "firstHoldSequence": null,
+    "expectedBlockedProbe": "after_start",
+    "continuationProbeObserved": true,
+    "sourceOracle": {
+      "instrumented": true,
+      "bidCalls": 0,
+      "validNonImprovingCalls": 0,
+      "incorrectBidUpdates": 0,
+      "negativeBidCalls": 0,
+      "startCalls": 2,
+      "startReturnedStopped": 2,
+      "wrongServiceCalls": 0,
+      "stopCalls": 0,
+      "wrongWinnerCalls": 0,
+      "runningWithoutAuctioneerFocus": 0,
+      "nextPlanProbes": {
+        "after_start": 2
+      },
+      "maximumArtifactCount": 2,
+      "missingRequiredProperties": 0
+    },
+    "wallSeconds": 9.701
+  },
+  {
+    "case": "missing_artifact",
+    "groundTruth": "fault",
+    "faultActivatedIndependently": true,
+    "classification": "MISSED_VIOLATION",
+    "checkpoints": 51,
+    "exitCode": 0,
+    "decisions": {
+      "APPROVE": 51
+    },
+    "completedAuctions": 0,
+    "failedInvariants": [],
+    "violatedGoals": [],
+    "firstHoldSequence": null,
+    "expectedBlockedProbe": "after_start",
+    "continuationProbeObserved": true,
+    "sourceOracle": {
+      "instrumented": true,
+      "bidCalls": 0,
+      "validNonImprovingCalls": 0,
+      "incorrectBidUpdates": 0,
+      "negativeBidCalls": 0,
+      "startCalls": 0,
+      "startReturnedStopped": 0,
+      "wrongServiceCalls": 0,
+      "stopCalls": 0,
+      "wrongWinnerCalls": 0,
+      "runningWithoutAuctioneerFocus": 0,
+      "nextPlanProbes": {
+        "fault_missing_artifact": 2,
+        "after_start": 2
+      },
+      "maximumArtifactCount": 0,
+      "missingRequiredProperties": 0
+    },
+    "wallSeconds": 9.896
+  },
+  {
+    "case": "wrong_service",
+    "groundTruth": "fault",
+    "faultActivatedIndependently": true,
+    "classification": "MISSED_VIOLATION",
+    "checkpoints": 69,
+    "exitCode": 0,
+    "decisions": {
+      "APPROVE": 69
+    },
+    "completedAuctions": 2,
+    "failedInvariants": [],
+    "violatedGoals": [],
+    "firstHoldSequence": null,
+    "expectedBlockedProbe": "after_start",
+    "continuationProbeObserved": true,
+    "sourceOracle": {
+      "instrumented": true,
+      "bidCalls": 4,
+      "validNonImprovingCalls": 2,
+      "incorrectBidUpdates": 0,
+      "negativeBidCalls": 0,
+      "startCalls": 2,
+      "startReturnedStopped": 0,
+      "wrongServiceCalls": 2,
+      "stopCalls": 2,
+      "wrongWinnerCalls": 0,
+      "runningWithoutAuctioneerFocus": 0,
+      "nextPlanProbes": {
+        "after_start": 2,
+        "after_bid_1": 2,
+        "after_bid_2": 2
+      },
+      "maximumArtifactCount": 2,
+      "missingRequiredProperties": 0
+    },
+    "wallSeconds": 10.419
+  },
+  {
+    "case": "wrong_winner",
+    "groundTruth": "fault",
+    "faultActivatedIndependently": true,
+    "classification": "MISSED_VIOLATION",
+    "checkpoints": 67,
+    "exitCode": 0,
+    "decisions": {
+      "APPROVE": 67
+    },
+    "completedAuctions": 2,
+    "failedInvariants": [],
+    "violatedGoals": [],
+    "firstHoldSequence": null,
+    "expectedBlockedProbe": "",
+    "continuationProbeObserved": false,
+    "sourceOracle": {
+      "instrumented": true,
+      "bidCalls": 4,
+      "validNonImprovingCalls": 2,
+      "incorrectBidUpdates": 0,
+      "negativeBidCalls": 0,
+      "startCalls": 2,
+      "startReturnedStopped": 0,
+      "wrongServiceCalls": 0,
+      "stopCalls": 2,
+      "wrongWinnerCalls": 2,
+      "runningWithoutAuctioneerFocus": 0,
+      "nextPlanProbes": {
+        "after_start": 2,
+        "after_bid_1": 2,
+        "after_bid_2": 2
+      },
+      "maximumArtifactCount": 2,
+      "missingRequiredProperties": 0
+    },
+    "wallSeconds": 9.755
+  },
+  {
+    "case": "wrong_eligible_winner",
+    "groundTruth": "fault",
+    "faultActivatedIndependently": true,
+    "classification": "MISSED_VIOLATION",
+    "checkpoints": 101,
+    "exitCode": 0,
+    "decisions": {
+      "APPROVE": 101
+    },
+    "completedAuctions": 2,
+    "failedInvariants": [],
+    "violatedGoals": [],
+    "firstHoldSequence": null,
+    "expectedBlockedProbe": "",
+    "continuationProbeObserved": false,
+    "sourceOracle": {
+      "instrumented": true,
+      "bidCalls": 8,
+      "validNonImprovingCalls": 6,
+      "incorrectBidUpdates": 0,
+      "negativeBidCalls": 0,
+      "startCalls": 2,
+      "startReturnedStopped": 0,
+      "wrongServiceCalls": 0,
+      "stopCalls": 2,
+      "wrongWinnerCalls": 2,
+      "runningWithoutAuctioneerFocus": 0,
+      "nextPlanProbes": {
+        "after_start": 2,
+        "after_bid_1": 4,
+        "after_bid_2": 4
+      },
+      "maximumArtifactCount": 2,
+      "missingRequiredProperties": 0
+    },
+    "wallSeconds": 9.603
+  },
+  {
+    "case": "missing_property",
+    "groundTruth": "coverage",
+    "faultActivatedIndependently": true,
+    "classification": "UNVERIFIED_AND_BLOCKED",
+    "checkpoints": 36,
+    "exitCode": 0,
+    "decisions": {
+      "APPROVE": 35,
+      "HOLD_UNVERIFIED": 1
+    },
+    "completedAuctions": 0,
+    "failedInvariants": [],
+    "violatedGoals": [],
+    "firstHoldSequence": 36,
+    "expectedBlockedProbe": "after_start",
+    "continuationProbeObserved": false,
+    "sourceOracle": {
+      "instrumented": true,
+      "bidCalls": 0,
+      "validNonImprovingCalls": 0,
+      "incorrectBidUpdates": 0,
+      "negativeBidCalls": 0,
+      "startCalls": 2,
+      "startReturnedStopped": 0,
+      "wrongServiceCalls": 0,
+      "stopCalls": 0,
+      "wrongWinnerCalls": 0,
+      "runningWithoutAuctioneerFocus": 0,
+      "nextPlanProbes": {},
+      "maximumArtifactCount": 2,
+      "missingRequiredProperties": 2
+    },
+    "wallSeconds": 9.8
+  }
+]

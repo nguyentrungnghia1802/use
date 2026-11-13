@@ -2300,7 +2300,7 @@
       "gitStatus": "",
       "targetModule": "use-jacamo-semantic-engine",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/iscn/goalmodelinstance/parser/GoalModelInstanceTranslator.java",
-      "targetSha256": "daad76b6b94f3693f2157bef1176195bc9d79ed6b3f962e32265c19790b710c0",
+      "targetSha256": "4cb3d001e7f9a272e88df6c8e01691d0872da6e29bf011744b17190db5dbaec3",
       "fqcn": "org.vnu.sme.goal.dsl.iscn.goalmodelinstance.parser.GoalModelInstanceTranslator",
       "imports": [
         "java.util.ArrayList",
@@ -2335,14 +2335,16 @@
         "org.vnu.sme.goal.dsl.iscn.mm.ScenarioInstance",
         "org.vnu.sme.goal.dsl.iscn.mm.ScenarioStmt"
       ],
-      "reuseMode": "ORIGINAL_WITH_ADAPTER",
+      "reuseMode": "ORIGINAL_WITH_EXPLICIT_PATCH",
       "plannedPatchIds": [
-        "P-CTX-01"
+        "P-CTX-01",
+        "P-ACTOR-01"
       ],
       "appliedPatchIds": [
-        "P-CTX-01"
+        "P-CTX-01",
+        "P-ACTOR-01"
       ],
-      "extractionStatus": "PATCHED_WITH_PROVENANCE",
+      "extractionStatus": "PATCHED",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "IStarFrontend",
@@ -2351,7 +2353,7 @@
       "parityTests": [
         "G"
       ],
-      "acceptance": "Byte-identical selected core; admitted-profile behavior equals pinned original",
+      "acceptance": "Pinned original algorithms; explicit generic actor syntax/type preservation extension P-ACTOR-01",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -2670,15 +2672,19 @@
       "gitStatus": "",
       "targetModule": "use-jacamo-semantic-engine",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar/mm/Actor.java",
-      "targetSha256": "18055890ce1182b0c5b117f3ffaa4d42036c1de7ab74f4a0624ec14974007910",
+      "targetSha256": "58870d54a2330604b73cb7e8c6ab7ea18431dbdb0837d9c6af8a705670750588",
       "fqcn": "org.vnu.sme.goal.dsl.istar.mm.Actor",
       "imports": [
         "java.util.List"
       ],
-      "reuseMode": "ORIGINAL_COPY",
-      "plannedPatchIds": [],
-      "appliedPatchIds": [],
-      "extractionStatus": "ORIGINAL",
+      "reuseMode": "ORIGINAL_WITH_EXPLICIT_PATCH",
+      "plannedPatchIds": [
+        "P-ACTOR-01"
+      ],
+      "appliedPatchIds": [
+        "P-ACTOR-01"
+      ],
+      "extractionStatus": "PATCHED",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "IStarFrontend",
@@ -2689,7 +2695,7 @@
         "G",
         "L"
       ],
-      "acceptance": "Byte-identical selected core; admitted-profile behavior equals pinned original",
+      "acceptance": "Pinned original algorithms; explicit generic actor syntax/type preservation extension P-ACTOR-01",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -3569,17 +3575,21 @@
       "gitStatus": "",
       "targetModule": "use-jacamo-semantic-engine",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar/parser/IStarModelFactory.java",
-      "targetSha256": "8e26e4e1939c2a55b04b5a250c6fcefa2d60d033aebdb983365617d5ca787e18",
+      "targetSha256": "0c7ff36e997e19c9a074c01a777257992ffe8745dd8b6cfa41fcb0ff1afb4833",
       "fqcn": "org.vnu.sme.goal.dsl.istar.parser.IStarModelFactory",
       "imports": [
         "java.util.*",
         "org.vnu.sme.goal.dsl.istar.ast.*",
         "org.vnu.sme.goal.dsl.istar.mm.*"
       ],
-      "reuseMode": "ORIGINAL_WITH_ADAPTER",
-      "plannedPatchIds": [],
-      "appliedPatchIds": [],
-      "extractionStatus": "ORIGINAL",
+      "reuseMode": "ORIGINAL_WITH_EXPLICIT_PATCH",
+      "plannedPatchIds": [
+        "P-ACTOR-01"
+      ],
+      "appliedPatchIds": [
+        "P-ACTOR-01"
+      ],
+      "extractionStatus": "PATCHED",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "IStarFrontend",
@@ -3588,7 +3598,7 @@
       "parityTests": [
         "D"
       ],
-      "acceptance": "Byte-identical selected core; admitted-profile behavior equals pinned original",
+      "acceptance": "Pinned original algorithms; explicit generic actor syntax/type preservation extension P-ACTOR-01",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -3893,13 +3903,17 @@
       "gitStatus": "",
       "targetModule": "use-jacamo-semantic-engine",
       "targetPath": "src/main/resources/grammars/IStar.g4",
-      "targetSha256": "177eabd15e56c644c98bfa4e7a6f2b2e0e18b67bdfe68ac01d872a13ea72d503",
+      "targetSha256": "bfd399aab1e8a37edd2e40107730152212ced98bda4f2483dd473ff773b42f7c",
       "fqcn": null,
       "imports": [],
-      "reuseMode": "ORIGINAL_COPY",
-      "plannedPatchIds": [],
-      "appliedPatchIds": [],
-      "extractionStatus": "ORIGINAL",
+      "reuseMode": "ORIGINAL_WITH_EXPLICIT_PATCH",
+      "plannedPatchIds": [
+        "P-ACTOR-01"
+      ],
+      "appliedPatchIds": [
+        "P-ACTOR-01"
+      ],
+      "extractionStatus": "PATCHED",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "IStarFrontend",
@@ -3908,7 +3922,7 @@
       "parityTests": [
         "D"
       ],
-      "acceptance": "Byte-identical selected core; admitted-profile behavior equals pinned original",
+      "acceptance": "Pinned original algorithms; explicit generic actor syntax/type preservation extension P-ACTOR-01",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     }
   ],
@@ -4050,6 +4064,25 @@
         "EngineExtractionTest",
         "CapabilityRoleBindingTest",
         "OccurrenceGoalModelExpanderTest"
+      ]
+    },
+    {
+      "id": "P-ACTOR-01",
+      "status": "APPLIED_VERIFIED",
+      "scope": "Generic intentional actor syntax, concrete type, and type-preserving instantiation",
+      "patchPath": "provenance/patches/P-ACTOR-01.diff",
+      "patchSha256": "6b5b4f2a3a04985279a0eabeaae64af94d944c63a2f3c1c3b057df68beb85ff6",
+      "originalRecurrenceUnchanged": true,
+      "newApiFiles": [
+        {
+          "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar/mm/GenericActor.java",
+          "sha256": "0637950c3b6bc93c759f202e1a91bd5189f6dfeed340e34b77c0dd4050256efc"
+        }
+      ],
+      "parityTests": [
+        "GenericActorTest",
+        "IStarFrontendParityTest",
+        "EngineExtractionTest"
       ]
     }
   ],
