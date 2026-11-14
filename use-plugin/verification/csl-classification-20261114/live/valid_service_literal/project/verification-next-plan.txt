@@ -1,6 +1,0 @@
-after_start	bob	1794591242657
-after_start	bob	1794591242676
-after_bid_1	alice	1794591242853
-after_bid_1	alice	1794591242865
-after_bid_2	alice	1794591242902
-after_bid_2	alice	1794591242913

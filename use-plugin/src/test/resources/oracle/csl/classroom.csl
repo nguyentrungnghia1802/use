@@ -1,0 +1,52 @@
+csl v2.0 ClassroomState {
+  enum AttendanceMethod {
+    none,
+    manual,
+    electronic
+  }
+
+  role Person {
+    active : Boolean default true;
+  }
+
+  role Teacher extends Person {
+    attendanceStarted : Boolean default false;
+  }
+
+  role Student extends Person {
+    present : Boolean default false;
+    attendanceMarked : Boolean default false;
+    lessonAttended : Boolean default false;
+  }
+
+  group Classroom {
+    lessonStarted : Boolean default false;
+    attendanceRecorded : Boolean default false;
+    attendanceMethod : AttendanceMethod default none;
+    lessonDelivered : Boolean default false;
+    // Independent of attendanceMethod: attendanceMethod records the outcome of the
+    // choice below, this attribute is the (pre-existing) signal the choice is based on.
+    electronicSystemAvailable : Boolean default true;
+    slidesReady : Boolean default false;
+    rosterChecked : Boolean default false;
+    needsClarification : Boolean default true;
+
+    Teacher [1];
+    Student [1..*];
+  }
+
+  // OCL is part of the CSL specification and is evaluated directly on an
+  // CSL/AOL state. Entity, Role and Group are not flattened into USE classes.
+  context Classroom inv LessonDeliveredAfterStart:
+    self.lessonDelivered = true implies self.lessonStarted = true;
+
+  context Classroom inv RecordedAttendanceHasMethod:
+    self.attendanceRecorded = true implies
+      self.attendanceMethod <> AttendanceMethod::none;
+
+  context Student inv MarkedStudentMustBePresent:
+    self.attendanceMarked = true implies self.present = true;
+
+  context Teacher inv AttendanceStartsAfterLesson:
+    self.attendanceStarted = true implies self.group.lessonStarted = true;
+}

@@ -1,5 +1,0 @@
-# Authored auction reference specification (.mrv)
-csl = auction_csl.csl
-istar = auction_istar_final.istar
-xml = auction-mapping.xml
-ocl = auction_constraints_final.ocl

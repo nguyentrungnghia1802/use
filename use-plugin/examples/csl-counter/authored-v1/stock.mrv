@@ -1,5 +1,0 @@
-# CSL Counter case study system specification (.mrv)
-csl = stock.csl
-istar = stock.istar
-xml = stock-mapping.xml
-ocl = stock.ocl

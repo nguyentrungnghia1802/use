@@ -14,9 +14,9 @@ import subprocess
 import time
 
 ROOT = Path(__file__).resolve().parents[2]
-EXAMPLE = ROOT / "use-plugin/examples/auction"
-MODELS = EXAMPLE / "state-only"
-MODULE = ROOT / "use-plugin/modules/state-verification"
+EXAMPLE = ROOT / "use-plugin/src/main/resources/example/auction"
+MODELS = EXAMPLE
+MODULE = ROOT / "use-plugin"
 ASL = Path("src/agt/auction_capabilities.asl")
 ARTIFACT = Path("src/env/auction_env/AuctionArtifact.java")
 CASES = [
@@ -288,7 +288,7 @@ def main():
         prepare(case, project)
         work.mkdir()
         seconds = args.baseline_seconds if kind == "baseline" else args.seconds
-        command = ["java", "-Duse.state.work="+str(work), "-cp", cp, "org.tzi.use.state.StateWorkbenchMain",
+        command = ["java", "-Duse.state.work="+str(work), "-cp", cp, "org.tzi.use.plugins.jacamo.bridge.StateWorkbenchMain",
                    str(project / "auction.jcm"), str(args.mapping), str(args.csl), str(args.istar), "--headless", "--seconds="+str(seconds)]
         started = time.monotonic()
         with (work / "consumer.log").open("w") as log:

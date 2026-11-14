@@ -1,1 +1,0 @@
-class Plain { int value; void change(){value++;} }

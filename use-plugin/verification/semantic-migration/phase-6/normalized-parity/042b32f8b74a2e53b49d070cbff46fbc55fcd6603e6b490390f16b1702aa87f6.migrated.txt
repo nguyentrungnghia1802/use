@@ -1,3 +1,0 @@
-false
-null
-[semantic: ACHIEVE goal 'a' cannot refine MAINTAIN goal 'parent' via AND — allowed child goal types are [MAINTAIN, NONE]]

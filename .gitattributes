@@ -1,12 +1,4 @@
-
-# Audited source freeze v5 checkout bytes: preserve the tested LF/CRLF form.
-"pom.xml" text eol=lf
-
-# Formal case inputs and pinned reference fixtures are byte-hashed.
-/use-plugin/examples/auction/** -text
-/use-plugin/examples/hello-world/** text eol=crlf
-/use-plugin/examples/house-building/** text eol=crlf
-/use-plugin/src/test/resources/auction-reference/** -text
-
-# Preserve final tested source-freeze bytes for repository delivery.
-"plan.md" text eol=crlf
+# Stable project files; imported source bytes are controlled inside use-plugin.
+/pom.xml text eol=lf
+/README.md text eol=lf
+/doc/*.md text eol=lf

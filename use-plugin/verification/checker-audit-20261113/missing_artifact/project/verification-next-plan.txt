@@ -1,4 +1,0 @@
-fault_missing_artifact	bob	1794586458098
-fault_missing_artifact	bob	1794586458105
-after_start	bob	1794586458113
-after_start	bob	1794586458124

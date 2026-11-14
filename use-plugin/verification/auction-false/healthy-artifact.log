@@ -1,2 +1,0 @@
-Received bid 42.0 from probefec15658d28543f79b450e51d0d686ff for service
-{faultyVariant=false, after={best_bid=42.0, running=false, task=service, winner=probefec15658d28543f79b450e51d0d686ff}, loadedClass=file:/D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/verification/auction-false/healthy-classes/, classSha256=3e18301988e95073e60de924a6ce6a2f091f29a18fd38673de30d3669599c789, sourceOperationSucceeded=true, before={best_bid=42.0, running=true, task=service, winner=no_winner}, status=PASS}

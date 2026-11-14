@@ -1,24 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin id="org.tzi.use.plugins.jacamo" name="JaCaMo" version="1.0.1"
         publisher="USE JaCaMo Plugin" class="org.tzi.use.plugins.jacamo.JaCaMoPlugin">
-    <commands>
-        <command id="org.tzi.use.plugins.jacamo.status" label="JaCaMo status"
-                 shellcmd="jacamo status" alias="jacamo-status"
-                 class="org.tzi.use.plugins.jacamo.JaCaMoStatusCommand"
-                 help="Show Bridge authority, readiness, negotiated capabilities and revision status"/>
-    </commands>
     <actions>
-        <action id="org.tzi.use.plugins.jacamo.goal-verification.action" label="use4Goal verification"
-                class="org.tzi.use.plugins.jacamo.JaCaMoGoalVerificationAction"
-                icon="icons/status.gif" tooltip="Authored CSL/iStar models and OCL over selected external JaCaMo state"
-                menu="JaCaMo" menuitem="use4Goal verification..." toolbaritem="false"/>
-        <action id="org.tzi.use.plugins.jacamo.workbench.action" label="JaCaMo workbench"
-                class="org.tzi.use.plugins.jacamo.JaCaMoWorkbenchAction"
-                icon="icons/status.gif" tooltip="Import official JaCaMo Bridge snapshots and verify them in USE"
-                menu="JaCaMo" menuitem="Open Workbench..." toolbaritem="false"/>
-        <action id="org.tzi.use.plugins.jacamo.status.action" label="JaCaMo status"
-                class="org.tzi.use.plugins.jacamo.JaCaMoStatusAction"
-                icon="icons/status.gif" tooltip="Show JaCaMo Bridge authority and readiness status"
-                menu="JaCaMo" menuitem="Status" toolbaritem="false"/>
+        <action id="org.tzi.use.plugins.jacamo.experiment.action" label="Run JaCaMo experiment"
+                class="org.tzi.use.plugins.jacamo.feature.bridge.JaCaMoExperimentAction"
+                icon="icons/status.gif" tooltip="Run JaCaMo and evaluate CSL / iStar inside USE"
+                menu="JaCaMo" menuitem="Run experiment..." toolbaritem="false"/>
     </actions>
 </plugin>

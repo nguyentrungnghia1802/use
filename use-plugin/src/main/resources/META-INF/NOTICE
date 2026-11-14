@@ -1,0 +1,13 @@
+USE CSL / OAL / iStar / JaCaMo plugins
+
+The USE host retains its GNU GPL version 2-or-later license (COPYING).
+Imported use4Goal DSL and diagram sources retain their GNU GPL version 3
+license and original copyright headers. Their pinned source commit is
+6f3e73801239fd8bfb94ca8d04ba531b903c0ac9; attribution and source hashes are
+in META-INF/use4goal-provenance.json and META-INF/use4goal-view-provenance.json.
+License texts are in META-INF/licenses.
+
+Only ANTLR 4.9.3 runtime is shaded into the plugin; its upstream license
+is retained in the JAR. JaCaMo, Jason, CArtAgO, Moise and NPL remain imported
+runtime JARs, with their original licenses/notices. The plugin contains
+connection and observation adapters, not alternate implementations of these tools.

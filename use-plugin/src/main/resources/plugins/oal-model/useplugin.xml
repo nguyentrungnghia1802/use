@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="org.tzi.use.plugins.oal-model" name="OAL State" version="1.0.1" publisher="USE Modeling Tools" class="org.tzi.use.plugins.jacamo.feature.oal.OalModelPlugin"><actions><action id="org.tzi.use.plugins.oal-model.open" label="OAL State" class="org.tzi.use.plugins.jacamo.feature.oal.OalModelAction" menu="OAL State" menuitem="Open..." icon="icons/model.gif" tooltip="Open OAL State in USE" toolbaritem="false"/></actions></plugin>

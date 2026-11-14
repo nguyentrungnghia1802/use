@@ -1,7 +1,0 @@
-Oct 31, 2026 4:26:10 PM java.util.jar.Attributes read
-WARNING: Duplicate name in Manifest: Implementation-Version.
-Ensure that the manifest does not have duplicate entries, and
-that blank lines separate individual sections in both your
-manifest and in the META-INF/MANIFEST.MF entry in the jar file.
-Agent mind inspector is running at http://192.168.0.103:3272
-S01_POSITIVE_BOUNDARY_PROBE_PASS

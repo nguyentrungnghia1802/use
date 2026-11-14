@@ -1,2 +1,0 @@
-Received bid 42.0 from probe365b632907b84fdf98127b6982a2cb25 for service
-{status=PASS, before={best_bid=42.0, running=true, task=service, winner=no_winner}, sourceOperationSucceeded=true, classSha256=8ace613431c7c8e8094627211b8d27c4a443e5395c432323be392664d5a42ffe, loadedClass=file:/D:/_CODE_BANK/Project_/08_Thesis/use/use-plugin/verification/auction-false/false-classes/, after={best_bid=42.0, running=true, task=service, winner=probe365b632907b84fdf98127b6982a2cb25}, faultyVariant=true}

@@ -1,3 +1,0 @@
-false
-null
-[semantic: refinement cycle detected involving element 'a']

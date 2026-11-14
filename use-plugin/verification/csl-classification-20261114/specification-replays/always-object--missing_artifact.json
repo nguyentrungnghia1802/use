@@ -1,1 +1,0 @@
-{"decision":"HOLD_FAILURE","evaluatedCheckpoints":1,"events":[{"completedAuctions":0,"decision":"HOLD_FAILURE","failedInvariants":["auctionGroup::AlwaysHasAuction"],"sequence":1,"violatedGoals":[]}],"firstHoldSequence":1,"scope":"Recorded-state prefix only; does not predict later JaCaMo behavior after a changed decision"}

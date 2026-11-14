@@ -1,4 +1,0 @@
-after_start	bob	1794586427731
-after_start	bob	1794586427756
-after_bid_1	alice	1794586428951
-after_bid_1	alice	1794586428967
