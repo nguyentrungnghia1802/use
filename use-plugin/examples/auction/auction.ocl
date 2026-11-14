@@ -1,8 +1,0 @@
--- Optional additional verification requirements for Auction.
--- Base invariants/operation contracts are in auction.csl;
--- Goal/Task predicates and source-observer contracts are in auction.istar.
--- Do not duplicate those names/bodies here: duplicates fail closed.
--- Add native USE OCL clauses here, and bind their contexts/names in XML.
--- No optional extra requirements are enabled by default.
--- WithinDeadline is embedded in auction.istar and bound in XML, following the
--- user-confirmed Core diagram. Missing qualified source times remain undefined.

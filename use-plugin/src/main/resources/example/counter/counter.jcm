@@ -1,0 +1,8 @@
+mas state_only_counter {
+    agent alice : counter.asl {
+        focus: main.counter
+    }
+    workspace main {
+        artifact counter : state_demo.Counter
+    }
+}

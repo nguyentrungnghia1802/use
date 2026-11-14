@@ -1,0 +1,90 @@
+-- Auction case-study demo constraints
+-- Purpose:
+--   * show invariants that should PASS for the supplied auction case study
+--   * show intentionally false invariants that should FAIL
+--   * include a runtime-sensitive invariant over C09 ObservablePropertySnapshot
+--
+-- Load this file only after the Auction native model is active.
+-- The two DEMO_FAIL invariants are intentionally wrong.
+
+-- =========================
+-- Expected PASS: static case-study structure
+-- Counts describe deployed declarations/specification objects, not the number
+-- of live SchemeBoard/GroupBoard artifacts. Official Moise includes abstract soc.
+-- =========================
+
+context Agent
+inv PASS_AuctionHasFiveAgents:
+    Agent.allInstances()->size() = 5
+
+context Role
+inv PASS_AuctionHasTwoConcreteRoles:
+    Role.allInstances()->select(r | not r.isAbstract)->size() = 2
+
+context Role
+inv PASS_AuctionHasOneAbstractRole:
+    Role.allInstances()->select(r | r.isAbstract)->size() = 1
+
+context Group
+inv PASS_AuctionHasOneGroup:
+    Group.allInstances()->size() = 1
+
+context Scheme
+inv PASS_AuctionHasOneScheme:
+    Scheme.allInstances()->size() = 1
+
+context Mission
+inv PASS_AuctionHasTwoMissions:
+    Mission.allInstances()->size() = 2
+
+context OrganizationalGoal
+inv PASS_AuctionHasFourOrganizationalGoals:
+    OrganizationalGoal.allInstances()->size() = 4
+
+context Norm
+inv PASS_AuctionHasTwoNorms:
+    Norm.allInstances()->size() = 2
+
+-- =========================
+-- Intentional FAIL constraints
+-- These are deliberately inconsistent with the Auction case study.
+-- They are useful to demonstrate that external OCL violations are reported.
+-- =========================
+
+context Agent
+inv DEMO_FAIL_AuctionShouldHaveSixAgents:
+    Agent.allInstances()->size() = 6
+
+context Mission
+inv DEMO_FAIL_AuctionShouldHaveThreeMissions:
+    Mission.allInstances()->size() = 3
+
+-- =========================
+-- Runtime demonstration
+-- C09 ObservablePropertySnapshot is the supported runtime property projection.
+--
+-- Observe the original auction_env.AuctionArtifact protocol, not framework or
+-- organization properties already present at baseline. Native C15 navigation
+-- Artifact.artifacts denotes its ArtifactType; C17 exposes Artifact.properties.
+--
+-- Official init/start/stop produces running=false/true/false. C09 values and
+-- valueTypes are canonical JSON Strings, not native Boolean/numeric attributes.
+-- This deliberately restrictive demo policy PASSes when no auction is running,
+-- FAILs while one is running, and PASSes again after all observed auctions stop.
+-- A materialized AuctionArtifact must expose exactly one correctly typed
+-- running property; missing/malformed data must not satisfy this predicate.
+-- Required incomplete Cartago coverage is SKIPPED by the verification service.
+-- =========================
+
+context Artifact
+inv DEMO_RUNTIME_NoRunningAuction:
+    self.artifacts.javaClassName = 'auction_env.AuctionArtifact' implies
+    (self.properties->one(p | p.name = 'running') and
+     self.properties->select(p | p.name = 'running')->forAll(p |
+         p.valueTypes = '["java.lang.Boolean"]' and
+         p.values = '["false"]'))
+
+-- Runtime sanity invariant expected to remain PASS for this small case study.
+context ObservablePropertySnapshot
+inv PASS_RuntimePropertySnapshotCountIsBounded:
+    ObservablePropertySnapshot.allInstances()->size() < 1000

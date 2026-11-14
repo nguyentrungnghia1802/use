@@ -836,6 +836,27 @@ public class MainWindow extends JFrame {
         addNewViewFrame(f, true);
     }
 
+    /** Adds a self-contained plugin workspace without the host's empty browser/log taking its space.
+     * The previous shell layout is restored when the workspace closes. */
+    public void addWorkspaceViewFrame(ViewFrame frame) {
+        JSplitPane upper=(JSplitPane)fTopSplitPane.getTopComponent();
+        int browserDivider=upper.getDividerLocation(),logDivider=fTopSplitPane.getDividerLocation();
+        int browserDividerSize=upper.getDividerSize(),logDividerSize=fTopSplitPane.getDividerSize();
+        boolean browserVisible=fModelBrowser.isVisible(),logVisible=fLogPanel.isVisible();
+        fModelBrowser.setVisible(false);fLogPanel.setVisible(false);
+        upper.setDividerSize(0);fTopSplitPane.setDividerSize(0);
+        upper.setDividerLocation(0);fTopSplitPane.setDividerLocation(1.0);
+        addNewViewFrame(frame);
+        frame.addInternalFrameListener(new InternalFrameAdapter(){
+            @Override public void internalFrameClosed(InternalFrameEvent event){
+                fModelBrowser.setVisible(browserVisible);fLogPanel.setVisible(logVisible);
+                upper.setDividerSize(browserDividerSize);fTopSplitPane.setDividerSize(logDividerSize);
+                upper.setDividerLocation(browserDivider);fTopSplitPane.setDividerLocation(logDivider);
+            }
+        });
+        SwingUtilities.invokeLater(()->{try{frame.setMaximum(true);}catch(java.beans.PropertyVetoException ignored){}});
+    }
+
     /**
      * Adds a new view (internal frame) to the desktop.
      * @param legacySize

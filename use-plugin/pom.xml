@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.tzi.use</groupId>
@@ -10,51 +8,17 @@
     </parent>
     <artifactId>use-plugin</artifactId>
     <version>1.0.1</version>
-    <name>USE JaCaMo Plugin</name>
-
+    <name>USE CSL, OAL, iStar and JaCaMo plugins</name>
     <properties>
-        <project.build.outputTimestamp>2026-09-18T00:00:00Z</project.build.outputTimestamp>
-        <jacamo.version>1.3.1</jacamo.version>
-        <jason.version>3.3.2</jason.version>
-        <cartago.version>3.1</cartago.version>
-        <moise.version>1.1</moise.version>
+        <antlr4.version>4.9.3</antlr4.version>
     </properties>
-
     <repositories>
         <repository>
             <id>jacamo</id>
             <url>https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master</url>
         </repository>
     </repositories>
-
     <dependencies>
-        <dependency>
-            <groupId>org.tzi.use</groupId>
-            <artifactId>use-jacamo-semantic-engine</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tzi.use</groupId>
-            <artifactId>jacamo-bridge-contract</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tzi.use</groupId>
-            <artifactId>jacamo-bridge-jacamo</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Read-only EMF model frontend and native metamodel validation. -->
-        <dependency>
-            <groupId>org.eclipse.emf</groupId>
-            <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-            <version>2.39.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.networknt</groupId>
-            <artifactId>json-schema-validator</artifactId>
-            <version>2.0.1</version>
-        </dependency>
         <dependency>
             <groupId>org.tzi.use</groupId>
             <artifactId>use-gui</artifactId>
@@ -62,22 +26,25 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>io.github.jason-lang</groupId>
-            <artifactId>jason-interpreter</artifactId>
-            <version>3.3.2-checkpoint-SNAPSHOT</version>
-            <scope>provided</scope>
+            <groupId>org.tzi.use</groupId>
+            <artifactId>use-core</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jacamo</groupId>
-            <artifactId>cartago</artifactId>
-            <version>3.1-checkpoint-SNAPSHOT</version>
-            <scope>provided</scope>
+            <artifactId>jacamo</artifactId>
+            <version>1.3.1-checkpoint-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.gradle</groupId>
+                    <artifactId>gradle-tooling-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.jacamo</groupId>
-            <artifactId>moise</artifactId>
-            <version>1.1</version>
-            <scope>provided</scope>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>${antlr4.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -85,147 +52,49 @@
             <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4</artifactId>
+            <version>${antlr4.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/version-manifest</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>org/tzi/use/plugins/jacamo/ocl/jacamo-core.ocl</exclude>
-                    <exclude>org/tzi/use/plugins/jacamo/ocl/jacamo-core-manifest.json</exclude>
-                    <exclude>org/tzi/use/plugins/jacamo/runtime/jacamo-use-runtime-mapping-v1.json</exclude>
-                    <exclude>org/tzi/use/plugins/jacamo/runtime/runtime-mapping.schema.json</exclude>
-                    <exclude>org/tzi/use/plugins/jacamo/runtime/runtime-mapping-freeze.json</exclude>
-                    <exclude>org/tzi/use/plugins/jacamo/verification/jacamo-verification-profile-v1.json</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>src/main/resources/org/tzi/use/plugins/jacamo/ocl</directory>
-                <targetPath>org/tzi/use/plugins/jacamo/historical/version-1/ocl</targetPath>
-                <includes>
-                    <include>jacamo-core.ocl</include>
-                    <include>jacamo-core-manifest.json</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources/org/tzi/use/plugins/jacamo/runtime</directory>
-                <targetPath>org/tzi/use/plugins/jacamo/historical/version-1/runtime</targetPath>
-                <includes>
-                    <include>jacamo-use-runtime-mapping-v1.json</include>
-                    <include>runtime-mapping.schema.json</include>
-                    <include>runtime-mapping-freeze.json</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources/org/tzi/use/plugins/jacamo/verification</directory>
-                <targetPath>org/tzi/use/plugins/jacamo/historical/version-1/verification</targetPath>
-                <includes><include>jacamo-verification-profile-v1.json</include></includes>
-            </resource>
-            <resource>
-                <directory>Core/Metamodel/version-1</directory>
-                <targetPath>org/tzi/use/plugins/jacamo/historical/version-1</targetPath>
-                <includes><include>JaCaMo-Metamodel.ecore</include></includes>
-            </resource>
-            <resource>
-                <directory>Core/Mapping/version-1</directory>
-                <targetPath>org/tzi/use/plugins/jacamo/historical/version-1</targetPath>
-                <includes>
-                    <include>jacamo-use-mapping-v1.json</include>
-                    <include>jacamo-use-mapping.schema.json</include>
-                    <include>freeze-manifest.json</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>Core/Metamodel/csl-monitor-v1</directory>
-                <targetPath>org/tzi/use/plugins/jacamo/semantics/metamodel</targetPath>
-                <includes><include>CSLMonitor.ecore</include></includes>
-            </resource>
-            <resource>
-                <directory>Core/Metamodel/jacamo-source-v2</directory>
-                <targetPath>org/tzi/use/plugins/jacamo/semantics/metamodel</targetPath>
-                <includes><include>jacamo_v2.ecore</include></includes>
-            </resource>
-            <resource>
-                <directory>Core/Metamodel/version-2</directory>
-                <targetPath>org/tzi/use/plugins/jacamo/canonical/version-2</targetPath>
-                <includes><include>jacamo_v2_complete.ecore</include></includes>
-            </resource>
-            <resource>
-                <directory>Core/Mapping/version-2</directory>
-                <targetPath>org/tzi/use/plugins/jacamo/canonical/version-2</targetPath>
-                <includes><include>jacamo-use-mapping-v2.json</include><include>jacamo-use-mapping-v2.schema.json</include></includes>
-            </resource>
-            <resource>
-                <directory>release</directory>
-                <targetPath>org/tzi/use/plugins/jacamo/release</targetPath>
-                <includes>
-                    <include>release-manifest.json</include>
-                    <include>v2-freeze-manifest.json</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>.</directory>
-                <targetPath>org/tzi/use/plugins/jacamo/release</targetPath>
-                <includes><include>compatibility.json</include></includes>
-            </resource>
-            <resource>
-                <directory>licenses</directory>
-                <targetPath>org/tzi/use/plugins/jacamo/release/licenses</targetPath>
-                <includes>
-                    <include>APACHE-2.0.txt</include>
-                    <include>SLF4J-MIT.txt</include>
-                    <include>ANTLR4-4.9.3.txt</include>
-                </includes>
-            </resource>
-        </resources>
+        <finalName>use-jacamo-plugin-${project.version}</finalName>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.6.0</version>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>${antlr4.version}</version>
                 <executions>
                     <execution>
-                        <id>add-auction-test-source</id>
-                        <phase>generate-test-sources</phase>
-                        <goals><goal>add-test-source</goal></goals>
+                        <id>language-parsers</id>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
                         <configuration>
-                            <sources>
-                                <source>examples/auction/src/env</source>
-                                <source>examples/hello-world/src/env</source>
-                                <source>examples/house-building/src/env</source>
-                            </sources>
+                            <sourceDirectory>${project.basedir}/src/main/resources/grammars</sourceDirectory>
+                            <includes>
+                                <include>CSL.g4</include>
+                                <include>IStar.g4</include>
+                            </includes>
+                            <visitor>true</visitor>
+                            <listener>true</listener>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
+            <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.4.2</version>
                 <configuration>
                     <forceCreation>true</forceCreation>
                     <excludes>
-                        <!-- Phase 10: historical source remains testable, but duplicate semantic authority is not shipped. -->
-                        <exclude>org/tzi/use/plugins/jacamo/extraction/StaticProjectImporter*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/extraction/JcmSemanticParser*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/extraction/JasonSourceParser*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/extraction/CartagoSourceExtractor*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/extraction/MoiseXmlParser*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/extraction/SemanticResolver*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/extraction/ElementDraft*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/extraction/ExtractionContext*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/extraction/ImportResult*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/extraction/XmlSourcePositions*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/project/JcmLexer*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/project/JcmProjectLoader*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/project/ProjectDiscoveryResult*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/project/ProjectGraph*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/project/ProjectEdge*</exclude>
-                        <exclude>org/tzi/use/plugins/jacamo/project/ImportService*</exclude>
+                        <exclude>plugins/**</exclude>
                     </excludes>
                     <archive>
                         <manifest>
@@ -233,17 +102,103 @@
                         </manifest>
                     </archive>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>csl-entry-point</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>csl</classifier>
+                            <classesDirectory>${project.build.outputDirectory}/plugins/csl-model</classesDirectory>
+                            <archive>
+                                <manifest>
+                                    <mainClass>org.tzi.use.plugins.jacamo.feature.csl.CslModelPlugin</mainClass>
+                                </manifest>
+                                <manifestEntries>
+                                    <Class-Path>use-jacamo-plugin-${project.version}.jar</Class-Path>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>oal-entry-point</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>oal</classifier>
+                            <classesDirectory>${project.build.outputDirectory}/plugins/oal-model</classesDirectory>
+                            <archive>
+                                <manifest>
+                                    <mainClass>org.tzi.use.plugins.jacamo.feature.oal.OalModelPlugin</mainClass>
+                                </manifest>
+                                <manifestEntries>
+                                    <Class-Path>use-jacamo-plugin-${project.version}.jar</Class-Path>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>istar-entry-point</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>istar</classifier>
+                            <classesDirectory>${project.build.outputDirectory}/plugins/istar-model</classesDirectory>
+                            <archive>
+                                <manifest>
+                                    <mainClass>org.tzi.use.plugins.jacamo.feature.istar.IStarModelPlugin</mainClass>
+                                </manifest>
+                                <manifestEntries>
+                                    <Class-Path>use-jacamo-plugin-${project.version}.jar</Class-Path>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>istarscn-entry-point</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>istarscn</classifier>
+                            <classesDirectory>${project.build.outputDirectory}/plugins/istar-scn</classesDirectory>
+                            <archive>
+                                <manifest>
+                                    <mainClass>org.tzi.use.plugins.jacamo.feature.istarscn.IStarScnPlugin</mainClass>
+                                </manifest>
+                                <manifestEntries>
+                                    <Class-Path>use-jacamo-plugin-${project.version}.jar</Class-Path>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
+            <!-- Only the parser runtime is shaded. USE and JaCaMo retain their own implementations. -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.6.0</version>
                 <executions>
                     <execution>
+                        <id>plugin-runtime</id>
                         <phase>package</phase>
-                        <goals><goal>shade</goal></goals>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.antlr:antlr4-runtime</include>
+                                </includes>
+                            </artifactSet>
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
@@ -251,97 +206,67 @@
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
-                                        <exclude>META-INF/MANIFEST.MF</exclude>
                                         <exclude>module-info.class</exclude>
-                                        <exclude>META-INF/versions/*/module-info.class</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer"/>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>org.tzi.use.plugins.jacamo.JaCaMoPlugin</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
                     </execution>
-
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.8.1</version>
+                <executions>
+                    <execution>
+                        <id>development-runtime-classpath</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>build-classpath</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <outputFile>${project.build.directory}/runtime-classpath.txt</outputFile>
+                            <regenerateFile>true</regenerateFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>official-jacamo-runtime</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <excludeArtifactIds>antlr4-runtime</excludeArtifactIds>
+                            <outputDirectory>${project.build.directory}/jacamo-runtime</outputDirectory>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.7.1</version>
                 <executions>
                     <execution>
-                        <id>release-package</id>
+                        <id>plugins-distribution</id>
                         <phase>package</phase>
-                        <goals><goal>single</goal></goals>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
                         <configuration>
-                            <descriptors><descriptor>src/assembly/release.xml</descriptor></descriptors>
-                            <finalName>use-jacamo-plugin-${project.version}</finalName>
-                            <appendAssemblyId>true</appendAssemblyId>
-                            <attach>true</attach>
+                            <descriptors>
+                                <descriptor>src/assembly/plugins.xml</descriptor>
+                            </descriptors>
+                            <finalName>use-modeling-tools-${project.version}</finalName>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>stage-current-plugin-for-use-gui</id>
-                        <phase>package</phase>
-                        <goals><goal>run</goal></goals>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${project.basedir}/../use-gui/lib/plugins"/>
-
-                                <copy file="${project.build.directory}/${project.build.finalName}.jar"
-                                      tofile="${project.basedir}/../use-gui/lib/plugins/use-jacamo-plugin-${project.version}.jar"
-                                      overwrite="true"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>release-package-checksum</id>
-                        <phase>pre-integration-test</phase>
-                        <goals><goal>run</goal></goals>
-                        <configuration>
-                            <target>
-                                <checksum file="${project.build.directory}/use-jacamo-plugin-${project.version}-release.zip"
-                                          algorithm="SHA-256" fileext=".sha256" format="MD5SUM"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.2.5</version>
-                <configuration>
-                    <!-- Failsafe executes the shaded project artifact. Its engine
-                         and ANTLR4 are already inside that JAR; re-adding their
-                         reactor dependency JARs creates duplicate engine resources.
-                         Keep the production installation guard strict in tests too. -->
-                    <classpathDependencyExcludes>
-                        <classpathDependencyExclude>org.tzi.use:use-jacamo-semantic-engine</classpathDependencyExclude>
-                        <classpathDependencyExclude>org.antlr:antlr4-runtime</classpathDependencyExclude>
-                    </classpathDependencyExcludes>
-                    <!-- Full structured CSL observations in multi-agent acceptance runs.
-                         Production keeps the 64 MiB default and the same fail-closed quota. -->
-                    <systemPropertyVariables>
-                        <use.jacamo.runtime.journal.maxBytes>536870912</use.jacamo.runtime.journal.maxBytes>
-                    </systemPropertyVariables>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals><goal>integration-test</goal><goal>verify</goal></goals>
                     </execution>
                 </executions>
             </plugin>

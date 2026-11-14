@@ -687,3 +687,6 @@
 
 # Preserve final tested source-freeze bytes for repository delivery.
 "pom.xml" text eol=crlf
+
+# Preserve the Unix launcher on Linux checkouts.
+/src/main/resources/bin/use text eol=lf

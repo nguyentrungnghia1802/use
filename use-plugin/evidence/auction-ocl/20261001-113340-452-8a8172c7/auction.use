@@ -1,0 +1,517 @@
+model auction_CodeGrounded
+
+enum MoisePlanOperator {
+  sequence, choice, parallel
+ };
+enum TriggerType {
+  belief, achieve, test, signal
+ };
+enum ActionKind {
+  EXTERNAL, INTERNAL
+ };
+enum PlanBodyType {
+  none, action, internalAction, achieve, test, addBel, addBelNewFocus, addBelBegin, addBelEnd, delBel, delBelNewFocus, delAddBel, achieveNF, constraint
+ };
+enum MoiseNormType {
+  obligation, permission
+ };
+enum MoiseGoalType {
+  performance, achievement, maintenance
+ };
+enum TriggerOperator {
+  add, del, goalState
+ };
+
+class Scheme
+attributes
+  functionalSpecificationSemanticId : String
+  rootGoalSemanticId : String
+  schemeId : String
+  semanticId : String
+end
+
+association M43NormMission between
+  Norm[*] role m43Mission
+  Mission[0..1] role m43Norms
+end
+
+association M07RoleRelationCompatibility between
+  RoleRelation[1] role m07CompatibilityRelation
+  Compatibility[0..1] role m07CompatibilityRelation
+end
+
+class SchemeMissionCardinality
+attributes
+  maxCardinality : Integer
+  minCardinality : Integer
+  missionSemanticId : String
+  schemeSemanticId : String
+  semanticId : String
+end
+
+composition A19PlanBodyElement between
+  Plan[1]
+  PlanBodyElement[*] role bodyElements ordered
+end
+
+class StructuralSpecification
+attributes
+  organizationSemanticId : String
+  rootGroupSemanticId : String
+  semanticId : String
+  specificationId : String
+end
+
+association X05AgentWorkspace between
+  Agent[*] role x05Workspaces
+  Workspace[*] role x05Agents ordered
+end
+
+class Mission
+attributes
+  goalSemanticIds : String
+  missionId : String
+  schemeSemanticId : String
+  semanticId : String
+end
+
+class ObservablePropertySnapshot
+attributes
+  annotations : String
+  artifactSemanticId : String
+  name : String
+  propertyId : String
+  semanticId : String
+  valueTypes : String
+  values : String
+end
+
+association M35SchemeRootGoal between
+  Scheme[0..1] role m35RootGoal
+  OrganizationalGoal[0..1] role m35Scheme
+end
+
+association M27CompatibilitySource between
+  Compatibility[*] role m27SourceCompatibility
+  Role[1] role m27SourceRole
+end
+
+composition M41NSNorm between
+  NormativeSpecification[1] role m41Norms
+  Norm[*] role m41NormativeSpecification ordered
+end
+
+composition M18OrganizationSS between
+  Organization[1] role m18StructuralSpecification
+  StructuralSpecification[1] role m18Organization
+end
+
+class Agent
+attributes
+  agentClass : String
+  architectureClasses : String
+  beliefBaseClass : String
+  host : String
+  instances : Integer
+  name : String
+  options : String
+  semanticId : String
+  sourceUri : String
+end
+
+composition C13EnvironmentWorkspace between
+  Environment[1]
+  Workspace[*] role workspaces ordered
+end
+
+class OrganizationalGoal
+attributes
+  arguments : String
+  dependencySemanticIds : String
+  description : String
+  goalId : String
+  goalType : MoiseGoalType
+  inPlanSemanticId : String
+  location : String
+  minAgentsToSatisfy : Integer
+  planSemanticId : String
+  schemeSemanticId : String
+  semanticId : String
+  ttf : String
+end
+
+association M30CardinalityMember between
+  GroupRoleCardinality[*] role m30GroupRoleCardinality
+  Role[1] role m30RoleMemberships
+end
+
+class Role
+attributes
+  isAbstract : Boolean
+  roleId : String
+  semanticId : String
+end
+
+composition M33FSScheme between
+  FunctionalSpecification[1] role m33Schemes
+  Scheme[*] role m33FunctionalSpecification ordered
+end
+
+association M07RoleRelationLink between
+  RoleRelation[1] role m07LinkRelation
+  Link[0..1] role m07RoleRelation
+end
+
+composition M19OrganizationFS between
+  Organization[1] role m19FunctionalSpecification
+  FunctionalSpecification[1] role m19Organization
+end
+
+association M36SchemeCardinality between
+  SchemeMissionCardinality[*] role m36SchemeCardinality
+  Scheme[1] role m36MissionCardinalities
+end
+
+class Environment
+attributes
+  defaultInfrastructureLayer : String
+  environmentId : String
+  name : String
+  semanticId : String
+  version : String
+end
+
+class FunctionalSpecification
+attributes
+  organizationSemanticId : String
+  semanticId : String
+  specificationId : String
+end
+
+association M28CompatibilityTarget between
+  Compatibility[*] role m28TargetCompatibility
+  Role[1] role m28TargetRole
+end
+
+composition C14WorkspaceArtifact between
+  Workspace[1]
+  Artifact[*] role artifacts ordered
+end
+
+association M31SubgroupCardinalityOwner between
+  SubGroupCardinality[*] role m31ParentCardinality
+  Group[1] role m31SubgroupCardinalities
+end
+
+association M40PlanSubGoals between
+  OrganizationalPlan[0..1] role m40Plan
+  OrganizationalGoal[*] role m40SubGoals ordered
+end
+
+class Compatibility
+attributes
+  roleRelationSemanticId : String
+  semanticId : String
+end
+
+class Link
+attributes
+  linkType : String
+  roleRelationSemanticId : String
+  semanticId : String
+end
+
+composition M21SSRole between
+  StructuralSpecification[1] role m21Roles
+  Role[*] role m21StructuralSpecification ordered
+end
+
+class Group
+attributes
+  groupId : String
+  parentGroupSemanticId : String
+  semanticId : String
+end
+
+class PlanBodyElement
+attributes
+  bodyType : PlanBodyType
+  ordinal : Integer
+  semanticId : String
+  term : String
+end
+
+class Organization
+attributes
+  name : String
+  semanticId : String
+  sourceUri : String
+end
+
+association M32SubgroupCardinalityMember between
+  SubGroupCardinality[*] role m32ChildCardinality
+  Group[1] role m32ParentCardinalities
+end
+
+composition M22SSGroup between
+  StructuralSpecification[0..1] role m22RootGroup
+  Group[1] role m22StructuralSpecification
+end
+
+class CartagoAgentIdentity
+attributes
+  globalId : String
+  localId : Integer
+  name : String
+  role : String
+  semanticId : String
+  workspaceSemanticId : String
+end
+
+class GroupRoleCardinality
+attributes
+  groupSemanticId : String
+  maxCardinality : Integer
+  minCardinality : Integer
+  roleSemanticId : String
+  semanticId : String
+end
+
+association C15ArtifactType between
+  Artifact[*]
+  ArtifactType[1] role artifacts
+end
+
+association M26LinkTarget between
+  Link[*] role m26TargetLink
+  Role[1] role m26TargetRole
+end
+
+association M42NormRole between
+  Norm[*] role m42Role
+  Role[0..1] role m42Norms
+end
+
+association X06AgentArtifactFocus between
+  Agent[*] role x06Artifacts
+  Artifact[*] role x06Agents ordered
+end
+
+association C20AgentArtifactFocus between
+  CartagoAgentIdentity[*] role agent
+  Artifact[*] role focusedArtifacts ordered
+end
+
+composition C17ArtifactObservableProperty between
+  Artifact[1]
+  ObservablePropertySnapshot[*] role properties ordered
+end
+
+association M37MissionCardinality between
+  SchemeMissionCardinality[*] role m37MissionCardinality
+  Mission[1] role m37SchemeCardinalities
+end
+
+class OrganizationalPlan
+attributes
+  planId : String
+  planOperator : MoisePlanOperator
+  schemeSemanticId : String
+  semanticId : String
+  successRate : Real
+  targetGoalSemanticId : String
+end
+
+association M29CardinalityOwner between
+  GroupRoleCardinality[*] role m29GroupRoleCardinality
+  Group[1] role m29RoleCardinalities
+end
+
+composition M20OrganizationNS between
+  Organization[1] role m20NormativeSpecification
+  NormativeSpecification[1] role m20Organization
+end
+
+association M25LinkSource between
+  Link[*] role m25SourceLink
+  Role[1] role m25SourceRole
+end
+
+association M39GoalPlan between
+  OrganizationalGoal[1] role m39Plan
+  OrganizationalPlan[0..1] role m39TargetGoal
+end
+
+class SubGroupCardinality
+attributes
+  maxCardinality : Integer
+  minCardinality : Integer
+  parentGroupSemanticId : String
+  semanticId : String
+  subGroupSemanticId : String
+end
+
+composition A17PlanLibraryPlan between
+  PlanLibrary[1]
+  Plan[*] role plans ordered
+end
+
+class RoleRelation
+attributes
+  bidirectional : Boolean
+  extendsToSubGroups : Boolean
+  groupSemanticId : String
+  relationId : String
+  relationKind : String
+  scope : String
+  semanticId : String
+  sourceRoleSemanticId : String
+  targetRoleSemanticId : String
+end
+
+class Plan
+attributes
+  jasonContext : String
+  label : String
+  ordinal : Integer
+  semanticId : String
+end
+
+composition M23GroupSubgroup between
+  Group[0..1] role m23ParentGroup
+  Group[*] role m23Subgroups ordered
+end
+
+class Artifact
+attributes
+  artifactTypeSemanticId : String
+  creatorAgentSemanticId : String
+  name : String
+  semanticId : String
+  uuid : String
+  workspaceSemanticId : String
+end
+
+association M38MissionGoal between
+  Mission[*] role m38Goals
+  OrganizationalGoal[*] role m38Missions ordered
+end
+
+class PlanLibrary
+attributes
+  semanticId : String
+end
+
+class NormativeSpecification
+attributes
+  organizationSemanticId : String
+  semanticId : String
+  specificationId : String
+end
+
+association X09AgentIdentity between
+  Agent[*] role x09CartagoIdentities
+  CartagoAgentIdentity[*] role x09Agents ordered
+end
+
+association X04AgentRole between
+  Agent[*] role x04Roles
+  Role[*] role x04Agents ordered
+end
+
+class ArtifactType
+attributes
+  classLoaderIdentity : String
+  javaClassName : String
+  semanticId : String
+end
+
+class Norm
+attributes
+  condition : String
+  missionSemanticId : String
+  normId : String
+  normType : MoiseNormType
+  normativeSpecificationSemanticId : String
+  roleSemanticId : String
+  semanticId : String
+  timeConstraint : String
+end
+
+association M24RoleSuperRole between
+  Role[*] role m24SubRole
+  Role[*] role m24SuperRoles
+end
+
+association A20PlanBodyNext between
+  PlanBodyElement[0..1] role current
+  PlanBodyElement[0..1] role next
+end
+
+composition M34SchemeMission between
+  Scheme[1] role m34Missions
+  Mission[*] role m34Scheme ordered
+end
+
+class Workspace
+attributes
+  address : String
+  environmentSemanticId : String
+  fullName : String
+  local : Boolean
+  name : String
+  parentSemanticId : String
+  protocol : String
+  remotePath : String
+  semanticId : String
+  uuid : String
+end
+
+association C19WorkspaceAgent between
+  Workspace[1]
+  CartagoAgentIdentity[*] role agents ordered
+end
+
+constraints
+context Plan inv A19OrderConsistent:
+  (self.bodyElements->isUnique( $elem0:PlanBodyElement | $elem0.ordinal ) and self.bodyElements->forAll( e:PlanBodyElement | ((e.ordinal >= 0) and (e.ordinal < self.bodyElements->size())) ))
+
+context Plan inv A20NextAgreesWithA19:
+  self.bodyElements->forAll( e:PlanBodyElement | if (e.ordinal < (self.bodyElements->size() - 1)) then (e.next = self.bodyElements->any( n:PlanBodyElement | (n.ordinal = (e.ordinal + 1)) )) else e.next.isUndefined() endif )
+
+context PlanLibrary inv A17OrderConsistent:
+  (self.plans->isUnique( $elem0:Plan | $elem0.ordinal ) and self.plans->forAll( p:Plan | ((p.ordinal >= 0) and (p.ordinal < self.plans->size())) ))
+
+context self : Agent inv PASS_AuctionHasFiveAgents:
+  (Agent.allInstances()->size() = 5)
+
+context self : Role inv PASS_AuctionHasTwoRoles:
+  (Role.allInstances()->size() = 2)
+
+context self : Group inv PASS_AuctionHasOneGroup:
+  (Group.allInstances()->size() = 1)
+
+context self : Scheme inv PASS_AuctionHasOneScheme:
+  (Scheme.allInstances()->size() = 1)
+
+context self : Mission inv PASS_AuctionHasTwoMissions:
+  (Mission.allInstances()->size() = 2)
+
+context self : OrganizationalGoal inv PASS_AuctionHasFourOrganizationalGoals:
+  (OrganizationalGoal.allInstances()->size() = 4)
+
+context self : Norm inv PASS_AuctionHasTwoNorms:
+  (Norm.allInstances()->size() = 2)
+
+context self : Agent inv DEMO_FAIL_AuctionShouldHaveSixAgents:
+  (Agent.allInstances()->size() = 6)
+
+context self : Mission inv DEMO_FAIL_AuctionShouldHaveThreeMissions:
+  (Mission.allInstances()->size() = 3)
+
+context self : ObservablePropertySnapshot inv DEMO_RUNTIME_NoObservablePropertySnapshots:
+  ObservablePropertySnapshot.allInstances()->isEmpty()
+
+context self : ObservablePropertySnapshot inv PASS_RuntimePropertySnapshotCountIsBounded:
+  (ObservablePropertySnapshot.allInstances()->size() < 1000)
+

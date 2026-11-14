@@ -9,13 +9,10 @@
     <packaging>pom</packaging>
     <version>7.5.0</version>
     <modules>
-        <module>use-plugin/modules/bridge-contract</module>
-        <module>use-plugin/modules/bridge-jacamo</module>
-        <module>use-assembly</module>
         <module>use-core</module>
-        <module>use-plugin/modules/semantic-engine</module>
         <module>use-gui</module>
         <module>use-plugin</module>
+        <module>use-assembly</module>
     </modules>
 
     <properties>

@@ -1,0 +1,15 @@
+name: Build USE and plugins
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - run: python3 use-plugin/tools/install-runtime.py
+      - run: mvn -B -pl use-plugin -am test '-Dtest=**/jacamo/**/*Test' -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false
+      - run: mvn -B package -Dmaven.test.skip=true

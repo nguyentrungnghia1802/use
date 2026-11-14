@@ -1,0 +1,136 @@
+{
+  "focused": {
+    "tests": 30,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "finishedAt": "2026-10-01T14:14:57+07:00",
+    "command": "mvn -B -pl use-plugin -am \"-Dtest=LiveJaCaMoLauncherLifetimeTest,AuctionExternalOclProfileTest,NativeOclLaunchEvidenceTest,GenericLauncherScriptTest,ExternalOclConstraintServiceTest,RuntimeVerificationCoordinatorTest,NativeRuntimeFacadeIntegrationTest,Phase9CaseStudyAcceptanceTest\" \"-Dsurefire.failIfNoSpecifiedTests=false\" test",
+    "log": "../focused-tests.log"
+  },
+  "fullReactor": {
+    "suiteCount": 125,
+    "tests": 546,
+    "unitTests": 406,
+    "integrationTests": 140,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "integrationSuites": [
+      {
+        "Tests": 1,
+        "Failures": 0,
+        "Errors": 0,
+        "Skipped": 0,
+        "Class": "org.tzi.use.OCLExpressionIT"
+      },
+      {
+        "Tests": 129,
+        "Failures": 0,
+        "Errors": 0,
+        "Skipped": 0,
+        "Class": "org.tzi.use.main.shell.ShellIT"
+      },
+      {
+        "Tests": 1,
+        "Failures": 0,
+        "Errors": 0,
+        "Skipped": 0,
+        "Class": "org.tzi.use.plugins.jacamo.codegrounded.NativeRuntimePackagedReplayIT"
+      },
+      {
+        "Tests": 1,
+        "Failures": 0,
+        "Errors": 0,
+        "Skipped": 0,
+        "Class": "org.tzi.use.plugins.jacamo.codegrounded.NativeUseExportRecompileIT"
+      },
+      {
+        "Tests": 2,
+        "Failures": 0,
+        "Errors": 0,
+        "Skipped": 0,
+        "Class": "org.tzi.use.plugins.jacamo.codegrounded.NativeUseGuiEndToEndIT"
+      },
+      {
+        "Tests": 1,
+        "Failures": 0,
+        "Errors": 0,
+        "Skipped": 0,
+        "Class": "org.tzi.use.plugins.jacamo.codegrounded.NativeUseSessionOclIT"
+      },
+      {
+        "Tests": 1,
+        "Failures": 0,
+        "Errors": 0,
+        "Skipped": 0,
+        "Class": "org.tzi.use.plugins.jacamo.GuiPluginStagingIT"
+      },
+      {
+        "Tests": 1,
+        "Failures": 0,
+        "Errors": 0,
+        "Skipped": 0,
+        "Class": "org.tzi.use.plugins.jacamo.LegacyAuthorityPackagingIT"
+      },
+      {
+        "Tests": 3,
+        "Failures": 0,
+        "Errors": 0,
+        "Skipped": 0,
+        "Class": "org.tzi.use.plugins.jacamo.release.ReleasePackageIT"
+      }
+    ],
+    "command": "mvn -B verify",
+    "finishedAt": "2026-10-01T14:22:14+07:00",
+    "pluginPackageReleaseIntegrationTests": 10,
+    "log": "../full-reactor-verify.log"
+  },
+  "live": {
+    "result": "JACAMO_BRIDGE_NATIVE_PASS",
+    "assertedTransition": "PASS -> FAIL -> PASS",
+    "journalEntries": 1133,
+    "externalBaseline": {
+      "PASS": 10,
+      "FAIL": 2,
+      "ERROR": 0,
+      "SKIPPED": 0
+    },
+    "runtimePolicyFailStatesRetained": 48,
+    "scope": "OBSERVED_SUPPORTED_PROJECTION_ONLY"
+  },
+  "installedReleaseReplay": {
+    "result": "ISOLATED_NATIVE_RUNTIME_REPLAY_PASS",
+    "actualLiveEntriesReplayed": 1133,
+    "allPerEntryStateResultHashesChecked": true,
+    "finalHashesMatchLiveManifest": true,
+    "releaseZipSha256": "9e1957ece9482d28e723f70c1ff76f94ad49d00a006d9d455aec224dc3791acc",
+    "installedPluginSha256": "9b3c616b1c6718e019cb58d70560143df96c6d44a3a4a1c07fcb50b9159b169e",
+    "log": "auction-installed-replay.log"
+  },
+  "git": {
+    "branch": "main",
+    "head": "872c187b",
+    "trackedChanges": 50,
+    "containsPreExistingChanges": true,
+    "untrackedEntries": 25,
+    "trackedDiffStat": {
+      "files": 50,
+      "insertions": 2253,
+      "deletions": 2575
+    }
+  },
+  "production": {
+    "filesChecked": 1159,
+    "changed": 0,
+    "added": 0,
+    "deleted": 0
+  },
+  "review": {
+    "trackedDiffWhitespace": "PASS",
+    "changedUntrackedFilesWhitespace": "PASS",
+    "frozenResourcesDiff": "UNCHANGED",
+    "normalWindowsCrlfRespected": true,
+    "noUnrelatedStagingOrCommit": true
+  }
+}

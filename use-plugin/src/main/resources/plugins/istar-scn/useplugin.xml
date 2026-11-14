@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="org.tzi.use.plugins.istar-scn" name="iStarSCN State" version="1.0.1" publisher="USE Modeling Tools" class="org.tzi.use.plugins.jacamo.feature.istarscn.IStarScnPlugin"><actions><action id="org.tzi.use.plugins.istar-scn.open" label="iStarSCN State" class="org.tzi.use.plugins.jacamo.feature.istarscn.IStarScnAction" menu="iStarSCN State" menuitem="Open..." icon="icons/model.gif" tooltip="Open iStarSCN State in USE" toolbaritem="false"/></actions></plugin>

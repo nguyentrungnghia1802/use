@@ -1,0 +1,4 @@
+csl v4.0 CounterState {
+    entity Counter { attribute value : Integer required mutable; }
+    context Counter inv Nonnegative: self.value >= 0;
+}

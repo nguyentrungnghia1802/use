@@ -1,0 +1,231 @@
+{
+  "status": "PASS",
+  "scope": "OBSERVED_SUPPORTED_PROJECTION_ONLY",
+  "sourceJcm": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\auction.jcm",
+  "sourceJcmSha256": "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb",
+  "profile": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\src\\test\\resources\\jacamo\\ocl\\auction\\auction_demo.ocl",
+  "profileSha256": "231e18551d84034d2fe8c97da5b235079dc75f3d37f5c3be4caae08ccc7ca3b6",
+  "externalInvariantCount": 12,
+  "baselinePass": 10,
+  "baselineFail": 2,
+  "externalErrorsOrSkipped": 0,
+  "sameActiveMSystem": true,
+  "systemIdentity": 1047460013,
+  "sessionId": "446a8dc8-1405-4bdf-9d83-8d3f19ed92c8",
+  "generation": 1,
+  "journalEntries": 1133,
+  "nativeEventRechecks": 160,
+  "evidenceOnlyEvents": 967,
+  "policyFailStates": 48,
+  "gapOrStaleEntries": 0,
+  "sourceCompleteness": {
+    "cartago": "COMPLETE",
+    "jason": "COMPLETE",
+    "moise:aorg": "PARTIAL",
+    "moise:dynamic": "PARTIAL",
+    "npl": "PARTIAL"
+  },
+  "sourceOrdering": [
+    {
+      "source": "cartago",
+      "events": 924,
+      "lastConsumedSequence": 924,
+      "resyncWatermark": 924
+    },
+    {
+      "source": "jason",
+      "events": 203,
+      "lastConsumedSequence": 203,
+      "resyncWatermark": 203
+    }
+  ],
+  "transitions": [
+    {
+      "ordinal": 2,
+      "kind": "PROFILE",
+      "stateVersion": 2,
+      "eventId": "profile:231e18551d84034d2fe8c97da5b235079dc75f3d37f5c3be4caae08ccc7ca3b6",
+      "sequence": 0,
+      "artifact": null,
+      "uuid": null,
+      "result": "PASS",
+      "observedAt": "2026-10-01T07:15:27.765721100Z",
+      "appliedAt": "2026-10-01T07:15:27.765721100Z",
+      "verifiedAt": "2026-10-01T07:15:27.800735Z",
+      "stateHash": "bcf903c770187bacc7badbb9bce13fc5a6706bbd9b1e6e5a259af8d2a4d9b6b5",
+      "running": []
+    },
+    {
+      "ordinal": 888,
+      "kind": "EVENT",
+      "stateVersion": 112,
+      "eventId": "446a8dc8-1405-4bdf-9d83-8d3f19ed92c8:cartago:721",
+      "sequence": 721,
+      "artifact": "a2",
+      "uuid": "66ec8049-7874-4577-b6c6-c370ce687b8b",
+      "result": "FAIL",
+      "observedAt": "2026-10-01T07:15:28.217697200Z",
+      "appliedAt": "2026-10-01T07:15:41.017101800Z",
+      "verifiedAt": "2026-10-01T07:15:41.029596900Z",
+      "stateHash": "49e4de315eb5d79fbcdeb379428b30d6a61599f9896911d2c8638715fe12b805",
+      "running": [
+        {
+          "name": "running",
+          "values": [
+            "true"
+          ],
+          "valueTypes": [
+            "java.lang.Boolean"
+          ],
+          "semanticId": "cartago:property:cartago:artifact:7900769e-4b44-4442-85a8-91fc8e817c9d:/main/aorg:66ec8049-7874-4577-b6c6-c370ce687b8b:obs_id_/main/aorg66ec8049-7874-4577-b6c6-c370ce687b8b_0"
+        }
+      ]
+    },
+    {
+      "ordinal": 1121,
+      "kind": "EVENT",
+      "stateVersion": 160,
+      "eventId": "446a8dc8-1405-4bdf-9d83-8d3f19ed92c8:cartago:916",
+      "sequence": 916,
+      "artifact": "a2",
+      "uuid": "66ec8049-7874-4577-b6c6-c370ce687b8b",
+      "result": "PASS",
+      "observedAt": "2026-10-01T07:15:30.685097200Z",
+      "appliedAt": "2026-10-01T07:15:44.630449Z",
+      "verifiedAt": "2026-10-01T07:15:44.640485Z",
+      "stateHash": "392717d9112f4a35825b01c0f128c41cf1102c08616531b3c2ac5d3b7c0dcc02",
+      "running": [
+        {
+          "name": "running",
+          "values": [
+            "false"
+          ],
+          "valueTypes": [
+            "java.lang.Boolean"
+          ],
+          "semanticId": "cartago:property:cartago:artifact:7900769e-4b44-4442-85a8-91fc8e817c9d:/main/aorg:66ec8049-7874-4577-b6c6-c370ce687b8b:obs_id_/main/aorg66ec8049-7874-4577-b6c6-c370ce687b8b_0"
+        }
+      ]
+    }
+  ],
+  "runningEvents": [
+    {
+      "stateVersion": 107,
+      "sequence": 706,
+      "artifact": "a2",
+      "uuid": "66ec8049-7874-4577-b6c6-c370ce687b8b",
+      "kind": "CREATED",
+      "values": [
+        "false"
+      ],
+      "valueTypes": [
+        "java.lang.Boolean"
+      ],
+      "observedAt": "2026-10-01T07:15:28.212699700Z",
+      "appliedAt": "2026-10-01T07:15:40.667439600Z",
+      "outcome": "PASS",
+      "artifactTypeJavaClassName": "auction_env.AuctionArtifact"
+    },
+    {
+      "stateVersion": 110,
+      "sequence": 714,
+      "artifact": "a1",
+      "uuid": "c9d2a3f8-2e6a-4e7d-9322-ea3d7574a81e",
+      "kind": "CREATED",
+      "values": [
+        "false"
+      ],
+      "valueTypes": [
+        "java.lang.Boolean"
+      ],
+      "observedAt": "2026-10-01T07:15:28.214700400Z",
+      "appliedAt": "2026-10-01T07:15:40.849186100Z",
+      "outcome": "PASS",
+      "artifactTypeJavaClassName": "auction_env.AuctionArtifact"
+    },
+    {
+      "stateVersion": 112,
+      "sequence": 721,
+      "artifact": "a2",
+      "uuid": "66ec8049-7874-4577-b6c6-c370ce687b8b",
+      "kind": "CHANGED",
+      "values": [
+        "true"
+      ],
+      "valueTypes": [
+        "java.lang.Boolean"
+      ],
+      "observedAt": "2026-10-01T07:15:28.217697200Z",
+      "appliedAt": "2026-10-01T07:15:41.017101800Z",
+      "outcome": "FAIL",
+      "artifactTypeJavaClassName": null
+    },
+    {
+      "stateVersion": 114,
+      "sequence": 731,
+      "artifact": "a1",
+      "uuid": "c9d2a3f8-2e6a-4e7d-9322-ea3d7574a81e",
+      "kind": "CHANGED",
+      "values": [
+        "true"
+      ],
+      "valueTypes": [
+        "java.lang.Boolean"
+      ],
+      "observedAt": "2026-10-01T07:15:28.220098400Z",
+      "appliedAt": "2026-10-01T07:15:41.211565Z",
+      "outcome": "FAIL",
+      "artifactTypeJavaClassName": null
+    },
+    {
+      "stateVersion": 148,
+      "sequence": 872,
+      "artifact": "a1",
+      "uuid": "c9d2a3f8-2e6a-4e7d-9322-ea3d7574a81e",
+      "kind": "CHANGED",
+      "values": [
+        "false"
+      ],
+      "valueTypes": [
+        "java.lang.Boolean"
+      ],
+      "observedAt": "2026-10-01T07:15:30.510559700Z",
+      "appliedAt": "2026-10-01T07:15:43.866649600Z",
+      "outcome": "FAIL",
+      "artifactTypeJavaClassName": null
+    },
+    {
+      "stateVersion": 160,
+      "sequence": 916,
+      "artifact": "a2",
+      "uuid": "66ec8049-7874-4577-b6c6-c370ce687b8b",
+      "kind": "CHANGED",
+      "values": [
+        "false"
+      ],
+      "valueTypes": [
+        "java.lang.Boolean"
+      ],
+      "observedAt": "2026-10-01T07:15:30.685097200Z",
+      "appliedAt": "2026-10-01T07:15:44.630449Z",
+      "outcome": "PASS",
+      "artifactTypeJavaClassName": null
+    }
+  ],
+  "preResyncVersion": 162,
+  "resyncVersion": 163,
+  "replayManifest": {
+    "baselineStateHash": "806b86ccd4b84048baf7d006a78b64ca0656af1686346a263ae9b75ad39a67b2",
+    "entries": 1133,
+    "files": {
+      "baseline.cmd": "806b86ccd4b84048baf7d006a78b64ca0656af1686346a263ae9b75ad39a67b2",
+      "constraints.ocl": "231e18551d84034d2fe8c97da5b235079dc75f3d37f5c3be4caae08ccc7ca3b6",
+      "model.use": "0c37c9c400e50a26361430a87f4ab970bbfba56162cf8a268a23f804f57c59c1",
+      "runtime.jsonl": "57ee73bc5d16725aeea9c7408fea9c5c27a67071cf0aadd1975f514041d14601"
+    },
+    "finalResultHash": "17422ff845539eac5265cbe9f2e1c8aa10d6021d42db261cdd68a27f0731e11e",
+    "finalStateHash": "e0d20184add5aa85a97fad9e86a2436408f26157d2f9b86745806130d8b5cb3a",
+    "schemaVersion": "1.0.0",
+    "scope": "OBSERVED_SUPPORTED_PROJECTION_ONLY"
+  }
+}
