@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="org.tzi.use.plugins.istar-model" name="iStar Model" version="1.0.1" publisher="USE Modeling Tools" class="org.tzi.use.plugins.jacamo.feature.istar.IStarModelPlugin"><actions><action id="org.tzi.use.plugins.istar-model.open" label="iStar Model" class="org.tzi.use.plugins.jacamo.feature.istar.IStarModelAction" menu="iStar Model" menuitem="Open..." icon="icons/model.gif" tooltip="Open iStar Model in USE" toolbaritem="false"/></actions></plugin>

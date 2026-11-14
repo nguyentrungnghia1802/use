@@ -1,0 +1,3 @@
+<mapping xmlns="urn:use:jacamo-state-mapping:1">
+  <attribute source="artifact:state_demo.Counter/property:value" target="Counter.value"/>
+</mapping>

@@ -1,0 +1,76 @@
+-- Auction case-study demo constraints
+-- Purpose:
+--   * show invariants that should PASS for the supplied auction case study
+--   * show intentionally false invariants that should FAIL
+--   * include a runtime-sensitive invariant over C09 ObservablePropertySnapshot
+--
+-- Load this file only after the Auction native model is active.
+-- The two DEMO_FAIL invariants are intentionally wrong.
+
+-- =========================
+-- Expected PASS: static case-study structure
+-- =========================
+
+context Agent
+inv PASS_AuctionHasFiveAgents:
+    Agent.allInstances()->size() = 5
+
+context Role
+inv PASS_AuctionHasTwoRoles:
+    Role.allInstances()->size() = 2
+
+context Group
+inv PASS_AuctionHasOneGroup:
+    Group.allInstances()->size() = 1
+
+context Scheme
+inv PASS_AuctionHasOneScheme:
+    Scheme.allInstances()->size() = 1
+
+context Mission
+inv PASS_AuctionHasTwoMissions:
+    Mission.allInstances()->size() = 2
+
+context OrganizationalGoal
+inv PASS_AuctionHasFourOrganizationalGoals:
+    OrganizationalGoal.allInstances()->size() = 4
+
+context Norm
+inv PASS_AuctionHasTwoNorms:
+    Norm.allInstances()->size() = 2
+
+-- =========================
+-- Intentional FAIL constraints
+-- These are deliberately inconsistent with the Auction case study.
+-- They are useful to demonstrate that external OCL violations are reported.
+-- =========================
+
+context Agent
+inv DEMO_FAIL_AuctionShouldHaveSixAgents:
+    Agent.allInstances()->size() = 6
+
+context Mission
+inv DEMO_FAIL_AuctionShouldHaveThreeMissions:
+    Mission.allInstances()->size() = 3
+
+-- =========================
+-- Runtime demonstration
+-- C09 ObservablePropertySnapshot is the supported runtime property projection.
+--
+-- If this profile is loaded before AuctionArtifact observable properties are
+-- materialized, this invariant can initially PASS and later FAIL when runtime
+-- property snapshots appear.
+--
+-- If the Auction runtime has already advanced before the profile is loaded,
+-- it may already be FAIL at baseline. That is still useful evidence that the
+-- OCL profile is evaluating the current native runtime state.
+-- =========================
+
+context ObservablePropertySnapshot
+inv DEMO_RUNTIME_NoObservablePropertySnapshots:
+    ObservablePropertySnapshot.allInstances()->isEmpty()
+
+-- Runtime sanity invariant expected to remain PASS for this small case study.
+context ObservablePropertySnapshot
+inv PASS_RuntimePropertySnapshotCountIsBounded:
+    ObservablePropertySnapshot.allInstances()->size() < 1000

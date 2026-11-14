@@ -1,0 +1,164 @@
+{
+  "schemaVersion" : "1.0.0",
+  "runId" : "17422ff845539eac5265cbe9f2e1c8aa10d6021d42db261cdd68a27f0731e11e",
+  "timestamp" : "2026-10-01T07:16:44.887701900Z",
+  "mode" : "RUNTIME_NATIVE",
+  "structureValid" : true,
+  "fingerprints" : {
+    "constraintSetHash" : "c04477d189018bd6ac56f5a95040d05f338931b199221cf72674b8a37891ed32",
+    "coverage" : "INCOMPLETE",
+    "eventId" : "manual",
+    "freshness" : "CURRENT_OBSERVED",
+    "generation" : "1",
+    "modelRevision" : "0dd4ff74cf8e5894790482ae9921c6c888140406594a804d95320fe4963ac7ec",
+    "nativeModelSha256" : "004b54cfbea8650672cbd1e7412fb1e9dfc09e61bdb516041139b78777b96e7e",
+    "sessionId" : "446a8dc8-1405-4bdf-9d83-8d3f19ed92c8",
+    "stateHash" : "e0d20184add5aa85a97fad9e86a2436408f26157d2f9b86745806130d8b5cb3a",
+    "stateVersion" : "163"
+  },
+  "results" : [ {
+    "constraintId" : "EXTERNAL:Agent::DEMO_FAIL_AuctionShouldHaveSixAgents",
+    "outcome" : "FAIL",
+    "contextObject" : "Agent",
+    "explanation" : "false",
+    "oclSource" : "(Agent.allInstances->size = 6)",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "EXTERNAL:Agent::PASS_AuctionHasFiveAgents",
+    "outcome" : "PASS",
+    "contextObject" : "Agent",
+    "explanation" : "true",
+    "oclSource" : "(Agent.allInstances->size = 5)",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "EXTERNAL:Artifact::DEMO_RUNTIME_NoRunningAuction",
+    "outcome" : "PASS",
+    "contextObject" : "Artifact",
+    "explanation" : "true",
+    "oclSource" : "((self.artifacts.javaClassName = 'auction_env.AuctionArtifact') implies (self.properties->one(p : ObservablePropertySnapshot | (p.name = 'running')) and self.properties->select(p : ObservablePropertySnapshot | (p.name = 'running'))->forAll(p : ObservablePropertySnapshot | ((p.valueTypes = '[\"java.lang.Boolean\"]') and (p.values = '[\"false\"]')))))",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "EXTERNAL:Group::PASS_AuctionHasOneGroup",
+    "outcome" : "PASS",
+    "contextObject" : "Group",
+    "explanation" : "true",
+    "oclSource" : "(Group.allInstances->size = 1)",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "EXTERNAL:Mission::DEMO_FAIL_AuctionShouldHaveThreeMissions",
+    "outcome" : "FAIL",
+    "contextObject" : "Mission",
+    "explanation" : "false",
+    "oclSource" : "(Mission.allInstances->size = 3)",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "EXTERNAL:Mission::PASS_AuctionHasTwoMissions",
+    "outcome" : "PASS",
+    "contextObject" : "Mission",
+    "explanation" : "true",
+    "oclSource" : "(Mission.allInstances->size = 2)",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "EXTERNAL:Norm::PASS_AuctionHasTwoNorms",
+    "outcome" : "PASS",
+    "contextObject" : "Norm",
+    "explanation" : "true",
+    "oclSource" : "(Norm.allInstances->size = 2)",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "EXTERNAL:ObservablePropertySnapshot::PASS_RuntimePropertySnapshotCountIsBounded",
+    "outcome" : "PASS",
+    "contextObject" : "ObservablePropertySnapshot",
+    "explanation" : "true",
+    "oclSource" : "(ObservablePropertySnapshot.allInstances->size < 1000)",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "EXTERNAL:OrganizationalGoal::PASS_AuctionHasFourOrganizationalGoals",
+    "outcome" : "PASS",
+    "contextObject" : "OrganizationalGoal",
+    "explanation" : "true",
+    "oclSource" : "(OrganizationalGoal.allInstances->size = 4)",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "NATIVE:Plan::A19OrderConsistent",
+    "outcome" : "PASS",
+    "contextObject" : "Plan",
+    "explanation" : "true",
+    "oclSource" : "(self.bodyElements->isUnique($elem0 : PlanBodyElement | $elem0.ordinal) and self.bodyElements->forAll(e : PlanBodyElement | ((e.ordinal >= 0) and (e.ordinal < self.bodyElements->size))))",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "NATIVE:Plan::A20NextAgreesWithA19",
+    "outcome" : "PASS",
+    "contextObject" : "Plan",
+    "explanation" : "true",
+    "oclSource" : "self.bodyElements->forAll(e : PlanBodyElement | if (e.ordinal < (self.bodyElements->size - 1)) then (e.next = self.bodyElements->any(n : PlanBodyElement | (n.ordinal = (e.ordinal + 1)))) else e.next.isUndefined endif)",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "NATIVE:PlanLibrary::A17OrderConsistent",
+    "outcome" : "PASS",
+    "contextObject" : "PlanLibrary",
+    "explanation" : "true",
+    "oclSource" : "(self.plans->isUnique($elem0 : Plan | $elem0.ordinal) and self.plans->forAll(p : Plan | ((p.ordinal >= 0) and (p.ordinal < self.plans->size))))",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "EXTERNAL:Role::PASS_AuctionHasOneAbstractRole",
+    "outcome" : "PASS",
+    "contextObject" : "Role",
+    "explanation" : "true",
+    "oclSource" : "(Role.allInstances->select(r : Role | r.isAbstract)->size = 1)",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "EXTERNAL:Role::PASS_AuctionHasTwoConcreteRoles",
+    "outcome" : "PASS",
+    "contextObject" : "Role",
+    "explanation" : "true",
+    "oclSource" : "(Role.allInstances->select(r : Role | not r.isAbstract)->size = 2)",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "EXTERNAL:Scheme::PASS_AuctionHasOneScheme",
+    "outcome" : "PASS",
+    "contextObject" : "Scheme",
+    "explanation" : "true",
+    "oclSource" : "(Scheme.allInstances->size = 1)",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  }, {
+    "constraintId" : "NATIVE:SKIPPED:C08LiveObservablePropertyAvailable",
+    "outcome" : "SKIPPED",
+    "contextObject" : "Artifact",
+    "explanation" : "SKIPPED_CAPABILITY",
+    "oclSource" : "true",
+    "sourceTrace" : [ ],
+    "correlationId" : null,
+    "runtimeEventIds" : [ ]
+  } ]
+}

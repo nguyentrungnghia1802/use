@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="org.tzi.use.plugins.csl-model" name="CSL Model" version="1.0.1" publisher="USE Modeling Tools" class="org.tzi.use.plugins.jacamo.feature.csl.CslModelPlugin"><actions><action id="org.tzi.use.plugins.csl-model.open" label="CSL Model" class="org.tzi.use.plugins.jacamo.feature.csl.CslModelAction" menu="CSL Model" menuitem="Open..." icon="icons/model.gif" tooltip="Open CSL Model in USE" toolbaritem="false"/></actions></plugin>

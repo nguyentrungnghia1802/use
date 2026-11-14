@@ -1,0 +1,64 @@
+diff --git "a/C:\\Users\\NTNghia\\OneDrive\\Desktop\\auction_demo.ocl" "b/D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\src\\test\\resources\\jacamo\\ocl\\auction\\auction_demo.ocl"
+index d0e27232..d9aae117 100644
+--- "a/C:\\Users\\NTNghia\\OneDrive\\Desktop\\auction_demo.ocl"
++++ "b/D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\src\\test\\resources\\jacamo\\ocl\\auction\\auction_demo.ocl"
+@@ -9,6 +9,8 @@
+ 
+ -- =========================
+ -- Expected PASS: static case-study structure
++-- Counts describe deployed declarations/specification objects, not the number
++-- of live SchemeBoard/GroupBoard artifacts. Official Moise includes abstract soc.
+ -- =========================
+ 
+ context Agent
+@@ -16,8 +18,12 @@ inv PASS_AuctionHasFiveAgents:
+     Agent.allInstances()->size() = 5
+ 
+ context Role
+-inv PASS_AuctionHasTwoRoles:
+-    Role.allInstances()->size() = 2
++inv PASS_AuctionHasTwoConcreteRoles:
++    Role.allInstances()->select(r | not r.isAbstract)->size() = 2
++
++context Role
++inv PASS_AuctionHasOneAbstractRole:
++    Role.allInstances()->select(r | r.isAbstract)->size() = 1
+ 
+ context Group
+ inv PASS_AuctionHasOneGroup:
+@@ -57,18 +63,26 @@ inv DEMO_FAIL_AuctionShouldHaveThreeMissions:
+ -- Runtime demonstration
+ -- C09 ObservablePropertySnapshot is the supported runtime property projection.
+ --
+--- If this profile is loaded before AuctionArtifact observable properties are
+--- materialized, this invariant can initially PASS and later FAIL when runtime
+--- property snapshots appear.
++-- Observe the original auction_env.AuctionArtifact protocol, not framework or
++-- organization properties already present at baseline. Native C15 navigation
++-- Artifact.artifacts denotes its ArtifactType; C17 exposes Artifact.properties.
+ --
+--- If the Auction runtime has already advanced before the profile is loaded,
+--- it may already be FAIL at baseline. That is still useful evidence that the
+--- OCL profile is evaluating the current native runtime state.
++-- Official init/start/stop produces running=false/true/false. C09 values and
++-- valueTypes are canonical JSON Strings, not native Boolean/numeric attributes.
++-- This deliberately restrictive demo policy PASSes when no auction is running,
++-- FAILs while one is running, and PASSes again after all observed auctions stop.
++-- A materialized AuctionArtifact must expose exactly one correctly typed
++-- running property; missing/malformed data must not satisfy this predicate.
++-- Required incomplete Cartago coverage is SKIPPED by the verification service.
+ -- =========================
+ 
+-context ObservablePropertySnapshot
+-inv DEMO_RUNTIME_NoObservablePropertySnapshots:
+-    ObservablePropertySnapshot.allInstances()->isEmpty()
++context Artifact
++inv DEMO_RUNTIME_NoRunningAuction:
++    self.artifacts.javaClassName = 'auction_env.AuctionArtifact' implies
++    (self.properties->one(p | p.name = 'running') and
++     self.properties->select(p | p.name = 'running')->forAll(p |
++         p.valueTypes = '["java.lang.Boolean"]' and
++         p.values = '["false"]'))
+ 
+ -- Runtime sanity invariant expected to remain PASS for this small case study.
+ context ObservablePropertySnapshot

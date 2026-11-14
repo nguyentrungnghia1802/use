@@ -1,0 +1,39 @@
+// M1 declarations describe the organization; live agents/role enactments belong to M0.
+// Every OrgContext is also a RuntimePlayer and can enact a role in another context.
+csl v4.0 AuctionState {
+    orgContext AuctionOrg {
+        attribute name : String required;
+        orgContext auctionGroup {
+            attribute name : String required;
+            role auctioneer;
+            role participant;
+            // Reusable agent context type; instances come from the source, not from declarations.
+            orgContext auction_capabilities {
+                attribute name : String required;
+            }
+            entity Auction {
+                attribute id : String required;
+                attribute running : Boolean required mutable;
+                attribute task : String required mutable;
+                attribute best_bid : Real required mutable;
+                attribute winner : String required mutable;
+            }
+        }
+    }
+    // JaCaMo's initial role-adoption plans have not run at the INITIAL snapshot.
+    // Require exactly one auctioneer once an Auction exists in this group.
+    context auctionGroup inv AuctioneerPopulation:
+        self.auctioneer->size() <= 1 and
+        (self.cslScopedEntities->notEmpty() implies self.auctioneer->size() = 1);
+    context auctionGroup inv ParticipantPopulation:
+        self.participant->size() <= 300;
+    context Auction inv ValidBid:
+        self.best_bid >= 0;
+    context Auction inv RunningAuctionIsObserved:
+        self.running implies self.focusedBy->exists(a |
+            self.cslEntityScope.oclAsType(auctionGroup).auctioneer->exists(r | r.player = a));
+    context auctionGroup inv UniqueAuctionId:
+        self.cslScopedEntities->select(e | e.oclIsKindOf(Auction))->collect(e | e.oclAsType(Auction))->isUnique(a | a.id);
+    context auction_capabilities inv NamedAgentContext:
+        self.name <> '';
+}

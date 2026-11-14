@@ -1,9 +1,0 @@
-# Evidence hashes describe exact UTF-8/LF output, including Windows checkouts.
-*.json text eol=lf
-*.use text eol=lf
-*.cmd text eol=lf
-*.log text eol=lf
-
-# Historical trace hashes include original Jackson CRLF body plus final LF.
-# Preserve those exact recorded bytes, without Git text normalization.
-historical-static/*/trace.json -text !eol

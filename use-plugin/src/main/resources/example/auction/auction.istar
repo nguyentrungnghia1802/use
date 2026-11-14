@@ -1,0 +1,81 @@
+// Four intentional viewpoints evaluated independently for each CSL Auction instance.
+// @csl-state Auction
+// Same local Goal names denote shared Goal views through participates-in.
+// No Jason plan/action is bound to an iStar Task by the XML mapping.
+istar AuctionStateGoals {
+    agent AuctionGroup {
+        goal RolesConsistent : Maintain condition {[
+            self.cslEntityScope.oclAsType(auctionGroup).auctioneer->size() = 1 and
+            self.cslEntityScope.oclAsType(auctionGroup).participant->size() <= 300
+        ]}
+        goal SafeBid : Maintain condition {[ self.best_bid >= 0 ]}
+        // bid() keeps the old best value or lowers it; creation has no previous value.
+        goal BidNeverIncreases : Maintain condition {[
+            Auction.allInstances@pre()->excludes(self) or self.best_bid <= self.best_bid@pre
+        ]}
+        goal AuctionCompleted : Achieve
+        goal O_start : Achieve > AuctionCompleted
+        goal O_bid : Achieve > AuctionCompleted
+        goal O_decide : Achieve > AuctionCompleted
+    }
+
+    role Auctioneer {
+        goal start : Achieve
+        goal decide : Achieve
+    }
+
+    role Participant {
+        goal bid : Achieve
+    }
+
+    actor auction_capabilities {
+        auction_capabilities participates-in Auctioneer
+        auction_capabilities participates-in Participant
+
+        // +!start: makeArtifact(...), focus(ArtId), start(S).
+        // Creation is observed once per physical artifact identity.
+        goal start : Achieve
+        task CreateAuctionArtifact > start
+            pre {[ true ]}
+            post {[ Auction.allInstances@pre()->excludes(self) ]}
+        task FocusAuctionArtifact > start
+            pre {[ true ]}
+            post {[
+                self.focusedBy->exists(a |
+                    self.cslEntityScope.oclAsType(auctionGroup).auctioneer->exists(r | r.player = a))
+            ]}
+        task StartAuction > start
+            pre {[
+                self.focusedBy->exists(a |
+                    self.cslEntityScope.oclAsType(auctionGroup).auctioneer->exists(r | r.player = a))
+            ]}
+            post {[ self.running ]}
+
+        // State witness of at least one improving bid, not a receipt for every bid call.
+        // A worse bid is successful but leaves best_bid unchanged in AuctionArtifact.bid().
+        goal bid : Achieve
+        task FocusForBid > bid
+            pre {[ self.running ]}
+            post {[
+                self.focusedBy->exists(a |
+                    self.cslEntityScope.oclAsType(auctionGroup).participant->exists(r | r.player = a))
+            ]}
+        task ObserveBid > bid
+            pre {[
+                self.running and self.focusedBy->exists(a |
+                    self.cslEntityScope.oclAsType(auctionGroup).participant->exists(r | r.player = a))
+            ]}
+            post {[ self.best_bid < 1.7976931348623157E308 ]}
+
+        // stop() publishes currentWinner, including no_winner when nobody bid.
+        // The remembered running precondition prevents init(running=false) from counting as stop.
+        goal decide : Achieve
+        task StopAuction > decide
+            pre {[ self.running ]}
+            post {[ not self.running ]}
+    }
+
+    depend AuctionGroup.O_start -> goal D_start -> Auctioneer.start
+    depend AuctionGroup.O_bid -> goal D_bid -> Participant.bid
+    depend AuctionGroup.O_decide -> goal D_decide -> Auctioneer.decide
+}

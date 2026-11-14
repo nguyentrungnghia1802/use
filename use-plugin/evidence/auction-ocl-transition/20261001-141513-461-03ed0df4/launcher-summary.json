@@ -1,0 +1,19 @@
+{
+  "injectedJcmSha256": "17d6bf21d70986c1812e1680fe104eb7427d0e95cddba8203fdc875e0a7e5eda",
+  "bridgeTimeoutMillis": 60000,
+  "sourceJcmSha256": "c766fb0dc5fc6f4085cf6c1fc26d2df09229256c2e6138dfd4d44ef21fb7d2fb",
+  "classification": "GENERIC_JCM_SUPPORTED_SCOPE_PASS",
+  "status": "PASS",
+  "stagedProject": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\evidence\\auction-ocl-transition\\20261001-141513-461-03ed0df4\\staging-auction",
+  "maxBufferedEvents": 8192,
+  "runtimeProjectClasses": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\evidence\\auction-ocl-transition\\20261001-141513-461-03ed0df4\\staging-auction\\build\\classes\\java\\main",
+  "sourceJcm": "D:\\_CODE_BANK\\Project_\\08_Thesis\\jacamo\\examples\\auction\\auction.jcm",
+  "observationSeconds": 75,
+  "evidence": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\evidence\\auction-ocl-transition\\20261001-141513-461-03ed0df4\\summary.json",
+  "oclProfile": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\src\\test\\resources\\jacamo\\ocl\\auction\\auction_demo.ocl",
+  "pipeline": "CODE_GROUNDED_NATIVE",
+  "awaitOclBaselineBeforeAgents": true,
+  "distributionSha256": "c4b1541cc4ffefa59c6a8446177b9102955d2ddc6cd628b8ff17264017506b76",
+  "runtimeProjectBuild": "GRADLE_CLASSES_PASS",
+  "derivedJcm": "D:\\_CODE_BANK\\Project_\\08_Thesis\\use\\use-plugin\\evidence\\auction-ocl-transition\\20261001-141513-461-03ed0df4\\staging-auction\\auction.jcm"
+}

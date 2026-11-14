@@ -1,5 +1,0 @@
-# House Building case study system specification (.mrv)
-csl = house.csl
-istar = house.istar
-xml = house-compact-mapping.xml
-ocl = house.ocl

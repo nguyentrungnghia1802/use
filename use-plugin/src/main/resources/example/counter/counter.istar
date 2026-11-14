@@ -1,0 +1,9 @@
+// @csl-context Counter = Counter
+istar CounterGoals {
+    agent Counter {
+        goal SafeValue : Maintain condition {[ self.value >= 0 ]}
+        goal Ready : Achieve
+        task Positive > Ready pre {[ true ]} post {[ self.value > 0 ]}
+        task TargetReached > Ready pre {[ true ]} post {[ self.value >= 2 ]}
+    }
+}

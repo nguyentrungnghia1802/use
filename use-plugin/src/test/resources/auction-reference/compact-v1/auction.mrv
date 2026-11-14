@@ -1,5 +1,0 @@
-# Compact auction reference specification (.mrv)
-csl = auction.csl
-istar = auction.istar
-xml = auction-mapping.xml
-ocl = auction.ocl
