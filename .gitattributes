@@ -2,3 +2,6 @@
 /pom.xml text eol=lf
 /README.md text eol=lf
 /doc/*.md text eol=lf
+
+# Preserve the byte-identical upstream license checked against the pinned archive.
+/use-plugin/src/main/resources/META-INF/licenses/use4Goal-GPL-3.0.txt -text

@@ -11,5 +11,6 @@ jobs:
           java-version: '21'
           cache: maven
       - run: python3 use-plugin/tools/install-runtime.py
-      - run: mvn -B -pl use-plugin -am test '-Dtest=**/jacamo/**/*Test' -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false
+      - name: Test plugins with a virtual display
+        run: xvfb-run -a mvn -B -pl use-plugin -am test '-Dtest=**/jacamo/**/*Test' -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false
       - run: mvn -B package -Dmaven.test.skip=true
