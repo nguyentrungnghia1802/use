@@ -1,4 +1,4 @@
-package org.vnu.sme.goal.dsl.istar_marking.mm;
+package org.vnu.sme.goal.verify.istar.marking;
 
 /** Runtime marking (Q,R) of one Task occurrence. */
 public record TaskMarking(boolean preSeen, boolean postSeen) {

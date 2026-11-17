@@ -7,7 +7,7 @@ import org.vnu.sme.goal.dsl.istar.parser.IStarFrontend;
 import org.tzi.use.plugins.jacamo.verify.runtime.*;
 import org.vnu.sme.goal.dsl.istar.mm.*;
 import org.vnu.sme.goal.dsl.istar_marking.mm.ScenarioInstance;
-import org.vnu.sme.goal.dsl.istar_marking.mm.GoalTaskStatus;
+import org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RoleSpecializationPolicyTest {

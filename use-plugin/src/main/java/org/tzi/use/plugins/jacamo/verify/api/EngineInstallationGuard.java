@@ -18,10 +18,12 @@ public final class EngineInstallationGuard {
             "org.tzi.use.plugins.jacamo.verify.api.EngineSemanticsProfile","org.tzi.use.plugins.jacamo.verify.runtime.RuntimeModelAdmission",
             "org.tzi.use.plugins.jacamo.verify.api.RoleSpecialization",
             "org.vnu.sme.goal.dsl.istar.mm.GenericActor",
-            "org.vnu.sme.goal.dsl.istar_marking.mm.GoalMarking",
-            "org.vnu.sme.goal.dsl.istar_marking.mm.TaskMarking",
-            "org.vnu.sme.goal.dsl.istar_marking.mm.IStarMarking",
-            "org.vnu.sme.goal.dsl.istar_marking.semantics.IStarPropagation",
+            "org.vnu.sme.goal.verify.istar.marking.GoalMarking",
+            "org.vnu.sme.goal.verify.istar.marking.TaskMarking",
+            "org.vnu.sme.goal.verify.istar.marking.IStarMarking",
+            "org.vnu.sme.goal.verify.istar.propagation.IStarPropagation",
+            "org.vnu.sme.goal.verify.istar.propagation.IStarDependencyPropagation",
+            "org.vnu.sme.goal.verify.istar.temporal.GoalTemporalEvaluator",
             "org.vnu.sme.goal.dsl.istar_marking.parser.GoalModelInstanceTranslator");
     private static final Map<String,String> GRAMMARS=Map.of(
             "grammars/CSL.g4","5bca5c44933f2619eeac837279e09a995a293383ebe3795d058d7e5319d3d224",

@@ -1,5 +1,6 @@
 package org.vnu.sme.goal.dsl.istar_marking.parser;
 
+import org.vnu.sme.goal.verify.istar.propagation.IStarDependencyPropagation;
 import org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstanceEvaluation;
 import org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstanceTopology;
 
@@ -10,10 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.vnu.sme.goal.dsl.istar_marking.mm.GoalTaskStatus;
-import org.vnu.sme.goal.dsl.istar_marking.mm.IStarMarking;
-import org.vnu.sme.goal.dsl.istar_marking.semantics.IStarPropagation;
-import org.vnu.sme.goal.dsl.istar_marking.mm.QualityStatus;
+import org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus;
+import org.vnu.sme.goal.verify.istar.marking.IStarMarking;
+import org.vnu.sme.goal.verify.istar.propagation.IStarPropagation;
+import org.vnu.sme.goal.verify.istar.marking.QualityStatus;
 import org.vnu.sme.goal.dsl.istar.mm.Actor;
 import org.vnu.sme.goal.dsl.istar.mm.Agent;
 import org.vnu.sme.goal.dsl.istar.mm.GenericActor;
@@ -58,8 +59,6 @@ public final class GoalModelInstanceTranslator {
         boolean sharesContext(String leftActorType, String leftInstanceId,
                               String rightActorType, String rightInstanceId);
     }
-
-    private static final int MAX_DEPENDENCY_STEPS = 10_000;
 
     private GoalModelInstanceTranslator() {}
 
@@ -463,21 +462,7 @@ public final class GoalModelInstanceTranslator {
     }
 
     private static IStarMarking saturateDependencies(GoalModel model, IStarMarking marking) {
-        IStarMarking current = marking;
-        boolean changed = true;
-        int steps = 0;
-        while (changed && steps++ < MAX_DEPENDENCY_STEPS) {
-            changed = false;
-            for (Dependency d : model.getDependencies()) {
-                if (d.dependerElmt() == null || d.dependeeElmt() == null) continue;
-                if (current.goalTaskStatus(d.dependerElmt()) == GoalTaskStatus.FULFILLED) continue;
-                if (current.goalTaskStatus(d.dependeeElmt()) == GoalTaskStatus.FULFILLED) {
-                    current = IStarPropagation.assignGoalTask(model, current, d.dependerElmt(), GoalTaskStatus.FULFILLED);
-                    changed = true;
-                }
-            }
-        }
-        return current;
+        return IStarDependencyPropagation.propagate(model, marking);
     }
 
     private static List<AggregateResult> evaluateAggregates(GoalModel source, IStarScenarioModel scenario,

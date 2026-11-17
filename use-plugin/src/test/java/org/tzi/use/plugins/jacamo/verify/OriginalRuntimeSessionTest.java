@@ -1,5 +1,9 @@
 package org.tzi.use.plugins.jacamo.verify;
 
+import org.vnu.sme.goal.verify.istar.marking.QualityStatus;
+import org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus;
+import org.vnu.sme.goal.verify.istar.marking.TaskMarking;
+import org.vnu.sme.goal.verify.istar.marking.GoalMarking;
 import java.nio.file.*;
 import java.util.*;
 import org.junit.jupiter.api.*;
@@ -12,7 +16,6 @@ import org.tzi.use.plugins.jacamo.verify.runtime.*;
 import org.vnu.sme.goal.dsl.istar_marking.mm.*;
 import org.vnu.sme.goal.dsl.istar_marking.parser.GoalModelInstanceTranslator;
 import org.vnu.sme.goal.dsl.istar.mm.*;
-import org.vnu.sme.goal.dsl.istar_marking.semantics.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.tzi.use.plugins.jacamo.verify.oracle.PinnedOriginalOracle.*;
 

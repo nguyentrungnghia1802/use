@@ -1680,10 +1680,11 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/dsl/csl/mm/CslSemanticValidator.java",
-      "targetSha256": "c34b40f9aaac70b66fd3bbeacf18a153e1ba318e4b0f10b2b1c59e359ef09391",
-      "fqcn": "org.vnu.sme.goal.dsl.csl.mm.CslSemanticValidator",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/csl/validation/CslSemanticValidator.java",
+      "targetSha256": "f7f34e3a01e9dd76a051c236a77487abb728fa834c24c683febe3494e7a7de2f",
+      "fqcn": "org.vnu.sme.goal.verify.csl.validation.CslSemanticValidator",
       "imports": [
+        "org.vnu.sme.goal.dsl.csl.mm.*",
         "java.util.ArrayList",
         "java.util.HashMap",
         "java.util.HashSet",
@@ -1695,8 +1696,10 @@
       ],
       "reuseMode": "ORIGINAL_COPY",
       "plannedPatchIds": [],
-      "appliedPatchIds": [],
-      "extractionStatus": "ORIGINAL",
+      "appliedPatchIds": [
+        "P-VERIFY-LAYOUT-01"
+      ],
+      "extractionStatus": "PACKAGE_RELOCATED",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
@@ -1707,7 +1710,7 @@
         "C",
         "H"
       ],
-      "acceptance": "Byte-identical selected core; admitted-profile behavior equals pinned original",
+      "acceptance": "Selected core differs only by recorded package/import relocation and mechanically audited method extraction; admitted-profile behavior equals pinned original",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -2048,14 +2051,15 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/dsl/csl_marking/mm/CslOclState.java",
-      "targetSha256": "952d4a31bb2eaf52688482f81c206adc778c29847a456c1edf6f4bd43287302a",
-      "fqcn": "org.vnu.sme.goal.dsl.csl_marking.mm.CslOclState",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/csl/state/CslOclState.java",
+      "targetSha256": "dc280995798d8d62e0192be746d9823068d509406685c613a4e00ba713cce8db",
+      "fqcn": "org.vnu.sme.goal.verify.csl.state.CslOclState",
       "imports": [],
       "reuseMode": "ORIGINAL_COPY",
       "plannedPatchIds": [],
       "appliedPatchIds": [
-        "P-DSL-LAYOUT-01"
+        "P-DSL-LAYOUT-01",
+        "P-VERIFY-LAYOUT-01"
       ],
       "extractionStatus": "PACKAGE_RELOCATED",
       "productionEvaluationAllowed": true,
@@ -2067,7 +2071,7 @@
         "A",
         "I"
       ],
-      "acceptance": "Selected core differs only by recorded patches and package/import relocation; admitted-profile behavior equals pinned original",
+      "acceptance": "Selected core differs only by recorded package/import relocation and mechanically audited method extraction; admitted-profile behavior equals pinned original",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -2203,9 +2207,10 @@
       "gitStatus": "",
       "targetModule": "use-plugin",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/csl/parser/CslModelFactory.java",
-      "targetSha256": "6afa2fd0b5bae853fcedccbf64c0a5fab98180e9c0c25a73734bb9f89c120073",
+      "targetSha256": "5e7f32654ff7dcb30cafe251da3eaf5f9196b717c0c235d0cc1bd263aac4e292",
       "fqcn": "org.vnu.sme.goal.dsl.csl.parser.CslModelFactory",
       "imports": [
+        "org.vnu.sme.goal.verify.csl.validation.CslSemanticValidator",
         "java.math.BigInteger",
         "java.util.*",
         "org.vnu.sme.goal.dsl.csl.ast.*",
@@ -2213,8 +2218,10 @@
       ],
       "reuseMode": "ORIGINAL_WITH_ADAPTER",
       "plannedPatchIds": [],
-      "appliedPatchIds": [],
-      "extractionStatus": "ORIGINAL",
+      "appliedPatchIds": [
+        "P-VERIFY-LAYOUT-01"
+      ],
+      "extractionStatus": "PACKAGE_RELOCATED",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
@@ -2226,7 +2233,7 @@
         "C",
         "I"
       ],
-      "acceptance": "Byte-identical selected core; admitted-profile behavior equals pinned original",
+      "acceptance": "Selected core differs only by recorded package/import relocation and mechanically audited method extraction; admitted-profile behavior equals pinned original",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -2272,12 +2279,12 @@
       "gitStatus": "",
       "targetModule": "use-plugin",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar_marking/mm/GoalModelInstanceEvaluation.java",
-      "targetSha256": "8d89d771126081e4c9ca337e2f184d8c7a45eca13850e745dbd964bcf3c43025",
+      "targetSha256": "92080cad11fc0c3f94360d51601410595cea5f5e891ccb8a4c7cf488d26ab15a",
       "fqcn": "org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstanceEvaluation",
       "imports": [
         "java.util.List",
         "java.util.Map",
-        "org.vnu.sme.goal.dsl.istar_marking.mm.IStarMarking",
+        "org.vnu.sme.goal.verify.istar.marking.IStarMarking",
         "org.vnu.sme.goal.dsl.istar.mm.GoalModel",
         "org.vnu.sme.goal.dsl.istar_marking.mm.AggregateResult",
         "org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstance"
@@ -2286,7 +2293,8 @@
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
-        "P-MARKING-LAYOUT-01"
+        "P-MARKING-LAYOUT-01",
+        "P-VERIFY-LAYOUT-01"
       ],
       "extractionStatus": "PACKAGE_RELOCATED",
       "productionEvaluationAllowed": true,
@@ -2297,7 +2305,7 @@
       "parityTests": [
         "G"
       ],
-      "acceptance": "Selected core differs only by recorded patches and package/import relocation; admitted-profile behavior equals pinned original",
+      "acceptance": "Selected core differs only by recorded package/import relocation and mechanically audited method extraction; admitted-profile behavior equals pinned original",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -2309,9 +2317,10 @@
       "gitStatus": "",
       "targetModule": "use-plugin",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar_marking/parser/GoalModelInstanceTranslator.java",
-      "targetSha256": "ea74f98d39ef50b39b5acc29119ffeb5f11ea2e2e7148169f5dad3653ca0df70",
+      "targetSha256": "10a4567ba0f4650341f50ce6f355e813b0b2ee1f3ac66fd595984ec0ca9f188c",
       "fqcn": "org.vnu.sme.goal.dsl.istar_marking.parser.GoalModelInstanceTranslator",
       "imports": [
+        "org.vnu.sme.goal.verify.istar.propagation.IStarDependencyPropagation",
         "org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstanceEvaluation",
         "org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstanceTopology",
         "java.util.ArrayList",
@@ -2320,10 +2329,10 @@
         "java.util.List",
         "java.util.Map",
         "java.util.Set",
-        "org.vnu.sme.goal.dsl.istar_marking.mm.GoalTaskStatus",
-        "org.vnu.sme.goal.dsl.istar_marking.mm.IStarMarking",
-        "org.vnu.sme.goal.dsl.istar_marking.semantics.IStarPropagation",
-        "org.vnu.sme.goal.dsl.istar_marking.mm.QualityStatus",
+        "org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus",
+        "org.vnu.sme.goal.verify.istar.marking.IStarMarking",
+        "org.vnu.sme.goal.verify.istar.propagation.IStarPropagation",
+        "org.vnu.sme.goal.verify.istar.marking.QualityStatus",
         "org.vnu.sme.goal.dsl.istar.mm.Actor",
         "org.vnu.sme.goal.dsl.istar.mm.Agent",
         "org.vnu.sme.goal.dsl.istar.mm.GenericActor",
@@ -2356,9 +2365,11 @@
         "P-CTX-01",
         "P-ACTOR-01",
         "P-DSL-LAYOUT-01",
-        "P-MARKING-LAYOUT-01"
+        "P-MARKING-LAYOUT-01",
+        "P-VERIFY-LAYOUT-01",
+        "P-DEPENDENCY-EXTRACT-01"
       ],
-      "extractionStatus": "PACKAGE_RELOCATED",
+      "extractionStatus": "METHOD_EXTRACTED_WITH_CHECKED_DELEGATION",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "IStarFrontend",
@@ -2367,7 +2378,7 @@
       "parityTests": [
         "G"
       ],
-      "acceptance": "Selected core differs only by recorded patches and package/import relocation; admitted-profile behavior equals pinned original",
+      "acceptance": "Selected core differs only by recorded package/import relocation and mechanically audited method extraction; admitted-profile behavior equals pinned original",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -3634,7 +3645,7 @@
       "gitStatus": "",
       "targetModule": "use-plugin",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/csl/parser/NativeOclEvaluator.java",
-      "targetSha256": "d9048f5621428c3459f053388f3371d9ecf87a76d2640793f39f0d0e60e63e62",
+      "targetSha256": "9be192f1824c779f60c739a74dddeda8e7e56090e8739ad89868662680af981a",
       "fqcn": "org.vnu.sme.goal.dsl.csl.parser.NativeOclEvaluator",
       "imports": [
         "java.util.ArrayList",
@@ -3642,12 +3653,13 @@
         "java.util.List",
         "java.util.Map",
         "java.util.Objects",
-        "org.vnu.sme.goal.dsl.csl_marking.mm.CslOclState"
+        "org.vnu.sme.goal.verify.csl.state.CslOclState"
       ],
       "reuseMode": "ORIGINAL_WITH_ADAPTER",
       "plannedPatchIds": [],
       "appliedPatchIds": [
-        "P-DSL-LAYOUT-01"
+        "P-DSL-LAYOUT-01",
+        "P-VERIFY-LAYOUT-01"
       ],
       "extractionStatus": "PACKAGE_RELOCATED",
       "productionEvaluationAllowed": false,
@@ -3659,7 +3671,7 @@
         "A",
         "I"
       ],
-      "acceptance": "Selected core differs only by recorded patches and package/import relocation; admitted-profile behavior equals pinned original",
+      "acceptance": "Selected core differs only by recorded package/import relocation and mechanically audited method extraction; admitted-profile behavior equals pinned original",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -3670,9 +3682,9 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar_marking/semantics/ContributionPolarity.java",
-      "targetSha256": "e7e5ae6e2dcec82dd589ffa3a9fd4da36755cd601fa1a77481429d8545ca066b",
-      "fqcn": "org.vnu.sme.goal.dsl.istar_marking.semantics.ContributionPolarity",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/propagation/ContributionPolarity.java",
+      "targetSha256": "b012182731895d977e77c91ebbf3c00054c952e9b00e4b1392e65adb253d6bf3",
+      "fqcn": "org.vnu.sme.goal.verify.istar.propagation.ContributionPolarity",
       "imports": [
         "org.vnu.sme.goal.dsl.istar.mm.ContributionType"
       ],
@@ -3680,7 +3692,8 @@
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
-        "P-MARKING-LAYOUT-01"
+        "P-MARKING-LAYOUT-01",
+        "P-VERIFY-LAYOUT-01"
       ],
       "extractionStatus": "PACKAGE_RELOCATED",
       "productionEvaluationAllowed": true,
@@ -3693,7 +3706,7 @@
         "F",
         "G"
       ],
-      "acceptance": "Selected core differs only by recorded patches and package/import relocation; admitted-profile behavior equals pinned original",
+      "acceptance": "Selected core differs only by recorded package/import relocation and mechanically audited method extraction; admitted-profile behavior equals pinned original",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -3704,19 +3717,22 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar_marking/mm/GoalMarking.java",
-      "targetSha256": "1996327c48a12054b982b8d7621ad7424be476f1dda0efe308507c98a3743841",
-      "fqcn": "org.vnu.sme.goal.dsl.istar_marking.mm.GoalMarking",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/marking/GoalMarking.java",
+      "targetSha256": "8aaac26b534eb9249285ca2ed3baf58a4ee7cfddcdaab07cec63598f17029e0f",
+      "fqcn": "org.vnu.sme.goal.verify.istar.marking.GoalMarking",
       "imports": [
+        "org.vnu.sme.goal.verify.istar.temporal.GoalTemporalEvaluator",
         "org.vnu.sme.goal.dsl.istar.mm.GoalType"
       ],
       "reuseMode": "ORIGINAL_COPY",
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
-        "P-MARKING-LAYOUT-01"
+        "P-MARKING-LAYOUT-01",
+        "P-VERIFY-LAYOUT-01",
+        "P-TEMPORAL-EXTRACT-01"
       ],
-      "extractionStatus": "PACKAGE_RELOCATED",
+      "extractionStatus": "METHOD_EXTRACTED_WITH_CHECKED_DELEGATION",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "IStarFrontend",
@@ -3727,7 +3743,7 @@
         "F",
         "G"
       ],
-      "acceptance": "Selected core differs only by recorded patches and package/import relocation; admitted-profile behavior equals pinned original",
+      "acceptance": "Selected core differs only by recorded package/import relocation and mechanically audited method extraction; admitted-profile behavior equals pinned original",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -3738,15 +3754,16 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar_marking/mm/GoalTaskStatus.java",
-      "targetSha256": "6fbaf3727a0334edfc8d28f895b00c99823295017f66fd3aac4d6ce65821c7c2",
-      "fqcn": "org.vnu.sme.goal.dsl.istar_marking.mm.GoalTaskStatus",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/marking/GoalTaskStatus.java",
+      "targetSha256": "1a4e1150db7fe256e38970f7cb437376c449764bda32e815e62ed6b4474e097f",
+      "fqcn": "org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus",
       "imports": [],
       "reuseMode": "ORIGINAL_COPY",
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
-        "P-MARKING-LAYOUT-01"
+        "P-MARKING-LAYOUT-01",
+        "P-VERIFY-LAYOUT-01"
       ],
       "extractionStatus": "PACKAGE_RELOCATED",
       "productionEvaluationAllowed": true,
@@ -3759,7 +3776,7 @@
         "F",
         "G"
       ],
-      "acceptance": "Selected core differs only by recorded patches and package/import relocation; admitted-profile behavior equals pinned original",
+      "acceptance": "Selected core differs only by recorded package/import relocation and mechanically audited method extraction; admitted-profile behavior equals pinned original",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -3770,9 +3787,9 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar_marking/mm/IStarMarking.java",
-      "targetSha256": "ec242b31e5e60555b6d9e2feaaea21bd0b74798d657378a479abcc075e5178f1",
-      "fqcn": "org.vnu.sme.goal.dsl.istar_marking.mm.IStarMarking",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/marking/IStarMarking.java",
+      "targetSha256": "cecf52cdfaf854e27320ceac9c804dd8dfc9539d21e8504696d32f14de4b28e7",
+      "fqcn": "org.vnu.sme.goal.verify.istar.marking.IStarMarking",
       "imports": [
         "java.util.Collections",
         "java.util.LinkedHashMap",
@@ -3789,7 +3806,8 @@
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
-        "P-MARKING-LAYOUT-01"
+        "P-MARKING-LAYOUT-01",
+        "P-VERIFY-LAYOUT-01"
       ],
       "extractionStatus": "PACKAGE_RELOCATED",
       "productionEvaluationAllowed": true,
@@ -3802,7 +3820,7 @@
         "F",
         "G"
       ],
-      "acceptance": "Selected core differs only by recorded patches and package/import relocation; admitted-profile behavior equals pinned original",
+      "acceptance": "Selected core differs only by recorded package/import relocation and mechanically audited method extraction; admitted-profile behavior equals pinned original",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -3813,9 +3831,9 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar_marking/semantics/IStarPropagation.java",
-      "targetSha256": "ea11323adc08ebef830ac69fd30a3002104f2a971fd27871296b34cbf5b3242d",
-      "fqcn": "org.vnu.sme.goal.dsl.istar_marking.semantics.IStarPropagation",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/propagation/IStarPropagation.java",
+      "targetSha256": "cd8e71cb67f5dc48dec20ec9939b555c183f7ad35d15d8b3539bb6cbc58420b9",
+      "fqcn": "org.vnu.sme.goal.verify.istar.propagation.IStarPropagation",
       "imports": [
         "java.util.ArrayList",
         "java.util.LinkedHashMap",
@@ -3829,15 +3847,16 @@
         "org.vnu.sme.goal.dsl.istar.mm.GoalModel",
         "org.vnu.sme.goal.dsl.istar.mm.OrRefinement",
         "org.vnu.sme.goal.dsl.istar.mm.Refinement",
-        "org.vnu.sme.goal.dsl.istar_marking.mm.GoalTaskStatus",
-        "org.vnu.sme.goal.dsl.istar_marking.mm.IStarMarking",
-        "org.vnu.sme.goal.dsl.istar_marking.mm.QualityStatus"
+        "org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus",
+        "org.vnu.sme.goal.verify.istar.marking.IStarMarking",
+        "org.vnu.sme.goal.verify.istar.marking.QualityStatus"
       ],
       "reuseMode": "ORIGINAL_COPY",
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
-        "P-MARKING-LAYOUT-01"
+        "P-MARKING-LAYOUT-01",
+        "P-VERIFY-LAYOUT-01"
       ],
       "extractionStatus": "PACKAGE_RELOCATED",
       "productionEvaluationAllowed": true,
@@ -3850,7 +3869,7 @@
         "F",
         "G"
       ],
-      "acceptance": "Selected core differs only by recorded patches and package/import relocation; admitted-profile behavior equals pinned original",
+      "acceptance": "Selected core differs only by recorded package/import relocation and mechanically audited method extraction; admitted-profile behavior equals pinned original",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -3861,15 +3880,16 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar_marking/mm/QualityStatus.java",
-      "targetSha256": "bc0bf7138f41f702b6753cadd633068a5a46f427c796916e252882c250c5d5e1",
-      "fqcn": "org.vnu.sme.goal.dsl.istar_marking.mm.QualityStatus",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/marking/QualityStatus.java",
+      "targetSha256": "9321f3392fe1201b4f6e140af488fff26afeb8c3973f78b9c6f5cf8547f6eb9c",
+      "fqcn": "org.vnu.sme.goal.verify.istar.marking.QualityStatus",
       "imports": [],
       "reuseMode": "ORIGINAL_COPY",
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
-        "P-MARKING-LAYOUT-01"
+        "P-MARKING-LAYOUT-01",
+        "P-VERIFY-LAYOUT-01"
       ],
       "extractionStatus": "PACKAGE_RELOCATED",
       "productionEvaluationAllowed": true,
@@ -3882,7 +3902,7 @@
         "F",
         "G"
       ],
-      "acceptance": "Selected core differs only by recorded patches and package/import relocation; admitted-profile behavior equals pinned original",
+      "acceptance": "Selected core differs only by recorded package/import relocation and mechanically audited method extraction; admitted-profile behavior equals pinned original",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -3893,15 +3913,16 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar_marking/mm/TaskMarking.java",
-      "targetSha256": "876599c4789ddc2d2e097b5af7ec70e9bfc9084a4dbe3ced6d229a184d45d28e",
-      "fqcn": "org.vnu.sme.goal.dsl.istar_marking.mm.TaskMarking",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/marking/TaskMarking.java",
+      "targetSha256": "c8fa7a76581a8065c9a8bd01721928b5d7c49e7a00b749076366472cc2fee1a5",
+      "fqcn": "org.vnu.sme.goal.verify.istar.marking.TaskMarking",
       "imports": [],
       "reuseMode": "ORIGINAL_COPY",
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
-        "P-MARKING-LAYOUT-01"
+        "P-MARKING-LAYOUT-01",
+        "P-VERIFY-LAYOUT-01"
       ],
       "extractionStatus": "PACKAGE_RELOCATED",
       "productionEvaluationAllowed": true,
@@ -3914,7 +3935,7 @@
         "F",
         "G"
       ],
-      "acceptance": "Selected core differs only by recorded patches and package/import relocation; admitted-profile behavior equals pinned original",
+      "acceptance": "Selected core differs only by recorded package/import relocation and mechanically audited method extraction; admitted-profile behavior equals pinned original",
       "license": "GPL-3.0 (upstream LICENSE; retain attribution)"
     },
     {
@@ -4150,8 +4171,65 @@
       "semanticChange": false,
       "scope": "Move marking state types to mm and propagation rules to semantics; only package/import references change",
       "relocations": "META-INF/dsl-class-relocations.properties"
+    },
+    {
+      "id": "P-VERIFY-LAYOUT-01",
+      "semanticChange": false,
+      "scope": "Move language-specific verification state/rules into istar and csl; update imports and deployment class identities only",
+      "relocations": "META-INF/verify-class-relocations.properties"
+    },
+    {
+      "id": "P-TEMPORAL-EXTRACT-01",
+      "semanticChange": false,
+      "scope": "Lift GoalMarking update/status/baseline bodies into GoalTemporalEvaluator; preserve public entry points through exact delegation",
+      "tests": [
+        "OriginalRuntimeSessionTest",
+        "EngineExtractionTest"
+      ]
+    },
+    {
+      "id": "P-DEPENDENCY-EXTRACT-01",
+      "semanticChange": false,
+      "scope": "Lift the dependency fixpoint and existing limit into IStarDependencyPropagation; keep scenario API and invocation order",
+      "tests": [
+        "OriginalRuntimeSessionTest",
+        "DerivedDependeePolicyTest",
+        "EngineExtractionTest"
+      ]
     }
   ],
-  "sourceLayout": "Single Maven source tree; DSL under istar, csl, istar_marking, csl_marking",
-  "semanticBoundary": "Semantic packages and verify may not import GUI, bridge or source frameworks; DSL view/form packages are presentation only"
+  "sourceLayout": "Single Maven source tree; DSL owns language definitions/scenarios/views; org.vnu.sme.goal.verify owns istar/csl rules; host verify owns runtime sessions and native USE backend",
+  "semanticBoundary": "Semantic packages and verify may not import GUI, bridge or source frameworks; DSL view/form packages are presentation only",
+  "verificationLayout": {
+    "patchId": "P-VERIFY-LAYOUT-01",
+    "core": "org.vnu.sme.goal.verify.{istar,csl}",
+    "backendAndSession": "org.tzi.use.plugins.jacamo.verify.{api,runtime,use75}",
+    "relocationAudit": "META-INF/verify-class-relocations.properties",
+    "preservation": "Pinned original bytes are reconstructed by reversing only recorded names/imports and checked method extractions. Existing exhaustive oracle parity tests remain authoritative."
+  },
+  "extractedImplementations": [
+    {
+      "fqcn": "org.vnu.sme.goal.verify.istar.temporal.GoalTemporalEvaluator",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/temporal/GoalTemporalEvaluator.java",
+      "targetSha256": "f74a3b1f1e75b176554090dd3c166ec27e4ef14f231b8eb62385c9a872b00633",
+      "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/verify/conformance/semantics/GoalMarking.java",
+      "methods": [
+        "update",
+        "status",
+        "baseline"
+      ],
+      "reuseMode": "EXISTING_ALGORITHM_EXTRACTED_WITHOUT_SEMANTIC_CHANGE"
+    },
+    {
+      "fqcn": "org.vnu.sme.goal.verify.istar.propagation.IStarDependencyPropagation",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/propagation/IStarDependencyPropagation.java",
+      "targetSha256": "69d2002c92e18b09c4a5b6906401aaa843f4702b701249f8d9e5c0e263c1da45",
+      "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/iscn/goalmodelinstance/parser/GoalModelInstanceTranslator.java",
+      "methods": [
+        "saturateDependencies",
+        "MAX_DEPENDENCY_STEPS"
+      ],
+      "reuseMode": "EXISTING_ALGORITHM_EXTRACTED_WITHOUT_SEMANTIC_CHANGE"
+    }
+  ]
 }

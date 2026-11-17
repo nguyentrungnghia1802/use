@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.tzi.use.plugins.jacamo.verify.oracle.SourcePackageRelocation;
 import org.vnu.sme.goal.dsl.csl.parser.CslCompiler;
 import org.vnu.sme.goal.dsl.istar.mm.GoalType;
-import org.vnu.sme.goal.dsl.istar_marking.mm.GoalMarking;
-import org.vnu.sme.goal.dsl.istar_marking.mm.GoalTaskStatus;
+import org.vnu.sme.goal.verify.istar.marking.GoalMarking;
+import org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;

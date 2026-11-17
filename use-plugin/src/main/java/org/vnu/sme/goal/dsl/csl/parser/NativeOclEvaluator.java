@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.vnu.sme.goal.dsl.csl_marking.mm.CslOclState;
+import org.vnu.sme.goal.verify.csl.state.CslOclState;
 
 /** Side-effect-free OCL subset evaluated directly over an CSL object state. */
 public final class NativeOclEvaluator {

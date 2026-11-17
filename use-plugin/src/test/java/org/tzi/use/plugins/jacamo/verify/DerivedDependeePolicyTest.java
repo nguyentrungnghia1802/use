@@ -1,5 +1,8 @@
 package org.tzi.use.plugins.jacamo.verify;
 
+import org.vnu.sme.goal.verify.istar.propagation.IStarPropagation;
+import org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus;
+import org.vnu.sme.goal.verify.istar.marking.TaskMarking;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.tzi.use.plugins.jacamo.verify.api.*;
@@ -9,7 +12,6 @@ import org.vnu.sme.goal.dsl.istar_marking.mm.ScenarioInstance;
 import org.vnu.sme.goal.dsl.istar.mm.*;
 import org.vnu.sme.goal.dsl.istar.parser.IStarCompiler;
 import org.vnu.sme.goal.dsl.istar_marking.mm.*;
-import org.vnu.sme.goal.dsl.istar_marking.semantics.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DerivedDependeePolicyTest {

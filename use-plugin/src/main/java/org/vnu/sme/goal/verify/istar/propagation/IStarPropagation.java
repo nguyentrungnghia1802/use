@@ -1,4 +1,4 @@
-package org.vnu.sme.goal.dsl.istar_marking.semantics;
+package org.vnu.sme.goal.verify.istar.propagation;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,9 +13,9 @@ import org.vnu.sme.goal.dsl.istar.mm.Contribution;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.OrRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Refinement;
-import org.vnu.sme.goal.dsl.istar_marking.mm.GoalTaskStatus;
-import org.vnu.sme.goal.dsl.istar_marking.mm.IStarMarking;
-import org.vnu.sme.goal.dsl.istar_marking.mm.QualityStatus;
+import org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus;
+import org.vnu.sme.goal.verify.istar.marking.IStarMarking;
+import org.vnu.sme.goal.verify.istar.marking.QualityStatus;
 
 /**
  * Propagation rules of Fig. 7 (Caballero-Villalobos, Definition 3.5 LTS) — the operational

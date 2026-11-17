@@ -1,5 +1,6 @@
-package org.vnu.sme.goal.dsl.csl.mm;
+package org.vnu.sme.goal.verify.csl.validation;
 
+import org.vnu.sme.goal.dsl.csl.mm.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

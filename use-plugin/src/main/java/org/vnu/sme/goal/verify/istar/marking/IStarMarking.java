@@ -1,4 +1,4 @@
-package org.vnu.sme.goal.dsl.istar_marking.mm;
+package org.vnu.sme.goal.verify.istar.marking;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

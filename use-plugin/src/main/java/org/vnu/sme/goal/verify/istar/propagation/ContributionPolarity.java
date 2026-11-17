@@ -1,4 +1,4 @@
-package org.vnu.sme.goal.dsl.istar_marking.semantics;
+package org.vnu.sme.goal.verify.istar.propagation;
 
 import org.vnu.sme.goal.dsl.istar.mm.ContributionType;
 
