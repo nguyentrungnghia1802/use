@@ -2,10 +2,11 @@ package org.tzi.use.plugins.jacamo.verify.runtime;
 
 import java.util.*;
 import org.tzi.use.plugins.jacamo.verify.api.*;
-import org.vnu.sme.goal.dsl.iscn.mm.*;
-import org.vnu.sme.goal.dsl.iscn.goalmodelinstance.parser.*;
+import org.vnu.sme.goal.dsl.istar_marking.mm.*;
+import org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstanceTopology;
+import org.vnu.sme.goal.dsl.istar_marking.parser.*;
 import org.vnu.sme.goal.dsl.istar.mm.*;
-import org.vnu.sme.goal.verify.conformance.semantics.*;
+import org.vnu.sme.goal.dsl.istar_marking.semantics.*;
 
 /** Synchronous neutral recurrence session. A plugin owner serializes calls and owns observation quality. */
 public final class Use4GoalRuntimeSessionAdapter implements AutoCloseable {

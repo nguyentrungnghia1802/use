@@ -3,11 +3,11 @@ package org.tzi.use.plugins.jacamo.verify;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.tzi.use.plugins.jacamo.verify.api.*;
-import org.tzi.use.plugins.jacamo.dsl.istar.parser.IStarFrontend;
+import org.vnu.sme.goal.dsl.istar.parser.IStarFrontend;
 import org.tzi.use.plugins.jacamo.verify.runtime.*;
 import org.vnu.sme.goal.dsl.istar.mm.*;
-import org.vnu.sme.goal.dsl.iscn.mm.ScenarioInstance;
-import org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus;
+import org.vnu.sme.goal.dsl.istar_marking.mm.ScenarioInstance;
+import org.vnu.sme.goal.dsl.istar_marking.mm.GoalTaskStatus;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RoleSpecializationPolicyTest {

@@ -8,7 +8,7 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.tzi.use.api.*;
 import org.tzi.use.parser.use.USECompiler;
-import org.tzi.use.plugins.jacamo.dsl.csl.parser.CslFrontend;
+import org.vnu.sme.goal.dsl.csl.parser.CslFrontend;
 import org.tzi.use.plugins.jacamo.verify.use75.*;
 import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.value.*;

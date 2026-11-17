@@ -1,6 +1,6 @@
 package org.tzi.use.plugins.jacamo.feature;
-import org.tzi.use.plugins.jacamo.dsl.state.ModelStateDocument;
-import org.tzi.use.plugins.jacamo.dsl.istarscn.view.IStarScenarioView;
+import org.vnu.sme.goal.dsl.csl_marking.mm.ModelStateDocument;
+import org.vnu.sme.goal.dsl.istar_marking.view.IStarScenarioView;
 
 import java.awt.*;
 import java.nio.file.*;
@@ -10,12 +10,12 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import org.tzi.use.gui.main.*;
 import org.tzi.use.gui.views.View;
-import org.tzi.use.plugins.jacamo.dsl.csl.view.CslView;
-import org.tzi.use.plugins.jacamo.dsl.istar.view.IStarView;
-import org.tzi.use.plugins.jacamo.dsl.oal.view.AolDiagram;
+import org.vnu.sme.goal.dsl.csl.form.CslView;
+import org.vnu.sme.goal.dsl.istar.form.IStarView;
+import org.vnu.sme.goal.dsl.csl_marking.view.AolDiagram;
 import org.tzi.use.plugins.jacamo.verify.api.EngineSemanticsProfile;
-import org.tzi.use.plugins.jacamo.dsl.csl.parser.*;
-import org.tzi.use.plugins.jacamo.dsl.istar.parser.*;
+import org.vnu.sme.goal.dsl.csl.parser.*;
+import org.vnu.sme.goal.dsl.istar.parser.*;
 import org.tzi.use.plugins.jacamo.verify.use75.*;
 
 /** Four independent USE menu adapters share parsing, placement and disposal here. */

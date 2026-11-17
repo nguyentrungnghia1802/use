@@ -6,13 +6,13 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.tzi.use.plugins.jacamo.verify.api.*;
-import org.tzi.use.plugins.jacamo.dsl.istar.parser.IStarFrontend;
+import org.vnu.sme.goal.dsl.istar.parser.IStarFrontend;
 import org.tzi.use.plugins.jacamo.verify.oracle.PinnedOriginalOracle;
 import org.tzi.use.plugins.jacamo.verify.runtime.*;
-import org.vnu.sme.goal.dsl.iscn.mm.*;
-import org.vnu.sme.goal.dsl.iscn.goalmodelinstance.parser.GoalModelInstanceTranslator;
+import org.vnu.sme.goal.dsl.istar_marking.mm.*;
+import org.vnu.sme.goal.dsl.istar_marking.parser.GoalModelInstanceTranslator;
 import org.vnu.sme.goal.dsl.istar.mm.*;
-import org.vnu.sme.goal.verify.conformance.semantics.*;
+import org.vnu.sme.goal.dsl.istar_marking.semantics.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.tzi.use.plugins.jacamo.verify.oracle.PinnedOriginalOracle.*;
 

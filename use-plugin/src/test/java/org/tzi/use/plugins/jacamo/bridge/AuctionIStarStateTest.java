@@ -4,7 +4,7 @@ import java.nio.file.*;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.tzi.use.plugins.jacamo.verify.api.EngineSemanticsProfile;
-import org.tzi.use.plugins.jacamo.dsl.istar.parser.IStarFrontend;
+import org.vnu.sme.goal.dsl.istar.parser.IStarFrontend;
 import org.vnu.sme.goal.dsl.istar.mm.*;
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -6,7 +6,7 @@ import org.tzi.use.api.*;
 import org.tzi.use.plugins.jacamo.verify.api.EngineSemanticsProfile;
 import org.tzi.use.plugins.jacamo.verify.api.EngineAdmissionException;
 import org.tzi.use.plugins.jacamo.verify.api.EngineDiagnostic;
-import org.tzi.use.plugins.jacamo.dsl.csl.parser.CslFrontend;
+import org.vnu.sme.goal.dsl.csl.parser.CslFrontend;
 import org.tzi.use.uml.mm.*;
 import org.vnu.sme.goal.dsl.csl.mm.*;
 

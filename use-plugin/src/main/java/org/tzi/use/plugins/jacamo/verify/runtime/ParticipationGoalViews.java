@@ -1,7 +1,7 @@
 package org.tzi.use.plugins.jacamo.verify.runtime;
 
 import java.util.*;
-import org.tzi.use.plugins.jacamo.dsl.istar.parser.ScopedElementNames;
+import org.vnu.sme.goal.dsl.istar.parser.ScopedElementNames;
 import org.vnu.sme.goal.dsl.istar.mm.*;
 
 /** Same-named Goal views share one occurrence through participates-in; no authored dependency is added. */

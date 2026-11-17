@@ -1,7 +1,7 @@
 package org.tzi.use.plugins.jacamo.verify.runtime;
 
 import java.util.*;
-import org.vnu.sme.goal.dsl.iscn.goalmodelinstance.parser.GoalModelInstanceTopology.ActorBinding;
+import org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstanceTopology.ActorBinding;
 
 /** Complete structured occurrence identity within a run/program owner, including its activation episode. */
 public record EngineOccurrenceKey(String sourceElementId,List<ActorBinding> bindingStack,String episode) {

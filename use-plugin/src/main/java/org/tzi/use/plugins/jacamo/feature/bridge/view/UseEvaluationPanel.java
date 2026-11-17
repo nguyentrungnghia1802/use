@@ -8,11 +8,11 @@ import java.util.function.Consumer;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.tzi.use.plugins.jacamo.dsl.state.ModelStateDocument;
-import org.tzi.use.plugins.jacamo.dsl.istarscn.view.IStarScenarioView;
-import org.tzi.use.plugins.jacamo.dsl.csl.view.CslView;
-import org.tzi.use.plugins.jacamo.dsl.istar.view.IStarView;
-import org.tzi.use.plugins.jacamo.dsl.oal.view.AolDiagram;
+import org.vnu.sme.goal.dsl.csl_marking.mm.ModelStateDocument;
+import org.vnu.sme.goal.dsl.istar_marking.view.IStarScenarioView;
+import org.vnu.sme.goal.dsl.csl.form.CslView;
+import org.vnu.sme.goal.dsl.istar.form.IStarView;
+import org.vnu.sme.goal.dsl.csl_marking.view.AolDiagram;
 import org.tzi.use.plugins.jacamo.bridge.*;
 
 /** Four model/state views share the exact verified cut and native schema. */

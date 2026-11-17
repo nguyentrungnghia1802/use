@@ -2,10 +2,11 @@ package org.tzi.use.plugins.jacamo.verify.runtime;
 
 import java.util.*;
 import org.tzi.use.plugins.jacamo.verify.api.*;
-import org.vnu.sme.goal.dsl.iscn.mm.ScenarioInstance;
-import org.vnu.sme.goal.dsl.iscn.goalmodelinstance.parser.GoalModelInstanceTranslator.InstanceContextMatcher;
+import org.vnu.sme.goal.dsl.istar_marking.mm.ScenarioInstance;
+import org.vnu.sme.goal.dsl.istar_marking.parser.GoalModelInstanceTranslator.InstanceContextMatcher;
 import org.vnu.sme.goal.dsl.istar.mm.*;
-import org.vnu.sme.goal.verify.conformance.semantics.*;
+import org.vnu.sme.goal.dsl.istar_marking.mm.*;
+import org.vnu.sme.goal.dsl.istar_marking.semantics.*;
 import static org.tzi.use.plugins.jacamo.verify.api.EngineDiagnostic.*;
 
 /** Conservative, versioned operational subset. No patches to original recurrence or propagation. */

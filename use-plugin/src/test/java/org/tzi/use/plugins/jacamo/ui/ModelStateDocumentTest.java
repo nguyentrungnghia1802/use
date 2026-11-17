@@ -1,12 +1,12 @@
 package org.tzi.use.plugins.jacamo.ui;
-import org.tzi.use.plugins.jacamo.dsl.state.ModelStateDocument;
-import org.tzi.use.plugins.jacamo.dsl.istarscn.view.IStarScenarioView;
+import org.vnu.sme.goal.dsl.csl_marking.mm.ModelStateDocument;
+import org.vnu.sme.goal.dsl.istar_marking.view.IStarScenarioView;
 
 import java.nio.file.*;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.tzi.use.plugins.jacamo.dsl.oal.mm.AcceptedAolState;
+import org.vnu.sme.goal.dsl.csl_marking.mm.AcceptedAolState;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ModelStateDocumentTest {

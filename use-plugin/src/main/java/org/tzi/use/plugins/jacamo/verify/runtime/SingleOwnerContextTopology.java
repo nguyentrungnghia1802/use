@@ -2,9 +2,10 @@ package org.tzi.use.plugins.jacamo.verify.runtime;
 
 import java.util.*;
 import org.vnu.sme.goal.dsl.istar.mm.*;
-import org.vnu.sme.goal.dsl.iscn.mm.ScenarioInstance;
-import org.vnu.sme.goal.dsl.iscn.goalmodelinstance.mm.GoalModelInstance;
-import org.vnu.sme.goal.dsl.iscn.goalmodelinstance.parser.*;
+import org.vnu.sme.goal.dsl.istar_marking.mm.ScenarioInstance;
+import org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstance;
+import org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstanceTopology;
+import org.vnu.sme.goal.dsl.istar_marking.parser.*;
 
 /** New neutral adapter, not a patched upstream API. A bijective execution M1
  * instantiation for a proved single-owner context. Each definition element has

@@ -6,14 +6,14 @@ import java.util.regex.*;
 import org.tzi.use.plugins.jacamo.bridge.protocol.CanonicalJson;
 import org.tzi.use.api.*;
 import org.tzi.use.plugins.jacamo.verify.api.EngineSemanticsProfile;
-import org.tzi.use.plugins.jacamo.dsl.csl.parser.*;
-import org.tzi.use.plugins.jacamo.dsl.istar.parser.*;
+import org.vnu.sme.goal.dsl.csl.parser.*;
+import org.vnu.sme.goal.dsl.istar.parser.*;
 import org.tzi.use.plugins.jacamo.verify.runtime.*;
 import org.tzi.use.plugins.jacamo.verify.use75.*;
 import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.value.*;
 import org.tzi.use.uml.sys.*;
-import org.vnu.sme.goal.dsl.iscn.mm.ScenarioInstance;
+import org.vnu.sme.goal.dsl.istar_marking.mm.ScenarioInstance;
 import org.vnu.sme.goal.dsl.istar.mm.*;
 
 /** Receives CSL data only. No Jason plan, action, success flag or Task mapping enters this evaluator. */

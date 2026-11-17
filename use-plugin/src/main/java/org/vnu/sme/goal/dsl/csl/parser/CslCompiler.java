@@ -15,7 +15,7 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.vnu.sme.goal.dsl.csl.ast.CslModelCS;
 import org.vnu.sme.goal.dsl.csl.mm.CslModel;
-import org.vnu.sme.goal.trace.cslTrace.nativecsl.NativeOclEvaluator;
+import org.vnu.sme.goal.dsl.csl.parser.NativeOclEvaluator;
 
 public final class CslCompiler {
     public record Result(CslModelCS ast, CslModel model, List<String> errors) {

@@ -14,7 +14,7 @@ class EngineInstallationGuardTest {
     }
     @Test void missingGrammarProvenanceLicenseOrClassCannotFallBack() {
         for(String missing:List.of("grammars/CSL.g4","grammars/IStar.g4","META-INF/use4goal-provenance.json","META-INF/licenses/use4Goal-GPL-3.0.txt",
-                "org/vnu/sme/goal/verify/conformance/semantics/GoalMarking.class")) {
+                "org/vnu/sme/goal/dsl/istar_marking/mm/GoalMarking.class")) {
             var resolver=new ClassLoader(EngineInstallationGuard.class.getClassLoader()) {
                 @Override public Enumeration<URL> getResources(String name) throws java.io.IOException {return name.equals(missing)?Collections.emptyEnumeration():super.getResources(name);}
             };

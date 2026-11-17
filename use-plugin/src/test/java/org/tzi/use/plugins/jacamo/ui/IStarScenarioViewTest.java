@@ -1,13 +1,13 @@
 package org.tzi.use.plugins.jacamo.ui;
-import org.tzi.use.plugins.jacamo.dsl.state.ModelStateDocument;
-import org.tzi.use.plugins.jacamo.dsl.istarscn.view.IStarScenarioView;
+import org.vnu.sme.goal.dsl.csl_marking.mm.ModelStateDocument;
+import org.vnu.sme.goal.dsl.istar_marking.view.IStarScenarioView;
 
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
 import org.junit.jupiter.api.Test;
 import org.tzi.use.plugins.jacamo.verify.api.EngineSemanticsProfile;
-import org.tzi.use.plugins.jacamo.dsl.istar.parser.IStarFrontend;
+import org.vnu.sme.goal.dsl.istar.parser.IStarFrontend;
 import static org.junit.jupiter.api.Assertions.*;
 
 class IStarScenarioViewTest {

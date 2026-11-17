@@ -67,7 +67,7 @@ public final class DiagramModelBrowser extends JPanel {
         model.groups().stream().filter(g->!nested.contains(g.name())).forEach(g->root.add(cslGroup(g,true)));
         if(nativeModel!=null){
             var enactments=new DefaultMutableTreeNode("Enactment possibilities (mapping)");
-            for(var cls:nativeModel.classes())for(String role:org.tzi.use.plugins.jacamo.dsl.csl.view.CslEnactmentMetadata.enactedRoles(cls))
+            for(var cls:nativeModel.classes())for(String role:org.vnu.sme.goal.dsl.csl.view.CslEnactmentMetadata.enactedRoles(cls))
                 enactments.add(node(cls.name()+" -> "+role,"Mapped enactment possibility","Meaning","The represented agent may enact this role; actual instances need a frozen Plays link."));
             if(enactments.getChildCount()>0)root.add(enactments);
         }

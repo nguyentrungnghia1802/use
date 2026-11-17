@@ -7,7 +7,7 @@ import java.security.MessageDigest;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.tzi.use.plugins.jacamo.dsl.csl.parser.CslFrontend;
+import org.vnu.sme.goal.dsl.csl.parser.CslFrontend;
 import org.tzi.use.plugins.jacamo.verify.oracle.PinnedOriginalOracle;
 import org.vnu.sme.goal.dsl.csl.mm.*;
 import org.vnu.sme.goal.dsl.csl.parser.CslCompiler;

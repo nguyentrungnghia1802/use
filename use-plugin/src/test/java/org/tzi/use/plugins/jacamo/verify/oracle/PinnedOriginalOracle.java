@@ -137,7 +137,7 @@ public final class PinnedOriginalOracle implements AutoCloseable {
     public static String normalize(Object value) throws Exception {
         if (value == null) return "null";
         if (value instanceof CharSequence || value instanceof Number || value instanceof Boolean || value instanceof Enum<?>)
-            return value.getClass().getName() + ":" + value;
+            return SourcePackageRelocation.originalNames(value.getClass().getName()) + ":" + value;
         if (value instanceof Optional<?> optional) return "Optional(" + normalize(optional.orElse(null)) + ")";
         if (value instanceof OptionalInt optional) return "OptionalInt(" + (optional.isPresent() ? optional.getAsInt() : "empty") + ")";
         if (value instanceof Collection<?> collection) {
@@ -154,11 +154,11 @@ public final class PinnedOriginalOracle implements AutoCloseable {
         for (Class<?> type = value.getClass(); type != null && type.getName().startsWith("org.vnu.sme.goal."); type = type.getSuperclass()) {
             for (var field : type.getDeclaredFields()) {
                 if (Modifier.isStatic(field.getModifiers()) || field.isSynthetic()) continue;
-                field.setAccessible(true); fields.put(type.getName() + "." + field.getName(), normalize(field.get(value)));
+                field.setAccessible(true); fields.put(SourcePackageRelocation.originalNames(type.getName()) + "." + field.getName(), normalize(field.get(value)));
             }
         }
         if (fields.isEmpty()) throw new AssertionError("NO_ORIGINAL_MODEL_FIELDS:" + value.getClass());
-        return value.getClass().getName() + fields;
+        return SourcePackageRelocation.originalNames(value.getClass().getName()) + fields;
     }
     @Override public void close() throws IOException { loader.close(); }
 }

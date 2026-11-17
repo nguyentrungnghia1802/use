@@ -1,7 +1,8 @@
 package org.tzi.use.plugins.jacamo.verify.runtime;
 
 import java.util.*;
-import org.vnu.sme.goal.verify.conformance.semantics.*;
+import org.vnu.sme.goal.dsl.istar_marking.mm.*;
+import org.vnu.sme.goal.dsl.istar_marking.semantics.*;
 
 /** Immutable staged history only. No native model/state, socket, or UI ownership. */
 public record EngineCheckpoint(String ownerToken,long epoch,String definitionHash,String castRevision,long boundary,

@@ -1,10 +1,11 @@
 package org.tzi.use.plugins.jacamo.verify;
 
 import org.junit.jupiter.api.Test;
+import org.tzi.use.plugins.jacamo.verify.oracle.SourcePackageRelocation;
 import org.vnu.sme.goal.dsl.csl.parser.CslCompiler;
 import org.vnu.sme.goal.dsl.istar.mm.GoalType;
-import org.vnu.sme.goal.verify.conformance.semantics.GoalMarking;
-import org.vnu.sme.goal.verify.conformance.semantics.GoalTaskStatus;
+import org.vnu.sme.goal.dsl.istar_marking.mm.GoalMarking;
+import org.vnu.sme.goal.dsl.istar_marking.mm.GoalTaskStatus;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class EngineExtractionTest {
     private static final Path ROOT = Path.of("").toAbsolutePath();
 
-    @Test void selectedSourcesAreByteIdenticalToPinnedOriginalArchive() throws Exception {
+    @Test void selectedSourcesPreservePinnedBytesExceptRecordedPackagesAndPatches() throws Exception {
         String manifest = Files.readString(ROOT.resolve("src/main/resources/META-INF/use4goal-provenance.json"));
         int javaFiles = 0, grammars = 0;
         try (var archive = new ZipFile(ROOT.resolve("src/test/resources/oracle/pinned-original-core.zip").toFile())) {
@@ -28,7 +29,7 @@ class EngineExtractionTest {
                 String upstream = entry.getName();
                 Path target;
                 if (upstream.startsWith("goal/src/main/java/")) {
-                    target = ROOT.resolve("src/main/java/" + upstream.substring("goal/src/main/java/".length()));
+                    target = SourcePackageRelocation.sourcePath(ROOT, upstream);
                     javaFiles++;
                 } else if (upstream.endsWith(".g4")) {
                     target = ROOT.resolve("src/main/resources/grammars/" + Path.of(upstream).getFileName());
@@ -38,17 +39,18 @@ class EngineExtractionTest {
                     target = ROOT.resolve("src/main/resources/META-INF/licenses/use4Goal-GPL-3.0.txt");
                 }
                 byte[] expected = archive.getInputStream(entry).readAllBytes();
-                byte[] actual=Files.readAllBytes(target);
+                byte[] targetBytes=Files.readAllBytes(target);
+                byte[] actual=upstream.endsWith(".java") ? SourcePackageRelocation.originalSource(upstream, targetBytes) : targetBytes;
                 if(upstream.endsWith("/GoalModelInstanceTranslator.java")) {
                     verifyContextPatchScope(expected,actual);
-                    String targetHash=HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(actual));
+                    String targetHash=HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(targetBytes));
                     assertTrue(manifest.contains(targetHash),"Unrecorded P-CTX-01 target hash");
                 } else if(upstream.endsWith("/GoalModelValidator.java")||upstream.endsWith("/IStarCompiler.java")) {
                     verifyAdmissionPatchScope(target.getFileName().toString(),expected,actual);
-                    assertTrue(manifest.contains(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(actual))),"Unrecorded P-IADM-01 target hash");
+                    assertTrue(manifest.contains(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(targetBytes))),"Unrecorded P-IADM-01 target hash");
                 } else if(List.of("Actor.java","IStarModelFactory.java","IStar.g4").contains(target.getFileName().toString())) {
                     assertEquals(new String(expected,StandardCharsets.UTF_8).replace("\r\n","\n"),reverseGenericActorPatch(target.getFileName().toString(),new String(actual,StandardCharsets.UTF_8).replace("\r\n","\n")),"Unregistered change outside P-ACTOR-01: "+upstream);
-                    assertTrue(manifest.contains(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(actual))),"Unrecorded P-ACTOR-01 target hash");
+                    assertTrue(manifest.contains(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(targetBytes))),"Unrecorded P-ACTOR-01 target hash");
                 } else assertArrayEquals(expected,actual,upstream);
                 String hash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(expected));
                 assertTrue(manifest.contains(hash), "Unrecorded source hash: " + upstream);
@@ -125,11 +127,12 @@ class EngineExtractionTest {
         };
     }
     @Test void provenanceRejectsAnUnapprovedPrivateAlgorithmChange() throws Exception {
-        Path target=ROOT.resolve("src/main/java/org/vnu/sme/goal/dsl/iscn/goalmodelinstance/parser/GoalModelInstanceTranslator.java");
+        String upstream="goal/src/main/java/org/vnu/sme/goal/dsl/iscn/goalmodelinstance/parser/GoalModelInstanceTranslator.java";
+        Path target=SourcePackageRelocation.sourcePath(ROOT,upstream);
         try(var archive=new ZipFile(ROOT.resolve("src/test/resources/oracle/pinned-original-core.zip").toFile())) {
             var entry=archive.getEntry("goal/src/main/java/org/vnu/sme/goal/dsl/iscn/goalmodelinstance/parser/GoalModelInstanceTranslator.java");
             byte[] original=archive.getInputStream(entry).readAllBytes();
-            byte[] changed=Files.readString(target).replace("MAX_DEPENDENCY_STEPS = 10_000","MAX_DEPENDENCY_STEPS = 1").getBytes(StandardCharsets.UTF_8);
+            byte[] changed=new String(SourcePackageRelocation.originalSource(upstream,Files.readAllBytes(target)),StandardCharsets.UTF_8).replace("MAX_DEPENDENCY_STEPS = 10_000","MAX_DEPENDENCY_STEPS = 1").getBytes(StandardCharsets.UTF_8);
             assertThrows(AssertionError.class,()->verifyContextPatchScope(original,changed));
         }
     }
@@ -140,10 +143,12 @@ class EngineExtractionTest {
             try (var files = Files.walk(directory)) {
                 for (Path file : files.filter(p -> p.toString().endsWith(".java")).toList()) {
                     String source = Files.readString(file);
+                    boolean presentation=file.toString().replace('\\', '/').matches(".*/dsl/[^/]+/(view|form)/.*");
                     for (String forbidden : List.of("import jason.", "import cartago.", "import moise.",
-                            "import org.tzi.use.gui.", "import org.tzi.use.plugins.jacamo.bridge.",
+                            "import org.tzi.use.plugins.jacamo.bridge.",
                             "import org.tzi.use.plugins.jacamo.feature."))
                         assertFalse(source.contains(forbidden), file + ": " + forbidden);
+                    if(!presentation)assertFalse(source.contains("import org.tzi.use.gui."),file+": semantic code imports GUI");
                 }
             }
         }
