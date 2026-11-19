@@ -36,6 +36,7 @@ public final class SnapshotVerifier implements AutoCloseable {
     }
     private record Predicate(String element,Spec.Kind kind,String actor,NativeOclBackend.Compiled compiled) { }
     private final AttributeMapping mapping;
+    private final String modelRevision;
     private final org.vnu.sme.goal.dsl.csl.mm.CslModel cslModel;
     private final GoalModel goals;
     private final ParticipationViews participation;
@@ -55,6 +56,7 @@ public final class SnapshotVerifier implements AutoCloseable {
     public SnapshotVerifier(Path mappingFile,Path cslFile,Path istarFile)throws Exception {
         mapping=AttributeMapping.read(mappingFile);
         String cslSource=Files.readString(cslFile),istar=Files.readString(istarFile);
+        modelRevision = hash(hash(cslSource) + hash(istar));
         if(cslSource.contains("@use-native-ocl")||istar.contains("@use-native-ocl"))throw new IllegalArgumentException("STATE_MODE_INLINE_NATIVE_CONTRACTS_UNSUPPORTED");
         var csl=new CslFrontend().compile(cslSource,cslFile.toString()).requireModel();cslModel=csl;
         goals=new IStarFrontend().compileScoped(istar,istarFile.toString(),PROFILE).requireModel();
@@ -104,6 +106,7 @@ public final class SnapshotVerifier implements AutoCloseable {
         predicates.add(new Predicate(element,kind,actor,ocl.compile(new Spec(element+":"+kind,compiledKind,self,null,body))));
     }
     public AttributeMapping mapping(){return mapping;}
+    String modelRevision() { return modelRevision; }
     public org.vnu.sme.goal.dsl.csl.mm.CslModel cslModel(){return cslModel;}
     public GoalModel goalModel(){return goals;}
     public MSystem system(){return system;}

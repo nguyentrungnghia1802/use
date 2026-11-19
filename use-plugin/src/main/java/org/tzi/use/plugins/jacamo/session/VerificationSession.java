@@ -40,6 +40,7 @@ public final class VerificationSession implements AutoCloseable {
     private final String runtimeClasspath;
     private final Listener listener;
     private final SnapshotVerifier verifier;
+    private final String inputRevision;
     private final ServerSocket server;
     private final byte[] secret = new byte[32];
     private record Receipt(String requestHash, Map<String, Object> response) { }
@@ -59,8 +60,10 @@ public final class VerificationSession implements AutoCloseable {
         this.listener = Objects.requireNonNull(listener);
         Files.createDirectories(this.work);
         verifier = new SnapshotVerifier(configuration.mapping(), configuration.csl(), configuration.istar());
-        try { server = new ServerSocket(0, 16, InetAddress.getLoopbackAddress()); }
-        catch (Exception failure) { verifier.close(); throw failure; }
+        try {
+            inputRevision = CheckpointProtocol.inputRevision(verifier.modelRevision(), configuration.project(), verifier.mapping());
+            server = new ServerSocket(0, 16, InetAddress.getLoopbackAddress());
+        } catch (Exception failure) { verifier.close(); throw failure; }
     }
     public static VerificationSession start(Configuration configuration, Path work, String runtimeClasspath, Listener listener) throws Exception {
         var session = new VerificationSession(configuration, work, runtimeClasspath, listener);
@@ -91,7 +94,7 @@ public final class VerificationSession implements AutoCloseable {
         catch (UnsupportedOperationException ignored) { }
         ProducerProcess.compileArtifacts(configuration.project(), work, runtimeClasspath, listener::log);
         Thread.ofPlatform().daemon().name("csl-state-consumer").start(this::serve);
-        producer = ProducerProcess.start(configuration, work, runtimeClasspath, server.getLocalPort(), secretFile);
+        producer = ProducerProcess.start(configuration, work, runtimeClasspath, server.getLocalPort(), secretFile, verifier.modelRevision());
         Process running = producer;
         Thread.ofPlatform().daemon().name("jacamo-console").start(() -> {
             try (var reader = running.inputReader(); var log = Files.newBufferedWriter(work.resolve("producer.log"))) {
@@ -125,6 +128,7 @@ public final class VerificationSession implements AutoCloseable {
         String token = (String) request.get("token");
         String run = (String) request.get("run");
         if (token == null || token.isBlank() || run == null || run.isBlank()) throw new IOException("STATE_TOKEN_REQUIRED");
+        var cut = CheckpointProtocol.Cut.require(request.get("cut"), run, inputRevision);
 
         String key = run + ":" + token;
         Receipt previous = receipts.get(key);
@@ -145,9 +149,10 @@ public final class VerificationSession implements AutoCloseable {
         }
 
         String decision = result == null ? "HOLD_UNVERIFIED" : result.decision();
+        Map<String, Object> payload = result == null ? Map.of() : result.payload();
         Map<String, Object> response = Map.of("version", CheckpointProtocol.VERSION, "token", token, "run", run,
-                "requestHash", hash, "decision", decision, "diagnostic", failure,
-                "result", result == null ? Map.of() : result.payload());
+                "requestHash", hash, "cut", cut.payload(), "decision", decision, "diagnostic", failure,
+                "result", payload, "resultHash", CheckpointProtocol.digest(payload));
         receipts.put(key, new Receipt(hash, response));
         recordResult(request, response);
         // UI failures must never turn HOLD into APPROVE or prevent delivery of the native decision.

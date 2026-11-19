@@ -29,8 +29,8 @@ final class JaCaMoCheckpoints implements AutoCloseable {
     void initial() {
         try {
             long epoch = ExecutionBarrier.closeAdmission();
-            freeze(epoch);
-            if (!handler.verify(checkpoint("", "INITIAL", "INITIAL", "INITIAL", "", -1, 0, List.of())))
+            var cut = freeze(epoch);
+            if (!handler.verify(checkpoint("", "INITIAL", "INITIAL", "INITIAL", "", -1, 0, List.of()), cut))
                 throw new IllegalStateException("INITIAL_STATE_NOT_APPROVED");
             ExecutionBarrier.release(epoch);
         } catch (Exception failure) { throw new IllegalStateException("INITIAL_SOURCE_ADMISSION_FAILED", failure); }
@@ -55,29 +55,33 @@ final class JaCaMoCheckpoints implements AutoCloseable {
     }
     private void drain(long epoch) {
         try {
-            freeze(epoch);
+            var cut = freeze(epoch);
             while (true) {
                 Pending next;
                 synchronized (this) {
                     next = pending.pollFirst();
                     if (next == null) { ExecutionBarrier.release(epoch); draining = false; return; }
                 }
-                boolean approved = handler.verify(next.checkpoint());
+                boolean approved = handler.verify(next.checkpoint(), cut);
                 next.result().complete(approved);
                 if (!approved) return; // No timeout, console action or failed transport may resume the source.
             }
         } catch (Exception failure) { System.out.println("JACAMO_CHECKPOINT_HELD " + failure); failure.printStackTrace(System.out); }
     }
-    private static void freeze(long epoch) throws InterruptedException {
-        if (!ExecutionBarrier.awaitFrozen(epoch, Duration.ofSeconds(30)).clockFrozen())
-            throw new IllegalStateException("SOURCE_BARRIER_NOT_FROZEN");
+    private static ExecutionBarrier.Proof freeze(long epoch) throws InterruptedException {
+        return ExecutionBarrier.awaitFrozen(epoch, Duration.ofSeconds(30));
     }
-    private void await(Checkpoint checkpoint) throws Exception {
+    private Approval submitForDelivery(Checkpoint checkpoint) {
         var result = submit(checkpoint);
-        // A source hook must yield its admitted scheduler step before waiting for the global cut.
-        var suspension = ExecutionBarrier.suspend();
-        try { result.get(); }
-        finally { suspension.resume(); } // HOLD keeps this parked before dispatch.
+        // Yield the admitted step before the caller leaves the source monitor.
+        return new Approval(result, ExecutionBarrier.suspend());
+    }
+
+    private record Approval(CompletableFuture<Boolean> result, ExecutionBarrier.Suspension step) {
+        void awaitRelease() throws Exception {
+            try { result.get(); }
+            finally { step.resume(); }
+        }
     }
     private void unavailable(String reason) {
         complete = false;
@@ -191,26 +195,35 @@ final class JaCaMoCheckpoints implements AutoCloseable {
                 if (body.getBodyTerm() instanceof InternalActionLiteral literal && literal.getFunctor().equals(".join")) return true;
             return false;
         }
-        synchronized void onMarker(String plan, boolean entry) throws Exception {
-            var intention = ts.getC().getSelectedIntention();
-            if (intention == null || intention.isFinished()) throw new IllegalStateException("PLAN_FRAME_MISSING");
-            var means = intention.peek();
-            if (entry) {
-                if (active.containsKey(means)) throw new IllegalStateException("PLAN_FRAME_DUPLICATE_ENTRY");
-                var parent = group(intention);
-                if (parent == null) {
-                    parent = new Group(plan, means, intention); roots.put(parent.invocation, parent);
-                    means.getUnif().bind(continuationKey, ASSyntax.createString(parent.invocation));
+        void onMarker(String plan, boolean entry) throws Exception {
+            Delivery reply;
+            synchronized (this) {
+                var intention = ts.getC().getSelectedIntention();
+                if (intention == null || intention.isFinished()) throw new IllegalStateException("PLAN_FRAME_MISSING");
+                var means = intention.peek();
+                if (entry) {
+                    if (active.containsKey(means)) throw new IllegalStateException("PLAN_FRAME_DUPLICATE_ENTRY");
+                    var parent = group(intention);
+                    if (parent == null) {
+                        parent = new Group(plan, means, intention);
+                        roots.put(parent.invocation, parent);
+                        means.getUnif().bind(continuationKey, ASSyntax.createString(parent.invocation));
+                    } else {
+                        parent.merged++;
+                    }
+                    active.put(means, parent);
+                    return;
                 }
-                else parent.merged++;
-                active.put(means, parent);
-            } else finish(means, "SUCCEEDED");
+                reply = finish(means, "SUCCEEDED");
+            }
+            if (reply != null) reply.send();
         }
-        private void finish(IntendedMeans means, String outcome) throws Exception {
+
+        private Delivery finish(IntendedMeans means, String outcome) {
             var group = active.remove(means);
             boolean isRoot = group != null && group.root == means;
             if (group == null) { group = continuation(means); isRoot = group != null; }
-            if (!isRoot) return;
+            if (!isRoot) return null;
             var completed = group;
             if (outcome.equals("FAILED")) for (var frame : group.intention) {
                 var parent = continuation(frame);
@@ -218,27 +231,43 @@ final class JaCaMoCheckpoints implements AutoCloseable {
             }
             roots.remove(group.invocation); active.values().removeIf(value -> value == completed);
             var event = group.event(outcome, "PLAN_COMPLETED", group.messages);
-            if (group.deliveries.isEmpty() || !outcome.equals("SUCCEEDED")) submit(event);
-            else {
-                // A final outgoing message is published only after the enclosing plan is approved.
-                // This combines completion and return-to-caller into one checkpoint.
-                await(event);
-                try { for (var delivery : group.deliveries) delivery.send(); }
+            if (group.deliveries.isEmpty() || !outcome.equals("SUCCEEDED")) {
+                submit(event);
+                return null;
+            }
+
+            // Plan completion and the final reply share a single checkpoint.
+            var deliveries = List.copyOf(group.deliveries);
+            var approval = submitForDelivery(event);
+            return () -> {
+                approval.awaitRelease();
+                try { for (var delivery : deliveries) delivery.send(); }
                 catch (Exception failure) { unavailable("MESSAGE_DELIVERY_FAILED"); throw failure; }
-            }
+            };
         }
-        synchronized void send(Message message, Delivery delivery) throws Exception {
-            if (agent.equals(message.getReceiver())) { delivery.send(); return; }
-            var intention = ts.getC().getSelectedIntention();
-            var group = group(intention);
-            String id = message.getMsgId() + ":" + message.getReceiver();
-            if (group != null && !message.isAsk() && onlyReturnsRemain(intention)) {
-                group.messages.add(id); group.deliveries.add(delivery); return;
+
+        void send(Message message, Delivery delivery) throws Exception {
+            if (agent.equals(message.getReceiver())) {
+                delivery.send();
+                return;
             }
-            var event = group == null
-                    ? checkpoint(agent, "SOURCE_MESSAGE", "RUNNING", "AGENT_HANDOFF", "", -1, 0, List.of(id))
-                    : group.event("RUNNING", "AGENT_HANDOFF", List.of(id));
-            await(event);
+
+            Approval approval;
+            synchronized (this) {
+                var intention = ts.getC().getSelectedIntention();
+                var group = group(intention);
+                String id = message.getMsgId() + ":" + message.getReceiver();
+                if (group != null && !message.isAsk() && onlyReturnsRemain(intention)) {
+                    group.messages.add(id);
+                    group.deliveries.add(delivery);
+                    return;
+                }
+                var event = group == null
+                        ? checkpoint(agent, "SOURCE_MESSAGE", "RUNNING", "AGENT_HANDOFF", "", -1, 0, List.of(id))
+                        : group.event("RUNNING", "AGENT_HANDOFF", List.of(id));
+                approval = submitForDelivery(event);
+            }
+            approval.awaitRelease();
             delivery.send();
         }
         private boolean onlyReturnsRemain(Intention intention) throws Exception {

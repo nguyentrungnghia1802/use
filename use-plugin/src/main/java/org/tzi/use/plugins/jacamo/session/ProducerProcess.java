@@ -72,12 +72,12 @@ final class ProducerProcess {
     }
 
     static Process start(VerificationSession.Configuration configuration, Path work, String classpath,
-                         int port, Path secretFile) throws IOException {
+                         int port, Path secretFile, String modelRevision) throws IOException {
         var command = List.of(Path.of(System.getProperty("java.home"), "bin", "java").toString(),
                 "-Djava.awt.headless=true", "-cp", classpath + File.pathSeparator + work.resolve("artifact-classes"),
                 // The child JVM has the JaCaMo classes on its own classpath.
                 "org.tzi.use.plugins.jacamo.runtime.StateProducer", configuration.project().toString(), configuration.mapping().toString(),
-                Integer.toString(port), secretFile.toString(), work.toString());
+                Integer.toString(port), secretFile.toString(), work.toString(), modelRevision);
         return new ProcessBuilder(command).directory(configuration.project().getParent().toFile())
                 .redirectErrorStream(true).start();
     }

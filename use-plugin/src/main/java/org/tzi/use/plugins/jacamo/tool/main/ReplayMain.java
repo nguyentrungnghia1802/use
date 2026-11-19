@@ -17,7 +17,9 @@ public final class ReplayMain {
             while((line=reader.readLine())!=null) {
                 var record=CanonicalJson.object(CanonicalJson.decode(line.getBytes(StandardCharsets.UTF_8)));
                 var request=CanonicalJson.object(record.get("request"));
-                if(!CheckpointProtocol.VERSION.equals(request.get("version")))throw new IllegalArgumentException("REPLAY_REQUIRES_CURRENT_TRACE_VERSION:"+CheckpointProtocol.VERSION);
+                if (!CheckpointProtocol.supportsReplay(request.get("version"))) {
+                    throw new IllegalArgumentException("REPLAY_UNSUPPORTED_TRACE_VERSION:" + request.get("version"));
+                }
                 var snapshot=CheckpointProtocol.decodeSnapshot(CanonicalJson.object(request.get("snapshot")));
                 try {
                     var result=verifier.update(snapshot);last=result.decision();

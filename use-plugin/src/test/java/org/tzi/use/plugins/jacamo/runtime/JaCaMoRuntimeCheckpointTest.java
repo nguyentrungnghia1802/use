@@ -1,9 +1,11 @@
 package org.tzi.use.plugins.jacamo.runtime;
 
+import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -142,14 +144,45 @@ class JaCaMoRuntimeCheckpointTest {
     }
     public static final class Source {
         public static void main(String[] args) throws Exception {
-            var runtime = new JaCaMoRuntime(UUID.randomUUID().toString(), c -> {
+            var runtime = new JaCaMoRuntime(UUID.randomUUID().toString(), (c, cut) -> {
+                assertTrue(cut.admissionClosed() && cut.clockFrozen());
+                assertTrue(cut.active().isEmpty() && cut.pending() == 0);
+                if (!c.messages().isEmpty()) assertDeliveryWaitReleasesMonitor();
                 var row = Map.<String,Object>of("agent", c.agent(), "plan", c.plan(), "boundary", c.boundary(),
                         "outcome", c.outcome(), "invocation", c.invocation(), "intention", c.intention(), "merged", c.mergedPlans(), "messages", c.messages());
                 Files.writeString(Path.of(args[1]), new String(CanonicalJson.encode(row), StandardCharsets.UTF_8)+"\n", StandardOpenOption.CREATE, StandardOpenOption.APPEND);
                 return args[2].isEmpty() || !(c.boundary().contains(args[2]) || c.plan().contains(args[2]));
             });
             Runtime.getRuntime().addShutdownHook(new Thread(runtime::close));
-            runtime.initialize(Path.of(args[0])); runtime.create(); runtime.start(); new CountDownLatch(1).await();
+            runtime.initialize(Path.of(args[0]));
+            runtime.create();
+            // ThreadMXBean exposes held monitors for platform threads.
+            for (var agent : runtime.launcher().getAgs().values()) {
+                agent.setThread(Thread.ofPlatform().unstarted(agent));
+            }
+            runtime.start();
+            new CountDownLatch(1).await();
+        }
+
+        private static void assertDeliveryWaitReleasesMonitor() throws InterruptedException {
+            var threads = ManagementFactory.getThreadMXBean();
+            String checkpoints = JaCaMoCheckpoints.class.getName();
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(2);
+            do {
+                for (var thread : threads.dumpAllThreads(true, false)) {
+                    boolean waitingForApproval = thread.getThreadState() == Thread.State.WAITING
+                            && Arrays.stream(thread.getStackTrace()).anyMatch(frame ->
+                                frame.getClassName().startsWith(checkpoints)
+                                && (frame.getMethodName().equals("await") || frame.getMethodName().equals("awaitRelease")));
+                    if (!waitingForApproval) continue;
+                    assertFalse(Arrays.stream(thread.getLockedMonitors()).anyMatch(monitor ->
+                            monitor.getClassName().equals(checkpoints + "$Monitor")),
+                            "JaCaMo holds the plan monitor while waiting for approval");
+                    return;
+                }
+                Thread.sleep(5);
+            } while (System.nanoTime() < deadline);
+            fail("Source thread did not wait for the checkpoint decision");
         }
     }
 }

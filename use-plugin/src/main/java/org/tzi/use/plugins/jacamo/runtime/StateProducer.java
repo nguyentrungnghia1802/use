@@ -7,6 +7,7 @@ import org.tzi.use.plugins.jacamo.bridge.protocol.CheckpointProtocol;
 import cartago.*;
 import jacamo.infra.JaCaMoLauncher;
 import jason.asSyntax.*;
+import org.jacamo.checkpoint.runtime.ExecutionBarrier;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -18,11 +19,12 @@ import org.tzi.use.plugins.jacamo.runtime.JaCaMoRuntime.Checkpoint;
 /** Child JVM entry point. Captures frozen JaCaMo state and exchanges it with the USE session. */
 public final class StateProducer {
     public static void main(String[] args)throws Exception {
-        if(args.length!=5)throw new IllegalArgumentException("project mapping port secret-file runtime-directory");
+        if (args.length != 6) throw new IllegalArgumentException("project mapping port secret-file runtime-directory model-revision");
         Path project=Path.of(args[0]).toAbsolutePath(),work=Path.of(args[4]).toAbsolutePath();Files.createDirectories(work);
         var mapping=AttributeMapping.read(Path.of(args[1]));byte[] secret=HexFormat.of().parseHex(Files.readString(Path.of(args[3])).trim());
         for(String type:mapping.sourceClasses())if(!Artifact.class.isAssignableFrom(Class.forName(type,false,StateProducer.class.getClassLoader())))throw new IllegalArgumentException("MAPPED_SOURCE_NOT_ARTIFACT:"+type);
-        var bridge=new Connection(mapping,Integer.parseInt(args[2]),secret,work);
+        String revision = CheckpointProtocol.inputRevision(args[5], project, mapping);
+        var bridge = new Connection(mapping, Integer.parseInt(args[2]), secret, work, revision);
         var runtime=new JaCaMoRuntime(bridge.run,bridge::send);
         bridge.launcher=runtime.launcher();
         Runtime.getRuntime().addShutdownHook(new Thread(runtime::close,"stop-source-interface"));
@@ -33,25 +35,42 @@ public final class StateProducer {
     }
     private static final class Connection {
         private final String run=UUID.randomUUID().toString();
-        private final AttributeMapping mapping;private final int port;private final byte[] secret;private final Path work;
+        private final AttributeMapping mapping;
+        private final int port;
+        private final byte[] secret;
+        private final Path work;
+        private final String revision;
         private long sequence;
         private JaCaMoLauncher launcher;
         private final Map<jason.infra.local.LocalAgArch,String> agentIdentities=new IdentityHashMap<>();
-        Connection(AttributeMapping mapping,int port,byte[] secret,Path work){this.mapping=mapping;this.port=port;this.secret=secret;this.work=work;}
-        boolean send(Checkpoint checkpoint)throws Exception {
+        Connection(AttributeMapping mapping, int port, byte[] secret, Path work, String revision) {
+            this.mapping = mapping;
+            this.port = port;
+            this.secret = secret;
+            this.work = work;
+            this.revision = revision;
+        }
+
+        boolean send(Checkpoint checkpoint, ExecutionBarrier.Proof proof) throws Exception {
+            if (!run.equals(proof.run()) || !proof.admissionClosed() || !proof.clockFrozen()
+                    || !proof.active().isEmpty() || proof.pending() != 0) {
+                throw new IOException("STATE_CUT_NOT_FROZEN");
+            }
+            var cut = CheckpointProtocol.Cut.local(run, proof.epoch(), revision);
             var snapshot=capture(++sequence,checkpoint.complete());
             var metadata=Map.<String,Object>of("boundary",checkpoint.boundary(),"invocation",checkpoint.invocation(),
                     "intention",checkpoint.intention(),"mergedPlans",checkpoint.mergedPlans(),"messages",checkpoint.messages());
             var request=Map.<String,Object>of("version",CheckpointProtocol.VERSION,"token",checkpoint.token(),"run",run,"agent",checkpoint.agent(),
-                    "plan",checkpoint.plan(),"outcome",checkpoint.outcome(),"checkpoint",metadata,"snapshot",CheckpointProtocol.encodeSnapshot(snapshot),"sourceState",sourceState());
+                    "plan",checkpoint.plan(),"outcome",checkpoint.outcome(),"checkpoint",metadata,"cut",cut.payload(),
+                    "snapshot",CheckpointProtocol.encodeSnapshot(snapshot),"sourceState",sourceState());
             String requestHash=CheckpointProtocol.digest(request);
             try(var socket=new Socket(InetAddress.getLoopbackAddress(),port)) {
                 socket.setSoTimeout(30000);CheckpointProtocol.write(socket.getOutputStream(),request,secret);
                 var response=CheckpointProtocol.read(socket.getInputStream(),secret);
-                if(!CheckpointProtocol.VERSION.equals(response.get("version"))||!checkpoint.token().equals(response.get("token"))||!run.equals(response.get("run"))||!requestHash.equals(response.get("requestHash")))throw new IOException("STATE_APPROVAL_IDENTITY_MISMATCH");
+                boolean approved = CheckpointProtocol.approved(response, run, checkpoint.token(), requestHash, cut);
                 Files.writeString(work.resolve("checkpoint-"+sequence+".json"),new String(CanonicalJson.encode(Map.of("request",request,"response",response)),StandardCharsets.UTF_8));
                 System.out.println("STATE_CHECKPOINT sequence="+sequence+" agent="+checkpoint.agent()+" plan="+checkpoint.plan()+" outcome="+checkpoint.outcome()+" boundary="+checkpoint.boundary()+" merged="+checkpoint.mergedPlans()+" decision="+response.get("decision"));
-                return "APPROVE".equals(response.get("decision"));
+                return approved;
             }
         }
         /** Inspector data is audit/presentation only. It never becomes a Task receipt or an OCL input. */

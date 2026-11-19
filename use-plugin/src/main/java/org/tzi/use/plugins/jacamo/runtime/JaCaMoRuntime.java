@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import jacamo.infra.JaCaMoLauncher;
+import org.jacamo.checkpoint.runtime.ExecutionBarrier;
 
 /** Imports JaCaMo unchanged; its extension points install source checkpoint observation/admission. */
 public final class JaCaMoRuntime implements AutoCloseable {
@@ -14,7 +15,7 @@ public final class JaCaMoRuntime implements AutoCloseable {
     }
     @FunctionalInterface public interface CheckpointHandler {
         /** Called only while the source is frozen. False keeps JaCaMo stopped. */
-        boolean verify(Checkpoint checkpoint) throws Exception;
+        boolean verify(Checkpoint checkpoint, ExecutionBarrier.Proof cut) throws Exception;
     }
 
     private final JaCaMoLauncher launcher;

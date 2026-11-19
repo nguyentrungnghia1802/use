@@ -10,6 +10,8 @@ import java.nio.file.*;
 import java.util.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CslStateVerifierTest {
@@ -99,11 +101,13 @@ class CslStateVerifierTest {
         assertThrows(IllegalArgumentException.class,()->new SnapshotVerifier(map,write("a.csl",CSL),write("a.istar",ISTAR.replace("self.reading >= 2","step.succeeded"))));
     }
 
-    @Test void replayReportsModelElementsAndStopsAtTheFirstHold() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"CSL_STATE_SYNC/2.0", CheckpointProtocol.VERSION})
+    void replayReportsModelElementsAndStopsAtTheFirstHold(String version) throws Exception {
         var trace = directory.resolve("history.jsonl");
         Files.write(trace, List.of(snapshot(1, 2), snapshot(2, -1), snapshot(3, 2)).stream()
                 .map(state -> Map.of("request", Map.of(
-                        "version", CheckpointProtocol.VERSION, "snapshot", CheckpointProtocol.encodeSnapshot(state))))
+                        "version", version, "snapshot", CheckpointProtocol.encodeSnapshot(state))))
                 .map(CanonicalJson::encode)
                 .map(bytes -> new String(bytes, StandardCharsets.UTF_8)).toList());
         var output = directory.resolve("replay.json");
