@@ -5,8 +5,8 @@
   "relocations": {
     "org.vnu.sme.goal.dsl.csl.view": "org.vnu.sme.goal.dsl.csl.view",
     "org.vnu.sme.goal.dsl.istar.view": "org.vnu.sme.goal.dsl.istar.view",
-    "org.vnu.sme.goal.gui.DiagramModelBrowser": "org.tzi.use.plugins.jacamo.ui.diagram.DiagramModelBrowser",
-    "org.vnu.sme.goal.gui.DiagramVisualStyle": "org.tzi.use.plugins.jacamo.ui.diagram.DiagramVisualStyle",
+    "org.vnu.sme.goal.gui.DiagramModelBrowser": "org.tzi.use.plugins.jacamo.gui.views.DiagramModelBrowser",
+    "org.vnu.sme.goal.gui.DiagramVisualStyle": "org.tzi.use.plugins.jacamo.gui.views.DiagramVisualStyle",
     "org.vnu.sme.goal.dsl.csl.view.CslView": "org.vnu.sme.goal.dsl.csl.form.CslView",
     "org.vnu.sme.goal.dsl.istar.view.IStarView": "org.vnu.sme.goal.dsl.istar.form.IStarView"
   },
@@ -32,7 +32,7 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslDiagramEdge.java",
       "sourceSha256": "feb55b9e66a5d1ac5a787f03aaa93a7ef7b2bed6e9eb6e5e9f88ff70a8d48a9b",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/csl/view/CslDiagramEdge.java",
-      "targetSha256": "15c0b6df42c99e5e73343534f9a1d1fbc3556de0c9e5e7f95a7cec178b8e70c6",
+      "targetSha256": "a7c250ffdc8b46971e4fbc1c6205e845bffdfb860623ae55d1cc995501fbe515",
       "patches": [
         "PACKAGE_RELOCATION",
         "RESPECT_ASSOCIATION_LABEL_TOGGLE",
@@ -40,20 +40,22 @@
         "FROZEN_PLAYER_LABELS_AND_COMPACT_STATE_ROWS",
         "USE_ROUTING_AND_DECLARATIVE_MODEL_PRESENTATION_20261104",
         "FUNCTIONAL_PACKAGE_LAYOUT_20261114",
-        "P-DSL-LAYOUT-01"
+        "P-DSL-LAYOUT-01",
+        "PLUGIN_GUI_LAYOUT"
       ]
     },
     {
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslDiagramNode.java",
       "sourceSha256": "ea5f405e94e9a97d3b2e310d0955c7e624754f11debe0318a236c9be00c5f7ae",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/csl/view/CslDiagramNode.java",
-      "targetSha256": "e17ddd4ba0130b7a2b1f3f21d18d9e6d849e4391d4fba89e4ba0ef9f15065e69",
+      "targetSha256": "d0f8b13022b8b9f436c4a6249ba8ac78d25b1ee6cf796bec646ba91057a59606",
       "patches": [
         "PACKAGE_RELOCATION",
         "ROLE_HEADER_ICON_WIDTH",
         "VALIDATED_ENACTMENT_OVERLAY_AND_ORGCTX_LABELS",
         "FUNCTIONAL_PACKAGE_LAYOUT_20261114",
-        "P-DSL-LAYOUT-01"
+        "P-DSL-LAYOUT-01",
+        "PLUGIN_GUI_LAYOUT"
       ]
     },
     {
@@ -175,7 +177,7 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/csl/view/CslView.java",
       "sourceSha256": "c87a98474c51fb73dadc22109a1363b0ceb7e707c57546525cc562012adbda2c",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/csl/form/CslView.java",
-      "targetSha256": "bd6128d0c84313c64f2fe546a1a4ff8461d2d9ebb03a541b405bc047490d3148",
+      "targetSha256": "33ba4f3ddbeac5747b9ac733cc8239c8fc9e54cda0acb776fcbb0dc543515b33",
       "patches": [
         "PACKAGE_RELOCATION",
         "EMBEDDED_VIEW_FACTORY",
@@ -185,7 +187,8 @@
         "EXPLICIT_ENACTMENT_VIEW_AND_FAILURE_NAVIGATION",
         "DECOUPLE_MODEL_PRESENTATION_FROM_BRIDGE_20261114",
         "FUNCTIONAL_PACKAGE_LAYOUT_20261114",
-        "P-DSL-LAYOUT-01"
+        "P-DSL-LAYOUT-01",
+        "PLUGIN_GUI_LAYOUT"
       ]
     },
     {
@@ -206,13 +209,14 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarDiagramEdge.java",
       "sourceSha256": "b751422adba307ad9f2cb117a1e9d257d2ff8711db0eac656628477f93fb33ae",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarDiagramEdge.java",
-      "targetSha256": "b4efe172ac489239b8386ecd9f53e16f222a7c895d62c65d64cb2b23e55b8f34",
+      "targetSha256": "037d2b1027fe1999461f16cfa3c34dc965946f947b2c8228a1accaf5d3df1185",
       "patches": [
         "PACKAGE_RELOCATION",
         "ACTOR_ASSOCIATION_HEADER_ROUTES",
         "USE_ROUTING_AND_DECLARATIVE_MODEL_PRESENTATION_20261104",
         "FUNCTIONAL_PACKAGE_LAYOUT_20261114",
-        "P-DSL-LAYOUT-01"
+        "P-DSL-LAYOUT-01",
+        "PLUGIN_GUI_LAYOUT"
       ]
     },
     {
@@ -324,7 +328,7 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarView.java",
       "sourceSha256": "87e24b31b69fb9a7518a1a75e24d1e24cc474ac9b77ab63ddcedc8cbb2e35c95",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar/form/IStarView.java",
-      "targetSha256": "3167bb1ce64bbdec16b54a84d28fad1f666e49c7786552da9bc0c64b580231e5",
+      "targetSha256": "56489fb2f116c4d6dd673e18aecdbb6160d3e16858403aab58c244d5bfdc4472",
       "patches": [
         "PACKAGE_RELOCATION",
         "DETACH_CLEANUP",
@@ -333,7 +337,8 @@
         "OPTIONAL_MODEL_BROWSER_FOR_CURRENT_INSTANCE_CARDS",
         "DECOUPLE_MODEL_PRESENTATION_FROM_BRIDGE_20261114",
         "FUNCTIONAL_PACKAGE_LAYOUT_20261114",
-        "P-DSL-LAYOUT-01"
+        "P-DSL-LAYOUT-01",
+        "PLUGIN_GUI_LAYOUT"
       ]
     },
     {
@@ -361,8 +366,8 @@
     {
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/gui/DiagramModelBrowser.java",
       "sourceSha256": "a812493f3d1df03f0eaab2908d3b3a68c2c3fc3e2006b06b83245e499ee8d772",
-      "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/diagram/DiagramModelBrowser.java",
-      "targetSha256": "a8724da5140169e0151d7922bc09750105b139adb505711a97612dd74bd26f41",
+      "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/gui/views/DiagramModelBrowser.java",
+      "targetSha256": "5b2b3a900603d2385ff1c976117c9f652088157563c54245d41dbda90bfacd68",
       "patches": [
         "PACKAGE_RELOCATION",
         "SELECT_CSL_ISTAR_BROWSER_ONLY",
@@ -370,17 +375,19 @@
         "EXPLICIT_ENACTMENT_VIEW_AND_FAILURE_NAVIGATION",
         "DECOUPLE_MODEL_PRESENTATION_FROM_BRIDGE_20261114",
         "FUNCTIONAL_PACKAGE_LAYOUT_20261114",
-        "P-DSL-LAYOUT-01"
+        "P-DSL-LAYOUT-01",
+        "PLUGIN_GUI_LAYOUT"
       ]
     },
     {
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/gui/DiagramVisualStyle.java",
       "sourceSha256": "aac8c93f1fd7f9a8b382111d6cdbe142775f97e43540f79c25afcf7bdcfcb4e5",
-      "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/ui/diagram/DiagramVisualStyle.java",
-      "targetSha256": "a8a6dc0c55dacb0e61695da1dccae25140dd61ce12b08d42193510cd5a605458",
+      "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/gui/views/DiagramVisualStyle.java",
+      "targetSha256": "b8fdc6ce6bcaceb31d335c8521deccfbf0e14a33c035b2cb39891f2c64da4d00",
       "patches": [
         "PACKAGE_RELOCATION",
-        "FUNCTIONAL_PACKAGE_LAYOUT_20261114"
+        "FUNCTIONAL_PACKAGE_LAYOUT_20261114",
+        "PLUGIN_GUI_LAYOUT"
       ]
     }
   ]

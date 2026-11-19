@@ -6,11 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.vnu.sme.goal.verify.csl.state.CslOclState;
-
 /** Side-effect-free OCL subset evaluated directly over an CSL object state. */
 public final class NativeOclEvaluator {
     private NativeOclEvaluator() {}
+
+    /** Minimal typed CSL system-state protocol consumed by OCL evaluation. */
+    public interface State {
+        Object property(Object base, String name);
+        String identity(Object value);
+    }
 
     /** Parses one native CSL/OCL expression without requiring a system state. */
     public static void validate(String source) {
@@ -20,7 +24,7 @@ public final class NativeOclEvaluator {
         new Parser(source).parse();
     }
 
-    public static boolean evaluate(String source, CslOclState snapshot, List<?> context) {
+    public static boolean evaluate(String source, State snapshot, List<?> context) {
         if (source == null || source.isBlank()) return false;
         Map<String, Object> variables = new LinkedHashMap<>();
         // Context paths are stored from the outermost occurrence to the innermost
@@ -33,7 +37,7 @@ public final class NativeOclEvaluator {
         return Boolean.TRUE.equals(new Parser(source).parse().eval(new Env(snapshot, variables)));
     }
 
-    private record Env(CslOclState snapshot, Map<String,Object> vars) {
+    private record Env(State snapshot, Map<String,Object> vars) {
         Env with(String name, Object value) {
             Map<String,Object> copy = new LinkedHashMap<>(vars); copy.put(name, value);
             return new Env(snapshot, copy);
@@ -109,7 +113,7 @@ public final class NativeOclEvaluator {
         return switch(operation){case LT->result<0;case LE->result<=0;case GT->result>0;case GE->result>=0;default->false;};
     }
     private static List<?> list(Object v){return v instanceof List<?> xs?xs:v==null?List.of():List.of(v);}
-    private static boolean same(Object a,Object b,CslOclState state){
+    private static boolean same(Object a,Object b,State state){
         if(a!=null&&b!=null&&a.getClass().equals(b.getClass())&&!isLiteral(a))
             return state.identity(a).equals(state.identity(b));
         return Objects.equals(normalize(a),normalize(b));

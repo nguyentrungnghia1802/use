@@ -1,5 +1,8 @@
 package org.tzi.use.plugins.jacamo.bridge;
 
+import org.tzi.use.plugins.jacamo.session.SnapshotVerifier;
+import org.tzi.use.plugins.jacamo.session.VerificationSession;
+import org.tzi.use.plugins.jacamo.session.VerificationSession.Configuration;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -12,12 +15,12 @@ class StateSessionLifecycleTest {
     @TempDir Path directory;
     @Test void embeddedOwnerReceivesRealInspectorStateStopsItsProducerAndCanStartAFreshRun()throws Exception {
         Path example=Path.of("src/main/resources/example/counter").toAbsolutePath().normalize();
-        var config=new StateRunConfiguration(example.resolve("counter.jcm"),example.resolve("attribute-mapping.xml"),example.resolve("counter.csl"),example.resolve("counter.istar"));
+        var config=new Configuration(example.resolve("counter.jcm"),example.resolve("attribute-mapping.xml"),example.resolve("counter.csl"),example.resolve("counter.istar"));
         String previousRun="";
         for(int attempt=0;attempt<2;attempt++) {
             var held=new CountDownLatch(1);var request=new AtomicReference<Map<String,Object>>();
-            var session=StateVerificationSession.start(config,directory.resolve("run-"+attempt),System.getProperty("java.class.path"),new StateVerificationSession.Listener(){
-                public void checkpoint(Map<String,Object> source,Map<String,Object> response,CslStateVerifier.Result result){
+            var session=VerificationSession.start(config,directory.resolve("run-"+attempt),System.getProperty("java.class.path"),new VerificationSession.Listener(){
+                public void checkpoint(Map<String,Object> source,Map<String,Object> response,SnapshotVerifier.Result result){
                     if(response.get("decision").equals("HOLD_FAILURE")){request.set(source);held.countDown();}
                 }
             });

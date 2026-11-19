@@ -3,7 +3,7 @@ package org.vnu.sme.goal.dsl.istar_marking.mm;
 import java.util.List;
 import java.util.Map;
 
-import org.vnu.sme.goal.verify.istar.marking.IStarMarking;
+import org.vnu.sme.goal.verify.istar.IStarMarking;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar_marking.mm.AggregateResult;
 import org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstance;

@@ -131,15 +131,18 @@ class JaCaMoRuntimeCheckpointTest {
     private static List<Map<String,Object>> read(Path trace) throws Exception {
         if (!Files.exists(trace)) return List.of();
         // The last line may still be in flight; only complete JSON lines are consumed.
+        String content = Files.readString(trace);
+        int lastNewline = content.lastIndexOf('\n');
+        if (lastNewline < 0) return List.of();
         var rows = new ArrayList<Map<String,Object>>();
-        for (String line : Files.readString(trace).split("\n")) try {
+        for (String line : content.substring(0, lastNewline).split("\n")) {
             rows.add(CanonicalJson.object(CanonicalJson.decode(line.getBytes(StandardCharsets.UTF_8))));
-        } catch (IllegalArgumentException ignored) { }
+        }
         return rows;
     }
     public static final class Source {
         public static void main(String[] args) throws Exception {
-            var runtime = new OfficialJaCaMoRuntimeAdapter(UUID.randomUUID().toString(), c -> {
+            var runtime = new JaCaMoRuntime(UUID.randomUUID().toString(), c -> {
                 var row = Map.<String,Object>of("agent", c.agent(), "plan", c.plan(), "boundary", c.boundary(),
                         "outcome", c.outcome(), "invocation", c.invocation(), "intention", c.intention(), "merged", c.mergedPlans(), "messages", c.messages());
                 Files.writeString(Path.of(args[1]), new String(CanonicalJson.encode(row), StandardCharsets.UTF_8)+"\n", StandardOpenOption.CREATE, StandardOpenOption.APPEND);

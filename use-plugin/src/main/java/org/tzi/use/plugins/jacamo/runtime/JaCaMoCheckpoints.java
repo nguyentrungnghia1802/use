@@ -7,7 +7,7 @@ import jason.architecture.AgArch;
 import jason.asSemantics.*;
 import jason.asSyntax.*;
 import org.jacamo.checkpoint.runtime.ExecutionBarrier;
-import org.tzi.use.plugins.jacamo.runtime.JaCaMoRuntimeAdapter.*;
+import org.tzi.use.plugins.jacamo.runtime.JaCaMoRuntime.*;
 
 /** Selects source execution boundaries without access to mapping, CSL, iStar or their values. */
 final class JaCaMoCheckpoints implements AutoCloseable {

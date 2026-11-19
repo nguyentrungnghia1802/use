@@ -1,5 +1,7 @@
 package org.tzi.use.plugins.jacamo.bridge;
 
+import org.tzi.use.plugins.jacamo.bridge.protocol.CheckpointProtocol;
+import org.tzi.use.plugins.jacamo.session.SnapshotVerifier;
 import java.nio.file.*;
 import java.util.*;
 import org.junit.jupiter.api.*;
@@ -34,7 +36,7 @@ class CslOrganizationStateTest {
           task Positive > Done pre {[ true ]} post {[ self.reading > 0 ]}
         } }
         """;
-    private CslStateVerifier verifier()throws Exception {
+    private SnapshotVerifier verifier()throws Exception {
         Files.writeString(directory.resolve("model.csl"),CSL);Files.writeString(directory.resolve("model.istar"),ISTAR);
         Files.writeString(directory.resolve("map.xml"),"""
           <mapping xmlns="urn:use:jacamo-state-mapping:1">
@@ -45,26 +47,26 @@ class CslOrganizationStateTest {
             <attribute source="artifact:demo.Sensor/property:value" target="Metric.reading"/>
           </mapping>
           """);
-        return new CslStateVerifier(directory.resolve("map.xml"),directory.resolve("model.csl"),directory.resolve("model.istar"));
+        return new SnapshotVerifier(directory.resolve("map.xml"),directory.resolve("model.csl"),directory.resolve("model.istar"));
     }
-    private List<CslStateVerifier.Node> nodes(){return List.of(
-        new CslStateVerifier.Node("community-id","organization","community","community-1","/community","",Map.of()),
-        new CslStateVerifier.Node("org-id","organization","warehouse","warehouse-1","/warehouse","",Map.of()),
-        new CslStateVerifier.Node("group-id","group","department","department-1","/warehouse","org-id",Map.of()),
-        new CslStateVerifier.Node("person-1","agent","worker","mika","","",Map.of()),
-        new CslStateVerifier.Node("person-2","agent","worker","lin","","",Map.of()));}
-    private List<CslStateVerifier.Enactment> enactments(){return List.of(
-        new CslStateVerifier.Enactment("community-id","org-id","member"),
-        new CslStateVerifier.Enactment("group-id","person-1","lead"),
-        new CslStateVerifier.Enactment("group-id","person-2","contributor"));}
-    private CslStateVerifier.Snapshot snapshot(long sequence,List<CslStateVerifier.Node> nodes,List<CslStateVerifier.Enactment> roles){return new CslStateVerifier.Snapshot("run",sequence,true,
-        List.of(new CslStateVerifier.Artifact("sensor-id","demo.Sensor","sensor-9","/warehouse",Map.of("value",2))),nodes,roles);}
+    private List<SourceSnapshot.Node> nodes(){return List.of(
+        new SourceSnapshot.Node("community-id","organization","community","community-1","/community","",Map.of()),
+        new SourceSnapshot.Node("org-id","organization","warehouse","warehouse-1","/warehouse","",Map.of()),
+        new SourceSnapshot.Node("group-id","group","department","department-1","/warehouse","org-id",Map.of()),
+        new SourceSnapshot.Node("person-1","agent","worker","mika","","",Map.of()),
+        new SourceSnapshot.Node("person-2","agent","worker","lin","","",Map.of()));}
+    private List<SourceSnapshot.Enactment> enactments(){return List.of(
+        new SourceSnapshot.Enactment("community-id","org-id","member"),
+        new SourceSnapshot.Enactment("group-id","person-1","lead"),
+        new SourceSnapshot.Enactment("group-id","person-2","contributor"));}
+    private SourceSnapshot snapshot(long sequence,List<SourceSnapshot.Node> nodes,List<SourceSnapshot.Enactment> roles){return new SourceSnapshot("run",sequence,true,
+        List.of(new SourceSnapshot.Artifact("sensor-id","demo.Sensor","sensor-9","/warehouse",Map.of("value",2))),nodes,roles);}
 
     @Test void projectsOrganizationContainmentAtomicPlayersAndAnOrganizationPlayingAHigherLevelRole()throws Exception {
         try(var verifier=verifier()) {
             var snapshot=snapshot(1,nodes(),enactments());var result=verifier.update(snapshot);
             assertEquals("APPROVE",result.decision(),()->result.checks().toString());
-            assertEquals(snapshot,StateWire.snapshot(StateWire.snapshot(snapshot)));
+            assertEquals(snapshot, CheckpointProtocol.decodeSnapshot(CheckpointProtocol.encodeSnapshot(snapshot)));
             var state=verifier.system().state();var model=verifier.system().model();
             assertTrue(model.getClass("Organization").isSubClassifierOf(model.getClass("RuntimePlayer")));
             assertNull(model.getClass("AtomicAgent"));
@@ -80,16 +82,17 @@ class CslOrganizationStateTest {
     }
     @Test void directMembershipSurvivesRoleWithdrawalAndAllowsMultipleGroupsWithoutCopyingTheAgent()throws Exception {
         try(var verifier=verifier()) {
-            var direct=List.of(new CslStateVerifier.Membership("person-1","group-id"),new CslStateVerifier.Membership("person-1","community-id"));
+            var direct=List.of(new SourceSnapshot.Membership("person-1","group-id"),new SourceSnapshot.Membership("person-1","community-id"));
             var first=snapshot(1,nodes(),enactments());
-            var initial=verifier.update(new CslStateVerifier.Snapshot(first.run(),1,true,first.artifacts(),first.nodes(),first.enactments(),direct));
+            var initial=verifier.update(new SourceSnapshot(first.run(),1,true,first.artifacts(),first.nodes(),first.enactments(),direct));
             var second=snapshot(2,nodes(),enactments().stream().filter(e->!e.role().equals("lead")).toList());
-            var removed=verifier.update(new CslStateVerifier.Snapshot(second.run(),2,true,second.artifacts(),second.nodes(),second.enactments(),direct));
+            var removed=verifier.update(new SourceSnapshot(second.run(),2,true,second.artifacts(),second.nodes(),second.enactments(),direct));
             assertEquals("HOLD_FAILURE",removed.decision());
             assertEquals(2,verifier.system().state().allLinks().stream().filter(l->l.association().name().equals("CslMembership")).count());
             assertEquals(2,removed.state().stream().filter(r->r.get("type").equals("Skills")).count());
             assertEquals(first.nodes().size()+first.artifacts().size()+first.enactments().size(),initial.state().size());
-            assertEquals(new CslStateVerifier.Snapshot(first.run(),1,true,first.artifacts(),first.nodes(),first.enactments(),direct),StateWire.snapshot(StateWire.snapshot(new CslStateVerifier.Snapshot(first.run(),1,true,first.artifacts(),first.nodes(),first.enactments(),direct))));
+            var observed = new SourceSnapshot(first.run(), 1, true, first.artifacts(), first.nodes(), first.enactments(), direct);
+            assertEquals(observed, CheckpointProtocol.decodeSnapshot(CheckpointProtocol.encodeSnapshot(observed)));
         }
     }
     @Test void leavingARoleRemovesTheOccurrenceAndBlocksFromBothCslAndIStar()throws Exception {
@@ -107,9 +110,9 @@ class CslOrganizationStateTest {
     @Test void unresolvedPlayersAndAmbiguousEntityScopesAreRejectedBeforeChangingAuthoritativeState()throws Exception {
         try(var verifier=verifier()) {
             var initial=verifier.update(snapshot(1,nodes(),enactments()));
-            var invalid=new ArrayList<>(enactments());invalid.add(new CslStateVerifier.Enactment("group-id","missing-person","lead"));
+            var invalid=new ArrayList<>(enactments());invalid.add(new SourceSnapshot.Enactment("group-id","missing-person","lead"));
             assertThrows(IllegalArgumentException.class,()->verifier.update(snapshot(2,nodes(),invalid)));
-            var duplicated=new ArrayList<>(nodes());duplicated.add(new CslStateVerifier.Node("other-group","group","department","other","/warehouse","org-id",Map.of()));
+            var duplicated=new ArrayList<>(nodes());duplicated.add(new SourceSnapshot.Node("other-group","group","department","other","/warehouse","org-id",Map.of()));
             assertThrows(IllegalArgumentException.class,()->verifier.update(snapshot(2,duplicated,enactments())));
             assertEquals(initial,verifier.update(snapshot(1,nodes(),enactments())));
             assertEquals("APPROVE",verifier.update(snapshot(2,nodes(),enactments())).decision());

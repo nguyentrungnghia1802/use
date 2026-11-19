@@ -25,7 +25,7 @@ import org.tzi.use.gui.main.ViewFrame;
 import org.tzi.use.gui.views.PrintableView;
 import org.tzi.use.gui.views.View;
 import org.vnu.sme.goal.dsl.csl.mm.CslModel;
-import org.tzi.use.plugins.jacamo.ui.diagram.DiagramModelBrowser;
+import org.tzi.use.plugins.jacamo.gui.views.DiagramModelBrowser;
 
 @SuppressWarnings("serial")
 public final class CslView extends JPanel implements View, PrintableView {

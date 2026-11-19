@@ -1,13 +1,14 @@
 package org.tzi.use.plugins.jacamo.verify;
 
+import org.tzi.use.plugins.jacamo.verify.istar.GoalTaskSession.TopologyPolicy;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.tzi.use.plugins.jacamo.verify.api.*;
 import org.vnu.sme.goal.dsl.istar.parser.IStarFrontend;
-import org.tzi.use.plugins.jacamo.verify.runtime.*;
+import org.tzi.use.plugins.jacamo.verify.istar.*;
 import org.vnu.sme.goal.dsl.istar_marking.mm.ScenarioInstance;
 import org.vnu.sme.goal.dsl.istar.mm.*;
-import org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus;
+import org.vnu.sme.goal.verify.istar.IStarMarking.GoalTaskStatus;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ParticipationGoalViewsTest {
@@ -33,12 +34,12 @@ class ParticipationGoalViewsTest {
         assertEquals("Capability",views.executionModel().getDependencies().getFirst().dependee());
         assertEquals("requested",GoalActivationGraph.of(views.executionModel()).parentOf("Capability.start").orElseThrow());
         var cast=source.getActors().stream().map(a->new ScenarioInstance(a.name()+"Instance",a.name())).toList();
-        try(var session=new Use4GoalRuntimeSessionAdapter(views.executionModel(),cast,(a,x,b,y)->true,"shared-csl-context",PROFILE,EngineTopologyPolicy.SINGLE_OWNER_CONTEXT_V1)) {
+        try(var session=new GoalTaskSession(views.executionModel(),cast,(a,x,b,y)->true,"shared-csl-context",PROFILE,TopologyPolicy.SINGLE_OWNER_CONTEXT_V1)) {
             var action=session.topology().occurrences().values().stream().filter(o->o.sourceElementId().equals("action")).findFirst().orElseThrow();
             var requested=session.topology().occurrences().values().stream().filter(o->o.sourceElementId().equals("requested")).findFirst().orElseThrow();
-            var first=session.step(new EngineInputs(Map.of(),Map.of(action.occurrenceId(),new EngineInputs.TaskInput("state",true,true,false)),Map.of()));
+            var first=session.step(new EngineInputs(Map.of(),Map.of(action.occurrenceId(),new EngineInputs.TaskInput("state",true,true,false))));
             assertNotEquals(GoalTaskStatus.FULFILLED,first.aggregate().goalTaskStatus(requested.occurrenceId()));
-            var next=session.step(new EngineInputs(Map.of(),Map.of(action.occurrenceId(),new EngineInputs.TaskInput("state",true,true,true)),Map.of()));
+            var next=session.step(new EngineInputs(Map.of(),Map.of(action.occurrenceId(),new EngineInputs.TaskInput("state",true,true,true))));
             assertEquals(GoalTaskStatus.FULFILLED,next.aggregate().goalTaskStatus(requested.occurrenceId()));
         }
         assertEquals(Set.of("Capability.start","Worker.start"),new HashSet<>(views.viewsOf("Capability.start")));

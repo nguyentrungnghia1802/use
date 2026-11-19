@@ -1680,9 +1680,9 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/verify/csl/validation/CslSemanticValidator.java",
-      "targetSha256": "f7f34e3a01e9dd76a051c236a77487abb728fa834c24c683febe3494e7a7de2f",
-      "fqcn": "org.vnu.sme.goal.verify.csl.validation.CslSemanticValidator",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/csl/CslSemanticValidator.java",
+      "targetSha256": "c4df2c35dcea6c563d9de1d2fc50a03df555d82b1bc7470442c90427b63acfd2",
+      "fqcn": "org.vnu.sme.goal.verify.csl.CslSemanticValidator",
       "imports": [
         "org.vnu.sme.goal.dsl.csl.mm.*",
         "java.util.ArrayList",
@@ -1697,7 +1697,8 @@
       "reuseMode": "ORIGINAL_COPY",
       "plannedPatchIds": [],
       "appliedPatchIds": [
-        "P-VERIFY-LAYOUT-01"
+        "P-VERIFY-LAYOUT-01",
+        "P-CSL-LAYOUT-01"
       ],
       "extractionStatus": "PACKAGE_RELOCATED",
       "productionEvaluationAllowed": true,
@@ -2051,17 +2052,18 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/verify/csl/state/CslOclState.java",
-      "targetSha256": "dc280995798d8d62e0192be746d9823068d509406685c613a4e00ba713cce8db",
-      "fqcn": "org.vnu.sme.goal.verify.csl.state.CslOclState",
+      "targetPath": "src/main/java/org/vnu/sme/goal/dsl/csl/parser/NativeOclEvaluator.java",
+      "targetSha256": "ad337240ac9b43bcc1fe64e43832931ba71d00a87e7ef6086f5a421bf92569ab",
+      "fqcn": "org.vnu.sme.goal.dsl.csl.parser.NativeOclEvaluator$State",
       "imports": [],
       "reuseMode": "ORIGINAL_COPY",
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
-        "P-VERIFY-LAYOUT-01"
+        "P-VERIFY-LAYOUT-01",
+        "P-CSL-LAYOUT-01"
       ],
-      "extractionStatus": "PACKAGE_RELOCATED",
+      "extractionStatus": "NESTED_INTERFACE_RELOCATION",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
@@ -2207,10 +2209,10 @@
       "gitStatus": "",
       "targetModule": "use-plugin",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/csl/parser/CslModelFactory.java",
-      "targetSha256": "5e7f32654ff7dcb30cafe251da3eaf5f9196b717c0c235d0cc1bd263aac4e292",
+      "targetSha256": "9fbe3f7bcfc625da077598ab89b7b2615c5bf42cd48941d11ebe6ff9dab855da",
       "fqcn": "org.vnu.sme.goal.dsl.csl.parser.CslModelFactory",
       "imports": [
-        "org.vnu.sme.goal.verify.csl.validation.CslSemanticValidator",
+        "org.vnu.sme.goal.verify.csl.CslSemanticValidator",
         "java.math.BigInteger",
         "java.util.*",
         "org.vnu.sme.goal.dsl.csl.ast.*",
@@ -2219,7 +2221,8 @@
       "reuseMode": "ORIGINAL_WITH_ADAPTER",
       "plannedPatchIds": [],
       "appliedPatchIds": [
-        "P-VERIFY-LAYOUT-01"
+        "P-VERIFY-LAYOUT-01",
+        "P-CSL-LAYOUT-01"
       ],
       "extractionStatus": "PACKAGE_RELOCATED",
       "productionEvaluationAllowed": true,
@@ -2279,12 +2282,12 @@
       "gitStatus": "",
       "targetModule": "use-plugin",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar_marking/mm/GoalModelInstanceEvaluation.java",
-      "targetSha256": "92080cad11fc0c3f94360d51601410595cea5f5e891ccb8a4c7cf488d26ab15a",
+      "targetSha256": "fd14b79e8c98bd58e9c7af216b06c6aa2d05b21a2c05ddc1b48303e13d35fc28",
       "fqcn": "org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstanceEvaluation",
       "imports": [
         "java.util.List",
         "java.util.Map",
-        "org.vnu.sme.goal.verify.istar.marking.IStarMarking",
+        "org.vnu.sme.goal.verify.istar.IStarMarking",
         "org.vnu.sme.goal.dsl.istar.mm.GoalModel",
         "org.vnu.sme.goal.dsl.istar_marking.mm.AggregateResult",
         "org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstance"
@@ -2317,10 +2320,9 @@
       "gitStatus": "",
       "targetModule": "use-plugin",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar_marking/parser/GoalModelInstanceTranslator.java",
-      "targetSha256": "10a4567ba0f4650341f50ce6f355e813b0b2ee1f3ac66fd595984ec0ca9f188c",
+      "targetSha256": "703888278e297d13b3eddf6c2f77fb7b563129e12436dbe6ff1552afb839a2f5",
       "fqcn": "org.vnu.sme.goal.dsl.istar_marking.parser.GoalModelInstanceTranslator",
       "imports": [
-        "org.vnu.sme.goal.verify.istar.propagation.IStarDependencyPropagation",
         "org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstanceEvaluation",
         "org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstanceTopology",
         "java.util.ArrayList",
@@ -2329,10 +2331,8 @@
         "java.util.List",
         "java.util.Map",
         "java.util.Set",
-        "org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus",
-        "org.vnu.sme.goal.verify.istar.marking.IStarMarking",
-        "org.vnu.sme.goal.verify.istar.propagation.IStarPropagation",
-        "org.vnu.sme.goal.verify.istar.marking.QualityStatus",
+        "org.vnu.sme.goal.verify.istar.IStarMarking.GoalTaskStatus",
+        "org.vnu.sme.goal.verify.istar.IStarMarking",
         "org.vnu.sme.goal.dsl.istar.mm.Actor",
         "org.vnu.sme.goal.dsl.istar.mm.Agent",
         "org.vnu.sme.goal.dsl.istar.mm.GenericActor",
@@ -2367,9 +2367,10 @@
         "P-DSL-LAYOUT-01",
         "P-MARKING-LAYOUT-01",
         "P-VERIFY-LAYOUT-01",
-        "P-DEPENDENCY-EXTRACT-01"
+        "P-DEPENDENCY-EXTRACT-01",
+        "P-ISTAR-GOAL-TASK-01"
       ],
-      "extractionStatus": "METHOD_EXTRACTED_WITH_CHECKED_DELEGATION",
+      "extractionStatus": "PATCHED",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "IStarFrontend",
@@ -2510,15 +2511,16 @@
       "gitStatus": "",
       "targetModule": "use-plugin",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar_marking/mm/ScenarioStmt.java",
-      "targetSha256": "c2af9f8ffcaea282528b1846419b5a7b257e2f527a630892355e529e6a2d41be",
+      "targetSha256": "acd44429e91a1f2446d82992612f2c489cf0c63a4668bbfcccb24940cce34834",
       "fqcn": "org.vnu.sme.goal.dsl.istar_marking.mm.ScenarioStmt",
       "imports": [],
-      "reuseMode": "ORIGINAL_COPY",
+      "reuseMode": "ORIGINAL_WITH_EXPLICIT_PATCH",
       "plannedPatchIds": [],
       "appliedPatchIds": [
-        "P-DSL-LAYOUT-01"
+        "P-DSL-LAYOUT-01",
+        "P-ISTAR-GOAL-TASK-01"
       ],
-      "extractionStatus": "PACKAGE_RELOCATED",
+      "extractionStatus": "PATCHED",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "IStarFrontend",
@@ -3645,23 +3647,23 @@
       "gitStatus": "",
       "targetModule": "use-plugin",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/csl/parser/NativeOclEvaluator.java",
-      "targetSha256": "9be192f1824c779f60c739a74dddeda8e7e56090e8739ad89868662680af981a",
+      "targetSha256": "ad337240ac9b43bcc1fe64e43832931ba71d00a87e7ef6086f5a421bf92569ab",
       "fqcn": "org.vnu.sme.goal.dsl.csl.parser.NativeOclEvaluator",
       "imports": [
         "java.util.ArrayList",
         "java.util.LinkedHashMap",
         "java.util.List",
         "java.util.Map",
-        "java.util.Objects",
-        "org.vnu.sme.goal.verify.csl.state.CslOclState"
+        "java.util.Objects"
       ],
       "reuseMode": "ORIGINAL_WITH_ADAPTER",
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
-        "P-VERIFY-LAYOUT-01"
+        "P-VERIFY-LAYOUT-01",
+        "P-CSL-LAYOUT-01"
       ],
-      "extractionStatus": "PACKAGE_RELOCATED",
+      "extractionStatus": "NESTED_INTERFACE_RELOCATION",
       "productionEvaluationAllowed": false,
       "requiredAdapters": [
         "IStarFrontend",
@@ -3682,25 +3684,21 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/propagation/ContributionPolarity.java",
-      "targetSha256": "b012182731895d977e77c91ebbf3c00054c952e9b00e4b1392e65adb253d6bf3",
-      "fqcn": "org.vnu.sme.goal.verify.istar.propagation.ContributionPolarity",
-      "imports": [
-        "org.vnu.sme.goal.dsl.istar.mm.ContributionType"
-      ],
-      "reuseMode": "ORIGINAL_COPY",
+      "targetPath": null,
+      "targetSha256": null,
+      "fqcn": null,
+      "imports": [],
+      "reuseMode": "REFERENCE_ONLY",
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
         "P-MARKING-LAYOUT-01",
-        "P-VERIFY-LAYOUT-01"
+        "P-VERIFY-LAYOUT-01",
+        "P-ISTAR-GOAL-TASK-01"
       ],
-      "extractionStatus": "PACKAGE_RELOCATED",
-      "productionEvaluationAllowed": true,
-      "requiredAdapters": [
-        "IStarFrontend",
-        "Use4GoalRuntimeSessionAdapter"
-      ],
+      "extractionStatus": "REMOVED_BY_PATCH",
+      "productionEvaluationAllowed": false,
+      "requiredAdapters": [],
       "parityTests": [
         "E",
         "F",
@@ -3717,22 +3715,39 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/marking/GoalMarking.java",
-      "targetSha256": "8aaac26b534eb9249285ca2ed3baf58a4ee7cfddcdaab07cec63598f17029e0f",
-      "fqcn": "org.vnu.sme.goal.verify.istar.marking.GoalMarking",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/IStarMarking.java",
+      "targetSha256": "00fcaf6f7b038a983cd55ce06d691126ea3fd084f0893ec6c16e80091adfb6f6",
+      "fqcn": "org.vnu.sme.goal.verify.istar.IStarMarking$GoalMarking",
       "imports": [
-        "org.vnu.sme.goal.verify.istar.temporal.GoalTemporalEvaluator",
-        "org.vnu.sme.goal.dsl.istar.mm.GoalType"
+        "java.util.ArrayList",
+        "java.util.Collections",
+        "java.util.LinkedHashMap",
+        "java.util.LinkedHashSet",
+        "java.util.List",
+        "java.util.Map",
+        "java.util.Objects",
+        "java.util.Set",
+        "org.vnu.sme.goal.dsl.istar.mm.Actor",
+        "org.vnu.sme.goal.dsl.istar.mm.AndRefinement",
+        "org.vnu.sme.goal.dsl.istar.mm.Dependency",
+        "org.vnu.sme.goal.dsl.istar.mm.Goal",
+        "org.vnu.sme.goal.dsl.istar.mm.GoalModel",
+        "org.vnu.sme.goal.dsl.istar.mm.GoalType",
+        "org.vnu.sme.goal.dsl.istar.mm.IntentionalElement",
+        "org.vnu.sme.goal.dsl.istar.mm.OrRefinement",
+        "org.vnu.sme.goal.dsl.istar.mm.Refinement",
+        "org.vnu.sme.goal.dsl.istar.mm.Task"
       ],
-      "reuseMode": "ORIGINAL_COPY",
+      "reuseMode": "ORIGINAL_WITH_EXPLICIT_PATCH",
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
         "P-MARKING-LAYOUT-01",
         "P-VERIFY-LAYOUT-01",
-        "P-TEMPORAL-EXTRACT-01"
+        "P-TEMPORAL-EXTRACT-01",
+        "P-ISTAR-GOAL-TASK-01"
       ],
-      "extractionStatus": "METHOD_EXTRACTED_WITH_CHECKED_DELEGATION",
+      "extractionStatus": "PATCHED",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "IStarFrontend",
@@ -3754,18 +3769,38 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/marking/GoalTaskStatus.java",
-      "targetSha256": "1a4e1150db7fe256e38970f7cb437376c449764bda32e815e62ed6b4474e097f",
-      "fqcn": "org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus",
-      "imports": [],
-      "reuseMode": "ORIGINAL_COPY",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/IStarMarking.java",
+      "targetSha256": "00fcaf6f7b038a983cd55ce06d691126ea3fd084f0893ec6c16e80091adfb6f6",
+      "fqcn": "org.vnu.sme.goal.verify.istar.IStarMarking$GoalTaskStatus",
+      "imports": [
+        "java.util.ArrayList",
+        "java.util.Collections",
+        "java.util.LinkedHashMap",
+        "java.util.LinkedHashSet",
+        "java.util.List",
+        "java.util.Map",
+        "java.util.Objects",
+        "java.util.Set",
+        "org.vnu.sme.goal.dsl.istar.mm.Actor",
+        "org.vnu.sme.goal.dsl.istar.mm.AndRefinement",
+        "org.vnu.sme.goal.dsl.istar.mm.Dependency",
+        "org.vnu.sme.goal.dsl.istar.mm.Goal",
+        "org.vnu.sme.goal.dsl.istar.mm.GoalModel",
+        "org.vnu.sme.goal.dsl.istar.mm.GoalType",
+        "org.vnu.sme.goal.dsl.istar.mm.IntentionalElement",
+        "org.vnu.sme.goal.dsl.istar.mm.OrRefinement",
+        "org.vnu.sme.goal.dsl.istar.mm.Refinement",
+        "org.vnu.sme.goal.dsl.istar.mm.Task"
+      ],
+      "reuseMode": "ORIGINAL_WITH_EXPLICIT_PATCH",
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
         "P-MARKING-LAYOUT-01",
-        "P-VERIFY-LAYOUT-01"
+        "P-VERIFY-LAYOUT-01",
+        "P-ISTAR-GOAL-TASK-01"
       ],
-      "extractionStatus": "PACKAGE_RELOCATED",
+      "extractionStatus": "PATCHED",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "IStarFrontend",
@@ -3787,29 +3822,38 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/marking/IStarMarking.java",
-      "targetSha256": "cecf52cdfaf854e27320ceac9c804dd8dfc9539d21e8504696d32f14de4b28e7",
-      "fqcn": "org.vnu.sme.goal.verify.istar.marking.IStarMarking",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/IStarMarking.java",
+      "targetSha256": "00fcaf6f7b038a983cd55ce06d691126ea3fd084f0893ec6c16e80091adfb6f6",
+      "fqcn": "org.vnu.sme.goal.verify.istar.IStarMarking",
       "imports": [
+        "java.util.ArrayList",
         "java.util.Collections",
         "java.util.LinkedHashMap",
+        "java.util.LinkedHashSet",
+        "java.util.List",
         "java.util.Map",
         "java.util.Objects",
+        "java.util.Set",
+        "org.vnu.sme.goal.dsl.istar.mm.Actor",
+        "org.vnu.sme.goal.dsl.istar.mm.AndRefinement",
+        "org.vnu.sme.goal.dsl.istar.mm.Dependency",
         "org.vnu.sme.goal.dsl.istar.mm.Goal",
         "org.vnu.sme.goal.dsl.istar.mm.GoalModel",
+        "org.vnu.sme.goal.dsl.istar.mm.GoalType",
         "org.vnu.sme.goal.dsl.istar.mm.IntentionalElement",
-        "org.vnu.sme.goal.dsl.istar.mm.Quality",
-        "org.vnu.sme.goal.dsl.istar.mm.Resource",
+        "org.vnu.sme.goal.dsl.istar.mm.OrRefinement",
+        "org.vnu.sme.goal.dsl.istar.mm.Refinement",
         "org.vnu.sme.goal.dsl.istar.mm.Task"
       ],
-      "reuseMode": "ORIGINAL_COPY",
+      "reuseMode": "ORIGINAL_WITH_EXPLICIT_PATCH",
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
         "P-MARKING-LAYOUT-01",
-        "P-VERIFY-LAYOUT-01"
+        "P-VERIFY-LAYOUT-01",
+        "P-ISTAR-GOAL-TASK-01"
       ],
-      "extractionStatus": "PACKAGE_RELOCATED",
+      "extractionStatus": "PATCHED",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "IStarFrontend",
@@ -3831,34 +3875,38 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/propagation/IStarPropagation.java",
-      "targetSha256": "cd8e71cb67f5dc48dec20ec9939b555c183f7ad35d15d8b3539bb6cbc58420b9",
-      "fqcn": "org.vnu.sme.goal.verify.istar.propagation.IStarPropagation",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/IStarMarking.java",
+      "targetSha256": "00fcaf6f7b038a983cd55ce06d691126ea3fd084f0893ec6c16e80091adfb6f6",
+      "fqcn": "org.vnu.sme.goal.verify.istar.IStarMarking",
       "imports": [
         "java.util.ArrayList",
+        "java.util.Collections",
         "java.util.LinkedHashMap",
         "java.util.LinkedHashSet",
         "java.util.List",
         "java.util.Map",
+        "java.util.Objects",
         "java.util.Set",
         "org.vnu.sme.goal.dsl.istar.mm.Actor",
         "org.vnu.sme.goal.dsl.istar.mm.AndRefinement",
-        "org.vnu.sme.goal.dsl.istar.mm.Contribution",
+        "org.vnu.sme.goal.dsl.istar.mm.Dependency",
+        "org.vnu.sme.goal.dsl.istar.mm.Goal",
         "org.vnu.sme.goal.dsl.istar.mm.GoalModel",
+        "org.vnu.sme.goal.dsl.istar.mm.GoalType",
+        "org.vnu.sme.goal.dsl.istar.mm.IntentionalElement",
         "org.vnu.sme.goal.dsl.istar.mm.OrRefinement",
         "org.vnu.sme.goal.dsl.istar.mm.Refinement",
-        "org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus",
-        "org.vnu.sme.goal.verify.istar.marking.IStarMarking",
-        "org.vnu.sme.goal.verify.istar.marking.QualityStatus"
+        "org.vnu.sme.goal.dsl.istar.mm.Task"
       ],
-      "reuseMode": "ORIGINAL_COPY",
+      "reuseMode": "ORIGINAL_WITH_EXPLICIT_PATCH",
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
         "P-MARKING-LAYOUT-01",
-        "P-VERIFY-LAYOUT-01"
+        "P-VERIFY-LAYOUT-01",
+        "P-ISTAR-GOAL-TASK-01"
       ],
-      "extractionStatus": "PACKAGE_RELOCATED",
+      "extractionStatus": "PATCHED",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "IStarFrontend",
@@ -3880,23 +3928,21 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/marking/QualityStatus.java",
-      "targetSha256": "9321f3392fe1201b4f6e140af488fff26afeb8c3973f78b9c6f5cf8547f6eb9c",
-      "fqcn": "org.vnu.sme.goal.verify.istar.marking.QualityStatus",
+      "targetPath": null,
+      "targetSha256": null,
+      "fqcn": null,
       "imports": [],
-      "reuseMode": "ORIGINAL_COPY",
+      "reuseMode": "REFERENCE_ONLY",
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
         "P-MARKING-LAYOUT-01",
-        "P-VERIFY-LAYOUT-01"
+        "P-VERIFY-LAYOUT-01",
+        "P-ISTAR-GOAL-TASK-01"
       ],
-      "extractionStatus": "PACKAGE_RELOCATED",
-      "productionEvaluationAllowed": true,
-      "requiredAdapters": [
-        "IStarFrontend",
-        "Use4GoalRuntimeSessionAdapter"
-      ],
+      "extractionStatus": "REMOVED_BY_PATCH",
+      "productionEvaluationAllowed": false,
+      "requiredAdapters": [],
       "parityTests": [
         "E",
         "F",
@@ -3913,18 +3959,38 @@
       "workingBytesDifferFromHead": true,
       "gitStatus": "",
       "targetModule": "use-plugin",
-      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/marking/TaskMarking.java",
-      "targetSha256": "c8fa7a76581a8065c9a8bd01721928b5d7c49e7a00b749076366472cc2fee1a5",
-      "fqcn": "org.vnu.sme.goal.verify.istar.marking.TaskMarking",
-      "imports": [],
-      "reuseMode": "ORIGINAL_COPY",
+      "targetPath": "src/main/java/org/vnu/sme/goal/verify/istar/IStarMarking.java",
+      "targetSha256": "00fcaf6f7b038a983cd55ce06d691126ea3fd084f0893ec6c16e80091adfb6f6",
+      "fqcn": "org.vnu.sme.goal.verify.istar.IStarMarking$TaskMarking",
+      "imports": [
+        "java.util.ArrayList",
+        "java.util.Collections",
+        "java.util.LinkedHashMap",
+        "java.util.LinkedHashSet",
+        "java.util.List",
+        "java.util.Map",
+        "java.util.Objects",
+        "java.util.Set",
+        "org.vnu.sme.goal.dsl.istar.mm.Actor",
+        "org.vnu.sme.goal.dsl.istar.mm.AndRefinement",
+        "org.vnu.sme.goal.dsl.istar.mm.Dependency",
+        "org.vnu.sme.goal.dsl.istar.mm.Goal",
+        "org.vnu.sme.goal.dsl.istar.mm.GoalModel",
+        "org.vnu.sme.goal.dsl.istar.mm.GoalType",
+        "org.vnu.sme.goal.dsl.istar.mm.IntentionalElement",
+        "org.vnu.sme.goal.dsl.istar.mm.OrRefinement",
+        "org.vnu.sme.goal.dsl.istar.mm.Refinement",
+        "org.vnu.sme.goal.dsl.istar.mm.Task"
+      ],
+      "reuseMode": "ORIGINAL_WITH_EXPLICIT_PATCH",
       "plannedPatchIds": [],
       "appliedPatchIds": [
         "P-DSL-LAYOUT-01",
         "P-MARKING-LAYOUT-01",
-        "P-VERIFY-LAYOUT-01"
+        "P-VERIFY-LAYOUT-01",
+        "P-ISTAR-GOAL-TASK-01"
       ],
-      "extractionStatus": "PACKAGE_RELOCATED",
+      "extractionStatus": "PATCHED",
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "IStarFrontend",
@@ -4196,6 +4262,21 @@
         "DerivedDependeePolicyTest",
         "EngineExtractionTest"
       ]
+    },
+    {
+      "id": "P-ISTAR-GOAL-TASK-01",
+      "semanticChange": true,
+      "scope": "Consolidate iStar Goal and Task marking and propagation in IStarMarking.java. Remove Quality markings and contribution evaluation. Reject requests that explicitly depend on Quality verification. Keep the iStar DSL and existing Goal and Task rules."
+    },
+    {
+      "id": "P-CSL-LAYOUT-01",
+      "semanticChange": false,
+      "scope": "Flatten the CSL verification package. Nest the OCL state contract in its only consumer, NativeOclEvaluator. Keep model rules and digest algorithms intact.",
+      "tests": [
+        "EngineExtractionTest",
+        "VerificationPackageLayoutTest"
+      ],
+      "relocations": "META-INF/verify-class-relocations.properties"
     }
   ],
   "sourceLayout": "Single Maven source tree; DSL owns language definitions/scenarios/views; org.vnu.sme.goal.verify owns istar/csl rules; host verify owns runtime sessions and native USE backend",
@@ -4203,9 +4284,14 @@
   "verificationLayout": {
     "patchId": "P-VERIFY-LAYOUT-01",
     "core": "org.vnu.sme.goal.verify.{istar,csl}",
-    "backendAndSession": "org.tzi.use.plugins.jacamo.verify.{api,runtime,use75}",
+    "backendAndSession": "org.tzi.use.plugins.jacamo.verify.{api,istar,use75}",
     "relocationAudit": "META-INF/verify-class-relocations.properties",
-    "preservation": "Pinned original bytes are reconstructed by reversing only recorded names/imports and checked method extractions. Existing exhaustive oracle parity tests remain authoritative."
+    "preservation": "Pinned bytes are compared after reversing recorded package changes and existing scoped patches. P-ISTAR-GOAL-TASK-01 records exact rewritten target hashes and retired originals. The independent oracle checks Goal and Task behavior.",
+    "cslModelClasses": [
+      "org.vnu.sme.goal.verify.csl.CslSemanticValidator",
+      "org.vnu.sme.goal.verify.csl.CslModelFingerprint"
+    ],
+    "cslOclStateContract": "org.vnu.sme.goal.dsl.csl.parser.NativeOclEvaluator$State"
   },
   "extractedImplementations": [
     {
@@ -4218,7 +4304,8 @@
         "status",
         "baseline"
       ],
-      "reuseMode": "EXISTING_ALGORITHM_EXTRACTED_WITHOUT_SEMANTIC_CHANGE"
+      "reuseMode": "EXISTING_ALGORITHM_EXTRACTED_WITHOUT_SEMANTIC_CHANGE",
+      "supersededBy": "P-ISTAR-GOAL-TASK-01"
     },
     {
       "fqcn": "org.vnu.sme.goal.verify.istar.propagation.IStarDependencyPropagation",
@@ -4229,7 +4316,8 @@
         "saturateDependencies",
         "MAX_DEPENDENCY_STEPS"
       ],
-      "reuseMode": "EXISTING_ALGORITHM_EXTRACTED_WITHOUT_SEMANTIC_CHANGE"
+      "reuseMode": "EXISTING_ALGORITHM_EXTRACTED_WITHOUT_SEMANTIC_CHANGE",
+      "supersededBy": "P-ISTAR-GOAL-TASK-01"
     }
   ]
 }

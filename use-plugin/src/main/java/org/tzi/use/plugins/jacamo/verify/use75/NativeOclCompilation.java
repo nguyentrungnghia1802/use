@@ -1,5 +1,6 @@
 package org.tzi.use.plugins.jacamo.verify.use75;
 
+import org.tzi.use.plugins.jacamo.verify.use75.NativeOclBackend.Spec;
 import java.io.*;
 import java.util.*;
 import org.antlr.runtime.*;
@@ -26,7 +27,7 @@ public final class NativeOclCompilation {
     public static Expression transitionPredicate(MModel model,MClass self,String id,String body) {
         return expression(model,self,null,id,body,true);
     }
-    public static Expression compile(MModel model,OclContractSpec specification) {
+    public static Expression compile(MModel model,Spec specification) {
         return expression(model,specification.self(),specification.operation(),specification.id(),specification.body(),specification.requiresBefore(),specification.bindings());
     }
     public static Expression operationPredicate(MModel model,MOperation operation,String id,String body,boolean pre) {

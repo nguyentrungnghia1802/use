@@ -1,5 +1,7 @@
 package org.tzi.use.plugins.jacamo.verify;
 
+import org.tzi.use.plugins.jacamo.verify.use75.NativeOclBackend.Outcome;
+import org.tzi.use.plugins.jacamo.verify.use75.NativeOclBackend.Spec;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.tzi.use.api.*;
@@ -10,8 +12,8 @@ import org.tzi.use.uml.ocl.type.TypeFactory;
 import org.tzi.use.uml.ocl.value.*;
 import org.tzi.use.uml.sys.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.tzi.use.plugins.jacamo.verify.use75.NativeOclOutcome.Status.*;
-import static org.tzi.use.plugins.jacamo.verify.use75.OclContractSpec.Kind.*;
+import static org.tzi.use.plugins.jacamo.verify.use75.NativeOclBackend.Outcome.Status.*;
+import static org.tzi.use.plugins.jacamo.verify.use75.NativeOclBackend.Spec.Kind.*;
 
 class NativeOclBackendTest {
     record Fixture(UseModelApi schema,MClass type,MOperation operation,MSystem system,UseSystemApi api,MObject object,MObject peer){}
@@ -26,7 +28,7 @@ class NativeOclBackendTest {
         return new Fixture(schema,type,op,system,api,object,peer);
     }
     private NativeOclBackend backend(Fixture f){return new NativeOclBackend(f.system().model(),"program-1","USE4GOAL_OBSERVED_V1");}
-    private OclContractSpec spec(Fixture f,OclContractSpec.Kind kind,String body){return new OclContractSpec("contract-"+kind,kind,f.type(),kind==TASK_PRE||kind==TASK_POST?f.operation():null,body);}
+    private Spec spec(Fixture f,Spec.Kind kind,String body){return new Spec("contract-"+kind,kind,f.type(),kind==TASK_PRE||kind==TASK_POST?f.operation():null,body);}
     private Map<String,Value> values(Fixture f){return Map.of("self",f.object().value(),"amount",IntegerValue.valueOf(1),"result",IntegerValue.valueOf(1));}
     @Test void actualNativeAtPreUsesDistinctPinnedStatesAndDetectsIncorrectIncrement() throws Exception {
         var f=fixture();try(var backend=backend(f)) {
@@ -50,7 +52,7 @@ class NativeOclBackendTest {
                 assertEquals(PASS,backend.evaluate(backend.compile(spec(f,GOAL,body)),UseStateReadView.pin(null,f.system().state()),values(f),"").status());
             var transition=backend.compile(spec(f,TRANSITION,"self.peers@pre->size() = 1 and self.peers->isEmpty()"));
             assertEquals(PASS,backend.evaluate(transition,UseStateReadView.pin(before,f.system().state()),values(f),"").status());
-            var contextual=new OclContractSpec("context",GOAL,f.type(),null,"self.p = player.p and orgContext.p >= 0",Map.of("player",f.type(),"orgContext",f.type()));
+            var contextual=new Spec("context",GOAL,f.type(),null,"self.p = player.p and orgContext.p >= 0",Map.of("player",f.type(),"orgContext",f.type()));
             var compiled=backend.compile(contextual);var values=new HashMap<String,Value>(values(f));values.put("player",f.peer().value());values.put("orgContext",f.object().value());
             assertEquals(PASS,backend.evaluate(compiled,UseStateReadView.pin(null,f.system().state()),values,"").status());
             values.remove("orgContext");assertEquals(SKIPPED,backend.evaluate(compiled,UseStateReadView.pin(null,f.system().state()),values,"").status());
@@ -58,7 +60,7 @@ class NativeOclBackendTest {
     }
     @Test void booleanTypeGateAndPreContextRejectInvalidProgramsWithoutCachingFailures() throws Exception {
         var f=fixture();try(var backend=backend(f)) {
-            for(var kind:OclContractSpec.Kind.values())assertThrows(IllegalArgumentException.class,()->backend.compile(spec(f,kind,"self.p + 1")));
+            for(var kind:Spec.Kind.values())assertThrows(IllegalArgumentException.class,()->backend.compile(spec(f,kind,"self.p + 1")));
             for(var kind:List.of(GOAL,TASK_PRE,INVARIANT))assertThrows(IllegalArgumentException.class,()->backend.compile(spec(f,kind,"self.p = self.p@pre")));
             assertThrows(IllegalArgumentException.class,()->backend.compile(spec(f,TASK_PRE,"result > 0")));
             assertThrows(IllegalArgumentException.class,()->backend.compile(spec(f,GOAL,"self.missing > 0")));
@@ -75,7 +77,7 @@ class NativeOclBackendTest {
             for(var reason:List.of("PARTIAL","GAP","ARGUMENT_UNAVAILABLE","INTERFERENCE","INCARNATION_MISMATCH","STALE_CORRELATION")) {
                 var result=backend.evaluate(equality,view,values(f),reason);assertEquals(SKIPPED,result.status());assertNull(result.knownBoolean());assertEquals(reason,result.diagnostic());
             }
-            assertEquals(ERROR,NativeOclOutcome.evaluate(null,view.after(),view.after(),new VarBindings()).status());
+            assertEquals(ERROR,Outcome.evaluate(null,view.after(),view.after(),new VarBindings()).status());
         }
     }
     @Test void exactArgumentsResultsAndForeignSelfBindingsAreFenced() throws Exception {

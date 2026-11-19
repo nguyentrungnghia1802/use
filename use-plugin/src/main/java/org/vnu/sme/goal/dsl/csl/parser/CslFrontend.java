@@ -1,6 +1,6 @@
 package org.vnu.sme.goal.dsl.csl.parser;
 
-import org.vnu.sme.goal.verify.csl.validation.CslSemanticValidator;
+import org.vnu.sme.goal.verify.csl.CslSemanticValidator;
 import java.util.*;
 import java.util.regex.Pattern;
 import org.tzi.use.plugins.jacamo.verify.api.EngineDiagnostic;

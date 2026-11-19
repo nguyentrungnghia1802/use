@@ -1,13 +1,14 @@
 package org.tzi.use.plugins.jacamo.verify;
 
+import org.tzi.use.plugins.jacamo.verify.istar.GoalTaskSession.TopologyPolicy;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.tzi.use.plugins.jacamo.verify.api.*;
 import org.vnu.sme.goal.dsl.istar.parser.IStarFrontend;
-import org.tzi.use.plugins.jacamo.verify.runtime.*;
+import org.tzi.use.plugins.jacamo.verify.istar.*;
 import org.vnu.sme.goal.dsl.istar.mm.*;
 import org.vnu.sme.goal.dsl.istar_marking.mm.ScenarioInstance;
-import org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus;
+import org.vnu.sme.goal.verify.istar.IStarMarking.GoalTaskStatus;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RoleSpecializationPolicyTest {
@@ -35,14 +36,14 @@ class RoleSpecializationPolicyTest {
     }
     @Test void originalTaskAndAndDependencyPropagationRemainExecutable() {
         var cast=List.of(new ScenarioInstance("team","Team"),new ScenarioInstance("capability-definition","Capability"),new ScenarioInstance("alice","Performer"));
-        try(var session=new Use4GoalRuntimeSessionAdapter(model(SOURCE),cast,(a,x,b,y)->true,"source-test",profile(),EngineTopologyPolicy.SINGLE_OWNER_CONTEXT_V1)) {
+        try(var session=new GoalTaskSession(model(SOURCE),cast,(a,x,b,y)->true,"source-test",profile(),TopologyPolicy.SINGLE_OWNER_CONTEXT_V1)) {
             String task=session.topology().occurrences().values().stream().filter(o->o.sourceElementId().equals("action")).findFirst().orElseThrow().occurrenceId();
-            var result=session.step(new EngineInputs(Map.of(),Map.of(task,new EngineInputs.TaskInput("invocation",true,true,true)),Map.of()));
+            var result=session.step(new EngineInputs(Map.of(),Map.of(task,new EngineInputs.TaskInput("invocation",true,true,true))));
             var dependency=session.topology().instance().model().getDependencies().getFirst();
             assertEquals(GoalTaskStatus.FULFILLED,result.aggregate().goalTaskStatus(dependency.dependeeElmt()));
             assertEquals(GoalTaskStatus.FULFILLED,result.aggregate().goalTaskStatus(dependency.dependerElmt()));
             assertTrue(result.originalApiCalls().contains("TaskMarking.update"));
-            assertTrue(result.originalApiCalls().contains("IStarPropagation.closePending"));
+            assertTrue(result.originalApiCalls().contains("IStarMarking.closePending"));
         }
     }
     @Test void unaryAdmissionDoesNotPermitArbitraryRefinementOrWrongKinds() {

@@ -1,7 +1,6 @@
 # Imported native sources/fixtures preserve their audited bytes.
 /src/main/java/org/vnu/** -text
-/src/main/java/org/tzi/use/plugins/jacamo/dsl/** -text
-/src/main/java/org/tzi/use/plugins/jacamo/ui/diagram/** -text
+/src/main/java/org/tzi/use/plugins/jacamo/gui/views/Diagram*.java -text
 /src/main/resources/grammars/** -text
 /src/test/resources/oracle/** -text
 /src/main/resources/example/** -text

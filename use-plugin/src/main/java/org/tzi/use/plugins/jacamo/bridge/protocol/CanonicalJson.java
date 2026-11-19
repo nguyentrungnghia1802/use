@@ -184,4 +184,10 @@ public final class CanonicalJson {
         void digits() { int start = at; while (!end() && Character.isDigit(text.charAt(at))) at++; if (start == at) throw new ContractException("digit required at " + at); }
         void expect(char expected) { space(); if (end() || text.charAt(at) != expected) throw new ContractException("expected '" + expected + "' at " + at); at++; }
     }
+
+
+    private static final class ContractException extends RuntimeException {
+        public ContractException(String message) { super(message); }
+        public ContractException(String message, Throwable cause) { super(message, cause); }
+    }
 }

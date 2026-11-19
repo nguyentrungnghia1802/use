@@ -14,11 +14,11 @@ import org.tzi.use.gui.views.diagrams.elements.PlaceableNode;
 import org.tzi.use.gui.views.diagrams.elements.edges.EdgeBase;
 import org.tzi.use.gui.views.diagrams.util.Direction;
 import org.tzi.use.gui.views.diagrams.waypoints.WayPoint;
-import org.tzi.use.plugins.jacamo.ui.diagram.DiagramVisualStyle;
+import org.tzi.use.plugins.jacamo.gui.views.DiagramVisualStyle;
 
 public final class IStarDiagramEdge extends EdgeBase {
     private static final Font EDGE_FONT = DiagramVisualStyle.EDGE_FONT;
-    private final org.tzi.use.plugins.jacamo.ui.diagram.DiagramEdgeRouter router=new org.tzi.use.plugins.jacamo.ui.diagram.DiagramEdgeRouter();
+    private final org.tzi.use.plugins.jacamo.gui.views.DiagramEdgeRouter router=new org.tzi.use.plugins.jacamo.gui.views.DiagramEdgeRouter();
     private java.util.Collection<? extends PlaceableNode> obstacles=java.util.List.of();
     public IStarDiagramEdge(IStarEdge edge,PlaceableNode source,PlaceableNode target,IStarDiagramOptions opt,java.util.Collection<? extends PlaceableNode> obstacles){this(edge,source,target,opt);this.obstacles=java.util.List.copyOf(obstacles);}
     private final IStarEdge edge;

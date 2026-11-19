@@ -21,7 +21,7 @@ public final class AolDiagramEdge extends EdgeBase {
     private static final double MARKER_LENGTH = 13.0;
     private static final double MARKER_HALF_WIDTH = 5.0;
 
-    private final org.tzi.use.plugins.jacamo.ui.diagram.DiagramEdgeRouter router=new org.tzi.use.plugins.jacamo.ui.diagram.DiagramEdgeRouter();
+    private final org.tzi.use.plugins.jacamo.gui.views.DiagramEdgeRouter router=new org.tzi.use.plugins.jacamo.gui.views.DiagramEdgeRouter();
     private final AolEdge edge;
     private final AolDiagramOptions opt;
     private final java.util.Collection<PlaceableNode> obstacles;

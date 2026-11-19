@@ -288,7 +288,7 @@ def main():
         prepare(case, project)
         work.mkdir()
         seconds = args.baseline_seconds if kind == "baseline" else args.seconds
-        command = ["java", "-Duse.state.work="+str(work), "-cp", cp, "org.tzi.use.plugins.jacamo.bridge.StateWorkbenchMain",
+        command = ["java", "-Duse.state.work="+str(work), "-cp", cp, "org.tzi.use.plugins.jacamo.tool.main.WorkbenchMain",
                    str(project / "auction.jcm"), str(args.mapping), str(args.csl), str(args.istar), "--headless", "--seconds="+str(seconds)]
         started = time.monotonic()
         with (work / "consumer.log").open("w") as log:

@@ -21,7 +21,7 @@ package org.vnu.sme.goal.dsl.csl.parser;
  *      4. assemble CSLModel
  * =============================================================================
  */
-import org.vnu.sme.goal.verify.csl.validation.CslSemanticValidator;
+import org.vnu.sme.goal.verify.csl.CslSemanticValidator;
 import java.math.BigInteger;
 import java.util.*;
 import org.vnu.sme.goal.dsl.csl.ast.*;

@@ -15,7 +15,7 @@ import java.awt.geom.RoundRectangle2D;
 
 import org.tzi.use.gui.views.diagrams.ToolTipProvider;
 import org.tzi.use.gui.views.diagrams.elements.CompartmentNode;
-import org.tzi.use.plugins.jacamo.ui.diagram.DiagramVisualStyle;
+import org.tzi.use.plugins.jacamo.gui.views.DiagramVisualStyle;
 
 /** Role, Group and Enumeration node using USE's compartment-node infrastructure. */
 public final class CslDiagramNode extends CompartmentNode implements ToolTipProvider {

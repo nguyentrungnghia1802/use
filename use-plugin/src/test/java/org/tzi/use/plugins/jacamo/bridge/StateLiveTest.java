@@ -1,5 +1,6 @@
 package org.tzi.use.plugins.jacamo.bridge;
 
+import org.tzi.use.plugins.jacamo.tool.main.WorkbenchMain;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -13,7 +14,7 @@ class StateLiveTest {
     @Test void actualJaCaMoChecksTheGroupedParentAndHoldsItsFinalViolation()throws Exception {
         Path example=Path.of("src/main/resources/example/counter").toAbsolutePath().normalize();
         var command=List.of(Path.of(System.getProperty("java.home"),"bin/java").toString(),"-Duse.state.work="+work,
-                "-cp",System.getProperty("java.class.path"),StateWorkbenchMain.class.getName(),
+                "-cp",System.getProperty("java.class.path"),WorkbenchMain.class.getName(),
                 example.resolve("counter.jcm").toString(),example.resolve("attribute-mapping.xml").toString(),
                 example.resolve("counter.csl").toString(),example.resolve("counter.istar").toString(),"--headless","--seconds=6");
         var process=new ProcessBuilder(command).redirectErrorStream(true).redirectOutput(work.resolve("consumer.log").toFile()).start();
@@ -42,7 +43,7 @@ class StateLiveTest {
     @Test void realAuctionUsesFewerCheckpointsAndRetainsIndependentInstances() throws Exception {
         Path example=Path.of("src/main/resources/example/auction").toAbsolutePath().normalize();
         var command=List.of(Path.of(System.getProperty("java.home"),"bin/java").toString(),"-Duse.state.work="+work,
-                "-cp",System.getProperty("java.class.path"),StateWorkbenchMain.class.getName(),
+                "-cp",System.getProperty("java.class.path"),WorkbenchMain.class.getName(),
                 example.resolve("auction.jcm").toString(),example.resolve("attribute-mapping.xml").toString(),
                 example.resolve("auction.csl").toString(),example.resolve("auction.istar").toString(),"--headless","--seconds=25");
         var process=new ProcessBuilder(command).redirectErrorStream(true).redirectOutput(work.resolve("consumer.log").toFile()).start();

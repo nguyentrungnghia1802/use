@@ -95,7 +95,7 @@ def main():
         result_file = output / (variant + "--" + case + ".json")
         mapping_file = "mapping-typo.xml" if variant == "mapping-typo" else "attribute-mapping.xml"
         istar_file = "without-bid-monotonicity.istar" if variant == "without-bid-monotonicity" else "auction.istar"
-        command = ["java", "-cp", cp, "org.tzi.use.plugins.jacamo.bridge.StateReplayMain",
+        command = ["java", "-cp", cp, "org.tzi.use.plugins.jacamo.tool.main.ReplayMain",
                    str(output / mapping_file), str(output / (variant + ".csl")),
                    str(output / istar_file), str(trace), str(result_file)]
         run = subprocess.run(command, cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=30)

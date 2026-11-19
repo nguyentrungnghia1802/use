@@ -1,6 +1,5 @@
 package org.vnu.sme.goal.dsl.istar_marking.parser;
 
-import org.vnu.sme.goal.verify.istar.propagation.IStarDependencyPropagation;
 import org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstanceEvaluation;
 import org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstanceTopology;
 
@@ -11,10 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus;
-import org.vnu.sme.goal.verify.istar.marking.IStarMarking;
-import org.vnu.sme.goal.verify.istar.propagation.IStarPropagation;
-import org.vnu.sme.goal.verify.istar.marking.QualityStatus;
+import org.vnu.sme.goal.verify.istar.IStarMarking.GoalTaskStatus;
+import org.vnu.sme.goal.verify.istar.IStarMarking;
 import org.vnu.sme.goal.dsl.istar.mm.Actor;
 import org.vnu.sme.goal.dsl.istar.mm.Agent;
 import org.vnu.sme.goal.dsl.istar.mm.GenericActor;
@@ -93,7 +90,7 @@ public final class GoalModelInstanceTranslator {
 
     /** P-CTX-01: delegates to the existing dependency algorithm; admission owns its bounds. */
     public static IStarMarking propagateDependencies(GoalModel instanceModel, IStarMarking marking) {
-        return saturateDependencies(instanceModel, marking);
+        return IStarMarking.propagateDependencies(instanceModel, marking);
     }
 
     public static GoalModelInstanceEvaluation evaluate(GoalModel source, IStarScenarioModel scenario) {
@@ -102,6 +99,7 @@ public final class GoalModelInstanceTranslator {
 
     public static GoalModelInstanceEvaluation evaluate(GoalModel source, IStarScenarioModel scenario,
                                                         InstanceContextMatcher contextMatcher) {
+        validateVerificationScope(source, scenario);
         Builder builder = new Builder(source, scenario, contextMatcher);
         builder.instantiateActors();
         builder.instantiateIntentionalTrees();
@@ -395,6 +393,26 @@ public final class GoalModelInstanceTranslator {
         }
     }
 
+    private static void validateVerificationScope(GoalModel model, IStarScenarioModel scenario) {
+        for (Actor actor : model.getActors()) {
+            if (!actor.contributions().isEmpty())
+                throw new IllegalArgumentException("QUALITY_CONTRIBUTION_NOT_VERIFIED:" + actor.name());
+        }
+        for (ScenarioStmt statement : scenario.statements()) {
+            String elementId = switch (statement) {
+                case ScenarioStmt.Fire fire -> fire.elementId();
+                case ScenarioStmt.Assign assign -> {
+                    if ("True".equals(assign.statusValue()) || "False".equals(assign.statusValue()))
+                        throw new IllegalArgumentException("QUALITY_STATUS_NOT_VERIFIED:" + assign.elementId());
+                    yield assign.elementId();
+                }
+                case ScenarioStmt.Aggregate aggregate -> aggregate.elementId();
+            };
+            if (model.findElement(elementId).orElse(null) instanceof Quality)
+                throw new IllegalArgumentException("QUALITY_STATUS_NOT_VERIFIED:" + elementId);
+        }
+    }
+
     private static IStarMarking executeTrace(GoalModel model, IStarScenarioModel scenario,
                                              Map<String, List<Occurrence>> occurrencesBySource,
                                              Map<String, String> instanceActorType,
@@ -405,21 +423,21 @@ public final class GoalModelInstanceTranslator {
                 case ScenarioStmt.Fire f -> {
                     for (Occurrence occurrence : resolve(f.instanceId(), f.elementId(), f.objectInstanceId(),
                             occurrencesBySource, instanceActorType, instancesByType)) {
-                        marking = IStarPropagation.fire(model, marking, occurrence.id());
-                        marking = saturateDependencies(model, marking);
+                        marking = IStarMarking.fire(model, marking, occurrence.id());
+                        marking = IStarMarking.propagateDependencies(model, marking);
                     }
                 }
                 case ScenarioStmt.Assign a -> {
                     for (Occurrence occurrence : resolve(a.instanceId(), a.elementId(), null,
                             occurrencesBySource, instanceActorType, instancesByType)) {
                         marking = applyAssign(model, marking, occurrence.id(), a.statusValue());
-                        marking = saturateDependencies(model, marking);
+                        marking = IStarMarking.propagateDependencies(model, marking);
                     }
                 }
                 case ScenarioStmt.Aggregate ignored -> { }
             }
         }
-        return IStarPropagation.closePending(model, saturateDependencies(model, marking));
+        return IStarMarking.closePending(model, IStarMarking.propagateDependencies(model, marking));
     }
 
     private static List<Occurrence> resolve(String subjectInstanceId, String elementId, String objectInstanceId,
@@ -453,16 +471,10 @@ public final class GoalModelInstanceTranslator {
 
     private static IStarMarking applyAssign(GoalModel model, IStarMarking marking, String id, String statusValue) {
         return switch (statusValue) {
-            case "Fulfilled" -> IStarPropagation.assignGoalTask(model, marking, id, GoalTaskStatus.FULFILLED);
-            case "Pending" -> IStarPropagation.assignGoalTask(model, marking, id, GoalTaskStatus.PENDING);
-            case "True" -> IStarPropagation.assignQuality(model, marking, id, QualityStatus.TRUE);
-            case "False" -> IStarPropagation.assignQuality(model, marking, id, QualityStatus.FALSE);
+            case "Fulfilled" -> IStarMarking.assignGoalTask(model, marking, id, GoalTaskStatus.FULFILLED);
+            case "Pending" -> IStarMarking.assignGoalTask(model, marking, id, GoalTaskStatus.PENDING);
             default -> marking;
         };
-    }
-
-    private static IStarMarking saturateDependencies(GoalModel model, IStarMarking marking) {
-        return IStarDependencyPropagation.propagate(model, marking);
     }
 
     private static List<AggregateResult> evaluateAggregates(GoalModel source, IStarScenarioModel scenario,
@@ -506,13 +518,7 @@ public final class GoalModelInstanceTranslator {
     }
 
     private static boolean isPositive(IntentionalElement elem, String id, IStarMarking marking) {
-        if (elem == null) return false;
-        return switch (elem) {
-            case Goal g -> marking.goalTaskStatus(id) == GoalTaskStatus.FULFILLED;
-            case Task t -> marking.goalTaskStatus(id) == GoalTaskStatus.FULFILLED;
-            case Quality q -> marking.qualityStatus(id) == QualityStatus.TRUE;
-            case Resource r -> false;
-        };
+        return elem instanceof GoalTaskElement && marking.goalTaskStatus(id) == GoalTaskStatus.FULFILLED;
     }
 
     private static String firstScopeType(List<Occurrence> occurrences) {

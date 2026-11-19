@@ -1,5 +1,11 @@
 package org.tzi.use.plugins.jacamo.bridge;
 
+import org.tzi.use.plugins.jacamo.bridge.mapping.AttributeMapping;
+import org.tzi.use.plugins.jacamo.bridge.protocol.CanonicalJson;
+import org.tzi.use.plugins.jacamo.bridge.protocol.CheckpointProtocol;
+import org.tzi.use.plugins.jacamo.session.SnapshotVerifier;
+import org.tzi.use.plugins.jacamo.tool.main.ReplayMain;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 import org.junit.jupiter.api.*;
@@ -22,15 +28,16 @@ class CslStateVerifierTest {
           task NonnegativeObserved > Done pre {[ true ]} post {[ self.reading >= 0 ]}
         } }
         """;
-    private Path write(String name,String text)throws Exception{Path path=directory.resolve(name);Files.writeString(path,text);return path;}
-    private CslStateVerifier verifier()throws Exception {
-        return new CslStateVerifier(write("mapping.xml","""
+    private static final String MAPPING = """
           <mapping xmlns="urn:use:jacamo-state-mapping:1">
             <attribute source="artifact:unrelated.CustomGauge/property:value" target="Gauge.reading"/>
           </mapping>
-          """),write("example.csl",CSL),write("example.istar",ISTAR));
+          """;
+    private Path write(String name,String text)throws Exception{Path path=directory.resolve(name);Files.writeString(path,text);return path;}
+    private SnapshotVerifier verifier()throws Exception {
+        return new SnapshotVerifier(write("mapping.xml", MAPPING), write("example.csl", CSL), write("example.istar", ISTAR));
     }
-    private CslStateVerifier.Snapshot snapshot(long sequence,int value){return new CslStateVerifier.Snapshot("run",sequence,true,List.of(new CslStateVerifier.Artifact("physical-1","unrelated.CustomGauge","some-name","/main",Map.of("value",value))));}
+    private SourceSnapshot snapshot(long sequence,int value){return new SourceSnapshot("run",sequence,true,List.of(new SourceSnapshot.Artifact("physical-1","unrelated.CustomGauge","some-name","/main",Map.of("value",value))));}
     @Test void nativeCslAndIStarReadOnlyProjectedStateAndRetainOriginalTaskHistory()throws Exception {
         try(var verifier=verifier()) {
             var first=verifier.update(snapshot(1,0));assertEquals("APPROVE",first.decision());
@@ -46,18 +53,18 @@ class CslStateVerifierTest {
     @Test void physicalInstancesAndLifetimesHaveIndependentMarkings()throws Exception {
         try(var verifier=verifier()) {
             verifier.update(snapshot(1,2));
-            var second=new CslStateVerifier.Artifact("physical-2","unrelated.CustomGauge","same-name","/main",Map.of("value",0));
-            var result=verifier.update(new CslStateVerifier.Snapshot("run",2,true,List.of(snapshot(1,2).artifacts().getFirst(),second)));
+            var second=new SourceSnapshot.Artifact("physical-2","unrelated.CustomGauge","same-name","/main",Map.of("value",0));
+            var result=verifier.update(new SourceSnapshot("run",2,true,List.of(snapshot(1,2).artifacts().getFirst(),second)));
             assertEquals(2,result.state().size());
             assertEquals(1,result.elements().stream().filter(e->e.element().equals("ReachedTwo")&&e.status().equals("FULFILLED")).count());
-            verifier.update(new CslStateVerifier.Snapshot("run",3,true,List.of()));
+            verifier.update(new SourceSnapshot("run",3,true,List.of()));
             var fresh=verifier.update(snapshot(4,0));assertFalse(fresh.elements().stream().anyMatch(e->e.element().equals("ReachedTwo")&&e.status().equals("FULFILLED")));
         }
     }
     @Test void incompleteCoverageCannotDeleteObjectsOrCertifyEmptyState()throws Exception {
         try(var verifier=verifier()) {
             verifier.update(snapshot(1,1));
-            var held=verifier.update(new CslStateVerifier.Snapshot("run",2,false,List.of()));
+            var held=verifier.update(new SourceSnapshot("run",2,false,List.of()));
             assertEquals("HOLD_UNVERIFIED",held.decision());assertEquals(1,held.state().size());
             assertEquals("APPROVE",verifier.update(snapshot(2,2)).decision());
         }
@@ -65,10 +72,10 @@ class CslStateVerifierTest {
     @Test void invalidAttributesAndReorderedOrForeignSnapshotsDoNotAdvanceState()throws Exception {
         try(var verifier=verifier()) {
             var initial=verifier.update(snapshot(1,1));
-            var invalid=new CslStateVerifier.Artifact("physical-1","unrelated.CustomGauge","name","/main",Map.of("value","wrong type"));
-            assertThrows(IllegalArgumentException.class,()->verifier.update(new CslStateVerifier.Snapshot("run",2,true,List.of(invalid))));
+            var invalid=new SourceSnapshot.Artifact("physical-1","unrelated.CustomGauge","name","/main",Map.of("value","wrong type"));
+            assertThrows(IllegalArgumentException.class,()->verifier.update(new SourceSnapshot("run",2,true,List.of(invalid))));
             assertThrows(IllegalArgumentException.class,()->verifier.update(snapshot(3,2)));
-            assertThrows(IllegalArgumentException.class,()->verifier.update(new CslStateVerifier.Snapshot("another-run",2,true,List.of())));
+            assertThrows(IllegalArgumentException.class,()->verifier.update(new SourceSnapshot("another-run",2,true,List.of())));
             assertEquals(initial,verifier.update(snapshot(1,1)));
             assertThrows(IllegalArgumentException.class,()->verifier.update(snapshot(1,100)));
             assertEquals("APPROVE",verifier.update(snapshot(2,2)).decision());
@@ -80,7 +87,7 @@ class CslStateVerifierTest {
     }
     @Test void anIStarMaintainViolationHoldsEvenWhenEveryCslInvariantPasses()throws Exception {
         Path map=write("mapping.xml","<mapping xmlns='urn:use:jacamo-state-mapping:1'><attribute source='artifact:unrelated.CustomGauge/property:value' target='Gauge.reading'/></mapping>");
-        try(var verifier=new CslStateVerifier(map,write("a.csl",CSL),write("a.istar",ISTAR.replace("condition {[ self.reading >= 0 ]}","condition {[ self.reading < 2 ]}")))) {
+        try(var verifier=new SnapshotVerifier(map,write("a.csl",CSL),write("a.istar",ISTAR.replace("condition {[ self.reading >= 0 ]}","condition {[ self.reading < 2 ]}")))) {
             assertEquals("APPROVE",verifier.update(snapshot(1,0)).decision());
             var result=verifier.update(snapshot(2,2));assertEquals("HOLD_FAILURE",result.decision());
             assertTrue(result.checks().stream().filter(c->c.kind().equals("CSL_INVARIANT")).allMatch(c->c.verdict().equals("PASS")));
@@ -89,6 +96,31 @@ class CslStateVerifierTest {
     }
     @Test void iStarCannotDependOnSourceStepSuccess()throws Exception {
         Path map=write("mapping.xml","<mapping xmlns='urn:use:jacamo-state-mapping:1'><attribute source='artifact:test.Gauge/property:v' target='Gauge.reading'/></mapping>");
-        assertThrows(IllegalArgumentException.class,()->new CslStateVerifier(map,write("a.csl",CSL),write("a.istar",ISTAR.replace("self.reading >= 2","step.succeeded"))));
+        assertThrows(IllegalArgumentException.class,()->new SnapshotVerifier(map,write("a.csl",CSL),write("a.istar",ISTAR.replace("self.reading >= 2","step.succeeded"))));
+    }
+
+    @Test void replayReportsModelElementsAndStopsAtTheFirstHold() throws Exception {
+        var trace = directory.resolve("history.jsonl");
+        Files.write(trace, List.of(snapshot(1, 2), snapshot(2, -1), snapshot(3, 2)).stream()
+                .map(state -> Map.of("request", Map.of(
+                        "version", CheckpointProtocol.VERSION, "snapshot", CheckpointProtocol.encodeSnapshot(state))))
+                .map(CanonicalJson::encode)
+                .map(bytes -> new String(bytes, StandardCharsets.UTF_8)).toList());
+        var output = directory.resolve("replay.json");
+        ReplayMain.main(new String[]{write("mapping.xml", MAPPING).toString(),
+                write("example.csl", CSL).toString(), write("example.istar", ISTAR).toString(),
+                trace.toString(), output.toString()});
+
+        var report = CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(output)));
+        assertEquals("HOLD_FAILURE", report.get("decision"));
+        assertEquals(2L, ((Number) report.get("firstHoldSequence")).longValue());
+        assertEquals(2L, ((Number) report.get("evaluatedCheckpoints")).longValue());
+        var events = (List<?>) report.get("events");
+        var fulfilled = (List<?>) CanonicalJson.object(events.getFirst()).get("fulfilledElements");
+        var done = fulfilled.stream().map(CanonicalJson::object)
+                .filter(element -> element.get("element").equals("Done")).findFirst().orElseThrow();
+        assertEquals("Gauge", done.get("actor"));
+        assertFalse(((String) done.get("context")).isBlank());
+        assertEquals(List.of("Gauge::Nonnegative"), CanonicalJson.object(events.getLast()).get("failedInvariants"));
     }
 }

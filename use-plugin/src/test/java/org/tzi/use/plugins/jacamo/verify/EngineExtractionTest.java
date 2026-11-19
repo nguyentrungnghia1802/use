@@ -1,17 +1,21 @@
 package org.tzi.use.plugins.jacamo.verify;
 
 import org.junit.jupiter.api.Test;
+import org.tzi.use.plugins.jacamo.bridge.protocol.CanonicalJson;
 import org.tzi.use.plugins.jacamo.verify.oracle.SourcePackageRelocation;
 import org.vnu.sme.goal.dsl.csl.parser.CslCompiler;
 import org.vnu.sme.goal.dsl.istar.mm.GoalType;
-import org.vnu.sme.goal.verify.istar.marking.GoalMarking;
-import org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus;
+import org.vnu.sme.goal.verify.istar.IStarMarking.GoalMarking;
+import org.vnu.sme.goal.verify.istar.IStarMarking.GoalTaskStatus;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.security.MessageDigest;
 import java.util.HexFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipFile;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -21,12 +25,38 @@ class EngineExtractionTest {
     private static final Path ROOT = Path.of("").toAbsolutePath();
 
     @Test void selectedSourcesPreservePinnedBytesExceptRecordedPackagesAndPatches() throws Exception {
-        String manifest = Files.readString(ROOT.resolve("src/main/resources/META-INF/use4goal-provenance.json"));
+        String manifestText = Files.readString(ROOT.resolve("src/main/resources/META-INF/use4goal-provenance.json"));
+        var manifest = CanonicalJson.object(CanonicalJson.decode(manifestText.getBytes(StandardCharsets.UTF_8)));
+        var patched = new HashMap<String, Map<String, Object>>();
+        for (Object raw : (List<?>) manifest.get("files")) {
+            var file = CanonicalJson.object(raw);
+            if (((List<?>) file.get("appliedPatchIds")).contains("P-ISTAR-GOAL-TASK-01"))
+                patched.put((String) file.get("upstreamPath"), file);
+        }
+        assertEquals(Set.of("ContributionPolarity.java", "QualityStatus.java", "GoalMarking.java", "TaskMarking.java",
+                        "GoalTaskStatus.java", "IStarMarking.java", "IStarPropagation.java",
+                        "GoalModelInstanceTranslator.java", "ScenarioStmt.java"),
+                patched.keySet().stream().map(path -> Path.of(path).getFileName().toString())
+                        .collect(java.util.stream.Collectors.toSet()));
         int javaFiles = 0, grammars = 0;
         try (var archive = new ZipFile(ROOT.resolve("src/test/resources/oracle/pinned-original-core.zip").toFile())) {
             for (var entry : archive.stream().toList()) {
                 if (entry.isDirectory()) continue;
                 String upstream = entry.getName();
+                byte[] expected = archive.getInputStream(entry).readAllBytes();
+                var patch = patched.remove(upstream);
+                if (patch != null) {
+                    javaFiles++;
+                    assertEquals(patch.get("sourceSha256"), sha256(expected), upstream);
+                    if ("REMOVED_BY_PATCH".equals(patch.get("extractionStatus"))) {
+                        assertEquals(Boolean.FALSE, patch.get("productionEvaluationAllowed"), upstream);
+                        assertNull(patch.get("targetPath"), upstream);
+                    } else {
+                        Path target = ROOT.resolve((String) patch.get("targetPath"));
+                        assertApprovedPatchBytes(patch, Files.readAllBytes(target));
+                    }
+                    continue;
+                }
                 Path target;
                 if (upstream.startsWith("goal/src/main/java/")) {
                     target = SourcePackageRelocation.sourcePath(ROOT, upstream);
@@ -38,24 +68,21 @@ class EngineExtractionTest {
                     assertEquals("LICENSE", upstream);
                     target = ROOT.resolve("src/main/resources/META-INF/licenses/use4Goal-GPL-3.0.txt");
                 }
-                byte[] expected = archive.getInputStream(entry).readAllBytes();
-                byte[] targetBytes=Files.readAllBytes(target);
-                byte[] actual=upstream.endsWith(".java") ? SourcePackageRelocation.originalSource(upstream, targetBytes) : targetBytes;
-                if(upstream.endsWith("/GoalModelInstanceTranslator.java")) {
-                    verifyContextPatchScope(expected,actual);
-                    String targetHash=HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(targetBytes));
-                    assertTrue(manifest.contains(targetHash),"Unrecorded P-CTX-01 target hash");
-                } else if(upstream.endsWith("/GoalModelValidator.java")||upstream.endsWith("/IStarCompiler.java")) {
+                byte[] targetBytes = Files.readAllBytes(target);
+                byte[] actual = upstream.endsWith(".java")
+                        ? SourcePackageRelocation.originalSource(upstream, targetBytes) : targetBytes;
+                if (upstream.endsWith("/GoalModelValidator.java") || upstream.endsWith("/IStarCompiler.java")) {
                     verifyAdmissionPatchScope(target.getFileName().toString(),expected,actual);
-                    assertTrue(manifest.contains(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(targetBytes))),"Unrecorded P-IADM-01 target hash");
+                    assertTrue(manifestText.contains(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(targetBytes))),"Unrecorded P-IADM-01 target hash");
                 } else if(List.of("Actor.java","IStarModelFactory.java","IStar.g4").contains(target.getFileName().toString())) {
                     assertEquals(new String(expected,StandardCharsets.UTF_8).replace("\r\n","\n"),reverseGenericActorPatch(target.getFileName().toString(),new String(actual,StandardCharsets.UTF_8).replace("\r\n","\n")),"Unregistered change outside P-ACTOR-01: "+upstream);
-                    assertTrue(manifest.contains(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(targetBytes))),"Unrecorded P-ACTOR-01 target hash");
+                    assertTrue(manifestText.contains(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(targetBytes))),"Unrecorded P-ACTOR-01 target hash");
                 } else assertArrayEquals(expected,actual,upstream);
                 String hash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(expected));
-                assertTrue(manifest.contains(hash), "Unrecorded source hash: " + upstream);
+                assertTrue(manifestText.contains(hash), "Unrecorded source hash: " + upstream);
             }
         }
+        assertTrue(patched.isEmpty(), "Recorded patch sources missing from pinned archive: " + patched.keySet());
         assertEquals(123, javaFiles);
         assertEquals(2, grammars);
     }
@@ -105,14 +132,6 @@ class EngineExtractionTest {
             assertThrows(AssertionError.class,()->verifyAdmissionPatchScope("GoalModelValidator.java",archive.getInputStream(entry).readAllBytes(),changed));
         }
     }
-    static void verifyContextPatchScope(byte[] original,byte[] patched) {
-        String expected=new String(original,StandardCharsets.UTF_8).replace("\r\n","\n");
-        String actual=reverseGenericActorPatch("GoalModelInstanceTranslator.java",new String(patched,StandardCharsets.UTF_8).replace("\r\n","\n"));
-        int start=actual.indexOf("    /** P-CTX-01: structured, in-memory topology seam.");
-        int end=actual.indexOf("    public static GoalModelInstanceEvaluation evaluate(",start);
-        assertTrue(start>=0&&end>start,"Missing registered P-CTX-01 seam");
-        assertEquals(expected,actual.substring(0,start)+actual.substring(end),"Original algorithms changed outside P-CTX-01");
-    }
     // Invert only the exact registered type/syntax additions. Unrelated upstream bytes stay pinned.
     static String reverseGenericActorPatch(String name,String source) {
         return switch(name) {
@@ -121,20 +140,28 @@ class EngineExtractionTest {
             case "IStar.g4" -> source.replace("//  Actor is abstract; project extension P-ACTOR-01 adds a concrete GenericActor\n//  spelled 'actor', alongside Role and Agent.","//  Actor is abstract — only Role and Agent are concrete, both generalizing\n//  to Actor.")
                     .replace("actorKind : 'role' | 'agent' | 'actor' ;","actorKind : 'role' | 'agent' ;");
             case "IStarModelFactory.java" -> source.replace("            case \"actor\" -> new GenericActor(cs.id(), elements, refinements, contributions, qualifications,\n                    neededBys, assocs);\n","");
-            case "GoalModelInstanceTranslator.java" -> source.replace("import org.vnu.sme.goal.dsl.istar.mm.GenericActor;\n","")
-                    .replace("                Actor actor = sourceActor instanceof GenericActor\n                        ? new GenericActor(actorId, new ArrayList<>(bucket.elements.values()), bucket.refinements,\n                                bucket.contributions, List.of(), List.of(), List.of())\n                        : sourceActor instanceof Role","                Actor actor = sourceActor instanceof Role");
             default -> throw new IllegalArgumentException(name);
         };
     }
+    private static String sha256(byte[] bytes) throws Exception {
+        return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
+    }
+
+    private static void assertApprovedPatchBytes(Map<String, Object> patch, byte[] target) throws Exception {
+        assertEquals(patch.get("targetSha256"), sha256(target),
+                "Unrecorded change to " + patch.get("targetPath"));
+    }
+
     @Test void provenanceRejectsAnUnapprovedPrivateAlgorithmChange() throws Exception {
-        String upstream="goal/src/main/java/org/vnu/sme/goal/dsl/iscn/goalmodelinstance/parser/GoalModelInstanceTranslator.java";
-        Path target=SourcePackageRelocation.sourcePath(ROOT,upstream);
-        try(var archive=new ZipFile(ROOT.resolve("src/test/resources/oracle/pinned-original-core.zip").toFile())) {
-            var entry=archive.getEntry("goal/src/main/java/org/vnu/sme/goal/dsl/iscn/goalmodelinstance/parser/GoalModelInstanceTranslator.java");
-            byte[] original=archive.getInputStream(entry).readAllBytes();
-            byte[] changed=new String(SourcePackageRelocation.originalSource(upstream,Files.readAllBytes(target)),StandardCharsets.UTF_8).replace("MAX_DEPENDENCY_STEPS = 10_000","MAX_DEPENDENCY_STEPS = 1").getBytes(StandardCharsets.UTF_8);
-            assertThrows(AssertionError.class,()->verifyContextPatchScope(original,changed));
-        }
+        var manifest = CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(
+                ROOT.resolve("src/main/resources/META-INF/use4goal-provenance.json"))));
+        var patch = ((List<?>) manifest.get("files")).stream().map(CanonicalJson::object)
+                .filter(file -> ((String) file.get("upstreamPath")).endsWith("/IStarMarking.java"))
+                .findFirst().orElseThrow();
+        byte[] changed = Files.readString(ROOT.resolve((String) patch.get("targetPath")))
+                .replace("MAX_DEPENDENCY_STEPS = 10_000", "MAX_DEPENDENCY_STEPS = 1")
+                .getBytes(StandardCharsets.UTF_8);
+        assertThrows(AssertionError.class, () -> assertApprovedPatchBytes(patch, changed));
     }
 
     @Test void semanticSourcesRemainIndependentOfTheImportedRuntimeAndGui() throws Exception {
@@ -144,11 +171,18 @@ class EngineExtractionTest {
                 for (Path file : files.filter(p -> p.toString().endsWith(".java")).toList()) {
                     String source = Files.readString(file);
                     boolean presentation=file.toString().replace('\\', '/').matches(".*/dsl/[^/]+/(view|form)/.*");
-                    for (String forbidden : List.of("import jason.", "import cartago.", "import moise.",
+                    for (String forbidden : List.of("import jason.", "import cartago.", "import moise.", "import jacamo.",
                             "import org.tzi.use.plugins.jacamo.bridge.",
-                            "import org.tzi.use.plugins.jacamo.feature."))
+                            "import org.tzi.use.plugins.jacamo.integration.",
+                            "import org.tzi.use.plugins.jacamo.runtime.",
+                            "import org.tzi.use.plugins.jacamo.session.",
+                            "import org.tzi.use.plugins.jacamo.tool."))
                         assertFalse(source.contains(forbidden), file + ": " + forbidden);
-                    if(!presentation)assertFalse(source.contains("import org.tzi.use.gui."),file+": semantic code imports GUI");
+                    if (!presentation) {
+                        assertFalse(source.contains("import org.tzi.use.gui."), file + ": semantic code imports USE GUI");
+                        assertFalse(source.contains("import org.tzi.use.plugins.jacamo.gui."),
+                                file + ": semantic code imports plugin GUI");
+                    }
                 }
             }
         }

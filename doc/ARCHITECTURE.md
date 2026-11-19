@@ -10,23 +10,22 @@ test. Không còn các Maven module lồng nhau cho từng thành phần nhỏ.
 use-plugin/
   src/main/java/
     org/tzi/use/plugins/jacamo/
-      feature/          Entry point và luồng giao diện của 5 chức năng
-      dsl/
-        csl/parser/     Frontend CSL
-        csl/view/       Diagram CSL
-        istar/parser/   Frontend iStar, tên cục bộ và kiểm tra capability
-        istar/view/     Diagram iStar
-        oal/            Đối tượng và diagram trạng thái CSL
-        istarscn/view/  Marking của từng phiên iStar
-        state/          Lưu/đọc snapshot mô hình
-      verify/           Native USE/OCL, topology và marking adapter
-      runtime/          Interface JaCaMo, chọn checkpoint và giữ/tiếp tục thực thi
-      bridge/           Session, snapshot, mapping và transport
-        protocol/       Frame/JSON phục vụ kết nối
-      ui/diagram/       Thành phần đồ họa dùng chung
-    org/vnu/sme/goal/    Phần DSL/semantics gốc được tái sử dụng
-      dsl/csl/parser/   CslCompiler, visitor và semantic validator
-      dsl/istar/parser/ IStarCompiler và model factory
+      integration/use/ Đăng ký plugin và action với USE
+      gui/main/        Cửa sổ và hộp thoại
+      gui/views/       Panel, cây mô hình và thành phần vẽ dùng chung
+      runtime/         Khởi chạy JaCaMo, chọn checkpoint, thu thập trạng thái
+      bridge/          Kiểu dữ liệu snapshot dùng chung
+        mapping/       Đọc XML và chiếu dữ liệu nguồn sang CSL
+        protocol/      Mã hóa, xác thực và trao đổi checkpoint
+      session/         Vòng đời JVM con, lịch sử và cập nhật trạng thái USE
+      verify/
+        api/           Profile, chẩn đoán và kiểm tra cài đặt
+        use75/         Mô hình native USE và OCL
+        istar/         Đánh giá Goal/Task và lịch sử đánh giá
+      tool/main/       Điểm vào CLI cho workbench và replay
+    org/vnu/sme/goal/
+      dsl/             Frontend, AST, metamodel và diagram CSL/iStar
+      verify/          Ngữ nghĩa CSL và iStar tái sử dụng từ USE4Goal
   src/main/resources/
     grammars/           CSL.g4 và IStar.g4; ANTLR sinh parser vào target/
     example/            Auction và Counter, gồm cả source JaCaMo
@@ -37,9 +36,9 @@ use-plugin/
   tools/                Import runtime, chạy và kiểm tra
 ```
 
-Giữ namespace gốc `org.vnu.sme.goal` cho compiler/AST/model/recurrence được tái
-sử dụng nhằm bảo toàn source và đối chiếu bản tham chiếu. Frontend và code tích
-hợp do project phát triển nằm dưới `org.tzi.use.plugins.jacamo`.
+Namespace `org.vnu.sme.goal` chứa frontend, mô hình và thuật toán kiểm chứng
+được đối chiếu với USE4Goal. Namespace `org.tzi.use.plugins.jacamo` chứa
+phần tích hợp JaCaMo, phiên chạy và giao diện plugin.
 
 Một lần build tạo năm entry JAR cho CSL, OAL, iStar, iStarSCN và bridge. Bốn JAR
 entry nhỏ tham chiếu triển khai dùng chung trong JAR plugin chính. Parser/engine
@@ -48,21 +47,25 @@ vào USE. Các JAR JaCaMo được đóng gói riêng cho JVM nguồn.
 
 ## JaCaMo là thư viện được import
 
-`JaCaMoRuntimeAdapter` là ranh giới ghép nối. `OfficialJaCaMoRuntimeAdapter` gọi
-`JaCaMoLauncher` gốc để đọc JCM, tạo hệ thống và chạy agent. Jason thực thi plan;
+`JaCaMoRuntime` gọi `JaCaMoLauncher` gốc để đọc JCM, tạo hệ thống và chạy agent.
+Jason thực thi plan;
 CArtAgO thực thi Artifact; Moise/NPL quản lý tổ chức. Project không có source thay
 thế các package framework `jacamo`, `jason`, `cartago` hay `moise`.
 
-Interface trong `runtime/` quan sát vòng đời plan, chọn checkpoint và giữ JaCaMo
-cho đến khi USE chấp thuận. Nó không đọc CSL, iStar, mapping hoặc so sánh giá trị
-trạng thái. Bridge chỉ đọc snapshot đã đóng băng, ánh xạ và truyền yêu cầu/kết quả.
-Hook không phải bộ thông dịch plan mới. Runtime chạy trong JVM do USE
+`JaCaMoCheckpoints` quan sát vòng đời plan, chọn checkpoint và giữ JaCaMo
+cho đến khi USE chấp thuận. `StateProducer` thu thập snapshot đã đóng băng.
+Bridge ánh xạ dữ liệu và trao đổi yêu cầu, kết quả. Runtime chạy trong JVM do USE
 quản lý để tách thư viện nguồn khỏi classloader giao diện; người dùng không cần
 mở ứng dụng JaCaMo riêng.
 
-`StateVerificationSession` quản lý tiến trình, kênh xác thực, cập nhật CSL và đánh
-giá, không phụ thuộc Swing. `feature/bridge/view` nhận kết quả để hiển thị. Đóng
-workspace hoặc thoát USE sẽ dừng tiến trình thuộc phiên đó.
+`VerificationSession` điều phối JVM con, kênh xác thực và lịch sử. Nó gọi
+`SnapshotVerifier` để cập nhật `MSystem` và đánh giá CSL/iStar. Cửa sổ trong
+`gui.main` điều khiển phiên, còn thành phần trong `gui.views` nhận kết quả để
+hiển thị. Đóng workspace hoặc thoát USE sẽ dừng tiến trình thuộc phiên đó.
+
+`ReplayMain` đọc snapshot đã ghi và báo cáo các phần tử hoàn thành qua trường
+`fulfilledElements`. Mỗi mục chứa context, actor và tên phần tử theo mô hình
+iStar được nạp cho lần replay.
 
 ### Ranh giới checkpoint
 

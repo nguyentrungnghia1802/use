@@ -1,13 +1,12 @@
 package org.tzi.use.plugins.jacamo.verify;
 
-import org.vnu.sme.goal.verify.istar.propagation.IStarPropagation;
-import org.vnu.sme.goal.verify.istar.marking.GoalTaskStatus;
-import org.vnu.sme.goal.verify.istar.marking.TaskMarking;
+import org.vnu.sme.goal.verify.istar.IStarMarking.GoalTaskStatus;
+import org.vnu.sme.goal.verify.istar.IStarMarking.TaskMarking;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.tzi.use.plugins.jacamo.verify.api.*;
 import org.vnu.sme.goal.dsl.istar.parser.IStarFrontend;
-import org.tzi.use.plugins.jacamo.verify.runtime.*;
+import org.tzi.use.plugins.jacamo.verify.istar.*;
 import org.vnu.sme.goal.dsl.istar_marking.mm.ScenarioInstance;
 import org.vnu.sme.goal.dsl.istar.mm.*;
 import org.vnu.sme.goal.dsl.istar.parser.IStarCompiler;
@@ -30,12 +29,12 @@ class DerivedDependeePolicyTest {
         }
         """;
     private static final List<ScenarioInstance> CAST = List.of(new ScenarioInstance("scope", "Context"), new ScenarioInstance("alice", "Worker"));
-    private static String id(Use4GoalRuntimeSessionAdapter session, String source) {
+    private static String id(GoalTaskSession session, String source) {
         return session.topology().occurrences().values().stream().filter(b -> b.sourceElementId().equals(source)).findFirst().orElseThrow().occurrenceId();
     }
     private static GoalModel model(String source) { return new IStarFrontend().compile(source, "policy.istar", PROFILE).requireModel(); }
-    private static Use4GoalRuntimeSessionAdapter session() {
-        return new Use4GoalRuntimeSessionAdapter(model(SOURCE), CAST, (a,x,b,y) -> true, "cast", PROFILE);
+    private static GoalTaskSession session() {
+        return new GoalTaskSession(model(SOURCE), CAST, (a,x,b,y) -> true, "cast", PROFILE);
     }
     @Test void strictDefaultsStillRejectWhileEveryOptInValidationLayerAgrees() {
         assertEquals(1, IStarCompiler.compile(SOURCE).errors().size());
@@ -45,7 +44,7 @@ class DerivedDependeePolicyTest {
         assertEquals(1, GoalModelValidator.validate(result.model()).size());
         assertThrows(EngineAdmissionException.class, () -> new OwnedGoalModel(result.model()));
         assertEquals(result.takeOwnership().hash(), new OwnedGoalModel(result.model(), PROFILE).hash());
-        assertThrows(EngineAdmissionException.class, () -> new Use4GoalRuntimeSessionAdapter(result.model(), CAST, (a,x,b,y)->true, "strict"));
+        assertThrows(EngineAdmissionException.class, () -> new GoalTaskSession(result.model(), CAST, (a,x,b,y)->true, "strict"));
         try (var session = session()) {
             assertEquals(PROFILE, session.profile());
             assertFalse(session.topology().instance().model().getDependencies().isEmpty());
@@ -62,14 +61,14 @@ class DerivedDependeePolicyTest {
         }
         assertFalse(new IStarFrontend().compile("istar Invalid { role R { goal g activation {[ true ]} } }", "activation", PROFILE).ok());
         var wrong = model(SOURCE.replace("Worker participates-in Context", "Worker is-a Context"));
-        assertThrows(EngineAdmissionException.class, () -> new Use4GoalRuntimeSessionAdapter(wrong, CAST, (a,x,b,y)->true, "cast", PROFILE));
-        assertThrows(EngineAdmissionException.class, () -> new Use4GoalRuntimeSessionAdapter(model(SOURCE), CAST, (a,x,b,y)->x.equals(y), "cast", PROFILE));
+        assertThrows(EngineAdmissionException.class, () -> new GoalTaskSession(wrong, CAST, (a,x,b,y)->true, "cast", PROFILE));
+        assertThrows(EngineAdmissionException.class, () -> new GoalTaskSession(model(SOURCE), CAST, (a,x,b,y)->x.equals(y), "cast", PROFILE));
     }
     @Test void missingOrForeignResourceWitnessCannotUpdateOrCreditTaskAndFailureIsAtomic() {
         try (var session = session()) {
             String second = id(session, "second");
             var task = Map.of(second, new EngineInputs.TaskInput("episode", true, true, true));
-            var absent = session.step(new EngineInputs(Map.of(), task, Map.of()));
+            var absent = session.step(new EngineInputs(Map.of(), task));
             assertTrue(absent.deferred().contains(second));
             assertEquals(TaskMarking.initial(), absent.history().tasks().get(second));
             assertFalse(absent.originalApiCalls().contains("TaskMarking.update"));
@@ -77,16 +76,16 @@ class DerivedDependeePolicyTest {
             for (var value : List.of(new EngineInputs.ResourceInput("episode", false, "observed-absent"),
                     new EngineInputs.ResourceInput("other-episode", true, "artifact-uuid"),
                     new EngineInputs.ResourceInput("episode", null, "partial"))) {
-                var deferred = session.step(new EngineInputs(Map.of(), task, Map.of(), Map.of(key, value)));
+                var deferred = session.step(new EngineInputs(Map.of(), task, Map.of(key, value)));
                 assertTrue(deferred.deferred().contains(second));
                 assertEquals(TaskMarking.initial(), deferred.history().tasks().get(second));
             }
             assertThrows(IllegalArgumentException.class, () -> new EngineInputs.ResourceInput("episode", true, ""));
             var before = session.checkpoint();
-            assertThrows(IllegalArgumentException.class, () -> session.step(new EngineInputs(Map.of(), task, Map.of(), Map.of(
+            assertThrows(IllegalArgumentException.class, () -> session.step(new EngineInputs(Map.of(), task, Map.of(
                     new EngineInputs.ResourceKey(second, "not-tool"), new EngineInputs.ResourceInput("episode", true, "uuid")))));
             assertEquals(before, session.checkpoint());
-            var ready = session.step(new EngineInputs(Map.of(), task, Map.of(), Map.of(key, new EngineInputs.ResourceInput("episode", true, "artifact-uuid"))));
+            var ready = session.step(new EngineInputs(Map.of(), task, Map.of(key, new EngineInputs.ResourceInput("episode", true, "artifact-uuid"))));
             assertEquals(GoalTaskStatus.FULFILLED, ready.history().tasks().get(second).status());
             assertTrue(ready.originalApiCalls().contains("TaskMarking.update"));
         }
@@ -99,12 +98,12 @@ class DerivedDependeePolicyTest {
             var resources = new LinkedHashMap<EngineInputs.ResourceKey, EngineInputs.ResourceInput>();
             tasks.keySet().stream().filter(k -> session.topology().occurrences().get(k).sourceElementId().equals("second"))
                     .forEach(k -> resources.put(new EngineInputs.ResourceKey(k, "tool"), new EngineInputs.ResourceInput("e", true, "same-context-artifact")));
-            var result = session.step(new EngineInputs(Map.of(), tasks, Map.of(), resources));
+            var result = session.step(new EngineInputs(Map.of(), tasks, resources));
             for (var dependency : session.topology().instance().model().getDependencies()) {
                 assertEquals(GoalTaskStatus.FULFILLED, result.aggregate().goalTaskStatus(dependency.dependeeElmt()));
                 assertEquals(GoalTaskStatus.FULFILLED, result.aggregate().goalTaskStatus(dependency.dependerElmt()));
             }
-            assertTrue(result.originalApiCalls().contains("IStarPropagation.closePending"));
+            assertTrue(result.originalApiCalls().contains("IStarMarking.closePending"));
             assertTrue(result.originalApiCalls().contains("GoalModelInstanceTranslator.propagateDependencies"));
         }
     }
@@ -112,11 +111,11 @@ class DerivedDependeePolicyTest {
         String source="istar Stable { role R { goal g : Achieve condition {[ true ]} } }";
         var model=new IStarFrontend().compile(source,"stable").requireModel();
         var cast=List.of(new ScenarioInstance("alice","R"));
-        try(var strict=new Use4GoalRuntimeSessionAdapter(model,cast,(a,x,b,y)->true,"one");
-            var extended=new Use4GoalRuntimeSessionAdapter(model,cast,(a,x,b,y)->true,"one",PROFILE);
-            var rebuilt=new Use4GoalRuntimeSessionAdapter(model,cast,(a,x,b,y)->true,"two",PROFILE)) {
+        try(var strict=new GoalTaskSession(model,cast,(a,x,b,y)->true,"one");
+            var extended=new GoalTaskSession(model,cast,(a,x,b,y)->true,"one",PROFILE);
+            var rebuilt=new GoalTaskSession(model,cast,(a,x,b,y)->true,"two",PROFILE)) {
             String id=id(extended,"g");
-            var history=extended.step(new EngineInputs(Map.of(id,new EngineInputs.GoalInput("e",true,true)),Map.of(),Map.of())).history();
+            var history=extended.step(new EngineInputs(Map.of(id,new EngineInputs.GoalInput("e",true,true)),Map.of())).history();
             assertThrows(IllegalArgumentException.class,()->strict.seedStableHistory(history,Map.of(id,"e")));
             rebuilt.seedStableHistory(history,Map.of(id,"e"));
             assertEquals(history.goals(),rebuilt.checkpoint().goals());

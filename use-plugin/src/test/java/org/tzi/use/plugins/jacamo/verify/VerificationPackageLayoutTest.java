@@ -43,7 +43,24 @@ class VerificationPackageLayoutTest {
             assertNull(loader.getResource(entry.getKey().toString().replace('.', '/') + ".class"),
                     "Stale verification class: " + entry.getKey());
         }
-        for (String name : Set.of("istar.temporal.GoalTemporalEvaluator", "istar.propagation.IStarDependencyPropagation"))
-            assertNotNull(Class.forName("org.vnu.sme.goal.verify." + name, false, loader));
+        for (String name : Set.of("marking.GoalMarking", "marking.TaskMarking", "marking.GoalTaskStatus",
+                "marking.IStarMarking", "marking.QualityStatus", "temporal.GoalTemporalEvaluator",
+                "propagation.IStarPropagation", "propagation.IStarDependencyPropagation", "propagation.ContributionPolarity")) {
+            assertNull(loader.getResource("org/vnu/sme/goal/verify/istar/" + name.replace('.', '/') + ".class"),
+                    "Stale iStar verification class: " + name);
+        }
+        try (var entries = Files.list(CORE.resolve("istar"))) {
+            assertEquals(Set.of("IStarMarking.java"),
+                    entries.map(p -> p.getFileName().toString()).collect(Collectors.toSet()));
+        }
+        for (String name : Set.of("state.CslOclState", "validation.CslSemanticValidator",
+                "validation.CslModelFingerprint")) {
+            assertNull(loader.getResource("org/vnu/sme/goal/verify/csl/" + name.replace('.', '/') + ".class"),
+                    "Stale CSL verification class: " + name);
+        }
+        try (var entries = Files.list(CORE.resolve("csl"))) {
+            assertEquals(Set.of("CslSemanticValidator.java", "CslModelFingerprint.java"),
+                    entries.map(p -> p.getFileName().toString()).collect(Collectors.toSet()));
+        }
     }
 }

@@ -30,11 +30,11 @@ public final class EmbeddedUseSmoke {
         for(String name:List.of("CSL Model","OAL State","iStar Model","iStarSCN State","JaCaMo"))
             require(plugins.values().stream().anyMatch(p->p.getPluginModel().getName().equals(name)),"Missing plugin "+name);
         var bridge=plugins.values().stream().filter(p->p.getPluginModel().getName().equals("JaCaMo")).findFirst().orElseThrow();
-        var loader=bridge.getPluginClassLoader();pluginLoader=loader.loadClass("org.tzi.use.plugins.jacamo.feature.bridge.JaCaMoExperimentAction").getClassLoader();
+        var loader=bridge.getPluginClassLoader();pluginLoader=loader.loadClass("org.tzi.use.plugins.jacamo.integration.use.JaCaMoExperimentAction").getClassLoader();
         var guard=pluginLoader.loadClass("org.tzi.use.plugins.jacamo.verify.api.EngineInstallationGuard");guard.getMethod("verify").invoke(null);
         System.out.println("PACKAGED_PLUGINS_OK engine="+guard.getProtectionDomain().getCodeSource().getLocation());
         var session=new Session();SwingUtilities.invokeAndWait(()->{owner=MainWindow.create(session,runtime);owner.setSize(1600,980);owner.setLocation(20,20);});
-        var action=(IPluginActionDelegate)loader.loadClass("org.tzi.use.plugins.jacamo.feature.bridge.JaCaMoExperimentAction").getConstructor().newInstance();
+        var action=(IPluginActionDelegate)loader.loadClass("org.tzi.use.plugins.jacamo.integration.use.JaCaMoExperimentAction").getConstructor().newInstance();
         IPluginAction context=new IPluginAction(){public void actionPerformed(java.awt.event.ActionEvent e){}public MainWindow getParent(){return owner;}public Session getSession(){return session;}};
         try {
             action.performAction(context);
@@ -66,7 +66,7 @@ public final class EmbeddedUseSmoke {
             Files.copy(work.resolve("latest.json"),evidence.resolve("latest.json"),StandardCopyOption.REPLACE_EXISTING);
             Files.copy(work.resolve("producer.log"),evidence.resolve("producer.log"),StandardCopyOption.REPLACE_EXISTING);
             for(var entry:List.of(new Tool("CslModelAction",models.resolve(base+".csl"),"CSL —"),new Tool("IStarModelAction",models.resolve(base+".istar"),"ISTAR —"),new Tool("OalModelAction",evidence.resolve("checkpoint.oal"),"OAL —"),new Tool("IStarScnAction",evidence.resolve("checkpoint.iscn"),"ISTAR_SCN —"))) {
-                var tool=(IPluginActionDelegate)pluginLoader.loadClass("org.tzi.use.plugins.jacamo.feature."+(entry.action().startsWith("Csl")?"csl":entry.action().startsWith("Oal")?"oal":entry.action().equals("IStarScnAction")?"istarscn":"istar")+"."+entry.action()).getConstructor().newInstance();tool.performAction(context);
+                var tool=(IPluginActionDelegate)pluginLoader.loadClass("org.tzi.use.plugins.jacamo.integration.use.ModelPlugins$"+entry.action()).getConstructor().newInstance();tool.performAction(context);
                 waitFor(()->chooser()!=null,8,"file chooser for "+entry.action());SwingUtilities.invokeAndWait(()->{var choose=chooser();choose.setSelectedFile(entry.file().toFile());choose.approveSelection();});
                 waitFor(()->internalFrame(entry.title())!=null,10,"independent plugin "+entry.action());
                 SwingUtilities.invokeAndWait(()->internalFrame(entry.title()).doDefaultCloseAction());

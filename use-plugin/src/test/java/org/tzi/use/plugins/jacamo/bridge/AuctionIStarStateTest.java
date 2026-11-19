@@ -1,5 +1,6 @@
 package org.tzi.use.plugins.jacamo.bridge;
 
+import org.tzi.use.plugins.jacamo.session.SnapshotVerifier;
 import java.nio.file.*;
 import java.util.*;
 import org.junit.jupiter.api.Test;
@@ -10,22 +11,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AuctionIStarStateTest {
     private final Path example=Path.of("src/main/resources/example/auction").toAbsolutePath().normalize();
-    private CslStateVerifier verifier()throws Exception{return new CslStateVerifier(example.resolve("attribute-mapping.xml"),example.resolve("auction.csl"),example.resolve("auction.istar"));}
-    private CslStateVerifier.Snapshot snapshot(long sequence,boolean running,double bid,String winner,boolean second) {
+    private SnapshotVerifier verifier()throws Exception{return new SnapshotVerifier(example.resolve("attribute-mapping.xml"),example.resolve("auction.csl"),example.resolve("auction.istar"));}
+    private SourceSnapshot snapshot(long sequence,boolean running,double bid,String winner,boolean second) {
         return snapshot(sequence,running,bid,winner,second,true);
     }
-    private CslStateVerifier.Snapshot snapshot(long sequence,boolean running,double bid,String winner,boolean second,boolean focused) {
-        var nodes=List.of(new CslStateVerifier.Node("org","organization","auction","aorg","/main/aorg","",Map.of()),
-                new CslStateVerifier.Node("group","group","auctionGroup","agrp","/main/aorg","org",Map.of()),
-                new CslStateVerifier.Node("agent1","agent","auction_capabilities","bob","","",Map.of()),
-                new CslStateVerifier.Node("agent2","agent","auction_capabilities","alice","","",Map.of()));
-        var roles=List.of(new CslStateVerifier.Enactment("group","agent1","auctioneer"),new CslStateVerifier.Enactment("group","agent2","participant"));
-        var artifacts=new ArrayList<CslStateVerifier.Artifact>();
-        artifacts.add(new CslStateVerifier.Artifact("a1-id","auction_env.AuctionArtifact","a1","/main/aorg",Map.of("running",running,"task","ticket","best_bid",bid,"winner",winner),focused?Set.of("agent1","agent2"):Set.of()));
-        if(second)artifacts.add(new CslStateVerifier.Artifact("a2-id","auction_env.AuctionArtifact","a2","/main/aorg",Map.of("running",false,"task","other-ticket","best_bid",Double.MAX_VALUE,"winner","no_winner")));
-        return new CslStateVerifier.Snapshot("run",sequence,true,artifacts,nodes,roles);
+    private SourceSnapshot snapshot(long sequence,boolean running,double bid,String winner,boolean second,boolean focused) {
+        var nodes=List.of(new SourceSnapshot.Node("org","organization","auction","aorg","/main/aorg","",Map.of()),
+                new SourceSnapshot.Node("group","group","auctionGroup","agrp","/main/aorg","org",Map.of()),
+                new SourceSnapshot.Node("agent1","agent","auction_capabilities","bob","","",Map.of()),
+                new SourceSnapshot.Node("agent2","agent","auction_capabilities","alice","","",Map.of()));
+        var roles=List.of(new SourceSnapshot.Enactment("group","agent1","auctioneer"),new SourceSnapshot.Enactment("group","agent2","participant"));
+        var artifacts=new ArrayList<SourceSnapshot.Artifact>();
+        artifacts.add(new SourceSnapshot.Artifact("a1-id","auction_env.AuctionArtifact","a1","/main/aorg",Map.of("running",running,"task","ticket","best_bid",bid,"winner",winner),focused?Set.of("agent1","agent2"):Set.of()));
+        if(second)artifacts.add(new SourceSnapshot.Artifact("a2-id","auction_env.AuctionArtifact","a2","/main/aorg",Map.of("running",false,"task","other-ticket","best_bid",Double.MAX_VALUE,"winner","no_winner")));
+        return new SourceSnapshot("run",sequence,true,artifacts,nodes,roles);
     }
-    private boolean status(CslStateVerifier.Result r,String element,String value){return r.elements().stream().anyMatch(e->e.element().equals(element)&&e.status().equals(value));}
+    private boolean status(SnapshotVerifier.Result r,String element,String value){return r.elements().stream().anyMatch(e->e.element().equals(element)&&e.status().equals(value));}
 
     @Test void actualExampleHasFourActorViewsAndPropagatesStateTasksThroughBothRolesToTheOrganization()throws Exception {
         var model=new IStarFrontend().compileScoped(Files.readString(example.resolve("auction.istar")),"auction.istar",EngineSemanticsProfile.ROLE_SPECIALIZATION_V1).requireModel();
