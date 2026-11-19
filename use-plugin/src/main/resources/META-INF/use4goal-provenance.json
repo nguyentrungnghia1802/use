@@ -31,7 +31,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -62,7 +62,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -92,7 +92,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -123,7 +123,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -153,7 +153,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -184,7 +184,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -216,7 +216,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -246,7 +246,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -277,7 +277,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -309,7 +309,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -339,7 +339,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -369,7 +369,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -399,7 +399,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -430,7 +430,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -461,7 +461,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -492,7 +492,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -523,7 +523,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -553,7 +553,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -581,7 +581,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -611,7 +611,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -639,7 +639,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -668,7 +668,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -697,7 +697,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -726,7 +726,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -755,7 +755,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -787,7 +787,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -818,7 +818,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -849,7 +849,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -878,7 +878,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -910,7 +910,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -941,7 +941,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -973,7 +973,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1002,7 +1002,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1031,7 +1031,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1063,7 +1063,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1096,7 +1096,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1127,7 +1127,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1159,7 +1159,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1190,7 +1190,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1223,7 +1223,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1254,7 +1254,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1285,7 +1285,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1318,7 +1318,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1349,7 +1349,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1380,7 +1380,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1412,7 +1412,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1444,7 +1444,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1476,7 +1476,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1507,7 +1507,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1539,7 +1539,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1570,7 +1570,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1601,7 +1601,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1630,7 +1630,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1662,7 +1662,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1704,7 +1704,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1735,7 +1735,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1766,7 +1766,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1795,7 +1795,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1826,7 +1826,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1855,7 +1855,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1886,7 +1886,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1915,7 +1915,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1944,7 +1944,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -1973,7 +1973,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -2005,7 +2005,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -2034,7 +2034,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "B",
@@ -2067,7 +2067,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -2102,7 +2102,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -2150,7 +2150,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -2189,7 +2189,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -2228,7 +2228,7 @@
       "productionEvaluationAllowed": true,
       "requiredAdapters": [
         "CslFrontend",
-        "Use75CslModelBackend"
+        "CslModelCompiler"
       ],
       "parityTests": [
         "A",
@@ -4194,8 +4194,8 @@
       "expectedDifference": "Only same-owner condition-free Achieve <- single Task AND realization; IS_A only between Role and empty definition-only capability Role. No invented enactment or inherited intentional behavior.",
       "newApiFiles": [
         {
-          "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/verify/api/RoleSpecialization.java",
-          "sha256": "c7f56a0353ae9d77e0d88329a208c69e0285b422e3b4314234e78eb64232d3f3",
+          "targetPath": "src/main/java/org/tzi/use/plugins/jacamo/verify/api/EngineSemanticsProfile.java",
+          "sha256": "8efe3c524fd9ba52e8b95e01827e5849f6129752ddbc8403caeeccbc6a438da0",
           "patches": [
             "P-DSL-LAYOUT-01"
           ]

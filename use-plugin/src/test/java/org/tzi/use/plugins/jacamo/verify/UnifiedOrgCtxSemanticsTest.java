@@ -6,16 +6,19 @@ import org.vnu.sme.goal.dsl.csl.parser.CslFrontend;
 import org.tzi.use.plugins.jacamo.verify.use75.*;
 import org.tzi.use.uml.ocl.value.BooleanValue;
 import org.tzi.use.uml.sys.MSystem;
+import org.tzi.use.plugins.jacamo.verify.use75.CslModelCompiler;
+import org.tzi.use.plugins.jacamo.verify.use75.CslModelCompiler.Binding;
+import org.tzi.use.plugins.jacamo.verify.use75.CslModelCompiler.ModelExtension;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UnifiedOrgCtxSemanticsTest {
-    private Use75ModelBinding model(){return new Use75CslModelBackend().compile(new CslFrontend().compile("""
+    private Binding model(){return new CslModelCompiler().compile(new CslFrontend().compile("""
         csl v4.0 Unified {
           orgContext Team { role worker; entity Document; }
           orgContext Person { attribute name : String; }
           orgContext Company { role supplier; }
         }
-        ""","unified.csl").requireModel(),M0ExtensionSpec.unifiedContexts());}
+        ""","unified.csl").requireModel(),ModelExtension.unifiedContexts());}
     @Test void oneSubjectCanBeMemberAndPlayerIndependentlyAtMultipleOrganizationalLevels()throws Exception {
         var binding=model();assertNull(binding.model().getClass("AtomicAgent"));
         var api=UseSystemApi.create(new MSystem(binding.model()),false);
@@ -39,7 +42,7 @@ class UnifiedOrgCtxSemanticsTest {
         assertThrows(UseApiException.class,()->api.createLink("Plays","document","job"));
         assertThrows(UseApiException.class,()->api.createLink("CslMembership","document","team"));
         var clash=new CslFrontend().compile("csl v4.0 Clash { orgContext Team { attribute members : String; } }","clash.csl").requireModel();
-        assertThrows(IllegalArgumentException.class,()->new Use75CslModelBackend().compile(clash,M0ExtensionSpec.unifiedContexts()));
-        assertNotNull(new Use75CslModelBackend().compile(clash,M0ExtensionSpec.observedPlayers()).model().getClass("AtomicAgent"));
+        assertThrows(IllegalArgumentException.class,()->new CslModelCompiler().compile(clash,ModelExtension.unifiedContexts()));
+        assertNotNull(new CslModelCompiler().compile(clash,ModelExtension.observedPlayers()).model().getClass("AtomicAgent"));
     }
 }

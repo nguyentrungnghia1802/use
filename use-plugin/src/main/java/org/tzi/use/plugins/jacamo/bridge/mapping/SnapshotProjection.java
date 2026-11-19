@@ -1,5 +1,6 @@
 package org.tzi.use.plugins.jacamo.bridge.mapping;
 
+import org.tzi.use.plugins.jacamo.verify.use75.CslModelCompiler.Binding;
 import org.tzi.use.plugins.jacamo.bridge.SourceSnapshot;
 import java.util.*;
 import org.tzi.use.plugins.jacamo.verify.use75.*;
@@ -11,19 +12,19 @@ public final class SnapshotProjection {
     public record Link(String association,String left,String right) { }
     public record Prepared(List<ObjectRow> objects,List<Link> links) { }
     private record Source(String id,String kind,String type,String name,String workspace,String parent,Map<String,Object> properties) { }
-    private final Use75ModelBinding binding;
+    private final Binding binding;
     private final AttributeMapping mapping;
-    public SnapshotProjection(Use75ModelBinding binding,AttributeMapping mapping) {
+    public SnapshotProjection(Binding binding,AttributeMapping mapping) {
         this.binding=binding;this.mapping=mapping;
         if(!binding.cslModel().relations().isEmpty())throw new IllegalArgumentException("STATE_EXPLICIT_ASSOCIATION_PROVIDER_REQUIRED");
         for(var a:mapping.attributes()) {
             var declaration=binding.classifiers().get(a.targetClass());
             if(declaration==null)throw new IllegalArgumentException("MAPPING_TARGET_MUST_BE_CSL_DECLARATION");
-            var expected=a.sourceCategory().equals("artifact")?Use75ModelBinding.Kind.ENTITY:Use75ModelBinding.Kind.ORG_CONTEXT;
+            var expected=a.sourceCategory().equals("artifact")?Binding.Kind.ENTITY:Binding.Kind.ORG_CONTEXT;
             if(declaration.kind()!=expected)throw new IllegalArgumentException("STATE_SOURCE_CSL_KIND_MISMATCH:"+a.targetClass());
             if(binding.classifier(a.targetClass()).attribute(a.targetName(),true)==null||binding.classifier(a.targetClass()).attribute(a.targetName(),true).isDerived())throw new IllegalArgumentException("STATE_TARGET_ATTRIBUTE_INVALID:"+a.targetName());
         }
-        for(var c:binding.classifiers().values())if(c.kind()!=Use75ModelBinding.Kind.ROLE&&mapping.attributes().stream().noneMatch(a->a.targetClass().equals(c.declaration())))throw new IllegalArgumentException("CSL_INSTANCE_SOURCE_REQUIRED:"+c.declaration());
+        for(var c:binding.classifiers().values())if(c.kind()!=Binding.Kind.ROLE&&mapping.attributes().stream().noneMatch(a->a.targetClass().equals(c.declaration())))throw new IllegalArgumentException("CSL_INSTANCE_SOURCE_REQUIRED:"+c.declaration());
     }
     public Prepared prepare(SourceSnapshot snapshot) {
         var sources = indexSources(snapshot);
@@ -89,7 +90,7 @@ public final class SnapshotProjection {
                                Map<String, List<ObjectRow>> bySource, Set<Link> links) {
         for(var artifact:snapshot.artifacts())for(String observer:artifact.observers()) {
             var source=sources.get(observer);if(source==null||!source.kind().equals("agent"))throw new IllegalArgumentException("FOCUS_OBSERVER_UNOBSERVED:"+observer);
-            if(bySource.getOrDefault(observer,List.of()).isEmpty()&&binding.classifiers().values().stream().noneMatch(c->c.kind()==Use75ModelBinding.Kind.ORG_CONTEXT))continue;
+            if(bySource.getOrDefault(observer,List.of()).isEmpty()&&binding.classifiers().values().stream().noneMatch(c->c.kind()==Binding.Kind.ORG_CONTEXT))continue;
             var player=exact(bySource.getOrDefault(observer,List.of()),"FOCUS_ORGCTX_UNRESOLVED:"+observer);
             for(var target:bySource.getOrDefault(artifact.identity(),List.of()))links.add(new Link("CslFocuses",player.identity(),target.identity()));
         }
@@ -133,7 +134,7 @@ public final class SnapshotProjection {
             if(contextSource==null||playerSource==null)throw new IllegalArgumentException("ROLE_ENDPOINT_UNOBSERVED");
             var contexts=bySource.getOrDefault(e.context(),List.of());if(contexts.isEmpty())continue;
             var context=exact(contexts,"ROLE_CONTEXT_AMBIGUOUS");var role=binding.classifiers().get(e.role());
-            if(role==null||role.kind()!=Use75ModelBinding.Kind.ROLE||!context.type().equals(binding.declarationOwners().get(e.role())))throw new IllegalArgumentException("ROLE_NOT_DECLARED_IN_CSL_CONTEXT:"+e.role());
+            if(role==null||role.kind()!=Binding.Kind.ROLE||!context.type().equals(binding.declarationOwners().get(e.role())))throw new IllegalArgumentException("ROLE_NOT_DECLARED_IN_CSL_CONTEXT:"+e.role());
             if(!binding.classifier(e.role()).allAttributes().isEmpty())throw new IllegalArgumentException("ROLE_ATTRIBUTE_PROVIDER_REQUIRED:"+e.role());
             String player=context(e.player(),sources,bySource).identity();
             String id=key(snapshot,e.context()+":"+e.player(),e.role());
@@ -144,7 +145,7 @@ public final class SnapshotProjection {
     private ObjectRow context(String id,Map<String,Source> sources,Map<String,List<ObjectRow>> bySource) {
         var source=sources.get(id);if(source==null||source.kind().equals("artifact"))throw new IllegalArgumentException("ORGCTX_ENDPOINT_UNOBSERVED:"+id);
         var row=exact(bySource.getOrDefault(id,List.of()),"ORGCTX_ENDPOINT_AMBIGUOUS_OR_UNMAPPED:"+id);
-        if(binding.classifiers().get(row.type()).kind()!=Use75ModelBinding.Kind.ORG_CONTEXT)throw new IllegalArgumentException("ORGCTX_ENDPOINT_REQUIRED");
+        if(binding.classifiers().get(row.type()).kind()!=Binding.Kind.ORG_CONTEXT)throw new IllegalArgumentException("ORGCTX_ENDPOINT_REQUIRED");
         return row;
     }
     private static void validateContextCycles(List<SourceSnapshot.Node> nodes) {

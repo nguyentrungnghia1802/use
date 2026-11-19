@@ -1,6 +1,7 @@
 package org.tzi.use.plugins.jacamo.verify.istar;
 
-import org.tzi.use.plugins.jacamo.verify.istar.EvaluationHistory.OccurrenceKey;
+import org.vnu.sme.goal.dsl.istar_marking.mm.GoalModelInstanceTopology.ActorBinding;
+import org.tzi.use.plugins.jacamo.verify.istar.GoalTaskSession.History.OccurrenceKey;
 import org.vnu.sme.goal.verify.istar.IStarMarking;
 import org.vnu.sme.goal.verify.istar.IStarMarking.TaskMarking;
 import org.vnu.sme.goal.verify.istar.IStarMarking.GoalMarking;
@@ -38,14 +39,14 @@ public final class GoalTaskSession implements AutoCloseable {
             GoalModelInstanceTranslator.InstanceContextMatcher matcher,String castRevision,EngineSemanticsProfile profile,TopologyPolicy topologyPolicy) {
         this.profile=Objects.requireNonNull(profile);
         this.topologyPolicy=Objects.requireNonNull(topologyPolicy);
-        var admitted=RuntimeModelAdmission.admit(source,cast,matcher,profile,topologyPolicy);definition=new OwnedGoalModel(source,profile);
+        var admitted=GoalModelAdmission.admit(source,cast,matcher,profile,topologyPolicy);definition=new OwnedGoalModel(source,profile);
         Objects.requireNonNull(castRevision);
         if(castRevision.isBlank())throw new IllegalArgumentException("EXPLICIT_CAST_REVISION_REQUIRED");
         this.castRevision=castRevision;
         // A policy change changes history ownership, even for identical M1 bytes.
         // Cast rebuilds may still seed exact stable keys under the same policy.
         definitionIdentity=definitionIdentity(definition.hash(),profile,topologyPolicy);
-        topology=topologyPolicy==TopologyPolicy.ORIGINAL_CONTEXT_PATHS?GoalModelInstanceTranslator.topology(source,new IStarScenarioModel("live","<in-memory>",cast,List.of()),matcher):SingleOwnerContextTopology.build(source,cast,matcher);
+        topology=topologyPolicy==TopologyPolicy.ORIGINAL_CONTEXT_PATHS?GoalModelInstanceTranslator.topology(source,new IStarScenarioModel("live","<in-memory>",cast,List.of()),matcher):GoalModelTopology.singleOwner(source,cast,matcher);
         instantiatedDefinition=new OwnedGoalModel(topology.instance().model(),profile);
         if(topology.occurrences().size()>admitted.occurrenceUpperBound()||topology.occurrences().size()>profile.maxOccurrences())
             throw new IllegalStateException("ENGINE_INSTANTIATED_BOUND_EXCEEDED");
@@ -62,10 +63,10 @@ public final class GoalTaskSession implements AutoCloseable {
     /** Read-only admission result for the actual expanded graph. */
     public boolean isDerivedOccurrence(String id){requireOpen();assertDefinitions();return derived.contains(id);}
     public GoalModelInstanceTopology topology(){requireOpen();assertDefinitions();return topology;}
-    public synchronized EvaluationHistory checkpoint(){requireOpen();return new EvaluationHistory(token,epoch,definitionIdentity,castRevision,boundary,goals,tasks,keys);}
+    public synchronized History checkpoint(){requireOpen();return new History(token,epoch,definitionIdentity,castRevision,boundary,goals,tasks,keys);}
     /** New neutral adapter seam, not an upstream API. A topology rebuild may keep
      * only exact structured occurrences. Different role stacks/episodes are ignored. */
-    public synchronized void seedStableHistory(EvaluationHistory previous,Map<String,String> episodes) {
+    public synchronized void seedStableHistory(History previous,Map<String,String> episodes) {
         requireOpen();assertDefinitions();if(boundary!=0||!goals.isEmpty()||!tasks.isEmpty())throw new IllegalStateException("ENGINE_SEED_REQUIRES_FRESH_SESSION");
         if(!definitionIdentity.equals(previous.definitionHash()))throw new IllegalArgumentException("ENGINE_SEED_DEFINITION_MISMATCH");
         for(var entry:previous.keys().entrySet()) {
@@ -77,7 +78,7 @@ public final class GoalTaskSession implements AutoCloseable {
         }
     }
     private record LeafDefinition(String kind,String actor,String actorKind,GoalType goalType,List<String> pre,List<String> post,Set<String> resources) { }
-    private record LeafImage(EngineSemanticsProfile profile,TopologyPolicy topologyPolicy,EvaluationHistory history,Map<String,LeafDefinition> definitions) { }
+    private record LeafImage(EngineSemanticsProfile profile,TopologyPolicy topologyPolicy,History history,Map<String,LeafDefinition> definitions) { }
     private LeafDefinition leafDefinition(String id) {
         if(derived.contains(id))return null;
         var binding=topology.occurrences().get(id);if(binding==null)return null;
@@ -110,7 +111,7 @@ public final class GoalTaskSession implements AutoCloseable {
             }
         }
     }
-    public synchronized void restore(EvaluationHistory image) {
+    public synchronized void restore(History image) {
         requireOpen();if(!image.ownerToken().equals(token)||image.epoch()!=epoch||!image.definitionHash().equals(definitionIdentity)||!image.castRevision().equals(castRevision))
             throw new IllegalArgumentException("ENGINE_CHECKPOINT_OWNER_MISMATCH");
         if(image.boundary()<0)throw new IllegalArgumentException("ENGINE_CHECKPOINT_BOUNDARY_INVALID");
@@ -132,7 +133,7 @@ public final class GoalTaskSession implements AutoCloseable {
         goals=new LinkedHashMap<>(image.goals());tasks=new LinkedHashMap<>(image.tasks());keys=new LinkedHashMap<>(image.keys());boundary=image.boundary();
     }
     /** Atomically stages history: no field is replaced if validation or original propagation fails. */
-    public synchronized StepResult step(EngineInputs input) {
+    public synchronized StepResult step(Inputs input) {
         requireOpen();assertDefinitions();var model=topology.instance().model();
         validateResourceInputs(input);
         var nextGoals=new LinkedHashMap<>(goals);var nextTasks=new LinkedHashMap<>(tasks);
@@ -179,7 +180,7 @@ public final class GoalTaskSession implements AutoCloseable {
         goals=nextGoals;tasks=nextTasks;keys=nextKeys;boundary=nextBoundary;
         return new StepResult(boundary,checkpoint(),aggregate,deferred,calls);
     }
-    private void validateResourceInputs(EngineInputs input) {
+    private void validateResourceInputs(Inputs input) {
         for(var key:input.resources().keySet()) {
             var binding=topology.occurrences().get(key.taskOccurrenceId());
             if(binding==null||!input.tasks().containsKey(key.taskOccurrenceId())
@@ -187,10 +188,10 @@ public final class GoalTaskSession implements AutoCloseable {
                 throw new IllegalArgumentException("ENGINE_RESOURCE_BINDING_UNRESOLVED:"+key);
         }
     }
-    private boolean resourcesReady(String task,String episode,EngineInputs input) {
+    private boolean resourcesReady(String task,String episode,Inputs input) {
         String source=topology.occurrences().get(task).sourceElementId();
         for(String resource:requiredResources.getOrDefault(source,Set.of())) {
-            var value=input.resources().get(new EngineInputs.ResourceKey(task,resource));
+            var value=input.resources().get(new Inputs.ResourceKey(task,resource));
             if(value==null||!Objects.equals(episode,value.episode())||!Boolean.TRUE.equals(value.available()))return false;
         }
         return true;
@@ -218,8 +219,47 @@ public final class GoalTaskSession implements AutoCloseable {
 
 
     /** Raw original history, derived original aggregate and deferred inputs are deliberately separate. */
-    public record StepResult(long boundary,EvaluationHistory history,IStarMarking aggregate,Set<String> deferred,
+    public record StepResult(long boundary,History history,IStarMarking aggregate,Set<String> deferred,
             List<String> originalApiCalls) {
         public StepResult {deferred=Set.copyOf(deferred);originalApiCalls=List.copyOf(originalApiCalls);}
+    }
+
+    /** Null Boolean means no known input. Coverage diagnostics stay outside the Boolean marking rules. */
+    public record Inputs(Map<String,GoalInput> goals,Map<String,TaskInput> tasks,
+                               Map<ResourceKey,ResourceInput> resources) {
+        public record GoalInput(String episode,Boolean active,Boolean condition) { }
+        public record TaskInput(String episode,Boolean required,Boolean pre,Boolean post) { }
+        /** External resource evidence is scoped to the exact task occurrence and source relation. */
+        public record ResourceKey(String taskOccurrenceId,String resourceSourceId) {
+            public ResourceKey {requireText(taskOccurrenceId);requireText(resourceSourceId);}
+        }
+        public record ResourceInput(String episode,Boolean available,String evidenceRef) {
+            public ResourceInput {
+                requireText(episode);
+                if(available!=null)requireText(evidenceRef);
+            }
+        }
+        public Inputs(Map<String,GoalInput> goals,Map<String,TaskInput> tasks) {
+            this(goals,tasks,Map.of());
+        }
+        public Inputs {goals=Map.copyOf(goals);tasks=Map.copyOf(tasks);resources=Map.copyOf(resources);}
+        private static void requireText(String value){if(value==null||value.isBlank())throw new IllegalArgumentException("ENGINE_RESOURCE_IDENTITY_REQUIRED");}
+        public static Inputs empty(){return new Inputs(Map.of(),Map.of());}
+    }
+
+    /** Immutable staged history only. No native model/state, socket, or UI ownership. */
+    public record History(String ownerToken,long epoch,String definitionHash,String castRevision,long boundary,
+            Map<String,GoalMarking> goals,Map<String,TaskMarking> tasks,
+            Map<String,OccurrenceKey> keys) {
+        public History {goals=Map.copyOf(goals);tasks=Map.copyOf(tasks);keys=Map.copyOf(keys);}
+
+
+        /** Complete structured occurrence identity within a run/program owner, including its activation episode. */
+        public record OccurrenceKey(String sourceElementId,List<ActorBinding> bindingStack,String episode) {
+            public OccurrenceKey {
+                Objects.requireNonNull(sourceElementId);bindingStack=List.copyOf(bindingStack);
+                if(episode==null||episode.isBlank())throw new IllegalArgumentException("EXPLICIT_EPISODE_REQUIRED");
+            }
+        }
     }
 }

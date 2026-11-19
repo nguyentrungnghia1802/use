@@ -14,6 +14,9 @@ import org.tzi.use.uml.mm.*;
 import org.tzi.use.uml.ocl.value.*;
 import org.tzi.use.uml.sys.MSystem;
 import org.vnu.sme.goal.dsl.csl.mm.*;
+import org.tzi.use.plugins.jacamo.verify.use75.CslModelCompiler;
+import org.tzi.use.plugins.jacamo.verify.use75.CslModelCompiler.Binding;
+import org.tzi.use.plugins.jacamo.verify.use75.CslModelCompiler.ModelExtension;
 import static org.junit.jupiter.api.Assertions.*;
 
 class Use75CslBackendTest {
@@ -35,9 +38,9 @@ class Use75CslBackendTest {
         assertEquals(a.toString(),b.toString());
         assertEquals(List.of("zeta","beta","alpha"),new ArrayList<>(second.model().getAnnotation("PortableOrder").getValues().keySet()));
     }
-    private Use75ModelBinding compile(String text, boolean players) {
-        return new Use75CslModelBackend().compile(new CslFrontend().compile(text,"backend.csl").requireModel(),
-                players ? M0ExtensionSpec.observedPlayers() : M0ExtensionSpec.schemaOnly());
+    private Binding compile(String text, boolean players) {
+        return new CslModelCompiler().compile(new CslFrontend().compile(text,"backend.csl").requireModel(),
+                players ? ModelExtension.observedPlayers() : ModelExtension.schemaOnly());
     }
     @Test void originalV4ProposalModelBuildsAllInvariantsAndRoundTripsThroughNativePrinter() throws Exception {
         String source = Files.readString(Path.of("src/test/resources/oracle/csl/proposal_review.csl"));
@@ -107,7 +110,7 @@ class Use75CslBackendTest {
         assertThrows(IllegalArgumentException.class,()->compile("csl v4.0 Bad { role RuntimePlayer; }",true));
         var inconsistent = new CslModel("v4.0","Bad",List.of(),List.of(new CslEntity("A",List.of()),new CslEntity("B",Optional.of("A"),List.of())),
                 List.of(),List.of(),List.of(),List.of(),List.of(),List.of());
-        assertThrows(IllegalArgumentException.class,()->new Use75CslModelBackend().compile(inconsistent));
+        assertThrows(IllegalArgumentException.class,()->new CslModelCompiler().compile(inconsistent));
     }
     @Test void compatibilityIsSymmetricMetadataAndAnExplicitM0NativeInvariant() {
         var binding = compile("csl v4.0 Compat { role A; role B; orgContext Team {} A compatible B; }",true);

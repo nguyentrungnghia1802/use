@@ -11,6 +11,8 @@ import org.vnu.sme.goal.dsl.istar_marking.mm.ScenarioInstance;
 import org.vnu.sme.goal.dsl.istar.mm.*;
 import org.vnu.sme.goal.dsl.istar.parser.IStarCompiler;
 import org.vnu.sme.goal.dsl.istar_marking.mm.*;
+import org.tzi.use.plugins.jacamo.verify.api.EngineDiagnostic.AdmissionException;
+import org.tzi.use.plugins.jacamo.verify.istar.GoalTaskSession.Inputs;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DerivedDependeePolicyTest {
@@ -42,9 +44,9 @@ class DerivedDependeePolicyTest {
         assertTrue(result.ok(), result.diagnostics().toString());
         assertTrue(GoalModelValidator.validate(result.model(), PROFILE.validationPolicy()).isEmpty());
         assertEquals(1, GoalModelValidator.validate(result.model()).size());
-        assertThrows(EngineAdmissionException.class, () -> new OwnedGoalModel(result.model()));
+        assertThrows(AdmissionException.class, () -> new OwnedGoalModel(result.model()));
         assertEquals(result.takeOwnership().hash(), new OwnedGoalModel(result.model(), PROFILE).hash());
-        assertThrows(EngineAdmissionException.class, () -> new GoalTaskSession(result.model(), CAST, (a,x,b,y)->true, "strict"));
+        assertThrows(AdmissionException.class, () -> new GoalTaskSession(result.model(), CAST, (a,x,b,y)->true, "strict"));
         try (var session = session()) {
             assertEquals(PROFILE, session.profile());
             assertFalse(session.topology().instance().model().getDependencies().isEmpty());
@@ -61,44 +63,44 @@ class DerivedDependeePolicyTest {
         }
         assertFalse(new IStarFrontend().compile("istar Invalid { role R { goal g activation {[ true ]} } }", "activation", PROFILE).ok());
         var wrong = model(SOURCE.replace("Worker participates-in Context", "Worker is-a Context"));
-        assertThrows(EngineAdmissionException.class, () -> new GoalTaskSession(wrong, CAST, (a,x,b,y)->true, "cast", PROFILE));
-        assertThrows(EngineAdmissionException.class, () -> new GoalTaskSession(model(SOURCE), CAST, (a,x,b,y)->x.equals(y), "cast", PROFILE));
+        assertThrows(AdmissionException.class, () -> new GoalTaskSession(wrong, CAST, (a,x,b,y)->true, "cast", PROFILE));
+        assertThrows(AdmissionException.class, () -> new GoalTaskSession(model(SOURCE), CAST, (a,x,b,y)->x.equals(y), "cast", PROFILE));
     }
     @Test void missingOrForeignResourceWitnessCannotUpdateOrCreditTaskAndFailureIsAtomic() {
         try (var session = session()) {
             String second = id(session, "second");
-            var task = Map.of(second, new EngineInputs.TaskInput("episode", true, true, true));
-            var absent = session.step(new EngineInputs(Map.of(), task));
+            var task = Map.of(second, new Inputs.TaskInput("episode", true, true, true));
+            var absent = session.step(new Inputs(Map.of(), task));
             assertTrue(absent.deferred().contains(second));
             assertEquals(TaskMarking.initial(), absent.history().tasks().get(second));
             assertFalse(absent.originalApiCalls().contains("TaskMarking.update"));
-            var key = new EngineInputs.ResourceKey(second, "tool");
-            for (var value : List.of(new EngineInputs.ResourceInput("episode", false, "observed-absent"),
-                    new EngineInputs.ResourceInput("other-episode", true, "artifact-uuid"),
-                    new EngineInputs.ResourceInput("episode", null, "partial"))) {
-                var deferred = session.step(new EngineInputs(Map.of(), task, Map.of(key, value)));
+            var key = new Inputs.ResourceKey(second, "tool");
+            for (var value : List.of(new Inputs.ResourceInput("episode", false, "observed-absent"),
+                    new Inputs.ResourceInput("other-episode", true, "artifact-uuid"),
+                    new Inputs.ResourceInput("episode", null, "partial"))) {
+                var deferred = session.step(new Inputs(Map.of(), task, Map.of(key, value)));
                 assertTrue(deferred.deferred().contains(second));
                 assertEquals(TaskMarking.initial(), deferred.history().tasks().get(second));
             }
-            assertThrows(IllegalArgumentException.class, () -> new EngineInputs.ResourceInput("episode", true, ""));
+            assertThrows(IllegalArgumentException.class, () -> new Inputs.ResourceInput("episode", true, ""));
             var before = session.checkpoint();
-            assertThrows(IllegalArgumentException.class, () -> session.step(new EngineInputs(Map.of(), task, Map.of(
-                    new EngineInputs.ResourceKey(second, "not-tool"), new EngineInputs.ResourceInput("episode", true, "uuid")))));
+            assertThrows(IllegalArgumentException.class, () -> session.step(new Inputs(Map.of(), task, Map.of(
+                    new Inputs.ResourceKey(second, "not-tool"), new Inputs.ResourceInput("episode", true, "uuid")))));
             assertEquals(before, session.checkpoint());
-            var ready = session.step(new EngineInputs(Map.of(), task, Map.of(key, new EngineInputs.ResourceInput("episode", true, "artifact-uuid"))));
+            var ready = session.step(new Inputs(Map.of(), task, Map.of(key, new Inputs.ResourceInput("episode", true, "artifact-uuid"))));
             assertEquals(GoalTaskStatus.FULFILLED, ready.history().tasks().get(second).status());
             assertTrue(ready.originalApiCalls().contains("TaskMarking.update"));
         }
     }
     @Test void originalAndAndDependencyPropagationRequireBothTasksAndExplicitResourceInput() {
         try (var session = session()) {
-            var tasks = new LinkedHashMap<String, EngineInputs.TaskInput>();
+            var tasks = new LinkedHashMap<String, Inputs.TaskInput>();
             session.topology().occurrences().values().stream().filter(b -> Set.of("first","second").contains(b.sourceElementId()))
-                    .forEach(b -> tasks.put(b.occurrenceId(), new EngineInputs.TaskInput("e", true, true, true)));
-            var resources = new LinkedHashMap<EngineInputs.ResourceKey, EngineInputs.ResourceInput>();
+                    .forEach(b -> tasks.put(b.occurrenceId(), new Inputs.TaskInput("e", true, true, true)));
+            var resources = new LinkedHashMap<Inputs.ResourceKey, Inputs.ResourceInput>();
             tasks.keySet().stream().filter(k -> session.topology().occurrences().get(k).sourceElementId().equals("second"))
-                    .forEach(k -> resources.put(new EngineInputs.ResourceKey(k, "tool"), new EngineInputs.ResourceInput("e", true, "same-context-artifact")));
-            var result = session.step(new EngineInputs(Map.of(), tasks, resources));
+                    .forEach(k -> resources.put(new Inputs.ResourceKey(k, "tool"), new Inputs.ResourceInput("e", true, "same-context-artifact")));
+            var result = session.step(new Inputs(Map.of(), tasks, resources));
             for (var dependency : session.topology().instance().model().getDependencies()) {
                 assertEquals(GoalTaskStatus.FULFILLED, result.aggregate().goalTaskStatus(dependency.dependeeElmt()));
                 assertEquals(GoalTaskStatus.FULFILLED, result.aggregate().goalTaskStatus(dependency.dependerElmt()));
@@ -115,7 +117,7 @@ class DerivedDependeePolicyTest {
             var extended=new GoalTaskSession(model,cast,(a,x,b,y)->true,"one",PROFILE);
             var rebuilt=new GoalTaskSession(model,cast,(a,x,b,y)->true,"two",PROFILE)) {
             String id=id(extended,"g");
-            var history=extended.step(new EngineInputs(Map.of(id,new EngineInputs.GoalInput("e",true,true)),Map.of())).history();
+            var history=extended.step(new Inputs(Map.of(id,new Inputs.GoalInput("e",true,true)),Map.of())).history();
             assertThrows(IllegalArgumentException.class,()->strict.seedStableHistory(history,Map.of(id,"e")));
             rebuilt.seedStableHistory(history,Map.of(id,"e"));
             assertEquals(history.goals(),rebuilt.checkpoint().goals());

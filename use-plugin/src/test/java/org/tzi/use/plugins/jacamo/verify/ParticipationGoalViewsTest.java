@@ -9,6 +9,8 @@ import org.tzi.use.plugins.jacamo.verify.istar.*;
 import org.vnu.sme.goal.dsl.istar_marking.mm.ScenarioInstance;
 import org.vnu.sme.goal.dsl.istar.mm.*;
 import org.vnu.sme.goal.verify.istar.IStarMarking.GoalTaskStatus;
+import org.tzi.use.plugins.jacamo.verify.istar.GoalTaskSession.Inputs;
+import org.tzi.use.plugins.jacamo.verify.istar.GoalModelTopology.ParticipationViews;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ParticipationGoalViewsTest {
@@ -27,7 +29,7 @@ class ParticipationGoalViewsTest {
         """;
     private GoalModel model(String text){return new IStarFrontend().compileScoped(text,"scoped.istar",PROFILE).requireModel();}
     @Test void participationSharesMatchingGoalActivationAndStatusWithoutAddingASocialDependency() {
-        var source=model(SOURCE);String before=OwnedGoalModel.fingerprint(source);var views=new ParticipationGoalViews(source);
+        var source=model(SOURCE);String before=OwnedGoalModel.fingerprint(source);var views=new ParticipationViews(source);
         assertEquals(1,source.getDependencies().size());assertEquals("Worker",source.getDependencies().getFirst().dependee());
         assertEquals("Capability.start",views.canonical("Worker.start"));
         assertEquals(1,views.executionModel().getDependencies().size());
@@ -37,9 +39,9 @@ class ParticipationGoalViewsTest {
         try(var session=new GoalTaskSession(views.executionModel(),cast,(a,x,b,y)->true,"shared-csl-context",PROFILE,TopologyPolicy.SINGLE_OWNER_CONTEXT_V1)) {
             var action=session.topology().occurrences().values().stream().filter(o->o.sourceElementId().equals("action")).findFirst().orElseThrow();
             var requested=session.topology().occurrences().values().stream().filter(o->o.sourceElementId().equals("requested")).findFirst().orElseThrow();
-            var first=session.step(new EngineInputs(Map.of(),Map.of(action.occurrenceId(),new EngineInputs.TaskInput("state",true,true,false))));
+            var first=session.step(new Inputs(Map.of(),Map.of(action.occurrenceId(),new Inputs.TaskInput("state",true,true,false))));
             assertNotEquals(GoalTaskStatus.FULFILLED,first.aggregate().goalTaskStatus(requested.occurrenceId()));
-            var next=session.step(new EngineInputs(Map.of(),Map.of(action.occurrenceId(),new EngineInputs.TaskInput("state",true,true,true))));
+            var next=session.step(new Inputs(Map.of(),Map.of(action.occurrenceId(),new Inputs.TaskInput("state",true,true,true))));
             assertEquals(GoalTaskStatus.FULFILLED,next.aggregate().goalTaskStatus(requested.occurrenceId()));
         }
         assertEquals(Set.of("Capability.start","Worker.start"),new HashSet<>(views.viewsOf("Capability.start")));
@@ -48,13 +50,13 @@ class ParticipationGoalViewsTest {
     @Test void equalNamesAloneDoNotCreateSharingAndTheDefaultCompilerKeepsGlobalIdentityRules() {
         assertFalse(new IStarFrontend().compile(SOURCE,"legacy.istar",PROFILE).ok());
         var independent=model(SOURCE.replace("Capability participates-in Worker",""));
-        assertTrue(new ParticipationGoalViews(independent).aliases().isEmpty());
+        assertTrue(new ParticipationViews(independent).aliases().isEmpty());
         assertFalse(new IStarFrontend().compileScoped(SOURCE.replace("goal start : Achieve\n", "goal start : Achieve goal start : Achieve\n"),"bad.istar",PROFILE).ok());
     }
     @Test void conflictingTypesAndMultipleProvidersRequireAnExplicitSemanticDecision() {
         var conflict=model(SOURCE.replace("role Worker { goal start : Achieve }","role Worker { goal start : Maintain }"));
-        assertThrows(IllegalArgumentException.class,()->new ParticipationGoalViews(conflict));
+        assertThrows(IllegalArgumentException.class,()->new ParticipationViews(conflict));
         var multiple=model(SOURCE.replace("depend Team.requested", "actor Other { Other participates-in Worker goal start : Achieve } depend Team.requested"));
-        assertThrows(IllegalArgumentException.class,()->new ParticipationGoalViews(multiple));
+        assertThrows(IllegalArgumentException.class,()->new ParticipationViews(multiple));
     }
 }

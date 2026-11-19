@@ -1,5 +1,10 @@
 package org.tzi.use.plugins.jacamo.session;
 
+import org.tzi.use.plugins.jacamo.verify.istar.GoalTaskSession.Inputs;
+import org.tzi.use.plugins.jacamo.verify.istar.GoalModelTopology.ParticipationViews;
+import org.tzi.use.plugins.jacamo.verify.use75.CslModelCompiler;
+import org.tzi.use.plugins.jacamo.verify.use75.CslModelCompiler.ModelExtension;
+import org.tzi.use.plugins.jacamo.verify.use75.NativeOclBackend.StateView;
 import org.tzi.use.plugins.jacamo.bridge.SourceSnapshot;
 import org.tzi.use.plugins.jacamo.bridge.mapping.AttributeMapping;
 import org.tzi.use.plugins.jacamo.bridge.mapping.SnapshotProjection;
@@ -33,7 +38,7 @@ public final class SnapshotVerifier implements AutoCloseable {
     private final AttributeMapping mapping;
     private final org.vnu.sme.goal.dsl.csl.mm.CslModel cslModel;
     private final GoalModel goals;
-    private final ParticipationGoalViews participation;
+    private final ParticipationViews participation;
     private final MSystem system;
     private final UseSystemApi api;
     private final NativeOclBackend ocl;
@@ -53,9 +58,9 @@ public final class SnapshotVerifier implements AutoCloseable {
         if(cslSource.contains("@use-native-ocl")||istar.contains("@use-native-ocl"))throw new IllegalArgumentException("STATE_MODE_INLINE_NATIVE_CONTRACTS_UNSUPPORTED");
         var csl=new CslFrontend().compile(cslSource,cslFile.toString()).requireModel();cslModel=csl;
         goals=new IStarFrontend().compileScoped(istar,istarFile.toString(),PROFILE).requireModel();
-        participation=new ParticipationGoalViews(goals);
+        participation=new ParticipationViews(goals);
         new IStarFrontend().validate(participation.executionModel(),istarFile+":participation",PROFILE).requireModel();
-        var binding=new Use75CslModelBackend().compile(csl,M0ExtensionSpec.unifiedContexts(),CslObservationSchema::prepare);
+        var binding=new CslModelCompiler().compile(csl,ModelExtension.unifiedContexts(),CslContextSchema::installObservations);
         system=new MSystem(binding.model());api=UseSystemApi.create(system,false);
         projection=new SnapshotProjection(binding,mapping);
         ocl=new NativeOclBackend(system.model(),"CSL_STATE_ONLY/1.0",PROFILE.name());
@@ -114,7 +119,7 @@ public final class SnapshotVerifier implements AutoCloseable {
         MSystemState before=new MSystemState("previous-csl-state",system.state());
         applySnapshot(prepared);
 
-        var view = UseStateReadView.pin(before, system.state());
+        var view = StateView.pin(before, system.state());
         var checks = new ArrayList<Check>();
         var elements = new ArrayList<ElementStatus>();
         checkInvariants(view, checks);
@@ -146,7 +151,7 @@ public final class SnapshotVerifier implements AutoCloseable {
         for(var link:prepared.links())api.createLink(link.association(),objects.get(link.left()).name(),objects.get(link.right()).name());
     }
 
-    private void checkInvariants(UseStateReadView view, List<Check> checks) {
+    private void checkInvariants(StateView view, List<Check> checks) {
         for (var object : objects.values()) {
             for (var entry : invariants.entrySet()) {
                 var compiled = entry.getValue();
@@ -158,7 +163,7 @@ public final class SnapshotVerifier implements AutoCloseable {
         }
     }
 
-    private void checkGoalTasks(String context, MObject object, UseStateReadView view,
+    private void checkGoalTasks(String context, MObject object, StateView view,
                                 List<Check> checks, List<ElementStatus> elements) {
         var session = sessions.computeIfAbsent(context, id -> new GoalTaskSession(participation.executionModel(),
                 actorClasses.keySet().stream()
@@ -190,23 +195,23 @@ public final class SnapshotVerifier implements AutoCloseable {
         }
     }
 
-    private EngineInputs goalTaskInputs(String context, GoalTaskSession session, Map<String, Boolean> outcomes) {
-        var goalsByOccurrence = new HashMap<String, EngineInputs.GoalInput>();
-        var tasksByOccurrence = new HashMap<String, EngineInputs.TaskInput>();
+    private Inputs goalTaskInputs(String context, GoalTaskSession session, Map<String, Boolean> outcomes) {
+        var goalsByOccurrence = new HashMap<String, Inputs.GoalInput>();
+        var tasksByOccurrence = new HashMap<String, Inputs.TaskInput>();
         for (var occurrence : session.topology().occurrences().values()) {
             String source = occurrence.sourceElementId();
             String id = occurrence.occurrenceId();
             if (session.isDerivedOccurrence(id)) continue;
             var element = goals.findElement(source).orElse(null);
             if (element instanceof Goal goal && !goal.conditions().isEmpty()) {
-                goalsByOccurrence.put(id, new EngineInputs.GoalInput(context, true, outcomes.get(source + ":" + Spec.Kind.GOAL)));
+                goalsByOccurrence.put(id, new Inputs.GoalInput(context, true, outcomes.get(source + ":" + Spec.Kind.GOAL)));
             }
             if (element instanceof Task) {
-                tasksByOccurrence.put(id, new EngineInputs.TaskInput(context, true,
+                tasksByOccurrence.put(id, new Inputs.TaskInput(context, true,
                         outcomes.get(source + ":" + Spec.Kind.TASK_PRE), outcomes.get(source + ":" + Spec.Kind.TASK_POST)));
             }
         }
-        return new EngineInputs(goalsByOccurrence, tasksByOccurrence);
+        return new Inputs(goalsByOccurrence, tasksByOccurrence);
     }
     private List<Map<String,Object>> stateRows(){var rows=new ArrayList<Map<String,Object>>();for(var entry:objects.entrySet()){var values=new TreeMap<String,Object>();values.put("object",entry.getValue().name());values.put("type",entry.getValue().cls().name());values.put("sourceIdentity",entry.getKey());
         var variables=new VarBindings(system.state());variables.push("self",entry.getValue().value());

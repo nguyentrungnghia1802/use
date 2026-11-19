@@ -9,6 +9,7 @@ import org.tzi.use.plugins.jacamo.verify.istar.*;
 import org.vnu.sme.goal.dsl.istar_marking.mm.ScenarioInstance;
 import org.vnu.sme.goal.dsl.istar.mm.*;
 import org.vnu.sme.goal.verify.istar.IStarMarking.GoalTaskStatus;
+import org.tzi.use.plugins.jacamo.verify.istar.GoalTaskSession.Inputs;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GenericActorTest {
@@ -35,9 +36,9 @@ class GenericActorTest {
         for(var policy:TopologyPolicy.values())try(var session=new GoalTaskSession(model,cast,(a,x,b,y)->true,"one-state-context",PROFILE,policy)) {
             assertTrue(session.topology().instance().model().getActors().stream().anyMatch(GenericActor.class::isInstance));
             if(policy!=TopologyPolicy.SINGLE_OWNER_CONTEXT_V1)continue;
-            var tasks=new HashMap<String,EngineInputs.TaskInput>();
-            session.topology().occurrences().values().stream().filter(o->o.sourceElementId().equals("action")).forEach(o->tasks.put(o.occurrenceId(),new EngineInputs.TaskInput("state",true,true,true)));
-            var result=session.step(new EngineInputs(Map.of(),tasks));
+            var tasks=new HashMap<String,Inputs.TaskInput>();
+            session.topology().occurrences().values().stream().filter(o->o.sourceElementId().equals("action")).forEach(o->tasks.put(o.occurrenceId(),new Inputs.TaskInput("state",true,true,true)));
+            var result=session.step(new Inputs(Map.of(),tasks));
             var requested=session.topology().occurrences().values().stream().filter(o->o.sourceElementId().equals("requested")).findFirst().orElseThrow();
             assertEquals(GoalTaskStatus.FULFILLED,result.aggregate().goalTaskStatus(requested.occurrenceId()));
         }

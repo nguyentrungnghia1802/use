@@ -15,7 +15,7 @@ public final class IStarFrontend {
         }
         public Result {diagnostics=List.copyOf(diagnostics);findings=List.copyOf(findings);}
         public boolean ok(){return model!=null&&diagnostics.isEmpty();}
-        public GoalModel requireModel(){if(!ok())throw new EngineAdmissionException(diagnostics);return model;}
+        public GoalModel requireModel(){if(!ok())throw new AdmissionException(diagnostics);return model;}
         public OwnedGoalModel takeOwnership(){return new OwnedGoalModel(requireModel(),profile);}
     }
     public Result compile(String source,String name) {

@@ -1,4 +1,6 @@
 package org.tzi.use.plugins.jacamo.gui.main;
+import org.tzi.use.plugins.jacamo.verify.use75.CslModelCompiler;
+import org.tzi.use.plugins.jacamo.verify.use75.CslModelCompiler.ModelExtension;
 import org.vnu.sme.goal.dsl.csl_marking.mm.ModelStateDocument;
 import org.vnu.sme.goal.dsl.istar_marking.view.IStarScenarioView;
 
@@ -39,7 +41,7 @@ public final class ModelWindow {
         Path model=state==null?file:state.model();String text=Files.readString(model);
         if(kind==Kind.CSL||kind==Kind.OAL) {
             var csl=new CslFrontend().compile(text,model.toString()).requireModel();
-            var binding=new Use75CslModelBackend().compile(csl,M0ExtensionSpec.unifiedContexts(),CslObservationSchema::prepare);
+            var binding=new CslModelCompiler().compile(csl,ModelExtension.unifiedContexts(),CslContextSchema::installObservations);
             return new Loaded(csl,binding.model(),null,state);
         }
         return new Loaded(null,null,new IStarFrontend().compileScoped(text,model.toString(),EngineSemanticsProfile.ROLE_SPECIALIZATION_V1).requireModel(),state);

@@ -16,7 +16,7 @@ public final class CslFrontend {
         public Result { diagnostics = List.copyOf(diagnostics); }
         public boolean ok() { return model != null && diagnostics.isEmpty(); }
         public CslModel requireModel() {
-            if (!ok()) throw new org.tzi.use.plugins.jacamo.verify.api.EngineAdmissionException(diagnostics);
+            if (!ok()) throw new AdmissionException(diagnostics);
             return model;
         }
     }

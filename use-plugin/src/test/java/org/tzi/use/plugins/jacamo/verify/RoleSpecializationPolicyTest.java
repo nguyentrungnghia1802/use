@@ -9,6 +9,9 @@ import org.tzi.use.plugins.jacamo.verify.istar.*;
 import org.vnu.sme.goal.dsl.istar.mm.*;
 import org.vnu.sme.goal.dsl.istar_marking.mm.ScenarioInstance;
 import org.vnu.sme.goal.verify.istar.IStarMarking.GoalTaskStatus;
+import org.tzi.use.plugins.jacamo.verify.api.EngineDiagnostic.AdmissionException;
+import org.tzi.use.plugins.jacamo.verify.istar.GoalTaskSession.Inputs;
+import org.tzi.use.plugins.jacamo.verify.istar.GoalModelAdmission;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RoleSpecializationPolicyTest {
@@ -38,7 +41,7 @@ class RoleSpecializationPolicyTest {
         var cast=List.of(new ScenarioInstance("team","Team"),new ScenarioInstance("capability-definition","Capability"),new ScenarioInstance("alice","Performer"));
         try(var session=new GoalTaskSession(model(SOURCE),cast,(a,x,b,y)->true,"source-test",profile(),TopologyPolicy.SINGLE_OWNER_CONTEXT_V1)) {
             String task=session.topology().occurrences().values().stream().filter(o->o.sourceElementId().equals("action")).findFirst().orElseThrow().occurrenceId();
-            var result=session.step(new EngineInputs(Map.of(),Map.of(task,new EngineInputs.TaskInput("invocation",true,true,true))));
+            var result=session.step(new Inputs(Map.of(),Map.of(task,new Inputs.TaskInput("invocation",true,true,true))));
             var dependency=session.topology().instance().model().getDependencies().getFirst();
             assertEquals(GoalTaskStatus.FULFILLED,result.aggregate().goalTaskStatus(dependency.dependeeElmt()));
             assertEquals(GoalTaskStatus.FULFILLED,result.aggregate().goalTaskStatus(dependency.dependerElmt()));
@@ -52,7 +55,7 @@ class RoleSpecializationPolicyTest {
                 SOURCE.replace("task action > delivered pre {[ true ]} post {[ true ]}","goal action : Achieve > delivered")))
             assertFalse(new IStarFrontend().compile(invalid,"invalid",profile()).ok(),invalid);
         var wrong=model(SOURCE.replace("role Capability","agent Capability"));
-        assertThrows(EngineAdmissionException.class,()->RuntimeModelAdmission.admit(wrong,List.of(new ScenarioInstance("team","Team"),new ScenarioInstance("base","Capability"),new ScenarioInstance("p","Performer")),(a,x,b,y)->true,profile()));
+        assertThrows(AdmissionException.class,()->GoalModelAdmission.admit(wrong,List.of(new ScenarioInstance("team","Team"),new ScenarioInstance("base","Capability"),new ScenarioInstance("p","Performer")),(a,x,b,y)->true,profile()));
         assertFalse(new IStarFrontend().compile(SOURCE.replace("role Capability { }","role Capability { Capability is-a Performer }"),"cycle",profile()).ok());
     }
 }

@@ -10,14 +10,15 @@ import org.vnu.sme.goal.dsl.istar_marking.mm.ScenarioInstance;
 import org.vnu.sme.goal.dsl.istar_marking.parser.GoalModelInstanceTranslator.InstanceContextMatcher;
 import org.vnu.sme.goal.dsl.istar.mm.*;
 import org.vnu.sme.goal.dsl.istar_marking.mm.*;
+import org.tzi.use.plugins.jacamo.verify.api.EngineSemanticsProfile.RoleSpecialization;
 import static org.tzi.use.plugins.jacamo.verify.api.EngineDiagnostic.*;
 
 /** Conservative, versioned operational subset. Admits Goal and Task verification and supported external relations. */
-public final class RuntimeModelAdmission {
+public final class GoalModelAdmission {
     public record Admitted(Set<String> derivedSourceIds,long occurrenceUpperBound,int activationDepth) {
         public Admitted {derivedSourceIds=Set.copyOf(derivedSourceIds);}
     }
-    private RuntimeModelAdmission() { }
+    private GoalModelAdmission() { }
     public static Admitted admit(GoalModel model,List<ScenarioInstance> cast,InstanceContextMatcher matcher) {
         return admit(model,cast,matcher,EngineSemanticsProfile.USE4GOAL_OBSERVED_V1);
     }
@@ -34,7 +35,7 @@ public final class RuntimeModelAdmission {
         // before calling it, just as the text frontend bounds its parse tree.
         preflightGraph(model);
         var diagnostics=OwnedGoalModel.validateDefinition(model,"<runtime-model>",profile);
-        if(!diagnostics.isEmpty())throw new EngineAdmissionException(diagnostics);
+        if(!diagnostics.isEmpty())throw new AdmissionException(diagnostics);
         for (var actor : model.getActors())
             if (!actor.contributions().isEmpty())
                 reject("QUALITY_CONTRIBUTION_NOT_VERIFIED", actor.name());
@@ -161,5 +162,5 @@ public final class RuntimeModelAdmission {
         while(!queue.isEmpty()){String node=queue.remove();order.add(node);for(String child:edges.getOrDefault(node,Set.of()))if(degree.merge(child,-1,Integer::sum)==0)queue.add(child);}
         if(order.size()!=degree.size())reject("ACTIVATION_DEPENDENCY_CYCLE",String.join(",",nodes));return order;
     }
-    private static void reject(String code,String target){throw new EngineAdmissionException(List.of(EngineDiagnostic.unsupported(Stage.CAPABILITY,code,target,"Outside USE4GOAL_OBSERVED_V1 operational subset")));}
+    private static void reject(String code,String target){throw new AdmissionException(List.of(EngineDiagnostic.unsupported(Stage.CAPABILITY,code,target,"Outside USE4GOAL_OBSERVED_V1 operational subset")));}
 }

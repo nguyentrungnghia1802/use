@@ -1,5 +1,6 @@
 package org.tzi.use.plugins.jacamo.verify.api;
 
+import org.tzi.use.plugins.jacamo.verify.api.EngineDiagnostic.AdmissionException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -17,7 +18,7 @@ public final class OwnedGoalModel {
     }
     public OwnedGoalModel(GoalModel model,EngineSemanticsProfile profile) {
         var diagnostics=validateDefinition(model,"<owned-goal-model>",profile);
-        if(!diagnostics.isEmpty())throw new EngineAdmissionException(diagnostics);
+        if(!diagnostics.isEmpty())throw new AdmissionException(diagnostics);
         this.model=model;this.hash=fingerprint(model);
     }
     public GoalModel model(){assertUnchanged();return model;}

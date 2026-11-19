@@ -13,6 +13,7 @@ import org.vnu.sme.goal.dsl.istar.parser.*;
 import org.tzi.use.plugins.jacamo.verify.oracle.PinnedOriginalOracle;
 import org.vnu.sme.goal.dsl.istar.mm.*;
 import org.vnu.sme.goal.dsl.istar.parser.IStarCompiler;
+import org.tzi.use.plugins.jacamo.verify.api.EngineDiagnostic.AdmissionException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.tzi.use.plugins.jacamo.verify.oracle.PinnedOriginalOracle.*;
 
@@ -76,7 +77,7 @@ class IStarFrontendParityTest {
         assertTrue(result.diagnostics().stream().anyMatch(d->d.code().equals(code)&&d.kind()==EngineDiagnostic.Kind.UNSUPPORTED));
         assertFalse(result.findings().isEmpty());
         assertTrue(result.findings().stream().allMatch(f->!f.span().sourceText().isEmpty()&&f.span().endOffset()>f.span().startOffset()));
-        assertThrows(EngineAdmissionException.class,result::requireModel);
+        assertThrows(AdmissionException.class,result::requireModel);
     }
     @Test void unicodeSourceSpansAndSyntaxLocationsComeFromActualTokens() {
         var result=new IStarFrontend().compile("// 😀 kiểm tra\nistar M { role R { goal g activation {[ true ]} } }","unicode.istar");

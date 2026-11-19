@@ -19,9 +19,9 @@ use-plugin/
         protocol/      Mã hóa, xác thực và trao đổi checkpoint
       session/         Vòng đời JVM con, lịch sử và cập nhật trạng thái USE
       verify/
-        api/           Profile, chẩn đoán và kiểm tra cài đặt
-        use75/         Mô hình native USE và OCL
-        istar/         Đánh giá Goal/Task và lịch sử đánh giá
+        api/           Profile, chẩn đoán, quyền sở hữu mô hình và kiểm tra cài đặt
+        use75/         Biên dịch mô hình CSL, schema ngữ cảnh và đánh giá OCL trên USE
+        istar/         Admission, topology thực thi và phiên đánh giá Goal/Task
       tool/main/       Điểm vào CLI cho workbench và replay
     org/vnu/sme/goal/
       dsl/             Frontend, AST, metamodel và diagram CSL/iStar
