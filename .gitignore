@@ -9,3 +9,6 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# Local verification runs and checkpoint histories
+/use-plugin/verification/
