@@ -1,4 +1,4 @@
-package org.tzi.use.plugins.jacamo.integration.use;
+package org.tzi.use.plugins.jacamo.entrypoint;
 
 import org.tzi.use.runtime.IPlugin;
 import org.tzi.use.runtime.IPluginRuntime;

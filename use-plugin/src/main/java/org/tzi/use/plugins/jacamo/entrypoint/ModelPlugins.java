@@ -1,4 +1,4 @@
-package org.tzi.use.plugins.jacamo.integration.use;
+package org.tzi.use.plugins.jacamo.entrypoint;
 
 import javax.swing.SwingUtilities;
 import org.tzi.use.plugins.jacamo.gui.main.ModelWindow;

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin id="org.tzi.use.plugins.jacamo" name="JaCaMo" version="1.0.1"
-        publisher="USE JaCaMo Plugin" class="org.tzi.use.plugins.jacamo.integration.use.JaCaMoPlugin">
+<plugin id="org.tzi.use.plugins.jacamo" name="JaCaMo" version="${project.version}"
+        publisher="USE JaCaMo Plugin" class="org.tzi.use.plugins.jacamo.entrypoint.JaCaMoPlugin">
     <actions>
         <action id="org.tzi.use.plugins.jacamo.experiment.action" label="Run JaCaMo experiment"
-                class="org.tzi.use.plugins.jacamo.integration.use.JaCaMoExperimentAction"
+                class="org.tzi.use.plugins.jacamo.entrypoint.JaCaMoExperimentAction"
                 icon="icons/status.gif" tooltip="Run JaCaMo and evaluate CSL / iStar inside USE"
                 menu="JaCaMo" menuitem="Run experiment..." toolbaritem="false"/>
     </actions>

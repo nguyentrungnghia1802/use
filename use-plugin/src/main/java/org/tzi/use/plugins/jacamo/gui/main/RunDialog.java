@@ -12,19 +12,36 @@ public final class RunDialog {
     private RunDialog() { }
     public static Optional<Configuration> show(Component owner) {
         var project=new JTextField(42);var csl=new JTextField(42);var istar=new JTextField(42);var mapping=new JTextField(42);
+        var artifactSources = new JTextField(42);
+        artifactSources.setName("bridge-artifact-source");
+        artifactSources.setToolTipText("Optional. Defaults to src/env beside the JaCaMo project.");
         project.setName("bridge-project");csl.setName("bridge-csl");istar.setName("bridge-istar");mapping.setName("bridge-mapping");
         var form=new JPanel(new GridBagLayout());int row=0;
-        for(var item:java.util.List.of(new Input("JaCaMo project",project,"jcm"),new Input("CSL model",csl,"csl"),new Input("iStar model",istar,"istar"),new Input("Attribute mapping",mapping,"xml"))) {
+        for(var item:java.util.List.of(new Input("JaCaMo project",project,"jcm"),new Input("CSL model",csl,"csl"),new Input("iStar model",istar,"istar"),new Input("Attribute mapping",mapping,"xml"),
+                new Input("Artifact Java sources (optional)",artifactSources,null))) {
             var constraints=new GridBagConstraints();constraints.gridy=row++;constraints.insets=new Insets(6,8,6,8);constraints.anchor=GridBagConstraints.WEST;
             constraints.gridx=0;form.add(new JLabel(item.label()),constraints);constraints.gridx=1;constraints.weightx=1;constraints.fill=GridBagConstraints.HORIZONTAL;form.add(item.field(),constraints);
             var browse=new JButton("Browse...");constraints.gridx=2;constraints.weightx=0;form.add(browse,constraints);
-            browse.addActionListener(e->{var chooser=new JFileChooser();chooser.setFileFilter(new FileNameExtensionFilter(item.label()+" (*."+item.extension()+")",item.extension()));if(!project.getText().isBlank())chooser.setCurrentDirectory(Path.of(project.getText()).toAbsolutePath().getParent().toFile());if(chooser.showOpenDialog(owner)==JFileChooser.APPROVE_OPTION){item.field().setText(chooser.getSelectedFile().getAbsolutePath());if(item.field()==project)suggestModels(Path.of(project.getText()),csl,istar,mapping);}});
+            browse.addActionListener(e -> {
+                var chooser = new JFileChooser();
+                if (item.extension() == null) chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                else chooser.setFileFilter(new FileNameExtensionFilter(item.label() + " (*." + item.extension() + ")", item.extension()));
+                if (!project.getText().isBlank()) chooser.setCurrentDirectory(Path.of(project.getText()).toAbsolutePath().getParent().toFile());
+                if (chooser.showOpenDialog(owner) == JFileChooser.APPROVE_OPTION) {
+                    item.field().setText(chooser.getSelectedFile().getAbsolutePath());
+                    if (item.field() == project) suggestModels(Path.of(project.getText()), csl, istar, mapping);
+                }
+            });
         }
         var panel=new JPanel(new BorderLayout(0,12));panel.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));panel.add(new JLabel("Choose the project and models to evaluate in USE."),BorderLayout.NORTH);panel.add(form);
         while(JOptionPane.showOptionDialog(owner,panel,"Run JaCaMo in USE",JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE,null,new String[]{"Run","Cancel"},"Run")==JOptionPane.OK_OPTION) {
             try {
                 for(var field:java.util.List.of(project,csl,istar,mapping))if(field.getText().isBlank())throw new IllegalArgumentException("Choose all four input files.");
-                var value=new Configuration(Path.of(project.getText()),Path.of(mapping.getText()),Path.of(csl.getText()),Path.of(istar.getText()));value.validate();return Optional.of(value);
+                Path sources = artifactSources.getText().isBlank() ? null : Path.of(artifactSources.getText());
+                var value = new Configuration(Path.of(project.getText()), Path.of(mapping.getText()),
+                        Path.of(csl.getText()), Path.of(istar.getText()), sources);
+                value.validate();
+                return Optional.of(value);
             }catch(Exception failure){JOptionPane.showMessageDialog(owner,failure.getMessage(),"Check run inputs",JOptionPane.ERROR_MESSAGE);}
         }
         return Optional.empty();

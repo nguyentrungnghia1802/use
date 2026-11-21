@@ -148,6 +148,7 @@ public final class StateProducer {
                         if(atom.getArity()!=0||atom.negated()||atom.hasAnnot())throw new IllegalArgumentException("STRUCTURED_PROPERTY_REQUIRES_TYPED_CONVERTER:"+property.getName());
                         value=atom.getFunctor();
                     }
+                    if (value instanceof Enum<?> literal) value = literal.name();
                     if(value instanceof String||value instanceof Boolean||value instanceof Number)properties.put(property.getName(),value);
                 }
                 if(info.getObservers()==null)throw new IllegalStateException("ARTIFACT_FOCUS_OBSERVATION_UNAVAILABLE");

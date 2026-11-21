@@ -28,11 +28,17 @@ Windows dùng `use-assembly/target/new/bin/start_use.bat`.
 Trong USE, chọn **Plugins → JaCaMo → Run experiment...**, rồi chọn project `.jcm`,
 CSL, iStar và mapping thuộc tính. JaCaMo và kết quả CSL/iStar hiển thị cạnh nhau;
 USE quản lý khởi chạy, dừng và khởi động lại phiên.
+Nếu mã Java của Artifact nằm ngoài `src/env` cạnh file `.jcm`, chọn thư mục đó
+ở **Artifact Java sources (optional)**. Với `WorkbenchMain`, dùng
+`--artifact-source=DIR`. Đường dẫn tương đối được tính từ thư mục chứa file `.jcm`.
+
+Phiên bản plugin lấy từ `revision` trong POM gốc. Có thể thử bản đóng gói với
+phiên bản khác bằng `mvn -B package -Drevision=1.0.2`.
 
 ## Tìm source ở đâu?
 
 - Code tích hợp: `use-plugin/src/main/java/org/tzi/use/plugins/jacamo/`.
-- Entry point: `feature/{csl,oal,istar,istarscn,bridge}`.
+- Entry point GUI và CLI: `entrypoint/`.
 - Frontend và view: `dsl/`; đánh giá native: `verify/`.
 - Interface và checkpoint JaCaMo: `runtime/`; mapping và kết nối: `bridge/`.
 - Parser gốc: `org/vnu/sme/goal/dsl/{csl,istar}/parser/` trong cùng `src/main/java`.

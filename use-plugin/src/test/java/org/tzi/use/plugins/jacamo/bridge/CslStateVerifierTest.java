@@ -4,7 +4,7 @@ import org.tzi.use.plugins.jacamo.bridge.mapping.AttributeMapping;
 import org.tzi.use.plugins.jacamo.bridge.protocol.CanonicalJson;
 import org.tzi.use.plugins.jacamo.bridge.protocol.CheckpointProtocol;
 import org.tzi.use.plugins.jacamo.session.SnapshotVerifier;
-import org.tzi.use.plugins.jacamo.tool.main.ReplayMain;
+import org.tzi.use.plugins.jacamo.entrypoint.ReplayMain;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
@@ -86,6 +86,48 @@ class CslStateVerifierTest {
     @Test void mappingCannotContainAnyTaskOrPlanLogic()throws Exception {
         var file=write("bad.xml","<mapping xmlns='urn:use:jacamo-state-mapping:1'><task source='some-plan' target='some-task'/></mapping>");
         assertThrows(IllegalArgumentException.class,()->AttributeMapping.read(file));
+    }
+
+    @Test void replayUsesDeclaredEnumValuesAndHoldsOnAnUnknownLiteral() throws Exception {
+        Path csl = write("mode.csl", """
+                csl v4.0 Modes {
+                  enum Mode { IDLE, ACTIVE }
+                  entity Station { mode : Mode required mutable; }
+                }
+                """);
+        Path istar = write("mode.istar", """
+                istar Modes { agent Station {
+                  goal IsActive : Maintain condition {[ self.mode = Mode::ACTIVE ]}
+                } }
+                """);
+        Path mapping = write("mode.xml", """
+                <mapping xmlns="urn:use:jacamo-state-mapping:1">
+                  <attribute source="artifact:example.StationArtifact/property:observedMode" target="Station.mode"/>
+                </mapping>
+                """);
+        Path trace = directory.resolve("enum-history.jsonl");
+        var literals = List.of("ACTIVE", "UNKNOWN");
+        for (int i = 0; i < literals.size(); i++) {
+            var state = new SourceSnapshot("enum-test", i + 1, true, List.of(
+                    new SourceSnapshot.Artifact("station-id", "example.StationArtifact", "station", "/main",
+                            Map.of("observedMode", literals.get(i)))));
+            var line = CanonicalJson.encode(Map.of("request", Map.of("version", CheckpointProtocol.VERSION,
+                    "snapshot", CheckpointProtocol.encodeSnapshot(state))));
+            Files.writeString(trace, new String(line, StandardCharsets.UTF_8) + "\n",
+                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        }
+        Path output = directory.resolve("enum-results.json");
+        ReplayMain.main(new String[]{mapping.toString(), csl.toString(), istar.toString(), trace.toString(), output.toString()});
+        var report = CanonicalJson.object(CanonicalJson.decode(Files.readAllBytes(output)));
+        var events = (List<?>) report.get("events");
+        var first = CanonicalJson.object(events.getFirst());
+        assertEquals("APPROVE", first.get("decision"));
+        assertTrue(((List<?>) first.get("fulfilledElements")).stream().map(CanonicalJson::object)
+                .anyMatch(element -> "IsActive".equals(element.get("element"))));
+        assertEquals("HOLD_UNVERIFIED", report.get("decision"));
+        assertEquals(2L, ((Number) report.get("firstHoldSequence")).longValue());
+        assertTrue(CanonicalJson.object(events.getLast()).get("diagnostic").toString()
+                .contains("ATTRIBUTE_ENUM_INVALID:Station.mode:"));
     }
     @Test void anIStarMaintainViolationHoldsEvenWhenEveryCslInvariantPasses()throws Exception {
         Path map=write("mapping.xml","<mapping xmlns='urn:use:jacamo-state-mapping:1'><attribute source='artifact:unrelated.CustomGauge/property:value' target='Gauge.reading'/></mapping>");

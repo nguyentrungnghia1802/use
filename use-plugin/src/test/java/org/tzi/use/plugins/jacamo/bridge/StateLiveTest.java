@@ -1,6 +1,6 @@
 package org.tzi.use.plugins.jacamo.bridge;
 
-import org.tzi.use.plugins.jacamo.tool.main.WorkbenchMain;
+import org.tzi.use.plugins.jacamo.entrypoint.WorkbenchMain;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;

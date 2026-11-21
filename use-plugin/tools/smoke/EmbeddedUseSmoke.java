@@ -1,6 +1,5 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.List;
@@ -12,7 +11,6 @@ import org.tzi.use.config.Options;
 import org.tzi.use.gui.main.MainWindow;
 import org.tzi.use.main.Session;
 import org.tzi.use.runtime.*;
-import org.tzi.use.runtime.gui.*;
 import org.tzi.use.runtime.impl.PluginRuntime;
 
 /** Cold packaged USE check. Requires a display; all application classes come from the installation. */
@@ -30,14 +28,14 @@ public final class EmbeddedUseSmoke {
         for(String name:List.of("CSL Model","OAL State","iStar Model","iStarSCN State","JaCaMo"))
             require(plugins.values().stream().anyMatch(p->p.getPluginModel().getName().equals(name)),"Missing plugin "+name);
         var bridge=plugins.values().stream().filter(p->p.getPluginModel().getName().equals("JaCaMo")).findFirst().orElseThrow();
-        var loader=bridge.getPluginClassLoader();pluginLoader=loader.loadClass("org.tzi.use.plugins.jacamo.integration.use.JaCaMoExperimentAction").getClassLoader();
+        var registeredPlugin=bridge.getPluginClass();
+        require(registeredPlugin!=null,"Cannot load the registered JaCaMo plugin");
+        pluginLoader=registeredPlugin.getClass().getClassLoader();
         var guard=pluginLoader.loadClass("org.tzi.use.plugins.jacamo.verify.api.EngineInstallationGuard");guard.getMethod("verify").invoke(null);
         System.out.println("PACKAGED_PLUGINS_OK engine="+guard.getProtectionDomain().getCodeSource().getLocation());
         var session=new Session();SwingUtilities.invokeAndWait(()->{owner=MainWindow.create(session,runtime);owner.setSize(1600,980);owner.setLocation(20,20);});
-        var action=(IPluginActionDelegate)loader.loadClass("org.tzi.use.plugins.jacamo.integration.use.JaCaMoExperimentAction").getConstructor().newInstance();
-        IPluginAction context=new IPluginAction(){public void actionPerformed(java.awt.event.ActionEvent e){}public MainWindow getParent(){return owner;}public Session getSession(){return session;}};
         try {
-            action.performAction(context);
+            clickPluginMenu("JaCaMo","Run experiment...");
             waitFor(()->named("bridge-project")!=null,10,"run form");
             Path example=installation.resolve(counter?"examples/counter":"examples/auction");
             Path models=example;String base=counter?"counter":"auction";
@@ -65,10 +63,14 @@ public final class EmbeddedUseSmoke {
             exportState(evidence.resolve("checkpoint.iscn"),models.resolve(base+".istar"),"ISTAR_SCN",result);
             Files.copy(work.resolve("latest.json"),evidence.resolve("latest.json"),StandardCopyOption.REPLACE_EXISTING);
             Files.copy(work.resolve("producer.log"),evidence.resolve("producer.log"),StandardCopyOption.REPLACE_EXISTING);
-            for(var entry:List.of(new Tool("CslModelAction",models.resolve(base+".csl"),"CSL —"),new Tool("IStarModelAction",models.resolve(base+".istar"),"ISTAR —"),new Tool("OalModelAction",evidence.resolve("checkpoint.oal"),"OAL —"),new Tool("IStarScnAction",evidence.resolve("checkpoint.iscn"),"ISTAR_SCN —"))) {
-                var tool=(IPluginActionDelegate)pluginLoader.loadClass("org.tzi.use.plugins.jacamo.integration.use.ModelPlugins$"+entry.action()).getConstructor().newInstance();tool.performAction(context);
-                waitFor(()->chooser()!=null,8,"file chooser for "+entry.action());SwingUtilities.invokeAndWait(()->{var choose=chooser();choose.setSelectedFile(entry.file().toFile());choose.approveSelection();});
-                waitFor(()->internalFrame(entry.title())!=null,10,"independent plugin "+entry.action());
+            for(var entry:List.of(
+                    new Tool("CSL Model",models.resolve(base+".csl"),"CSL —"),
+                    new Tool("iStar Model",models.resolve(base+".istar"),"ISTAR —"),
+                    new Tool("OAL State",evidence.resolve("checkpoint.oal"),"OAL —"),
+                    new Tool("iStarSCN State",evidence.resolve("checkpoint.iscn"),"ISTAR_SCN —"))) {
+                clickPluginMenu(entry.menu(),"Open...");
+                waitFor(()->chooser()!=null,8,"file chooser for "+entry.menu());SwingUtilities.invokeAndWait(()->{var choose=chooser();choose.setSelectedFile(entry.file().toFile());choose.approveSelection();});
+                waitFor(()->internalFrame(entry.title())!=null,10,"independent plugin "+entry.menu());
                 SwingUtilities.invokeAndWait(()->internalFrame(entry.title()).doDefaultCloseAction());
             }
             long pid=producerPid(view);
@@ -83,7 +85,29 @@ public final class EmbeddedUseSmoke {
         }
         System.exit(0);
     }
-    private record Tool(String action,Path file,String title){}
+    private record Tool(String menu,Path file,String title){}
+
+    private static void clickPluginMenu(String group, String label) throws Exception {
+        SwingUtilities.invokeAndWait(() -> {
+            JMenu plugins = menu(owner.getJMenuBar().getComponents(), "Plugins");
+            JMenu submenu = menu(plugins.getMenuComponents(), group);
+            for (Component component : submenu.getMenuComponents()) {
+                if (component instanceof JMenuItem item && label.equals(item.getText())) {
+                    require(item.isEnabled(), "Disabled plugin menu item: " + group + " / " + label);
+                    item.doClick();
+                    return;
+                }
+            }
+            throw new AssertionError("Missing plugin menu item: " + group + " / " + label);
+        });
+    }
+
+    private static JMenu menu(Component[] components, String label) {
+        for (Component component : components) {
+            if (component instanceof JMenu item && label.equals(item.getText())) return item;
+        }
+        throw new AssertionError("Missing menu: " + label);
+    }
     private static Map<String,Object> object(Object value){return (Map<String,Object>)value;}
     private static Map<String,Object> readReport(Path work)throws Exception{return object(pluginLoader.loadClass("org.tzi.use.plugins.jacamo.bridge.protocol.CanonicalJson").getMethod("decode",byte[].class).invoke(null,(Object)Files.readAllBytes(work.resolve("latest.json"))));}
     private static long completedGoals(Map<String,Object> result){if(!(result.get("elements") instanceof List<?> list))return 0;return list.stream().map(EmbeddedUseSmoke::object).filter(e->e.get("element").equals("AuctionCompleted")&&e.get("status").equals("FULFILLED")).count();}

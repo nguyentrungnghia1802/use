@@ -4,6 +4,8 @@ import org.tzi.use.plugins.jacamo.verify.use75.CslModelCompiler.Binding;
 import org.tzi.use.plugins.jacamo.bridge.SourceSnapshot;
 import java.util.*;
 import org.tzi.use.plugins.jacamo.verify.use75.*;
+import org.tzi.use.uml.ocl.type.EnumType;
+import org.tzi.use.uml.ocl.type.Type;
 import org.tzi.use.uml.ocl.value.*;
 
 /** Structural correspondence is type based; populations and enactments always come from M0 observations. */
@@ -66,7 +68,7 @@ public final class SnapshotProjection {
                     };
             String targetClass = attribute.targetClass();
             String targetName = attribute.targetName();
-            String type = binding.classifier(targetClass).attribute(targetName, true).type().toString();
+            Type type = binding.classifier(targetClass).attribute(targetName, true).type();
             targets.computeIfAbsent(targetClass, key -> new TreeMap<>())
                     .put(targetName, decodeValue(raw, type, targetClass + "." + targetName));
         }
@@ -156,8 +158,16 @@ public final class SnapshotProjection {
     private static String key(SourceSnapshot s,String id,String type){return s.run()+":"+id+":"+type;}
     private static ObjectRow exact(List<ObjectRow> values,String error){if(values.size()!=1)throw new IllegalArgumentException(error);return values.getFirst();}
 
-    private static Value decodeValue(Object raw,String type,String target) {
+    private static Value decodeValue(Object raw, Type nativeType, String target) {
         if(raw==null)throw new IllegalArgumentException("ATTRIBUTE_VALUE_MISSING:"+target);
+        if (nativeType instanceof EnumType enumeration) {
+            try {
+                return Use75ValueCodec.decodeEnum(enumeration, raw);
+            } catch (IllegalArgumentException invalid) {
+                throw new IllegalArgumentException("ATTRIBUTE_ENUM_INVALID:" + target + ":" + invalid.getMessage(), invalid);
+            }
+        }
+        String type = nativeType.toString();
         if(type.equals("String")&&raw instanceof String text)return new StringValue(text);
         if(type.equals("Boolean")&&raw instanceof Boolean truth)return BooleanValue.get(truth);
         if(type.equals("Real")&&raw instanceof Number number&&Double.isFinite(number.doubleValue()))return new RealValue(number.doubleValue());

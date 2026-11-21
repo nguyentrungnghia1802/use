@@ -7,7 +7,7 @@
         <version>7.5.0</version>
     </parent>
     <artifactId>use-plugin</artifactId>
-    <version>1.0.1</version>
+    <version>${revision}</version>
     <name>USE CSL, OAL, iStar and JaCaMo plugins</name>
     <properties>
         <antlr4.version>4.9.3</antlr4.version>
@@ -61,6 +61,17 @@
     </dependencies>
     <build>
         <finalName>use-jacamo-plugin-${project.version}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes><exclude>**/useplugin.xml</exclude></excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes><include>**/useplugin.xml</include></includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.antlr</groupId>
@@ -98,7 +109,7 @@
                     </excludes>
                     <archive>
                         <manifest>
-                            <mainClass>org.tzi.use.plugins.jacamo.integration.use.JaCaMoPlugin</mainClass>
+                            <mainClass>org.tzi.use.plugins.jacamo.entrypoint.JaCaMoPlugin</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -114,7 +125,7 @@
                             <classesDirectory>${project.build.outputDirectory}/plugins/csl-model</classesDirectory>
                             <archive>
                                 <manifest>
-                                    <mainClass>org.tzi.use.plugins.jacamo.integration.use.ModelPlugins$CslModelPlugin</mainClass>
+                                    <mainClass>org.tzi.use.plugins.jacamo.entrypoint.ModelPlugins$CslModelPlugin</mainClass>
                                 </manifest>
                                 <manifestEntries>
                                     <Class-Path>use-jacamo-plugin-${project.version}.jar</Class-Path>
@@ -133,7 +144,7 @@
                             <classesDirectory>${project.build.outputDirectory}/plugins/oal-model</classesDirectory>
                             <archive>
                                 <manifest>
-                                    <mainClass>org.tzi.use.plugins.jacamo.integration.use.ModelPlugins$OalModelPlugin</mainClass>
+                                    <mainClass>org.tzi.use.plugins.jacamo.entrypoint.ModelPlugins$OalModelPlugin</mainClass>
                                 </manifest>
                                 <manifestEntries>
                                     <Class-Path>use-jacamo-plugin-${project.version}.jar</Class-Path>
@@ -152,7 +163,7 @@
                             <classesDirectory>${project.build.outputDirectory}/plugins/istar-model</classesDirectory>
                             <archive>
                                 <manifest>
-                                    <mainClass>org.tzi.use.plugins.jacamo.integration.use.ModelPlugins$IStarModelPlugin</mainClass>
+                                    <mainClass>org.tzi.use.plugins.jacamo.entrypoint.ModelPlugins$IStarModelPlugin</mainClass>
                                 </manifest>
                                 <manifestEntries>
                                     <Class-Path>use-jacamo-plugin-${project.version}.jar</Class-Path>
@@ -171,7 +182,7 @@
                             <classesDirectory>${project.build.outputDirectory}/plugins/istar-scn</classesDirectory>
                             <archive>
                                 <manifest>
-                                    <mainClass>org.tzi.use.plugins.jacamo.integration.use.ModelPlugins$IStarScnPlugin</mainClass>
+                                    <mainClass>org.tzi.use.plugins.jacamo.entrypoint.ModelPlugins$IStarScnPlugin</mainClass>
                                 </manifest>
                                 <manifestEntries>
                                     <Class-Path>use-jacamo-plugin-${project.version}.jar</Class-Path>
@@ -212,7 +223,7 @@
                             </filters>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.tzi.use.plugins.jacamo.integration.use.JaCaMoPlugin</mainClass>
+                                    <mainClass>org.tzi.use.plugins.jacamo.entrypoint.JaCaMoPlugin</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

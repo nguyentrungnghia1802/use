@@ -1,4 +1,4 @@
-package org.tzi.use.plugins.jacamo.tool.main;
+package org.tzi.use.plugins.jacamo.entrypoint;
 
 import org.tzi.use.plugins.jacamo.bridge.protocol.CheckpointProtocol;
 import org.tzi.use.plugins.jacamo.session.SnapshotVerifier;

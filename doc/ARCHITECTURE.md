@@ -10,7 +10,7 @@ test. Không còn các Maven module lồng nhau cho từng thành phần nhỏ.
 use-plugin/
   src/main/java/
     org/tzi/use/plugins/jacamo/
-      integration/use/ Đăng ký plugin và action với USE
+      entrypoint/      Điểm vào từ menu USE và CLI (workbench, replay)
       gui/main/        Cửa sổ và hộp thoại
       gui/views/       Panel, cây mô hình và thành phần vẽ dùng chung
       runtime/         Khởi chạy JaCaMo, chọn checkpoint, thu thập trạng thái
@@ -22,7 +22,6 @@ use-plugin/
         api/           Profile, chẩn đoán, quyền sở hữu mô hình và kiểm tra cài đặt
         use75/         Biên dịch mô hình CSL, schema ngữ cảnh và đánh giá OCL trên USE
         istar/         Admission, topology thực thi và phiên đánh giá Goal/Task
-      tool/main/       Điểm vào CLI cho workbench và replay
     org/vnu/sme/goal/
       dsl/             Frontend, AST, metamodel và diagram CSL/iStar
       verify/          Ngữ nghĩa CSL và iStar tái sử dụng từ USE4Goal

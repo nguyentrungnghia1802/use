@@ -1,4 +1,4 @@
-package org.tzi.use.plugins.jacamo.tool.main;
+package org.tzi.use.plugins.jacamo.entrypoint;
 
 import org.tzi.use.plugins.jacamo.gui.main.StandaloneWindow;
 import org.tzi.use.plugins.jacamo.session.VerificationSession;
@@ -9,10 +9,23 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Compatibility CLI. USE plugins embed VerificationSession directly. */
 public final class WorkbenchMain {
+    private static final String ARTIFACT_SOURCE_OPTION = "--artifact-source=";
+
     public static void main(String[] args) throws Exception {
-        if (args.length < 4) throw new IllegalArgumentException("Usage: project.jcm mapping.xml model.csl model.istar [--headless] [--seconds=N]");
+        if (args.length < 4) throw new IllegalArgumentException(
+                "Usage: project.jcm mapping.xml model.csl model.istar [--headless] [--seconds=N] [--artifact-source=DIR]");
         boolean headless = Arrays.asList(args).contains("--headless");
-        var configuration = new Configuration(Path.of(args[0]), Path.of(args[1]), Path.of(args[2]), Path.of(args[3]));
+        Path artifactSources = null;
+        for (int i = 4; i < args.length; i++) {
+            if (!args[i].startsWith(ARTIFACT_SOURCE_OPTION)) continue;
+            String value = args[i].substring(ARTIFACT_SOURCE_OPTION.length());
+            if (value.isBlank() || artifactSources != null) {
+                throw new IllegalArgumentException("Use --artifact-source=DIR once with a directory path");
+            }
+            artifactSources = Path.of(value);
+        }
+        var configuration = new Configuration(Path.of(args[0]), Path.of(args[1]), Path.of(args[2]),
+                Path.of(args[3]), artifactSources);
         Path work = Path.of(System.getProperty("use.state.work", Path.of(System.getProperty("java.io.tmpdir"), "use-csl-state-" + System.currentTimeMillis()).toString()));
         var owner = new AtomicReference<VerificationSession>();
         VerificationSession.Listener listener = headless ? new VerificationSession.Listener() { }

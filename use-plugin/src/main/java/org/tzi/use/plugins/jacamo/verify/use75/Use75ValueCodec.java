@@ -3,6 +3,7 @@ package org.tzi.use.plugins.jacamo.verify.use75;
 import java.math.*;
 import java.util.*;
 import org.tzi.use.uml.mm.MModel;
+import org.tzi.use.uml.ocl.type.EnumType;
 import org.tzi.use.uml.ocl.value.*;
 import org.vnu.sme.goal.dsl.csl.mm.*;
 
@@ -16,10 +17,9 @@ public final class Use75ValueCodec {
         if (type instanceof CslNamedDataType) throw new IllegalArgumentException("UNSUPPORTED:EXACT_RUNTIME_CODEC_REQUIRED:" + type.sourceName());
         if (observed == null) return UndefinedValue.instance;
         if (type instanceof CslEnum enumeration) {
-            if (!(observed instanceof String literal)) throw mismatch(type, observed);
             var nativeType = model.enumType(enumeration.name());
             if (nativeType == null) throw new IllegalArgumentException("ENUM_MODEL_IDENTITY_MISSING:" + enumeration.name());
-            return new EnumValue(nativeType, literal);
+            return decodeEnum(nativeType, observed);
         }
         if (!(type instanceof CslPrimitiveType primitive)) throw new IllegalArgumentException("UNSUPPORTED:CSL_VALUE_TYPE:" + type.sourceName());
         return switch (primitive) {
@@ -44,6 +44,14 @@ public final class Use75ValueCodec {
             }
         };
     }
+
+    public static EnumValue decodeEnum(EnumType type, Object observed) {
+        if (!(observed instanceof String literal)) {
+            throw new IllegalArgumentException("CSL_ENUM_LITERAL_REQUIRED:" + type.name());
+        }
+        return new EnumValue(type, literal);
+    }
+
     private static IllegalArgumentException mismatch(CslDataType type, Object value) {
         return new IllegalArgumentException("CSL_TYPED_VALUE_MISMATCH:" + type.sourceName() + ":" + value.getClass().getName());
     }

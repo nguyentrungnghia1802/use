@@ -49,8 +49,7 @@ final class ProducerProcess {
         }
     }
 
-    static void compileArtifacts(Path project, Path work, String classpath, Consumer<String> log) throws IOException {
-        Path source = project.getParent().resolve("src/env");
+    static void compileArtifacts(Path source, Path work, String classpath, Consumer<String> log) throws IOException {
         Path output = work.resolve("artifact-classes");
         Files.createDirectories(output);
         if (!Files.isDirectory(source)) return;

@@ -27,32 +27,32 @@
     </fileSets>
     <files>
         <file>
-            <source>${project.build.directory}/use-jacamo-plugin-1.0.1.jar</source>
+            <source>${project.build.directory}/${project.build.finalName}.jar</source>
             <outputDirectory>lib/plugins</outputDirectory>
-            <destName>use-jacamo-plugin-1.0.1.jar</destName>
+            <destName>${project.build.finalName}.jar</destName>
         </file>
         <file>
-            <source>${project.build.directory}/use-jacamo-plugin-1.0.1-csl.jar</source>
+            <source>${project.build.directory}/${project.build.finalName}-csl.jar</source>
             <outputDirectory>lib/plugins</outputDirectory>
-            <destName>use-csl-model-1.0.1.jar</destName>
+            <destName>use-csl-model-${project.version}.jar</destName>
         </file>
         <file>
-            <source>${project.build.directory}/use-jacamo-plugin-1.0.1-oal.jar</source>
+            <source>${project.build.directory}/${project.build.finalName}-oal.jar</source>
             <outputDirectory>lib/plugins</outputDirectory>
-            <destName>use-oal-model-1.0.1.jar</destName>
+            <destName>use-oal-model-${project.version}.jar</destName>
         </file>
         <file>
-            <source>${project.build.directory}/use-jacamo-plugin-1.0.1-istar.jar</source>
+            <source>${project.build.directory}/${project.build.finalName}-istar.jar</source>
             <outputDirectory>lib/plugins</outputDirectory>
-            <destName>use-istar-model-1.0.1.jar</destName>
+            <destName>use-istar-model-${project.version}.jar</destName>
         </file>
         <file>
-            <source>${project.build.directory}/use-jacamo-plugin-1.0.1-istarscn.jar</source>
+            <source>${project.build.directory}/${project.build.finalName}-istarscn.jar</source>
             <outputDirectory>lib/plugins</outputDirectory>
-            <destName>use-istar-scn-1.0.1.jar</destName>
+            <destName>use-istar-scn-${project.version}.jar</destName>
         </file>
         <file>
-            <source>${project.build.directory}/use-jacamo-plugin-1.0.1.jar</source>
+            <source>${project.build.directory}/${project.build.finalName}.jar</source>
             <outputDirectory>bridge/state</outputDirectory>
         </file>
     </files>
