@@ -9,7 +9,7 @@ import org.jacamo.checkpoint.runtime.ExecutionBarrier;
 
 /** Imports JaCaMo unchanged; its extension points install source checkpoint observation/admission. */
 public final class JaCaMoRuntime implements AutoCloseable {
-    public record Checkpoint(String token, String agent, String plan, String outcome, String boundary,
+    public record Checkpoint(String token, String agent, String plan, String planTrigger, String outcome, String boundary,
                       String invocation, int intention, int mergedPlans, List<String> messages, boolean complete) {
         public Checkpoint { messages = List.copyOf(messages); }
     }

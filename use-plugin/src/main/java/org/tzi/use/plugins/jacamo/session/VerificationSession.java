@@ -16,32 +16,18 @@ import org.tzi.use.plugins.jacamo.bridge.protocol.CanonicalJson;
  * Presentation observes events; it has no authority to override the evaluation gate. */
 public final class VerificationSession implements AutoCloseable {
     /** Inputs for one owned source run. No Swing component or application singleton. */
-    public record Configuration(Path project, Path mapping, Path csl, Path istar, Path artifactSources) {
-        public Configuration(Path project, Path mapping, Path csl, Path istar) {
-            this(project, mapping, csl, istar, null);
-        }
-
+    public record Configuration(Path project, Path mapping, Path csl, Path istar) {
         public Configuration {
             project = project.toAbsolutePath().normalize();
             mapping = mapping.toAbsolutePath().normalize();
             csl = csl.toAbsolutePath().normalize();
             istar = istar.toAbsolutePath().normalize();
-            if (artifactSources != null) {
-                artifactSources = project.getParent().resolve(artifactSources).normalize();
-            }
-        }
-
-        public Path artifactSourceDirectory() {
-            return artifactSources == null ? project.getParent().resolve("src/env") : artifactSources;
         }
 
         public void validate() throws IOException {
             for (Path file : new Path[]{project, mapping, csl, istar})
                 if (!Files.isRegularFile(file) || !Files.isReadable(file)) throw new IOException("Cannot read " + file);
             if (!project.getFileName().toString().endsWith(".jcm")) throw new IOException("Select a JaCaMo .jcm project");
-            if (artifactSources != null && (!Files.isDirectory(artifactSources) || !Files.isReadable(artifactSources))) {
-                throw new IOException("Cannot read Artifact source directory " + artifactSources);
-            }
         }
     }
 
@@ -107,7 +93,7 @@ public final class VerificationSession implements AutoCloseable {
         Files.writeString(secretFile, HexFormat.of().formatHex(secret), StandardCharsets.US_ASCII);
         try { Files.setPosixFilePermissions(secretFile, PosixFilePermissions.fromString("rw-------")); }
         catch (UnsupportedOperationException ignored) { }
-        ProducerProcess.compileArtifacts(configuration.artifactSourceDirectory(), work, runtimeClasspath, listener::log);
+        ProducerProcess.compileArtifacts(configuration.project(), work, runtimeClasspath, listener::log);
         Thread.ofPlatform().daemon().name("csl-state-consumer").start(this::serve);
         producer = ProducerProcess.start(configuration, work, runtimeClasspath, server.getLocalPort(), secretFile, verifier.modelRevision());
         Process running = producer;

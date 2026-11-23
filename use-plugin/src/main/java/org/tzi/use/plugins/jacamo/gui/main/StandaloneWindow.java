@@ -1,5 +1,6 @@
 package org.tzi.use.plugins.jacamo.gui.main;
 
+import org.tzi.use.plugins.jacamo.gui.views.CheckpointPlan;
 import org.tzi.use.plugins.jacamo.session.SnapshotVerifier;
 import org.tzi.use.plugins.jacamo.session.VerificationSession;
 import java.awt.*;
@@ -30,7 +31,9 @@ public final class StandaloneWindow implements VerificationSession.Listener {
         tabs.addTab("CSL state", new JScrollPane(new JTable(state)));
         tabs.addTab("iStar state", new JScrollPane(new JTable(goals)));
         tabs.addTab("OCL", new JScrollPane(new JTable(checks)));
-        tabs.addTab("Checkpoints", new JScrollPane(new JTable(history)));
+        var timeline = new JTable(history);
+        CheckpointPlan.configureColumn(timeline);
+        tabs.addTab("Checkpoints", new JScrollPane(timeline));
         var button = new JButton("Stop JaCaMo"); button.addActionListener(e -> stop.run());
         var bar = new JPanel(new BorderLayout()); bar.add(status); bar.add(button, BorderLayout.EAST);
         window.add(bar, BorderLayout.NORTH); window.add(tabs); window.setSize(1200, 680);
@@ -50,7 +53,7 @@ public final class StandaloneWindow implements VerificationSession.Listener {
                 goals.setRowCount(0); result.elements().forEach(e -> goals.addRow(new Object[]{e.context(), e.actor(), e.element(), e.status()}));
                 checks.setRowCount(0); result.checks().forEach(c -> checks.addRow(new Object[]{c.context(), c.id(), c.kind(), c.expression(), c.verdict(), c.diagnostic()}));
             }
-            history.addRow(new Object[]{request.get("agent"), request.get("plan"), request.get("outcome"), response.get("decision")});
+            history.addRow(new Object[]{request.get("agent"), CheckpointPlan.from(request), request.get("outcome"), response.get("decision")});
             status.setText(response.get("decision") + " · " + response.get("diagnostic"));
         });
     }

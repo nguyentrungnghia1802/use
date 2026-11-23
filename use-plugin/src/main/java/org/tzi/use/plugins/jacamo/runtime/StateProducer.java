@@ -59,7 +59,8 @@ public final class StateProducer {
             var cut = CheckpointProtocol.Cut.local(run, proof.epoch(), revision);
             var snapshot=capture(++sequence,checkpoint.complete());
             var metadata=Map.<String,Object>of("boundary",checkpoint.boundary(),"invocation",checkpoint.invocation(),
-                    "intention",checkpoint.intention(),"mergedPlans",checkpoint.mergedPlans(),"messages",checkpoint.messages());
+                    "intention",checkpoint.intention(),"mergedPlans",checkpoint.mergedPlans(),"messages",checkpoint.messages(),
+                    "planTrigger",checkpoint.planTrigger());
             var request=Map.<String,Object>of("version",CheckpointProtocol.VERSION,"token",checkpoint.token(),"run",run,"agent",checkpoint.agent(),
                     "plan",checkpoint.plan(),"outcome",checkpoint.outcome(),"checkpoint",metadata,"cut",cut.payload(),
                     "snapshot",CheckpointProtocol.encodeSnapshot(snapshot),"sourceState",sourceState());
