@@ -5,12 +5,15 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Area;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.QuadCurve2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
@@ -79,9 +82,7 @@ public final class IStarDiagramNode extends PlaceableNode implements ToolTipProv
         }
 
         double x = getX(), y = getY(), w = getWidth(), h = getHeight();
-        String label = displayLabel();
-        double d = Math.max(IStarLayoutBuilder.ACTOR_D, (label == null ? 0 : label.length() * 8) + 24);
-        Area hit = new Area(new Ellipse2D.Double(x + (w - d) / 2.0, y - d / 2.0, d, d));
+        Area hit = new Area(actorCircle());
 
         Area outer = new Area(new RoundRectangle2D.Double(x, y, w, h, 18, 18));
         Area inner = new Area(new RoundRectangle2D.Double(x + 8, y + 8, Math.max(0, w - 16), Math.max(0, h - 16), 14, 14));
@@ -100,17 +101,14 @@ public final class IStarDiagramNode extends PlaceableNode implements ToolTipProv
         }
         g2.setColor(statusFrameColor());
         if (node.actorBoundary) {
-            g2.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
-                    10f, new float[]{7f, 4f}, 0f));
+            g2.setStroke(new BasicStroke(1.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
+                    10f, new float[]{1f, 3f}, 0f));
         } else {
             g2.setStroke(new BasicStroke(1.5f));
         }
         g2.draw(shape);
         if (node.kind == IStarNodeKind.ACTOR) {
             paintActorMark(g2);
-        }
-        if (node.dependencyMarker) {
-            paintDependencyBadge(g2);
         }
         if (badge != null) {
             paintStatusBadge(g2, badge);
@@ -198,9 +196,7 @@ public final class IStarDiagramNode extends PlaceableNode implements ToolTipProv
     private Shape shape() {
         double x = getX(), y = getY(), w = getWidth(), h = getHeight();
         return switch (node.kind) {
-            case ACTOR -> node.actorBoundary
-                    ? new RoundRectangle2D.Double(x, y, w, h, 18, 18)
-                    : new Ellipse2D.Double(x, y, w, h);
+            case ACTOR -> node.actorBoundary ? new RoundRectangle2D.Double(x, y, w, h, 18, 18) : actorCircle();
             case GOAL -> new Ellipse2D.Double(x, y, w, h);
             case TASK -> hex(x, y, w, h);
             case QUALITY -> cloud(x, y, w, h);
@@ -209,51 +205,55 @@ public final class IStarDiagramNode extends PlaceableNode implements ToolTipProv
     }
 
     private void paintActorMark(Graphics2D g) {
-        double x = getX(), y = getY(), w = getWidth(), h = getHeight();
+        Ellipse2D circle = actorCircle();
         if (node.actorBoundary) {
-            double d = actorCircleDiameter(g);
-            x = getX() + (getWidth() - d) / 2.0;
-            y = getY() - d / 2.0;
-            w = d;
-            h = d;
             g.setColor(Color.WHITE);
-            g.fill(new Ellipse2D.Double(x, y, w, h));
+            g.fill(circle);
             g.setColor(getFrameColor());
             g.setStroke(new BasicStroke(1.8f));
-            g.draw(new Ellipse2D.Double(x, y, w, h));
+            g.draw(circle);
+        }
+        g.setColor(getFrameColor());
+        g.setStroke(new BasicStroke(1.4f));
+        double h = circle.getHeight();
+        double cx = circle.getCenterX(), cy = circle.getCenterY();
+        if (node.actorSymbol == IStarNode.ActorSymbol.ROLE) {
+            double y = circle.getY() + h * 0.84;
+            double half = chordHalfWidth(circle, y);
+            g.draw(new QuadCurve2D.Double(cx - half, y, cx, circle.getY() + h * 0.98, cx + half, y));
+        } else if (node.actorSymbol == IStarNode.ActorSymbol.AGENT) {
+            double y = circle.getY() + h * 0.31;
+            double half = chordHalfWidth(circle, y);
+            g.draw(new Line2D.Double(cx - half, y, cx + half, y));
+            cy += h * 0.08;
         }
         g.setColor(getTextColor());
         g.setFont(getFont().deriveFont(Font.PLAIN, 11f));
-        drawCentered(g, displayLabel(), new Rectangle2D.Double(x, y, w, h));
-        g.setColor(getFrameColor());
-        if (node.actorIsRole) {
-            g.drawArc((int) x + 8, (int) (y + h * 0.62), (int) w - 16, (int) h / 4, 0, -180);
-        } else {
-            g.drawLine((int) x + 8, (int) (y + h * 0.72), (int) (x + w) - 8, (int) (y + h * 0.72));
+        drawCentered(g, displayLabel(), new Rectangle2D.Double(circle.getX(), cy - h / 2, circle.getWidth(), h));
+    }
+
+    private static double chordHalfWidth(Ellipse2D circle, double y) {
+        double offset = (y - circle.getCenterY()) / (circle.getHeight() / 2);
+        return circle.getWidth() / 2 * Math.sqrt(1 - offset * offset);
+    }
+
+    Ellipse2D actorCircle() {
+        if (!node.actorBoundary) {
+            return new Ellipse2D.Double(getX(), getY(), getWidth(), getHeight());
         }
+        double d = IStarLayoutBuilder.actorDiameter(displayLabel());
+        return new Ellipse2D.Double(getX() + (getWidth() - d) / 2, getY() - d / 2, d, d);
     }
 
-    double actorHeaderTop(Graphics2D g) {
-        return node.actorBoundary ? getY()-actorCircleDiameter(g)/2.0 : getY();
-    }
-
-    private double actorCircleDiameter(Graphics2D g) {
-        FontMetrics fm = g.getFontMetrics(getFont().deriveFont(Font.PLAIN, 11f));
-        String label = displayLabel();
-        return Math.max(IStarLayoutBuilder.ACTOR_D, fm.stringWidth(label == null ? "" : label) + 24);
-    }
-
-    private void paintDependencyBadge(Graphics2D g) {
-        int cx = (int) Math.round(getX() + getWidth() / 2.0);
-        int cy = (int) Math.round(getY() - 6);
-        g.setColor(Color.WHITE);
-        g.fillOval(cx - 12, cy - 8, 24, 16);
-        g.setColor(Color.BLACK);
-        g.setStroke(new BasicStroke(1.3f));
-        g.drawOval(cx - 12, cy - 8, 24, 16);
-        g.setFont(getFont().deriveFont(Font.BOLD, 10f));
-        FontMetrics fm = g.getFontMetrics();
-        g.drawString("D", cx - fm.stringWidth("D") / 2, cy + fm.getAscent() / 2 - 2);
+    Point2D dependencyAnchor(Point2D toward, Point2D existing) {
+        if (!node.actorBoundary) return existing;
+        var circle = actorCircle();
+        double dx = toward.getX() - circle.getCenterX();
+        double dy = toward.getY() - circle.getCenterY();
+        double distance = Math.hypot(dx, dy);
+        if (distance == 0) return existing;
+        double scale = circle.getWidth() / (2 * distance);
+        return new Point2D.Double(circle.getCenterX() + dx * scale, circle.getCenterY() + dy * scale);
     }
 
     private void paintStatusBadge(Graphics2D g, NodeBadge badge) {
@@ -290,26 +290,32 @@ public final class IStarDiagramNode extends PlaceableNode implements ToolTipProv
     }
 
     private static Shape hex(double x, double y, double w, double h) {
-        Polygon p = new Polygon();
-        p.addPoint((int) (x + 12), (int) y);
-        p.addPoint((int) (x + w - 12), (int) y);
-        p.addPoint((int) (x + w), (int) (y + h / 2));
-        p.addPoint((int) (x + w - 12), (int) (y + h));
-        p.addPoint((int) (x + 12), (int) (y + h));
-        p.addPoint((int) x, (int) (y + h / 2));
+        double inset = Math.min(w / 4, h / 2);
         Path2D.Double path = new Path2D.Double();
-        path.moveTo(p.xpoints[0], p.ypoints[0]);
-        for (int i = 1; i < p.npoints; i++) path.lineTo(p.xpoints[i], p.ypoints[i]);
+        path.moveTo(x + inset, y);
+        path.lineTo(x + w - inset, y);
+        path.lineTo(x + w, y + h / 2);
+        path.lineTo(x + w - inset, y + h);
+        path.lineTo(x + inset, y + h);
+        path.lineTo(x, y + h / 2);
         path.closePath();
         return path;
     }
 
     private static Shape cloud(double x, double y, double w, double h) {
-        Area area = new Area(new Ellipse2D.Double(x + w * 0.06, y + h * 0.30, w * 0.36, h * 0.52));
-        area.add(new Area(new Ellipse2D.Double(x + w * 0.24, y + h * 0.12, w * 0.34, h * 0.62)));
-        area.add(new Area(new Ellipse2D.Double(x + w * 0.48, y + h * 0.22, w * 0.42, h * 0.56)));
-        area.add(new Area(new RoundRectangle2D.Double(x + w * 0.18, y + h * 0.42, w * 0.66, h * 0.38, 18, 18)));
-        return area;
+        var outline = new Path2D.Double();
+        outline.moveTo(.17, .22);
+        outline.curveTo(.22, .02, .39, .02, .47, .18);
+        outline.curveTo(.59, .02, .84, .09, .86, .33);
+        outline.curveTo(1.02, .32, 1.05, .64, .88, .69);
+        outline.curveTo(.90, .88, .73, .96, .60, .81);
+        outline.curveTo(.51, 1.02, .31, .98, .26, .84);
+        outline.curveTo(.11, .93, -.02, .75, .09, .62);
+        outline.curveTo(-.05, .56, .02, .22, .17, .22);
+        outline.closePath();
+        var scale = AffineTransform.getTranslateInstance(x, y);
+        scale.scale(w, h);
+        return scale.createTransformedShape(outline);
     }
 
     private static void drawCentered(Graphics2D g, String text, Rectangle2D bounds) {

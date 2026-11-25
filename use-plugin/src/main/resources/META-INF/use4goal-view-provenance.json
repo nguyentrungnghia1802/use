@@ -195,40 +195,43 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarDiagram.java",
       "sourceSha256": "637b2f6e8595064253eaaee3acf7af087b2810382b96597edbd947898eb77198",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarDiagram.java",
-      "targetSha256": "cb248b23422987f6329be601e6fb58e562017b4651eceb7609c124fafad3fa17",
+      "targetSha256": "30815fa18287edc93cbf6855d25c8a6e9a080b0dc72c08362164fe9af329a1cd",
       "patches": [
         "PACKAGE_RELOCATION",
         "INITIAL_LAYOUT_CANVAS_SIZE",
         "USE_ROUTING_AND_DECLARATIVE_MODEL_PRESENTATION_20261104",
         "DECOUPLE_MODEL_PRESENTATION_FROM_BRIDGE_20261114",
         "FUNCTIONAL_PACKAGE_LAYOUT_20261114",
-        "P-DSL-LAYOUT-01"
+        "P-DSL-LAYOUT-01",
+        "ISTAR_FIGURE_1_NOTATION"
       ]
     },
     {
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarDiagramEdge.java",
       "sourceSha256": "b751422adba307ad9f2cb117a1e9d257d2ff8711db0eac656628477f93fb33ae",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarDiagramEdge.java",
-      "targetSha256": "037d2b1027fe1999461f16cfa3c34dc965946f947b2c8228a1accaf5d3df1185",
+      "targetSha256": "0931f6ea15f9890ef72b8ee5d674cfcb026d083e8a5d5d1ec56e83afec8638bf",
       "patches": [
         "PACKAGE_RELOCATION",
         "ACTOR_ASSOCIATION_HEADER_ROUTES",
         "USE_ROUTING_AND_DECLARATIVE_MODEL_PRESENTATION_20261104",
         "FUNCTIONAL_PACKAGE_LAYOUT_20261114",
         "P-DSL-LAYOUT-01",
-        "PLUGIN_GUI_LAYOUT"
+        "PLUGIN_GUI_LAYOUT",
+        "ISTAR_FIGURE_1_NOTATION"
       ]
     },
     {
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarDiagramNode.java",
       "sourceSha256": "d8eafe3b069463ec4e6647e064dbfcf1eb35870b7818ce7a698a7b2628f3398f",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarDiagramNode.java",
-      "targetSha256": "95295a97ea3db59f111f3d390098b297759c6577c729da0569d46edef3196da5",
+      "targetSha256": "ce6345d4e2e16e4be67baeb0e11e606867404808cf30806c297524ad76b8e4fc",
       "patches": [
         "PACKAGE_RELOCATION",
         "EXACT_ACTOR_HEADER_ATTACHMENT",
         "FUNCTIONAL_PACKAGE_LAYOUT_20261114",
-        "P-DSL-LAYOUT-01"
+        "P-DSL-LAYOUT-01",
+        "ISTAR_FIGURE_1_NOTATION"
       ]
     },
     {
@@ -280,25 +283,27 @@
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarLayoutBuilder.java",
       "sourceSha256": "384ac25df1df6c291f8fbf7a2979a41241bd25d8cb3b38d685909434efab913f",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarLayoutBuilder.java",
-      "targetSha256": "bcb3c13a4417b472c15cd21a5d170e239fd9f73af273c0b53e4f48df6d05520f",
+      "targetSha256": "b3467064e7fb37f61b49b0dfa99c7c2cfbace6af7c56dc25f53b53d57c184826",
       "patches": [
         "PACKAGE_RELOCATION",
         "ACTOR_CIRCLE_LABEL_HEADROOM",
         "DECLARED_ACTOR_ASSOCIATIONS",
         "USE_ROUTING_AND_DECLARATIVE_MODEL_PRESENTATION_20261104",
         "FUNCTIONAL_PACKAGE_LAYOUT_20261114",
-        "P-DSL-LAYOUT-01"
+        "P-DSL-LAYOUT-01",
+        "ISTAR_FIGURE_1_NOTATION"
       ]
     },
     {
       "upstreamPath": "goal/src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarNode.java",
       "sourceSha256": "31a620d04e8273d35ceea3d0c2d31e665c472c7b011b0ebf3fd0b06cb0a5726f",
       "targetPath": "src/main/java/org/vnu/sme/goal/dsl/istar/view/IStarNode.java",
-      "targetSha256": "31a620d04e8273d35ceea3d0c2d31e665c472c7b011b0ebf3fd0b06cb0a5726f",
+      "targetSha256": "00f0f43da0d36cede021627404e12cf99137379696505a4d783cb1cf33012274",
       "patches": [
         "PACKAGE_RELOCATION",
         "FUNCTIONAL_PACKAGE_LAYOUT_20261114",
-        "P-DSL-LAYOUT-01"
+        "P-DSL-LAYOUT-01",
+        "ISTAR_FIGURE_1_NOTATION"
       ]
     },
     {
