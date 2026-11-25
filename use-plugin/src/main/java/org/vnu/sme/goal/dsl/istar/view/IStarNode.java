@@ -8,14 +8,15 @@ import java.util.List;
  * LayoutBuilder are the only writers; painting only reads them.
  */
 public final class IStarNode {
+    enum ActorSymbol { ACTOR, ROLE, AGENT }
 
     public final String      id;
     public final String      label;
     public final IStarNodeKind kind;
     public final String      actorId;      // owning actor id; null for ACTOR nodes themselves
-    public final boolean     actorIsRole;  // meaningful only when kind == ACTOR (Role vs Agent glyph)
+    final ActorSymbol actorSymbol;
     public final boolean     actorBoundary;
-    public final boolean     dependencyMarker;
+    public final boolean     dependum;
     /** Human-readable OCL contract lines belonging to this goal/task. */
     public final List<String> oclContracts;
     /** Display name of the temporal GoalType; null for tasks and untyped goals. */
@@ -23,31 +24,16 @@ public final class IStarNode {
 
     public int x, y, w, h;
 
-    public IStarNode(String id, String label, IStarNodeKind kind, String actorId, boolean actorIsRole) {
-        this(id, label, kind, actorId, actorIsRole, false, false);
-    }
-
-    public IStarNode(String id, String label, IStarNodeKind kind, String actorId,
-                     boolean actorIsRole, boolean actorBoundary, boolean dependencyMarker) {
-        this(id, label, kind, actorId, actorIsRole, actorBoundary, dependencyMarker, List.of());
-    }
-
-    public IStarNode(String id, String label, IStarNodeKind kind, String actorId,
-                     boolean actorIsRole, boolean actorBoundary, boolean dependencyMarker,
-                     List<String> oclContracts) {
-        this(id, label, kind, actorId, actorIsRole, actorBoundary, dependencyMarker, oclContracts, null);
-    }
-
-    public IStarNode(String id, String label, IStarNodeKind kind, String actorId,
-                     boolean actorIsRole, boolean actorBoundary, boolean dependencyMarker,
-                     List<String> oclContracts, String goalType) {
+    IStarNode(String id, String label, IStarNodeKind kind, String actorId,
+              ActorSymbol actorSymbol, boolean actorBoundary, boolean dependum,
+              List<String> oclContracts, String goalType) {
         this.id = id;
         this.label = label;
         this.kind = kind;
         this.actorId = actorId;
-        this.actorIsRole = actorIsRole;
+        this.actorSymbol = actorSymbol;
         this.actorBoundary = actorBoundary;
-        this.dependencyMarker = dependencyMarker;
+        this.dependum = dependum;
         this.oclContracts = List.copyOf(oclContracts);
         this.goalType = goalType;
     }

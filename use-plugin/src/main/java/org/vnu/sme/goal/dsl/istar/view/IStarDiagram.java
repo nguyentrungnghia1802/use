@@ -182,12 +182,20 @@ public final class IStarDiagram extends DiagramView {
         if(visibleElements!=null) {
             if(node.actorBoundary||node.kind==IStarNodeKind.ACTOR) {
                 if(model.findActor(node.id).stream().flatMap(a->a.elements().stream()).noneMatch(e->visibleElements.contains(e.id())))return false;
-            } else if(node.dependencyMarker) {
-                if(model.getDependencies().stream().noneMatch(d->d.dependum().id().equals(node.label)&&visibleElements.contains(d.dependerElmt())&&visibleElements.contains(d.dependeeElmt())))return false;
+            } else if(node.dependum) {
+                if(model.getDependencies().stream().noneMatch(d -> d.dependum().id().equals(node.label)
+                        && endpointVisible(d.depender(), d.dependerElmt())
+                        && endpointVisible(d.dependee(), d.dependeeElmt()))) return false;
             } else if(!visibleElements.contains(node.id))return false;
         }
         if (!showQualities && node.kind == IStarNodeKind.QUALITY) return false;
-        return showDependencies || !node.dependencyMarker;
+        return showDependencies || !node.dependum;
+    }
+
+    private boolean endpointVisible(String actor, String element) {
+        if (element != null && mode == IStarViewMode.SR) return visibleElements.contains(element);
+        return model.findActor(actor).stream().flatMap(a -> a.elements().stream())
+                .anyMatch(e -> visibleElements.contains(e.id()));
     }
 
     private boolean isEdgeVisible(IStarEdge edge) {
@@ -340,7 +348,7 @@ public final class IStarDiagram extends DiagramView {
     }
 
     private void addVisibilityMenuItems(JPopupMenu menu) {
-        JCheckBoxMenuItem qualities = new JCheckBoxMenuItem("Show softgoals", showQualities);
+        JCheckBoxMenuItem qualities = new JCheckBoxMenuItem("Show qualities", showQualities);
         qualities.addActionListener(e -> {
             showQualities = qualities.isSelected();
             rebuild();

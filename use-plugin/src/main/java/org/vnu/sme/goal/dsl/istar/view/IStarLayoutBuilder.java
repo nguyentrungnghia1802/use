@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.vnu.sme.goal.dsl.istar.mm.Actor;
+import org.vnu.sme.goal.dsl.istar.mm.Agent;
 import org.vnu.sme.goal.dsl.istar.mm.AndRefinement;
 import org.vnu.sme.goal.dsl.istar.mm.Contribution;
 import org.vnu.sme.goal.dsl.istar.mm.Dependency;
+import org.vnu.sme.goal.dsl.istar.mm.GenericActor;
 import org.vnu.sme.goal.dsl.istar.mm.Goal;
 import org.vnu.sme.goal.dsl.istar.mm.GoalModel;
 import org.vnu.sme.goal.dsl.istar.mm.GoalTaskElement;
@@ -22,6 +24,7 @@ import org.vnu.sme.goal.dsl.istar.mm.Refinement;
 import org.vnu.sme.goal.dsl.istar.mm.Resource;
 import org.vnu.sme.goal.dsl.istar.mm.Role;
 import org.vnu.sme.goal.dsl.istar.mm.Task;
+import org.vnu.sme.goal.dsl.istar.view.IStarNode.ActorSymbol;
 
 /**
  * MM (GoalModel) -> IStarLayout. Pure computation — no Swing/AWT import.
@@ -38,7 +41,6 @@ public final class IStarLayoutBuilder {
 
     private static final int MARGIN    = 30;
     private static final int ACTOR_PAD = 22;
-    private static final int ACTOR_HDR = 28;
     private static final int HGAP      = 56;
     private static final int ACTOR_GAP = 200;
     private static final int ELEM_GAP  = 12;
@@ -69,7 +71,7 @@ public final class IStarLayoutBuilder {
 
         int ax = MARGIN;
         for (Actor actor : orderedActors(model)) {
-            IStarNode aNode = new IStarNode(actor.name(), actor.name(), IStarNodeKind.ACTOR, null, actor instanceof Role);
+            IStarNode aNode = actorNode(actor, false);
             aNode.x = ax;
             aNode.y = MARGIN;
             aNode.w = actorDiameter(actor.name());
@@ -82,7 +84,7 @@ public final class IStarLayoutBuilder {
         addAssociations(model, edges);
         int depIndex = 0;
         for (Dependency dep : model.getDependencies()) {
-            String depNodeId = addDependumNode(nodes, model, dep, depIndex++, dep.depender(), dep.dependee(), MARGIN + ACTOR_D + 26);
+            String depNodeId = addDependumNode(nodes, dep, depIndex++, dep.depender(), dep.dependee(), MARGIN + ACTOR_D + 26);
             edges.add(new IStarEdge(dep.depender(), depNodeId, IStarEdgeKind.DEPENDENCY, null, null));
             edges.add(new IStarEdge(depNodeId, dep.dependee(), IStarEdgeKind.DEPENDENCY, null, null));
         }
@@ -103,13 +105,11 @@ public final class IStarLayoutBuilder {
 
         int ax = MARGIN;
         for (Actor actor : orderedActors(model)) {
-            IStarNode aNode = new IStarNode(actor.name(), actor.name(), IStarNodeKind.ACTOR, null,
-                    actor instanceof Role, true, false);
+            IStarNode aNode = actorNode(actor, true);
             aNode.x = ax;
             aNode.y = top;
             nodes.put(aNode.id, aNode);
 
-            int cy   = top + ACTOR_HDR + ACTOR_PAD;
             int maxW = 0;
             List<IStarNode> children = new ArrayList<>();
 
@@ -122,6 +122,7 @@ public final class IStarLayoutBuilder {
                     case Resource r -> { kind = IStarNodeKind.RESOURCE; w = RW; h = RH; }
                     case Quality  q -> { kind = IStarNodeKind.QUALITY;  w = QW; h = QH; }
                 }
+                w = elementWidth(w, elem.id());
                 List<String> contracts = showOclContracts && elem instanceof GoalTaskElement gt
                         ? contractLines(gt) : List.of();
                 String goalType = elem instanceof Goal goal && goal.goalType() != null
@@ -131,12 +132,9 @@ public final class IStarLayoutBuilder {
                     w = Math.max(w, 250);
                     h += 18 + contracts.size() * 14;
                 }
-                IStarNode n = new IStarNode(elem.id(), elem.id(), kind, actor.name(), false,
+                IStarNode n = new IStarNode(elem.id(), elem.id(), kind, actor.name(), null,
                         false, false, contracts, goalType);
                 n.w = w; n.h = h;
-                n.x = ax + ACTOR_PAD;
-                n.y = cy;
-                cy += n.h + ELEM_GAP;
                 maxW = Math.max(maxW, n.w);
                 children.add(n);
                 nodes.put(n.id, n);
@@ -161,7 +159,7 @@ public final class IStarLayoutBuilder {
             children.forEach(c->layers.computeIfAbsent(ranks.get(c.id),k->new ArrayList<>()).add(c));
             int width=layers.values().stream().mapToInt(row->row.stream().mapToInt(c->c.w).sum()+Math.max(0,row.size()-1)*HGAP).max().orElse(maxW);
             aNode.w=Math.max(width+ACTOR_PAD*2,actorDiameter(actor.name())+ACTOR_PAD);
-            cy=top+ACTOR_HDR+ACTOR_PAD;
+            int cy = top + actorDiameter(actor.name()) / 2 + ACTOR_PAD;
             for(var row:layers.values()){
                 int rowWidth=row.stream().mapToInt(c->c.w).sum()+Math.max(0,row.size()-1)*HGAP;
                 int x=ax+(aNode.w-rowWidth)/2;
@@ -180,10 +178,10 @@ public final class IStarLayoutBuilder {
                 switch (ref) {
                     case AndRefinement and -> {
                         for (String childId : and.children())
-                            edges.add(new IStarEdge(childId, and.parent(), IStarEdgeKind.AND_REFINE, "AND", null));
+                            edges.add(new IStarEdge(childId, and.parent(), IStarEdgeKind.AND_REFINE, null, null));
                     }
                     case OrRefinement or ->
-                        edges.add(new IStarEdge(or.child(), or.parent(), IStarEdgeKind.OR_REFINE, "OR", null));
+                        edges.add(new IStarEdge(or.child(), or.parent(), IStarEdgeKind.OR_REFINE, null, null));
                 }
             }
             for (Contribution c : actor.contributions())
@@ -194,11 +192,9 @@ public final class IStarLayoutBuilder {
                 edges.add(new IStarEdge(nb.resource(), nb.task(), IStarEdgeKind.NEEDED_BY, null, null));
         }
         for (Dependency dep : model.getDependencies()) {
-            // Anchor to explicit boundary-opening elements. If omitted, fall back
-            // to the first intentional element inside each actor, not the actor boundary.
-            String fromId = dep.dependerElmt() != null ? dep.dependerElmt() : firstElementId(model, dep.depender());
-            String toId   = dep.dependeeElmt() != null ? dep.dependeeElmt() : firstElementId(model, dep.dependee());
-            String depNodeId = addDependumNode(nodes, model, dep, edges.size(), fromId, toId, 0);
+            String fromId = dep.dependerElmt() != null ? dep.dependerElmt() : dep.depender();
+            String toId = dep.dependeeElmt() != null ? dep.dependeeElmt() : dep.dependee();
+            String depNodeId = addDependumNode(nodes, dep, edges.size(), fromId, toId, 0);
             edges.add(new IStarEdge(fromId, depNodeId, IStarEdgeKind.DEPENDENCY, null, null));
             edges.add(new IStarEdge(depNodeId, toId, IStarEdgeKind.DEPENDENCY, null, null));
         }
@@ -234,21 +230,21 @@ public final class IStarLayoutBuilder {
         return result;
     }
 
-    private static String addDependumNode(Map<String, IStarNode> nodes, GoalModel model, Dependency dep,
+    private static String addDependumNode(Map<String, IStarNode> nodes, Dependency dep,
                                           int index, String fromId, String toId, int yFallback) {
-        IStarNodeKind kind = dependumKind(model, dep);
+        IStarNodeKind kind = dependumKind(dep);
         int[] size = sizeFor(kind);
         IStarNode from = nodes.get(fromId);
         IStarNode to = nodes.get(toId);
 
         IntentionalElement dependum = dep.dependum();
         IStarNode n = new IStarNode("dependum:" + index + ":" + dependum.id(), dependum.id(),
-                kind, null, false, false, true);
-        n.w = size[0];
+                kind, null, null, false, true, List.of(), null);
+        n.w = elementWidth(size[0], dependum.id());
         n.h = size[1];
         if (from != null && to != null) {
             int cx = (from.x + from.w / 2 + to.x + to.w / 2) / 2;
-            int cy = (from.y + from.h / 2 + to.y + to.h / 2) / 2;
+            int cy = (endpointY(from) + endpointY(to)) / 2;
             IStarNode fromActor=from.actorId==null?from:nodes.get(from.actorId);
             IStarNode toActor=to.actorId==null?to:nodes.get(to.actorId);
             if(fromActor!=null&&toActor!=null&&fromActor!=toActor){
@@ -267,12 +263,12 @@ public final class IStarLayoutBuilder {
             n.y = yFallback > 0 ? yFallback + index * DEP_Y_GAP : MARGIN + index * DEP_Y_GAP;
         }
         boolean overlaps;
-        do{overlaps=false;for(var prior:nodes.values())if(prior.dependencyMarker&&new java.awt.Rectangle(n.x-8,n.y-8,n.w+16,n.h+16).intersects(prior.x,prior.y,prior.w,prior.h)){n.y=prior.y+prior.h+24;overlaps=true;break;}}while(overlaps);
+        do{overlaps=false;for(var prior:nodes.values())if(prior.dependum&&new java.awt.Rectangle(n.x-8,n.y-8,n.w+16,n.h+16).intersects(prior.x,prior.y,prior.w,prior.h)){n.y=prior.y+prior.h+24;overlaps=true;break;}}while(overlaps);
         nodes.put(n.id, n);
         return n.id;
     }
 
-    private static IStarNodeKind dependumKind(GoalModel model, Dependency dep) {
+    private static IStarNodeKind dependumKind(Dependency dep) {
         return switch (dep.dependum()) {
             case Goal ignored -> IStarNodeKind.GOAL;
             case Task ignored -> IStarNodeKind.TASK;
@@ -281,20 +277,27 @@ public final class IStarLayoutBuilder {
         };
     }
 
-    private static String firstElementId(GoalModel model, String actorName) {
-        if (model != null) {
-            for (Actor actor : model.getActors()) {
-                if (actor.name().equals(actorName) && !actor.elements().isEmpty()) {
-                    return actor.elements().get(0).id();
-                }
-            }
-        }
-        return actorName;
+    private static int endpointY(IStarNode node) {
+        return node.actorBoundary ? node.y : node.y + node.h / 2;
     }
 
-    private static int actorDiameter(String label) {
+    private static IStarNode actorNode(Actor actor, boolean boundary) {
+        ActorSymbol symbol = switch (actor) {
+            case Agent ignored -> ActorSymbol.AGENT;
+            case Role ignored -> ActorSymbol.ROLE;
+            case GenericActor ignored -> ActorSymbol.ACTOR;
+        };
+        return new IStarNode(actor.name(), actor.name(), IStarNodeKind.ACTOR, null, symbol, boundary,
+                false, List.of(), null);
+    }
+
+    static int actorDiameter(String label) {
         int textWidth = label == null ? 0 : label.length() * 8;
         return Math.max(ACTOR_D, textWidth + 24);
+    }
+
+    private static int elementWidth(int minimum, String label) {
+        return Math.max(minimum, label.length() * 7 + 22);
     }
 
     private static String displayGoalType(org.vnu.sme.goal.dsl.istar.mm.GoalType type) {
