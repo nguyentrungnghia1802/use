@@ -2,12 +2,17 @@ package org.tzi.use.plugins.jacamo.gui.main;
 
 import org.tzi.use.plugins.jacamo.gui.views.JaCaMoRuntimePanel;
 import org.tzi.use.plugins.jacamo.gui.views.UseEvaluationPanel;
+import org.tzi.use.plugins.jacamo.session.ExperimentBundle;
 import org.tzi.use.plugins.jacamo.session.SnapshotVerifier;
 import org.tzi.use.plugins.jacamo.session.VerificationSession;
 import org.tzi.use.plugins.jacamo.session.VerificationSession.Configuration;
 import java.awt.*;
+import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
@@ -18,6 +23,7 @@ import org.tzi.use.gui.views.View;
 /** The USE-owned experiment screen: source/runtime left, CSL/iStar evaluation right. */
 public final class ExperimentWindow extends JPanel implements View {
     private static final Map<MainWindow, ViewFrame> WINDOWS = new WeakHashMap<>();
+    private static final Set<MainWindow> LOADING = Collections.newSetFromMap(new WeakHashMap<>());
 
     private final Configuration configuration;
     private final JaCaMoRuntimePanel runtime;
@@ -47,7 +53,31 @@ public final class ExperimentWindow extends JPanel implements View {
             catch (java.beans.PropertyVetoException ignored) { }
             return;
         }
-        RunDialog.show(owner).ifPresent(configuration -> open(owner, configuration));
+        if (!LOADING.add(owner)) return;
+        var selected = RunDialog.show(owner);
+        if (selected.isEmpty()) {
+            LOADING.remove(owner);
+            return;
+        }
+        owner.statusBar().showTmpMessage("Opening " + selected.get().getFileName());
+        new SwingWorker<Configuration, Void>() {
+            @Override protected Configuration doInBackground() throws Exception {
+                return ExperimentBundle.unpack(selected.get(), Path.of(System.getProperty("java.io.tmpdir")));
+            }
+
+            @Override protected void done() {
+                LOADING.remove(owner);
+                if (!owner.isDisplayable()) return;
+                try {
+                    open(owner, get());
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                } catch (ExecutionException failure) {
+                    JOptionPane.showMessageDialog(owner, failure.getCause().getMessage(),
+                            "Cannot open MRV experiment", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }.execute();
     }
 
     private static void open(MainWindow owner, Configuration configuration) {

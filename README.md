@@ -25,12 +25,25 @@ bash use-assembly/target/new/bin/use
 Lệnh package trên bỏ qua test; cách chạy test ở [doc/TESTING.md](doc/TESTING.md).
 Windows dùng `use-assembly/target/new/bin/start_use.bat`.
 
-Trong USE, chọn **Plugins → JaCaMo → Run experiment...**, rồi chọn project `.jcm`,
-CSL, iStar và mapping thuộc tính. JaCaMo và kết quả CSL/iStar hiển thị cạnh nhau;
-USE quản lý khởi chạy, dừng và khởi động lại phiên.
-Nếu mã Java của Artifact nằm ngoài `src/env` cạnh file `.jcm`, chọn thư mục đó
-ở **Artifact Java sources (optional)**. Với `WorkbenchMain`, dùng
-`--artifact-source=DIR`. Đường dẫn tương đối được tính từ thư mục chứa file `.jcm`.
+Trong USE, chọn **Plugins → JaCaMo → Run experiment...** và mở một tệp `.mrv`.
+Hộp thoại mở tại `use-plugin/src/main/resources/example` khi chạy trong workspace
+hoặc tại `examples/` của bản cài độc lập. Ví dụ `auction/auction.mrv` và
+`counter/counter.mrv` nằm ngay ở thư mục gốc của từng case.
+
+`.mrv` là tệp ZIP với `mrv.json` (phiên bản 1) ở gốc chỉ rõ bốn tệp
+`.jcm`, XML mapping, `.csl` và `.istar`. Gói cũng chứa cây `src/` của JaCaMo,
+gồm mã agent, tổ chức và mã Java của Artifact nếu có. USE giải nén theo cấu
+trúc dự án, rồi tự biên dịch Artifact từ `src/env` cạnh tệp `.jcm`.
+
+Để cập nhật một gói sau khi sửa nguồn, chạy lệnh sau trong thư mục của case.
+Với tài nguyên ngoài `src/`, thêm `--include FILE` cho từng tệp cần đóng gói.
+
+```bash
+python ../../../../../tools/pack-mrv.py auction.jcm attribute-mapping.xml auction.csl auction.istar
+```
+
+`WorkbenchMain` nhận `experiment.mrv [--headless] [--seconds=N]` và hỗ trợ cú
+pháp bốn đường dẫn cho các script hiện có.
 
 Phiên bản plugin lấy từ `revision` trong POM gốc. Có thể thử bản đóng gói với
 phiên bản khác bằng `mvn -B package -Drevision=1.0.2`.

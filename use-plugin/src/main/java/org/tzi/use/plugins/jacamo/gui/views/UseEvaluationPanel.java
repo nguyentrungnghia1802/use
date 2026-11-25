@@ -54,6 +54,7 @@ public final class UseEvaluationPanel extends JPanel implements AutoCloseable {
         tabs.addTab("CSL Model",csl);tabs.addTab("OAL State",oalPanel);tabs.addTab("iStar Model",istar);tabs.addTab("iStarSCN",scenario);
         var checkTable=new JTable(checks);checkTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);tabs.addTab("OCL",new JScrollPane(checkTable));
         var timeline=new JTable(history);timeline.setName("bridge-checkpoint-history");timeline.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        CheckpointPlan.configureColumn(timeline);
         timeline.getSelectionModel().addListSelectionListener(e->{if(!e.getValueIsAdjusting()&&!selecting&&timeline.getSelectedRow()>=0){follow.setSelected(false);display(checkpoints.get(timeline.convertRowIndexToModel(timeline.getSelectedRow())));}});
         tabs.addTab("Checkpoints",new JScrollPane(timeline));
         var mapping=new JTextArea();mapping.setEditable(false);try{mapping.setText(Files.readString(configuration.mapping()));}catch(Exception error){mapping.setText(error.toString());}
@@ -66,7 +67,7 @@ public final class UseEvaluationPanel extends JPanel implements AutoCloseable {
         try {
             if(checkpoints.size()>1000){checkpoints.removeFirst();history.removeRow(0);}
             var source=request.get("checkpoint") instanceof Map<?,?> metadata?metadata:Map.of();
-            history.addRow(new Object[]{result==null?"?":result.sequence(),request.get("agent"),request.get("plan"),source.get("boundary"),source.get("mergedPlans"),request.get("outcome"),response.get("decision")});
+            history.addRow(new Object[]{result==null?"?":result.sequence(),request.get("agent"),CheckpointPlan.from(request),source.get("boundary"),source.get("mergedPlans"),request.get("outcome"),response.get("decision")});
         }finally{selecting=false;}
         if(follow.isSelected())display(checkpoint);
     }

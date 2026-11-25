@@ -30,7 +30,7 @@ final class JaCaMoCheckpoints implements AutoCloseable {
         try {
             long epoch = ExecutionBarrier.closeAdmission();
             var cut = freeze(epoch);
-            if (!handler.verify(checkpoint("", "INITIAL", "INITIAL", "INITIAL", "", -1, 0, List.of()), cut))
+            if (!handler.verify(checkpoint("", "INITIAL", "", "INITIAL", "INITIAL", "", -1, 0, List.of()), cut))
                 throw new IllegalStateException("INITIAL_STATE_NOT_APPROVED");
             ExecutionBarrier.release(epoch);
         } catch (Exception failure) { throw new IllegalStateException("INITIAL_SOURCE_ADMISSION_FAILED", failure); }
@@ -39,9 +39,9 @@ final class JaCaMoCheckpoints implements AutoCloseable {
         var monitor = new Monitor(ts, agent);
         owned.add(ts); Architecture.monitors.put(ts, monitor); monitor.install();
     }
-    private Checkpoint checkpoint(String agent, String plan, String outcome, String boundary,
+    private Checkpoint checkpoint(String agent, String plan, String planTrigger, String outcome, String boundary,
                                   String invocation, int intention, int merged, List<String> messages) {
-        return new Checkpoint(UUID.randomUUID().toString(), agent, plan, outcome, boundary,
+        return new Checkpoint(UUID.randomUUID().toString(), agent, plan, planTrigger, outcome, boundary,
                 invocation, intention, merged, messages, complete);
     }
     private synchronized CompletableFuture<Boolean> submit(Checkpoint checkpoint) {
@@ -85,7 +85,7 @@ final class JaCaMoCheckpoints implements AutoCloseable {
     }
     private void unavailable(String reason) {
         complete = false;
-        submit(checkpoint("", reason, "UNAVAILABLE", "SOURCE_UNAVAILABLE", "", -1, 0, List.of()));
+        submit(checkpoint("", reason, "", "UNAVAILABLE", "SOURCE_UNAVAILABLE", "", -1, 0, List.of()));
     }
     @Override public void close() {
         ExecutionBarrier.stop(); worker.shutdownNow();
@@ -121,6 +121,7 @@ final class JaCaMoCheckpoints implements AutoCloseable {
         private final class Group {
             final String invocation = UUID.randomUUID().toString();
             final String plan;
+            final String planTrigger;
             final IntendedMeans root;
             final Intention intention;
             final List<Delivery> deliveries = new ArrayList<>();
@@ -129,9 +130,10 @@ final class JaCaMoCheckpoints implements AutoCloseable {
             boolean forked, childFailed;
             Group(String plan, IntendedMeans root, Intention intention) {
                 this.plan = plan; this.root = root; this.intention = intention;
+                planTrigger = root.getPlan().getTrigger().toString();
             }
             Checkpoint event(String outcome, String boundary, List<String> ids) {
-                return checkpoint(agent, plan, outcome, boundary, invocation, intention.getId(), merged, ids);
+                return checkpoint(agent, plan, planTrigger, outcome, boundary, invocation, intention.getId(), merged, ids);
             }
         }
         private final TransitionSystem ts;
@@ -263,7 +265,7 @@ final class JaCaMoCheckpoints implements AutoCloseable {
                     return;
                 }
                 var event = group == null
-                        ? checkpoint(agent, "SOURCE_MESSAGE", "RUNNING", "AGENT_HANDOFF", "", -1, 0, List.of(id))
+                        ? checkpoint(agent, "SOURCE_MESSAGE", "", "RUNNING", "AGENT_HANDOFF", "", -1, 0, List.of(id))
                         : group.event("RUNNING", "AGENT_HANDOFF", List.of(id));
                 approval = submitForDelivery(event);
             }
@@ -308,7 +310,7 @@ final class JaCaMoCheckpoints implements AutoCloseable {
                     if (selected != null && selected.getTrigger().equals(trigger)) event = selected;
                 }
                 if (event != null && group(event.getIntention()) == null)
-                    submit(checkpoint(agent, trigger.toString(), "FAILED", "GOAL_FAILED", "", -1, 0, List.of()));
+                    submit(checkpoint(agent, trigger.toString(), "", "FAILED", "GOAL_FAILED", "", -1, 0, List.of()));
             } catch (Exception failure) { unavailable("SOURCE_FAILURE_OBSERVATION_FAILED"); }
         }
         @Override public synchronized void intentionDropped(Intention intention) {

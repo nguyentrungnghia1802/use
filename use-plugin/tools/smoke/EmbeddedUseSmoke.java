@@ -36,15 +36,15 @@ public final class EmbeddedUseSmoke {
         var session=new Session();SwingUtilities.invokeAndWait(()->{owner=MainWindow.create(session,runtime);owner.setSize(1600,980);owner.setLocation(20,20);});
         try {
             clickPluginMenu("JaCaMo","Run experiment...");
-            waitFor(()->named("bridge-project")!=null,10,"run form");
+            waitFor(()->named("bridge-mrv")!=null,10,"MRV chooser");
             Path example=installation.resolve(counter?"examples/counter":"examples/auction");
             Path models=example;String base=counter?"counter":"auction";
             SwingUtilities.invokeAndWait(()->{
-                ((JTextField)named("bridge-project")).setText(example.resolve(base+".jcm").toString());
-                ((JTextField)named("bridge-csl")).setText(models.resolve(base+".csl").toString());
-                ((JTextField)named("bridge-istar")).setText(models.resolve(base+".istar").toString());
-                ((JTextField)named("bridge-mapping")).setText(models.resolve("attribute-mapping.xml").toString());
-                for(Window window:Window.getWindows())if(window instanceof JDialog&&window.isVisible()){var run=button(window,"Run");if(run!=null){run.doClick();break;}}
+                var select=(JFileChooser)named("bridge-mrv");
+                require(!select.isAcceptAllFileFilterUsed()&&select.getFileFilter().accept(example.resolve(base+".mrv").toFile())
+                        &&!select.getFileFilter().accept(example.resolve(base+".jcm").toFile()),"Expected an MRV-only filter");
+                select.setSelectedFile(example.resolve(base+".mrv").toFile());
+                select.approveSelection();
             });
             waitFor(()->named("jacamo-evaluation-view")!=null,10,"embedded experiment view");
             var view=(JPanel)onEdt(()->named("jacamo-evaluation-view"));
@@ -125,7 +125,6 @@ public final class EmbeddedUseSmoke {
     private static JInternalFrame internalFrame(String title){return owner==null?null:(JInternalFrame)find(owner,c->c instanceof JInternalFrame frame&&!frame.isClosed()&&frame.getTitle().startsWith(title));}
     private static JFileChooser chooser(){for(Window window:Window.getWindows())if(window.isVisible()){var found=find(window,c->c instanceof JFileChooser);if(found!=null)return (JFileChooser)found;}return null;}
     private static Component named(String name){for(Window window:Window.getWindows())if(window.isVisible()){var found=find(window,c->name.equals(c.getName()));if(found!=null)return found;}return null;}
-    private static JButton button(Container root,String text){return (JButton)find(root,c->c instanceof JButton b&&b.getText().equals(text));}
     private static Component find(Component root,java.util.function.Predicate<Component> matches){if(matches.test(root))return root;if(root instanceof Container container)for(Component child:container.getComponents()){var result=find(child,matches);if(result!=null)return result;}return null;}
     private static <T>T onEdt(java.util.concurrent.Callable<T> action)throws Exception{var value=new AtomicReference<T>();var failure=new AtomicReference<Exception>();SwingUtilities.invokeAndWait(()->{try{value.set(action.call());}catch(Exception e){failure.set(e);}});if(failure.get()!=null)throw failure.get();return value.get();}
     private static void waitFor(BooleanSupplier condition,int seconds,String label)throws Exception {long until=System.nanoTime()+seconds*1_000_000_000L;while(System.nanoTime()<until){if(onEdt(condition::getAsBoolean))return;if(asynchronousFailure.get()!=null)throw new AssertionError("Asynchronous UI failure",asynchronousFailure.get());Thread.sleep(100);}throw new AssertionError("Timeout: "+label);}
